@@ -10,6 +10,42 @@ import { toDocHref } from "@/lib/routes";
 import { themeStylesFromConfig } from "@/lib/theme";
 import type { TocItem } from "@/lib/toc";
 
+const renderScripts = (scripts?: string[]) =>
+  scripts?.map((script) => (
+    <Script key={script} src={script} strategy="afterInteractive" />
+  )) ?? null;
+
+const Breadcrumbs = ({
+  basePath,
+  breadcrumbs,
+}: {
+  basePath: string;
+  breadcrumbs: { label: string; path: string }[];
+}) => {
+  if (!breadcrumbs.length) {
+    return null;
+  }
+
+  return (
+    <nav className="doc-breadcrumbs">
+      {breadcrumbs.map((crumb, index) => {
+        const key = `${crumb.path || "current"}-${crumb.label}`;
+        const isLast = index === breadcrumbs.length - 1;
+        return (
+          <span key={key}>
+            {crumb.path ? (
+              <a href={toDocHref(crumb.path, basePath)}>{crumb.label}</a>
+            ) : (
+              <span>{crumb.label}</span>
+            )}
+            {isLast ? null : <span className="doc-breadcrumbs__sep">/</span>}
+          </span>
+        );
+      })}
+    </nav>
+  );
+};
+
 export const DocShell = ({
   config,
   nav,
@@ -51,9 +87,7 @@ export const DocShell = ({
       data-has-dark-logo={config.logo?.dark ? "true" : "false"}
       style={themeStylesFromConfig(config)}
     >
-      {config.scripts?.head?.map((script) => (
-        <Script key={script} src={script} strategy="beforeInteractive" />
-      ))}
+      {renderScripts(config.scripts?.head)}
       <DocHeader
         basePath={basePath}
         config={config}
@@ -71,24 +105,7 @@ export const DocShell = ({
         ) : null}
         <main className="doc-main">
           <div className="doc-content">
-            {breadcrumbs.length ? (
-              <nav className="doc-breadcrumbs">
-                {breadcrumbs.map((crumb, index) => (
-                  <span key={`${crumb.label}-${index}`}>
-                    {crumb.path ? (
-                      <a href={toDocHref(crumb.path, basePath)}>
-                        {crumb.label}
-                      </a>
-                    ) : (
-                      <span>{crumb.label}</span>
-                    )}
-                    {index < breadcrumbs.length - 1 ? (
-                      <span className="doc-breadcrumbs__sep">/</span>
-                    ) : null}
-                  </span>
-                ))}
-              </nav>
-            ) : null}
+            <Breadcrumbs basePath={basePath} breadcrumbs={breadcrumbs} />
             <h1>{pageTitle}</h1>
             {pageDescription ? (
               <p className="doc-description">{pageDescription}</p>
@@ -98,9 +115,7 @@ export const DocShell = ({
         </main>
         {hasToc ? <DocToc toc={toc} /> : null}
       </div>
-      {config.scripts?.body?.map((script) => (
-        <Script key={script} src={script} strategy="afterInteractive" />
-      ))}
+      {renderScripts(config.scripts?.body)}
     </div>
   );
 };

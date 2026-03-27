@@ -6,7 +6,8 @@
     "outDir": "./dist",
     "module": "ESNext",
     "moduleResolution": "bundler",
-    "strictNullChecks": true
+    "strictNullChecks": true,
+    "types": ["node"]
   },
   "include": ["src/**/*.ts"]
 }

@@ -15,7 +15,7 @@ Each project needs to be connected to your GitHub repository with the correct **
 **URL:** https://vercel.com/blode/web/settings/git
 
 1. Click "Connect Git Repository"
-2. Select: **mblode/neue-docs**
+2. Select: **mblode/blode-docs**
 3. **Root Directory**: `apps/web`
 4. Click "Save"
 
@@ -24,7 +24,7 @@ Each project needs to be connected to your GitHub repository with the correct **
 **URL:** https://vercel.com/blode/dashboard/settings/git
 
 1. Click "Connect Git Repository"
-2. Select: **mblode/neue-docs**
+2. Select: **mblode/blode-docs**
 3. **Root Directory**: `apps/dashboard`
 4. Click "Save"
 
@@ -33,7 +33,7 @@ Each project needs to be connected to your GitHub repository with the correct **
 **URL:** https://vercel.com/blode/docs/settings/git
 
 1. Click "Connect Git Repository"
-2. Select: **mblode/neue-docs**
+2. Select: **mblode/blode-docs**
 3. **Root Directory**: `apps/docs`
 4. Click "Save"
 
@@ -42,7 +42,7 @@ Each project needs to be connected to your GitHub repository with the correct **
 **URL:** https://vercel.com/blode/api/settings/git
 
 1. Click "Connect Git Repository"
-2. Select: **mblode/neue-docs**
+2. Select: **mblode/blode-docs**
 3. **Root Directory**: `apps/api`
 4. Click "Save"
 

@@ -1,10 +1,10 @@
 # Examples
 
-This folder contains end-to-end MDX examples for each content type. All examples share a single root config at `examples/config.json` so navigation, themes, and collection routing are centralized.
+This folder contains end-to-end MDX examples for each content type. All examples share a single root config at `examples/docs.json` so navigation, themes, and collection routing are centralized.
 
 ## How to use
 
-1. Open `examples/config.json` to see collections, navigation, and routing.
+1. Open `examples/docs.json` to see collections, navigation, and routing.
 2. Edit the `.mdx` files in each folder to update content.
 3. Preview with your MDX pipeline.
 
@@ -84,9 +84,8 @@ All content is MDX + frontmatter. The frontmatter defines metadata; the body is 
 
 ## Config
 
-The root `examples/config.json` uses a Mintlify-like structure:
+The root `examples/docs.json` uses a docs-first structure:
 
-- `"$schema": "https://mintlify.com/site.json"`
 - `theme`: UI theme
 - `name`: site identifier
 - `collections[]`: list of content collections

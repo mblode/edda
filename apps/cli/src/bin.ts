@@ -19,12 +19,7 @@ interface DeploymentResponse {
   manifestUrl?: string;
 }
 
-const CONTENT_CONFIG_FILES = [
-  "blode-docs.json",
-  "site.json",
-  "config.json",
-  "docs.json",
-];
+const CONTENT_CONFIG_FILE = "docs.json";
 const TEXT_CONTENT_TYPES: Record<string, string> = {
   ".css": "text/css; charset=utf-8",
   ".html": "text/html; charset=utf-8",
@@ -47,7 +42,7 @@ const printHelp = (): void => {
       "",
       "Commands:",
       "  init [dir]      Scaffold a content folder",
-      "  validate [dir]  Validate site.json or config.json",
+      "  validate [dir]  Validate docs.json",
       "  push [dir]      Publish docs content",
       "  dev             Start the docs dev server (see instructions)",
       "",
@@ -87,22 +82,21 @@ const runInit = async (target: string): Promise<void> => {
   const root = path.resolve(process.cwd(), target);
   await fs.mkdir(root, { recursive: true });
 
-  const siteJson = {
-    collections: [
-      {
-        id: "docs",
-        navigation: {
-          groups: [{ group: "Getting Started", pages: ["index"] }],
-        },
-        type: "docs",
-      },
-    ],
+  const docsJson = {
+    $schema: "https://mintlify.com/docs.json",
+    colors: {
+      primary: "#0D9373",
+    },
     name: "My Site",
+    navigation: {
+      groups: [{ group: "Getting Started", pages: ["index"] }],
+    },
+    theme: "mint",
   };
 
   await ensureFile(
-    path.join(root, "site.json"),
-    `${JSON.stringify(siteJson, null, 2)}\n`
+    path.join(root, CONTENT_CONFIG_FILE),
+    `${JSON.stringify(docsJson, null, 2)}\n`
   );
   await ensureFile(
     path.join(root, "index.mdx"),
@@ -113,20 +107,16 @@ const runInit = async (target: string): Promise<void> => {
 };
 
 const validateConfigFile = async (root: string): Promise<string> => {
-  for (const candidate of CONTENT_CONFIG_FILES) {
-    try {
-      const raw = await fs.readFile(path.join(root, candidate), "utf8");
-      JSON.parse(raw);
-      return candidate;
-    } catch (error) {
-      if (isMissingFileError(error)) {
-        continue;
-      }
-      throw error;
+  try {
+    const raw = await fs.readFile(path.join(root, CONTENT_CONFIG_FILE), "utf8");
+    JSON.parse(raw);
+    return CONTENT_CONFIG_FILE;
+  } catch (error) {
+    if (isMissingFileError(error)) {
+      throw new Error(`${CONTENT_CONFIG_FILE} not found.`);
     }
+    throw error;
   }
-
-  throw new Error("site.json, config.json, or docs.json not found.");
 };
 
 const runValidate = async (target: string): Promise<void> => {
@@ -136,7 +126,7 @@ const runValidate = async (target: string): Promise<void> => {
     const configFile = await validateConfigFile(root);
     console.log(`${configFile} is valid JSON.`);
   } catch (error: unknown) {
-    console.error("site.json or config.json validation failed.");
+    console.error("docs.json validation failed.");
     console.error(error instanceof Error ? error.message : error);
     process.exitCode = 1;
   }

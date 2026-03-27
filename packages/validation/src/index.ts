@@ -1,12 +1,12 @@
 import {
-  LegacyDocsConfigSchema,
-  SiteConfigSchema,
   FrontmatterSchemaByType,
+  MintlifyDocsConfigSchema,
+  SiteConfigSchema,
 } from "@repo/models";
 import type {
   ContentType,
   FrontmatterByType,
-  LegacyDocsConfig,
+  MintlifyDocsConfig,
   SiteConfig,
 } from "@repo/models";
 
@@ -32,10 +32,10 @@ export const validateSiteConfig = (
   return { errors: issues, success: false };
 };
 
-export const validateLegacyDocsConfig = (
+export const validateDocsConfig = (
   input: unknown
-): ValidationResult<LegacyDocsConfig> => {
-  const result = LegacyDocsConfigSchema.safeParse(input);
+): ValidationResult<MintlifyDocsConfig> => {
+  const result = MintlifyDocsConfigSchema.safeParse(input);
   if (result.success) {
     return { data: result.data, success: true };
   }

@@ -1,17 +1,48 @@
 import { TenantResolutionSchema } from "@repo/contracts";
 
+import { docsApiBase } from "./env";
 import { platformConfig } from "./platform-config";
 
 const DEFAULT_RESERVED_PATHS = [
-  "/api",
+  "/_internal",
   "/_next",
+  "/.well-known",
   "/favicon.ico",
+  "/llms.txt",
   "/robots.txt",
+  "/sitemap.xml",
+  "/logos",
+  "/file-text.svg",
+  "/globe.svg",
+  "/next.svg",
+  "/turborepo-dark.svg",
+  "/turborepo-light.svg",
+  "/vercel.svg",
+  "/window.svg",
 ];
-const apiBase =
-  process.env.DOCS_API_URL ??
-  process.env.NEXT_PUBLIC_API_URL ??
-  "http://localhost:4000";
+
+const LOCAL_ROOT_HOSTS = new Set(["localhost", "127.0.0.1"]);
+
+const normalizeHost = (host: string) =>
+  host.trim().toLowerCase().replace(/:\d+$/, "");
+
+export const getRequestHost = (headerSource: Pick<Headers, "get">) => {
+  const forwardedHost = headerSource.get("x-forwarded-host");
+  return normalizeHost(
+    forwardedHost?.split(",")[0]?.trim() || headerSource.get("host") || ""
+  );
+};
+
+export const getRequestProtocol = (headerSource: Pick<Headers, "get">) =>
+  headerSource.get("x-forwarded-proto")?.split(",")[0]?.trim() || "https";
+
+export const isRootRuntimeHost = (host: string) => {
+  const normalizedHost = normalizeHost(host);
+  return (
+    normalizedHost === platformConfig.rootDomain ||
+    LOCAL_ROOT_HOSTS.has(normalizedHost)
+  );
+};
 
 export const isReservedPath = (pathname: string) => {
   const { assetPrefix } = platformConfig;
@@ -22,8 +53,8 @@ export const isReservedPath = (pathname: string) => {
 };
 
 export const resolveTenant = async (host: string, pathname: string) => {
-  const url = new URL("/tenants/resolve", apiBase);
-  url.searchParams.set("host", host);
+  const url = new URL("/tenants/resolve", docsApiBase);
+  url.searchParams.set("host", normalizeHost(host));
   url.searchParams.set("path", pathname);
   let response: Response;
   try {

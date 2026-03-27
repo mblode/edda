@@ -1,6 +1,6 @@
 # @repo/db
 
-Shared Drizzle ORM schema and DAO layer for neue.
+Shared Drizzle ORM schema and DAO layer for blode.
 
 ## Commands
 
@@ -18,26 +18,30 @@ npm run db:local:push --workspace=packages/db
 psql "$DATABASE_URL" -f packages/db/seed.sql
 ```
 
-## Local Supabase workflow
+## Local Docker workflow
 
-Supabase runs the database locally. Drizzle Kit pushes the schema directly from
+Docker runs a standard Postgres 16 instance locally (matching Neon's version in
+production). Drizzle Kit pushes the schema directly from
 [`src/schema.ts`](./src/schema.ts).
-
-The safest local path is to use a dedicated database instead of the shared
-`postgres` database. The local wrapper creates the database if needed and then
-runs `drizzle-kit push` against it.
 
 ```bash
 # from repo root
-supabase start
 
-# defaults to postgresql://postgres:postgres@127.0.0.1:54322/neue_docs
-npm run db:local:push:init --workspace=packages/db
-npm run db:local:url --workspace=packages/db
+# start postgres
+npm run db:up
 
-# optional: use a different dedicated database name
-LOCAL_DATABASE_NAME=neue_docs_drizzle_test npm run db:local:push --workspace=packages/db
+# defaults to postgresql://postgres:postgres@127.0.0.1:5432/blode_docs
+npm run db:push
 
-# use the URL printed by db:local:url
+# optional: seed data
 psql "$DATABASE_URL" -f packages/db/seed.sql
+
+# stop postgres
+npm run db:down
+```
+
+For integration tests, set `DATABASE_URL` to a separate database:
+
+```bash
+LOCAL_DATABASE_NAME=blode_docs_drizzle_test npm run db:local:push --workspace=packages/db
 ```

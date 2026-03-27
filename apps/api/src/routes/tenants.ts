@@ -1,0 +1,172 @@
+import { Hono } from "hono";
+import { z } from "zod";
+
+import { rootDomain, validConfiguredDomainStatus } from "../lib/config.js";
+import { domainDao, projectDao } from "../lib/db.js";
+import { normalizeHost, slugifyPath, stripPrefix } from "../lib/normalize.js";
+import { notFound } from "../lib/responses.js";
+import { buildTenant, buildTenantResolution } from "../lib/tenant-builder.js";
+import { validateParams, validateQuery } from "../lib/validators.js";
+
+const slugParamsSchema = z.object({ slug: z.string().min(1) });
+const tenantResolveQuerySchema = z.object({
+  host: z.string().min(1),
+  path: z.string().optional(),
+});
+
+const isPresent = <T>(value: T | null): value is T => value !== null;
+
+export const tenants = new Hono();
+
+tenants.get("/", async (c) => {
+  const projects = await projectDao.list();
+  const tenantList = await Promise.all(
+    projects.map((project) => buildTenant(project.id))
+  );
+  return c.json(tenantList.filter(isPresent), 200);
+});
+
+tenants.get(
+  "/resolve",
+  validateQuery(tenantResolveQuerySchema),
+  // biome-ignore lint/complexity/noExcessiveCognitiveComplexity: TODO: Refactor this handler by extracting resolution strategies into separate functions
+  async (c) => {
+    const query = c.req.valid("query");
+    const host = normalizeHost(query.host);
+    const pathname = query.path ?? "/";
+
+    const previewPrefix = host.includes("---") ? host.split("---")[0] : null;
+    if (previewPrefix) {
+      const project = await projectDao.getBySlugUnique(previewPrefix);
+      if (project) {
+        const tenant = await buildTenant(project.id);
+        if (!tenant) {
+          return notFound(c);
+        }
+        const slugPath = slugifyPath(pathname);
+        const rewrittenPath = slugPath
+          ? `/sites/${tenant.slug}/${slugPath}`
+          : `/sites/${tenant.slug}/`;
+        return c.json(
+          buildTenantResolution(tenant, "preview", host, "", rewrittenPath),
+          200
+        );
+      }
+    }
+
+    const domain = await domainDao.getByHostname(host);
+    if (domain && domain.status === validConfiguredDomainStatus) {
+      const tenant = await buildTenant(domain.projectId);
+      if (!tenant) {
+        return notFound(c);
+      }
+      const slugPath = stripPrefix(pathname, domain.pathPrefix ?? null);
+      const rewrittenPath = slugPath
+        ? `/sites/${tenant.slug}/${slugPath}`
+        : `/sites/${tenant.slug}/`;
+      return c.json(
+        buildTenantResolution(
+          tenant,
+          "custom-domain",
+          host,
+          domain.pathPrefix ?? "",
+          rewrittenPath
+        ),
+        200
+      );
+    }
+
+    const localSuffixes = ["localhost", "127.0.0.1"];
+    const localSuffix = localSuffixes.find((suffix) =>
+      host.endsWith(`.${suffix}`)
+    );
+    if (localSuffix) {
+      const subdomain = host.slice(0, -1 * (localSuffix.length + 1));
+      if (subdomain) {
+        const project = await projectDao.getBySlugUnique(subdomain);
+        if (project) {
+          const tenant = await buildTenant(project.id);
+          if (!tenant) {
+            return notFound(c);
+          }
+          const slugPath = slugifyPath(pathname);
+          const rewrittenPath = slugPath
+            ? `/sites/${tenant.slug}/${slugPath}`
+            : `/sites/${tenant.slug}/`;
+          return c.json(
+            buildTenantResolution(tenant, "subdomain", host, "", rewrittenPath),
+            200
+          );
+        }
+      }
+    }
+
+    if (host.endsWith(`.${rootDomain}`)) {
+      const subdomain = host.slice(0, -1 * (rootDomain.length + 1));
+      if (
+        subdomain &&
+        !["www", "app", "admin", "dashboard"].includes(subdomain)
+      ) {
+        const project = await projectDao.getBySlugUnique(subdomain);
+        if (project) {
+          const tenant = await buildTenant(project.id);
+          if (!tenant) {
+            return notFound(c);
+          }
+          const slugPath = slugifyPath(pathname);
+          const rewrittenPath = slugPath
+            ? `/sites/${tenant.slug}/${slugPath}`
+            : `/sites/${tenant.slug}/`;
+          return c.json(
+            buildTenantResolution(tenant, "subdomain", host, "", rewrittenPath),
+            200
+          );
+        }
+      }
+    }
+
+    if (host === rootDomain || localSuffixes.includes(host)) {
+      const normalized = slugifyPath(pathname);
+      const parts = normalized ? normalized.split("/") : [];
+      const [projectSlug, ...rest] = parts;
+      if (projectSlug) {
+        const project = await projectDao.getBySlugUnique(projectSlug);
+        if (project) {
+          const tenant = await buildTenant(project.id);
+          if (!tenant) {
+            return notFound(c);
+          }
+          const remainder = rest.join("/");
+          const rewrittenPath = remainder
+            ? `/sites/${tenant.slug}/${remainder}`
+            : `/sites/${tenant.slug}/`;
+          return c.json(
+            buildTenantResolution(
+              tenant,
+              "path",
+              host,
+              `/${tenant.slug}`,
+              rewrittenPath
+            ),
+            200
+          );
+        }
+      }
+    }
+
+    return notFound(c);
+  }
+);
+
+tenants.get("/:slug", validateParams(slugParamsSchema), async (c) => {
+  const { slug } = c.req.valid("param");
+  const project = await projectDao.getBySlugUnique(slug);
+  if (!project) {
+    return notFound(c);
+  }
+  const tenant = await buildTenant(project.id);
+  if (!tenant) {
+    return notFound(c);
+  }
+  return c.json(tenant, 200);
+});

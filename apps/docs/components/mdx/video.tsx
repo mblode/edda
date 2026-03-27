@@ -3,6 +3,7 @@ export const Video = ({ src }: { src: string }) => (
     <iframe
       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
       allowFullScreen
+      sandbox="allow-popups allow-presentation allow-scripts"
       src={src}
       title="Video"
     />

@@ -3,10 +3,7 @@ import path from "node:path";
 import { TenantSchema } from "@repo/contracts";
 import type { Tenant } from "@repo/models";
 
-const apiBase =
-  process.env.DOCS_API_URL ??
-  process.env.NEXT_PUBLIC_API_URL ??
-  "http://localhost:4000";
+import { docsApiBase } from "./env";
 
 const tenantDocsPath = (slug: string) =>
   path.join(process.cwd(), "content", slug);
@@ -31,7 +28,7 @@ const mapTenant = (tenant: {
 });
 
 const fetchTenant = async (slug: string): Promise<Tenant | null> => {
-  const url = new URL(`/tenants/${slug}`, apiBase);
+  const url = new URL(`/tenants/${slug}`, docsApiBase);
   const response = await fetch(url.toString(), {
     next: { tags: [getProjectTag(slug), "tenants"] },
   });
@@ -47,7 +44,7 @@ const fetchTenant = async (slug: string): Promise<Tenant | null> => {
 };
 
 const fetchTenants = async (): Promise<Tenant[]> => {
-  const url = new URL("/tenants", apiBase);
+  const url = new URL("/tenants", docsApiBase);
   const response = await fetch(url.toString(), {
     next: { tags: ["tenants"] },
   });

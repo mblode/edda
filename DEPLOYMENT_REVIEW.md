@@ -7,7 +7,7 @@
 - ✅ Installed Vercel CLI
 - ✅ Logged in to Vercel
 - ✅ Created 4 Vercel projects: `web`, `dashboard`, `docs`, `api`
-- ✅ Removed unnecessary projects (`neue-docs` root, `src`)
+- ✅ Removed unnecessary projects (`blode-docs` root, `src`)
 - ✅ All code committed and pushed to GitHub
 
 ### 2. Configuration Files
@@ -129,9 +129,9 @@ Relative import paths need explicit file extensions in ECMAScript imports
 You can deploy **web** and **docs** apps immediately:
 
 1. Go to [vercel.com/blode/web/settings/git](https://vercel.com/blode/web/settings/git)
-2. Connect to `mblode/neue-docs`, set Root Directory: `apps/web`
+2. Connect to `mblode/blode-docs`, set Root Directory: `apps/web`
 3. Go to [vercel.com/blode/docs/settings/git](https://vercel.com/blode/docs/settings/git)
-4. Connect to `mblode/neue-docs`, set Root Directory: `apps/docs`
+4. Connect to `mblode/blode-docs`, set Root Directory: `apps/docs`
 
 Both will build successfully and deploy! 🎉
 

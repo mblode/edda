@@ -10,8 +10,8 @@ const scriptDir = dirname(fileURLToPath(import.meta.url));
 const packageRoot = resolve(scriptDir, "..");
 
 const DEFAULT_ADMIN_URL =
-  "postgresql://postgres:postgres@127.0.0.1:54322/postgres";
-const DEFAULT_DATABASE_NAME = "neue_docs";
+  "postgresql://postgres:postgres@127.0.0.1:5432/postgres";
+const DEFAULT_DATABASE_NAME = "blode_docs";
 const DATABASE_NAME_PATTERN = /^[a-zA-Z0-9_]+$/;
 
 const adminUrl = process.env.LOCAL_DATABASE_ADMIN_URL ?? DEFAULT_ADMIN_URL;

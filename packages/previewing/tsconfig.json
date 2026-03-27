@@ -3,7 +3,8 @@
   "extends": "@repo/typescript-config/nextjs.json",
   "compilerOptions": {
     "rootDir": "./src",
-    "strictNullChecks": true
+    "strictNullChecks": true,
+    "types": ["node"]
   },
   "include": ["src/**/*.ts"]
 }

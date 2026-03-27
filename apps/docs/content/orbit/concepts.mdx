@@ -1,0 +1,19 @@
+---
+title: Concepts
+description: Tenant routing and content resolution in Orbit.
+---
+
+## Hostname routing
+
+The runtime resolves the tenant from the request hostname before rewriting the request into `/sites/orbit`.
+
+## Content sources
+
+Orbit can read content from:
+
+- A promoted deployment manifest in blob storage
+- Local bundled content as a fallback
+
+## Why this matters
+
+You can keep one docs runtime deployment while serving many independently branded tenant sites.

@@ -1,7 +1,7 @@
 "use client";
 
-import clsx from "clsx";
-import { isValidElement, useMemo, useState } from "react";
+import cx from "clsx";
+import { isValidElement, useCallback, useMemo, useState } from "react";
 import type { ReactNode } from "react";
 
 const LANGUAGE_CLASS_REGEX = /language-([\w-]+)/;
@@ -48,21 +48,21 @@ export const CodeBlock = ({
   const language =
     getLanguage(children) ?? LANGUAGE_CLASS_REGEX.exec(className ?? "")?.[1];
 
-  const handleCopy = async () => {
+  const handleCopy = useCallback(async () => {
     if (!code) {
       return;
     }
     await navigator.clipboard.writeText(code);
     setCopied(true);
     setTimeout(() => setCopied(false), 1200);
-  };
+  }, [code]);
 
   return (
     <div className="code-block">
       <div className="code-block__meta">
         <span className="code-block__lang">{language ?? "text"}</span>
         <button
-          className={clsx("code-block__copy", {
+          className={cx("code-block__copy", {
             "code-block__copy--active": copied,
           })}
           onClick={handleCopy}
@@ -71,7 +71,7 @@ export const CodeBlock = ({
           {copied ? "Copied" : "Copy"}
         </button>
       </div>
-      <pre className={clsx("code-block__pre", className)}>{children}</pre>
+      <pre className={cx("code-block__pre", className)}>{children}</pre>
     </div>
   );
 };

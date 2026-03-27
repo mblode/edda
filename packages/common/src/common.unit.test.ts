@@ -27,7 +27,7 @@ describe("common utilities", () => {
   });
 
   it("slugifies strings", () => {
-    expect(slugify("Hello, neue Docs!")).toBe("hello-neue-docs");
+    expect(slugify("Hello, blode Docs!")).toBe("hello-blode-docs");
   });
 
   it("normalizes arrays", () => {

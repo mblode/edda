@@ -1,6 +1,105 @@
+@import "tailwindcss";
+
+@theme inline {
+  --font-sans: var(--font-glide);
+  --font-mono:
+    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
+    "Courier New", monospace;
+
+  --shadow-soft: 0 15px 50px 0 rgba(27, 32, 50, 0.1);
+  --shadow-input: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-popover:
+    0 24px 40px -12px oklch(0.255 0.078 116.06 / 0.08),
+    0 16px 28px -8px oklch(0.255 0.078 116.06 / 0.04),
+    0 4px 6px -2px oklch(0.255 0.078 116.06 / 0.04),
+    0 0 2px 0 oklch(0.255 0.078 116.06 / 0.04),
+    0 0 0 1px oklch(0.255 0.078 116.06 / 0.04);
+  --shadow-xs:
+    0 0 0 1px rgba(51, 51, 51, 0.04), 0 4px 8px -2px rgba(51, 51, 51, 0.06),
+    0 2px 4px rgba(51, 51, 51, 0.04), 0 1px 2px rgba(51, 51, 51, 0.04),
+    inset 0 -1px 1px -0.5px rgba(51, 51, 51, 0.06);
+  --shadow-sm:
+    0 0 0 1px rgba(51, 51, 51, 0.04), 0 16px 8px -8px rgba(51, 51, 51, 0.01),
+    0 12px 6px -6px rgba(51, 51, 51, 0.02),
+    0 5px 5px -2.5px rgba(51, 51, 51, 0.08),
+    0 1px 3px -1.5px rgba(51, 51, 51, 0.16),
+    inset 0 -0.5px 0.5px rgba(51, 51, 51, 0.08);
+  --shadow-md:
+    0 0 0 1px rgba(51, 51, 51, 0.04), 0 1px 1px 0.5px rgba(51, 51, 51, 0.04),
+    0 3px 3px -1.5px rgba(51, 51, 51, 0.02),
+    0 6px 6px -3px rgba(51, 51, 51, 0.04),
+    0 12px 12px -6px rgba(51, 51, 51, 0.04),
+    0 24px 24px -12px rgba(51, 51, 51, 0.04),
+    0 48px 48px -24px rgba(51, 51, 51, 0.04),
+    inset 0 -1px 1px -0.5px rgba(51, 51, 51, 0.06);
+  --shadow-lg:
+    0 0 0 1px rgba(51, 51, 51, 0.04), 0 1px 1px 0.5px rgba(51, 51, 51, 0.04),
+    0 3px 3px -1.5px rgba(51, 51, 51, 0.02),
+    0 6px 6px -3px rgba(51, 51, 51, 0.04),
+    0 12px 12px -6px rgba(51, 51, 51, 0.04),
+    0 24px 24px -12px rgba(51, 51, 51, 0.04),
+    0 48px 48px -24px rgba(51, 51, 51, 0.04),
+    0 96px 96px -32px rgba(51, 51, 51, 0.06),
+    inset 0 -1px 1px -0.5px rgba(51, 51, 51, 0.06);
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
 :root {
-  --font-body-default: system-ui, sans-serif;
-  --font-heading-default: system-ui, sans-serif;
+  --radius: 0.625rem;
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.145 0 0);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  --primary: oklch(0.205 0 0);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.97 0 0);
+  --secondary-foreground: oklch(0.205 0 0);
+  --muted: oklch(0.97 0 0);
+  --muted-foreground: oklch(0.556 0 0);
+  --accent: oklch(0.97 0 0);
+  --accent-foreground: oklch(0.205 0 0);
+  --destructive: oklch(0.577 0.245 27.325);
+  --destructive-foreground: oklch(0.97 0.01 17);
+  --border: oklch(0.922 0 0);
+  --input: oklch(0.922 0 0);
+  --ring: oklch(0.708 0 0);
+  --surface: oklch(0.98 0 0);
+  --surface-foreground: var(--foreground);
+  --code: var(--surface);
+  --code-foreground: var(--surface-foreground);
+  --code-highlight: oklch(0.96 0 0);
+  --code-number: oklch(0.56 0 0);
+  --selection: oklch(0.145 0 0);
+  --selection-foreground: oklch(1 0 0);
+  --overlay: rgba(193, 201, 210, 0.7);
+
+  --font-body-default: var(--font-sans, system-ui, sans-serif);
+  --font-heading-default: var(--font-sans, system-ui, sans-serif);
   --font-mono-default:
     ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
     "Courier New", monospace;
@@ -20,6 +119,37 @@
   --radius-lg: 24px;
   --radius-md: 16px;
   --radius-sm: 10px;
+}
+
+.dark {
+  --background: oklch(0.145 0 0);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.205 0 0);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.205 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.922 0 0);
+  --primary-foreground: oklch(0.205 0 0);
+  --secondary: oklch(0.269 0 0);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.269 0 0);
+  --muted-foreground: oklch(0.708 0 0);
+  --accent: oklch(0.371 0 0);
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.704 0.191 22.216);
+  --destructive-foreground: oklch(0.58 0.22 27);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.556 0 0);
+  --surface: oklch(0.2 0 0);
+  --surface-foreground: oklch(0.708 0 0);
+  --code: var(--surface);
+  --code-foreground: var(--surface-foreground);
+  --code-highlight: oklch(0.27 0 0);
+  --code-number: oklch(0.72 0 0);
+  --selection: oklch(0.922 0 0);
+  --selection-foreground: oklch(0.205 0 0);
+  --overlay: rgba(43, 53, 68, 0.7);
 }
 
 [data-theme="dark"] {
@@ -538,6 +668,41 @@ html[data-theme="dark"]
 
 .doc-toc__item--level-4 {
   padding-left: 24px;
+}
+
+.steps {
+  counter-reset: step;
+  border-left: 2px solid var(--color-border);
+  margin-left: 14px;
+  padding-left: 28px;
+  display: grid;
+  gap: 28px;
+}
+
+.steps > h3 {
+  counter-increment: step;
+  position: relative;
+  font-family: var(--font-heading);
+  margin-top: 0;
+}
+
+.steps > h3::before {
+  content: counter(step);
+  position: absolute;
+  left: calc(-28px - 14px - 1px);
+  top: 0;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--color-primary);
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-body);
+  line-height: 1;
 }
 
 .callout {

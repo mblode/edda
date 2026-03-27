@@ -119,34 +119,245 @@ export const DocsOpenApiProxySchema = z
   })
   .strict();
 
-export const LegacyDocsConfigSchema = z
+const MintlifyFontSchema = z
   .object({
-    colors: DocsColorsSchema.optional(),
-    description: z.string().optional(),
-    favicon: UrlOrPathSchema.optional(),
-    features: DocsFeatureFlagsSchema.optional(),
-    fonts: DocsFontsSchema.optional(),
-    logo: DocsLogoSchema.optional(),
-    metadata: z
-      .object({
-        defaultTitle: z.string().optional(),
-        ogImage: UrlOrPathSchema.optional(),
-        titleTemplate: z.string().optional(),
-      })
-      .strict()
-      .optional(),
-    name: z.string().min(1),
-    navigation: DocsNavigationSchema,
-    openapi: z
-      .union([z.string(), z.array(z.string()), DocsOpenApiSourceSchema])
-      .optional(),
-    openapiProxy: DocsOpenApiProxySchema.optional(),
-    scripts: DocsScriptsSchema.optional(),
-    theme: z.string().optional(),
+    family: z.string().min(1),
+    format: z.enum(["woff", "woff2"]).optional(),
+    source: z.string().min(1).optional(),
+    weight: z.number().optional(),
   })
   .strict();
 
-export type LegacyDocsConfig = z.infer<typeof LegacyDocsConfigSchema>;
+const MintlifyFontsSchema = z
+  .object({
+    body: MintlifyFontSchema.optional(),
+    family: z.string().min(1).optional(),
+    format: z.enum(["woff", "woff2"]).optional(),
+    heading: MintlifyFontSchema.optional(),
+    source: z.string().min(1).optional(),
+    weight: z.number().optional(),
+  })
+  .strict();
+
+const MintlifyLogoSchema = z.union([
+  UrlOrPathSchema,
+  z
+    .object({
+      dark: UrlOrPathSchema,
+      href: z.string().min(1).optional(),
+      light: UrlOrPathSchema,
+    })
+    .strict(),
+]);
+
+const MintlifyFaviconSchema = z.union([
+  UrlOrPathSchema,
+  z
+    .object({
+      dark: UrlOrPathSchema,
+      light: UrlOrPathSchema,
+    })
+    .strict(),
+]);
+
+const MintlifyNavbarLinkSchema = z
+  .object({
+    href: z.string().min(1),
+    icon: z.string().optional(),
+    iconType: z.string().optional(),
+    label: z.string().optional(),
+    type: z.enum(["discord", "github"]).optional(),
+  })
+  .strict();
+
+const MintlifyNavbarPrimarySchema = z
+  .object({
+    href: z.string().min(1),
+    label: z.string().optional(),
+    type: z.enum(["button", "discord", "github"]),
+  })
+  .strict();
+
+const MintlifyNavbarSchema = z
+  .object({
+    links: z.array(MintlifyNavbarLinkSchema).optional(),
+    primary: MintlifyNavbarPrimarySchema.optional(),
+  })
+  .strict();
+
+const MintlifyNavigationGlobalSchema = z
+  .object({
+    anchors: z
+      .array(
+        z
+          .object({
+            anchor: z.string().min(1),
+            color: z
+              .object({
+                dark: z.string().optional(),
+                light: z.string().optional(),
+              })
+              .strict()
+              .optional(),
+            hidden: z.boolean().optional(),
+            href: z.string().min(1),
+            icon: z.string().optional(),
+            iconType: z.string().optional(),
+          })
+          .strict()
+      )
+      .optional(),
+  })
+  .strict();
+
+const MintlifyNavigationGroupSchema = z
+  .object({
+    expanded: z.boolean().optional(),
+    group: z.string().min(1),
+    icon: z.string().optional(),
+    pages: z.array(z.string()).optional(),
+    root: z.string().optional(),
+    tag: z.string().optional(),
+  })
+  .strict();
+
+const MintlifyNavigationSchema = z
+  .object({
+    global: MintlifyNavigationGlobalSchema.optional(),
+    groups: z.array(MintlifyNavigationGroupSchema).optional(),
+    languages: z
+      .array(
+        z
+          .object({
+            default: z.boolean().optional(),
+            hidden: z.boolean().optional(),
+            href: z.string().min(1),
+            language: z.string().min(1),
+          })
+          .strict()
+      )
+      .optional(),
+    pages: z.array(z.string()).optional(),
+    versions: z
+      .array(
+        z
+          .object({
+            default: z.boolean().optional(),
+            hidden: z.boolean().optional(),
+            href: z.string().min(1),
+            version: z.string().min(1),
+          })
+          .strict()
+      )
+      .optional(),
+  })
+  .strict()
+  .refine(
+    (value) =>
+      Boolean(
+        value.groups?.length ||
+          value.pages?.length ||
+          value.languages?.length ||
+          value.versions?.length
+      ),
+    {
+      message:
+        "navigation must define at least one of groups, pages, languages, or versions",
+      path: [],
+    }
+  );
+
+const MintlifyApiSchema = z
+  .object({
+    asyncapi: z
+      .union([z.string(), z.array(z.string()), DocsOpenApiSourceSchema])
+      .optional(),
+    examples: z
+      .object({
+        autogenerate: z.boolean().optional(),
+        defaults: z.enum(["all", "required"]).optional(),
+        languages: z.array(z.string()).optional(),
+        prefill: z.boolean().optional(),
+      })
+      .strict()
+      .optional(),
+    mdx: z
+      .object({
+        auth: z
+          .object({
+            method: z.enum(["basic", "bearer", "cobo", "key"]).optional(),
+            name: z.string().optional(),
+          })
+          .strict()
+          .optional(),
+        server: z.union([z.string().min(1), z.array(z.string().min(1))]).optional(),
+      })
+      .strict()
+      .optional(),
+    openapi: z
+      .union([z.string(), z.array(z.string()), DocsOpenApiSourceSchema])
+      .optional(),
+    params: z
+      .object({
+        expanded: z.enum(["all", "closed"]).optional(),
+      })
+      .strict()
+      .optional(),
+    playground: z
+      .object({
+        credentials: z.boolean().optional(),
+        display: z.enum(["auth", "interactive", "none", "simple"]).optional(),
+        proxy: z.boolean().optional(),
+      })
+      .strict()
+      .optional(),
+    url: z.literal("full").optional(),
+  })
+  .strict();
+
+const MintlifyAppearanceSchema = z
+  .object({
+    default: z.enum(["dark", "light", "system"]).optional(),
+    strict: z.boolean().optional(),
+  })
+  .strict();
+
+const MintlifyMetadataSchema = z
+  .object({
+    timestamp: z.boolean().optional(),
+  })
+  .strict();
+
+const MintlifySearchSchema = z
+  .object({
+    prompt: z.string().optional(),
+  })
+  .strict();
+
+export const MintlifyDocsConfigSchema = z
+  .object({
+    $schema: z.string().optional(),
+    appearance: MintlifyAppearanceSchema.optional(),
+    api: MintlifyApiSchema.optional(),
+    colors: z.object({
+      dark: z.string().optional(),
+      light: z.string().optional(),
+      primary: z.string().min(1),
+    }).strict(),
+    description: z.string().optional(),
+    favicon: MintlifyFaviconSchema.optional(),
+    fonts: MintlifyFontsSchema.optional(),
+    logo: MintlifyLogoSchema.optional(),
+    metadata: MintlifyMetadataSchema.optional(),
+    name: z.string().min(1),
+    navbar: MintlifyNavbarSchema.optional(),
+    navigation: MintlifyNavigationSchema,
+    search: MintlifySearchSchema.optional(),
+    theme: z.string().min(1),
+  })
+  .strict();
+
+export type MintlifyDocsConfig = z.infer<typeof MintlifyDocsConfigSchema>;
 
 export const ContentTypeSchema = z.enum([
   "site",

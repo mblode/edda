@@ -9,10 +9,11 @@ type DbModule = typeof RepoDb;
 
 const databaseUrl =
   process.env.DATABASE_URL ??
-  "postgresql://postgres:postgres@127.0.0.1:54322/neue_docs_drizzle_test";
+  "postgresql://postgres:postgres@127.0.0.1:5432/blode_docs_drizzle_test";
 process.env.DATABASE_URL = databaseUrl;
 process.env.NODE_ENV = "test";
-process.env.PLATFORM_ROOT_DOMAIN = "neue.com";
+process.env.PLATFORM_ROOT_DOMAIN = "blode.md\n";
+process.env.ADMIN_API_TOKEN = "test-admin-token";
 
 let request: (input: string, init?: RequestInit) => Promise<Response>;
 let dbModule: DbModule;
@@ -24,6 +25,11 @@ beforeAll(async () => {
 });
 
 describe("domains API", () => {
+  const adminHeaders = {
+    "content-type": "application/json",
+    "x-admin-token": "test-admin-token",
+  };
+
   it("normalizes domain input and path prefixes", async () => {
     const projectSlug = `project-${randomUUID().slice(0, 8)}`;
     const fixture = await createProjectFixture(dbModule, { slug: projectSlug });
@@ -33,9 +39,7 @@ describe("domains API", () => {
         hostname: "https://docs.example.com/docs",
         pathPrefix: "docs",
       }),
-      headers: {
-        "content-type": "application/json",
-      },
+      headers: adminHeaders,
       method: "POST",
     });
 
@@ -48,13 +52,30 @@ describe("domains API", () => {
     await cleanupProjectFixture(dbModule, fixture);
   });
 
-  it("rejects neue.com as a custom domain", async () => {
+  it("rejects blode.md as a custom domain", async () => {
     const projectSlug = `project-${randomUUID().slice(0, 8)}`;
     const fixture = await createProjectFixture(dbModule, { slug: projectSlug });
 
     const response = await request(`/projects/${fixture.projectId}/domains`, {
       body: JSON.stringify({
-        hostname: "neue.com",
+        hostname: "blode.md",
+      }),
+      headers: adminHeaders,
+      method: "POST",
+    });
+
+    expect(response.status).toBe(400);
+
+    await cleanupProjectFixture(dbModule, fixture);
+  });
+
+  it("requires credentials for domain changes", async () => {
+    const projectSlug = `project-${randomUUID().slice(0, 8)}`;
+    const fixture = await createProjectFixture(dbModule, { slug: projectSlug });
+
+    const response = await request(`/projects/${fixture.projectId}/domains`, {
+      body: JSON.stringify({
+        hostname: "docs.example.com",
       }),
       headers: {
         "content-type": "application/json",
@@ -62,7 +83,7 @@ describe("domains API", () => {
       method: "POST",
     });
 
-    expect(response.status).toBe(400);
+    expect(response.status).toBe(401);
 
     await cleanupProjectFixture(dbModule, fixture);
   });

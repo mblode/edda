@@ -1,6 +1,6 @@
-const rootDomain = process.env.PLATFORM_ROOT_DOMAIN ?? "blode.md";
+import { platformAssetPrefix, platformRootDomain } from "./env";
 
 export const platformConfig = {
-  assetPrefix: process.env.PLATFORM_ASSET_PREFIX ?? "",
-  rootDomain,
+  assetPrefix: platformAssetPrefix,
+  rootDomain: platformRootDomain,
 };

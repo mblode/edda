@@ -1,6 +1,13 @@
+const cleanEnv = (value) => {
+  if (typeof value !== "string") {
+    return "";
+  }
+  return value.trim();
+};
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  assetPrefix: process.env.PLATFORM_ASSET_PREFIX || "",
+  assetPrefix: cleanEnv(process.env.PLATFORM_ASSET_PREFIX),
   images: {
     remotePatterns: [
       {
@@ -10,7 +17,7 @@ const nextConfig = {
     ],
   },
   rewrites() {
-    const assetPrefix = process.env.PLATFORM_ASSET_PREFIX || "";
+    const assetPrefix = cleanEnv(process.env.PLATFORM_ASSET_PREFIX);
     if (!assetPrefix) {
       return [];
     }

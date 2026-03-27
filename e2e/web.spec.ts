@@ -12,7 +12,7 @@ test("landing page renders primary CTA", async ({ page }) => {
   const cta = page.getByRole("link", { name: "Start now" }).first();
   await expect(cta).toHaveAttribute(
     "href",
-    "https://dashboard.neue.com/signup"
+    "https://dashboard.blode.md/signup"
   );
 
   await expect(page.getByPlaceholder("Work email")).toBeVisible();

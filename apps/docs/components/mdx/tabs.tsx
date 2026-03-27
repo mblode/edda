@@ -1,8 +1,8 @@
 "use client";
 
-import clsx from "clsx";
-import { Children, isValidElement, useMemo, useState } from "react";
-import type { ReactElement, ReactNode } from "react";
+import cx from "clsx";
+import { isValidElement, useCallback, useMemo, useState } from "react";
+import type { MouseEvent, ReactElement, ReactNode } from "react";
 
 interface TabProps {
   label: string;
@@ -14,16 +14,19 @@ export const Tab = ({ children }: TabProps) => (
 );
 
 export const Tabs = ({ children }: { children: ReactNode }) => {
-  const items = useMemo(
-    () =>
-      Children.toArray(children).filter(
-        isValidElement
-      ) as ReactElement<TabProps>[],
-    [children]
-  );
+  const items = useMemo(() => {
+    const nodes = Array.isArray(children) ? children : [children];
+    return nodes.filter((child): child is ReactElement<TabProps> =>
+      isValidElement<TabProps>(child)
+    );
+  }, [children]);
 
   const [active, setActive] = useState(0);
   const activeItem = items[active];
+  const handleTabClick = useCallback((event: MouseEvent<HTMLButtonElement>) => {
+    const index = Number(event.currentTarget.dataset.index ?? "0");
+    setActive(index);
+  }, []);
 
   if (!items.length) {
     return null;
@@ -34,11 +37,13 @@ export const Tabs = ({ children }: { children: ReactNode }) => {
       <div className="tabs__list" role="tablist">
         {items.map((item, index) => (
           <button
-            className={clsx("tabs__trigger", {
+            aria-selected={index === active}
+            className={cx("tabs__trigger", {
               "tabs__trigger--active": index === active,
             })}
-            key={`${item.props.label}-${index}`}
-            onClick={() => setActive(index)}
+            data-index={index}
+            key={String(item.key ?? item.props.label)}
+            onClick={handleTabClick}
             role="tab"
             type="button"
           >

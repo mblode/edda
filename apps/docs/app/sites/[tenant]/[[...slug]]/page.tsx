@@ -1,4 +1,3 @@
-// oxlint-disable eslint/complexity
 import { normalizePath } from "@repo/common";
 import type { ContentType } from "@repo/models";
 import {
@@ -20,6 +19,10 @@ import {
 import { renderMdx } from "@/lib/mdx";
 import { buildNavigation, findBreadcrumbs, flattenNav } from "@/lib/navigation";
 import { buildOpenApiRegistry } from "@/lib/openapi";
+import {
+  getCanonicalOrigin,
+  getTenantRequestContextFromHeaders,
+} from "@/lib/tenant-static";
 import { getTenantBySlug } from "@/lib/tenants";
 import { extractToc } from "@/lib/toc";
 
@@ -58,6 +61,7 @@ const labelFromType = (type: ContentType) => {
   }
 };
 
+// oxlint-disable-next-line eslint/complexity
 const getDocData = async (tenantSlug: string, slugKey: string) => {
   const tenant = await getTenantBySlug(tenantSlug);
   if (!tenant) {
@@ -141,7 +145,6 @@ const getDocData = async (tenantSlug: string, slugKey: string) => {
         <ApiReference
           entry={openApiEntry}
           proxyEnabled={config.openapiProxy?.enabled ?? false}
-          tenantSlug={tenant.slug}
         />
       ),
       currentPath,
@@ -224,10 +227,11 @@ const getDocData = async (tenantSlug: string, slugKey: string) => {
 export const generateMetadata = async ({
   params,
 }: {
-  params: { tenant: string; slug?: string[] };
+  params: Promise<{ tenant: string; slug?: string[] }>;
 }): Promise<Metadata> => {
-  const slugKey = (params.slug ?? []).join("/");
-  const data = await getDocData(params.tenant, slugKey);
+  const { slug = [], tenant: tenantSlug } = await params;
+  const slugKey = slug.join("/");
+  const data = await getDocData(tenantSlug, slugKey);
   if (!data || "configErrors" in data) {
     return {
       description: "Documentation",
@@ -237,48 +241,64 @@ export const generateMetadata = async ({
 
   const { config, pageTitle, pageDescription, tenant } = data;
 
-  const baseTitle = config?.metadata?.defaultTitle ?? config?.name ?? "Docs";
-  const titleTemplate = config?.metadata?.titleTemplate ?? "%s · Docs";
+  const baseTitle = config?.name ?? "Docs";
+  const titleTemplate = `%s · ${baseTitle}`;
   const title = pageTitle ? titleTemplate.replace("%s", pageTitle) : baseTitle;
 
   const headerStore = await headers();
-  const basePathHeader = headerStore.get("x-tenant-base-path") ?? "";
-  const strategy = headerStore.get("x-tenant-strategy");
-  const requestedHost = headerStore.get("x-tenant-domain");
-  const basePath = basePathHeader || tenant.pathPrefix || "";
-  const canonicalBasePath = strategy === "path" ? "" : basePath;
+  const requestContext = getTenantRequestContextFromHeaders(
+    tenant,
+    headerStore
+  );
+  const canonicalBasePath =
+    requestContext.strategy === "path"
+      ? ""
+      : requestContext.basePath || tenant.pathPrefix || "";
   const canonicalPath = slugKey ? `/${slugKey}` : "/";
   const fullCanonical = `${canonicalBasePath}${canonicalPath}`.replaceAll(
     /\/+/g,
     "/"
   );
-  const canonicalHost =
-    strategy === "custom-domain" && requestedHost
-      ? requestedHost
-      : tenant.primaryDomain;
+  const canonicalOrigin = getCanonicalOrigin(tenant, requestContext);
+  const ogImage = config?.metadata?.ogImage;
+  const favicon = config?.favicon;
 
   return {
     alternates: {
-      canonical: `https://${canonicalHost}${fullCanonical}`,
+      canonical: `${canonicalOrigin}${fullCanonical}`,
     },
     description: pageDescription ?? config?.description,
+    icons: favicon ? { icon: favicon } : undefined,
+    openGraph: ogImage
+      ? {
+          images: [ogImage],
+          url: `${canonicalOrigin}${fullCanonical}`,
+        }
+      : undefined,
     title,
+    twitter: ogImage
+      ? {
+          card: "summary_large_image",
+          images: [ogImage],
+        }
+      : undefined,
   };
 };
 
 const DocPage = async ({
   params,
 }: {
-  params: { tenant: string; slug?: string[] };
+  params: Promise<{ tenant: string; slug?: string[] }>;
 }) => {
-  const slugKey = (params.slug ?? []).join("/");
+  const { slug = [], tenant: tenantSlug } = await params;
+  const slugKey = slug.join("/");
   const headerStore = await headers();
   const headerTenant = headerStore.get("x-tenant-slug");
   const basePathHeader = headerStore.get("x-tenant-base-path") ?? "";
-  if (headerTenant && headerTenant !== params.tenant) {
+  if (headerTenant && headerTenant !== tenantSlug) {
     return notFound();
   }
-  const data = await getDocData(params.tenant, slugKey);
+  const data = await getDocData(tenantSlug, slugKey);
   if (!data) {
     return notFound();
   }
@@ -288,7 +308,7 @@ const DocPage = async ({
     const warnings = data.configWarnings ?? [];
     return (
       <div className="doc-error">
-        <h1>Invalid site.json</h1>
+        <h1>Invalid docs.json</h1>
         {warnings.length ? (
           <>
             <h2>Warnings</h2>

@@ -1,5 +1,7 @@
-const docsAppUrl = process.env.DOCS_APP_URL;
-const revalidateSecret = process.env.REVALIDATE_SECRET;
+import { readTrimmedEnv } from "./env.js";
+
+const docsAppUrl = readTrimmedEnv("DOCS_APP_URL");
+const revalidateSecret = readTrimmedEnv("REVALIDATE_SECRET");
 
 export const revalidateProject = async (projectSlug: string) => {
   if (!(docsAppUrl && revalidateSecret)) {

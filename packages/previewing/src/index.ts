@@ -5,13 +5,12 @@ import type {
   CollectionConfig,
   ContentType,
   FrontmatterByType,
-  LegacyDocsConfig,
+  MintlifyDocsConfig,
   SiteConfig,
 } from "@repo/models";
 import {
+  validateDocsConfig,
   validateFrontmatter,
-  validateLegacyDocsConfig,
-  validateSiteConfig,
 } from "@repo/validation";
 import YAML from "yaml";
 
@@ -53,10 +52,7 @@ export interface ContentIndex {
   errors: string[];
 }
 
-const BLODE_CONFIG_FILE = "blode-docs.json";
-const SITE_CONFIG_FILE = "site.json";
-const ALT_CONFIG_FILE = "config.json";
-const LEGACY_CONFIG_FILE = "docs.json";
+const DOCS_CONFIG_FILE = "docs.json";
 const DOC_FILE_EXTENSION_REGEX = /\.(mdx|md)$/;
 const FRONTMATTER_REGEX = /^---\s*\n([\s\S]*?)\n---\s*\n?/;
 const INDEX_SUFFIX = "/index";
@@ -90,84 +86,292 @@ const slugFromFile = (relativePath: string) => {
   return withoutExt.length ? withoutExt : "index";
 };
 
-const mapLegacyDocsConfig = (legacy: LegacyDocsConfig): SiteConfig => ({
-  collections: [
-    {
-      id: "docs",
-      navigation: legacy.navigation,
-      openapi: legacy.openapi,
-      root: "",
-      type: "docs",
+const defaultLinkLabel = (input: {
+  href: string;
+  label?: string;
+  type?: "discord" | "github";
+}) => {
+  if (input.label) {
+    return input.label;
+  }
+  if (input.type === "github") {
+    return "GitHub";
+  }
+  if (input.type === "discord") {
+    return "Discord";
+  }
+  try {
+    return new URL(input.href).hostname;
+  } catch {
+    return input.href;
+  }
+};
+
+const buildGoogleFontsCssUrl = (
+  fonts: MintlifyDocsConfig["fonts"]
+): string | undefined => {
+  if (!fonts) {
+    return undefined;
+  }
+
+  const fontEntries: { family: string; source?: string }[] = [];
+  if (fonts.family) {
+    fontEntries.push({ family: fonts.family, source: fonts.source });
+  }
+  if (fonts.body) {
+    fontEntries.push({
+      family: fonts.body.family,
+      source: fonts.body.source,
+    });
+  }
+  if (fonts.heading) {
+    fontEntries.push({
+      family: fonts.heading.family,
+      source: fonts.heading.source,
+    });
+  }
+
+  const googleFamilies = [
+    ...new Set(
+      fontEntries
+        .filter((entry) => !entry.source)
+        .map((entry) => entry.family)
+    ),
+  ];
+  if (!googleFamilies.length) {
+    return undefined;
+  }
+
+  const params = googleFamilies.map(
+    (family) => `family=${encodeURIComponent(family).replaceAll("%20", "+")}`
+  );
+  return `https://fonts.googleapis.com/css2?${params.join("&")}&display=swap`;
+};
+
+const mapDocsConfig = (docs: MintlifyDocsConfig): SiteConfig => {
+  const navigation = {
+    global:
+      docs.navbar?.links?.length || docs.navigation.global?.anchors?.length
+        ? {
+            anchors: docs.navigation.global?.anchors?.map((anchor) => ({
+              href: anchor.href,
+              label: anchor.anchor,
+            })),
+            links: docs.navbar?.links?.map((link) => ({
+              href: link.href,
+              label: defaultLinkLabel(link),
+            })),
+          }
+        : undefined,
+    groups: docs.navigation.groups?.map((group) => ({
+      expanded: group.expanded,
+      group: group.group,
+      pages: group.root
+        ? [
+            group.root,
+            ...(group.pages ?? []).filter((page) => page !== group.root),
+          ]
+        : group.pages,
+    })),
+    languages: docs.navigation.languages?.map((language) => ({
+      label: language.language,
+      locale: language.language,
+      url: language.href,
+    })),
+    pages: docs.navigation.pages,
+    versions: docs.navigation.versions?.map((version) => ({
+      label: version.version,
+      url: version.href,
+    })),
+  } satisfies SiteConfig["navigation"];
+
+  const baseFontFamily = docs.fonts?.family;
+  const fonts =
+    docs.fonts && (baseFontFamily || docs.fonts.body || docs.fonts.heading)
+      ? {
+          body: docs.fonts.body?.family ?? baseFontFamily,
+          cssUrl: buildGoogleFontsCssUrl(docs.fonts),
+          heading: docs.fonts.heading?.family ?? baseFontFamily,
+          provider: "google" as const,
+        }
+      : undefined;
+
+  return {
+    collections: [
+      {
+        id: "docs",
+        navigation,
+        openapi: docs.api?.openapi,
+        root: "",
+        type: "docs",
+      },
+    ],
+    colors: docs.colors,
+    description: docs.description,
+    favicon:
+      typeof docs.favicon === "string" ? docs.favicon : docs.favicon?.light,
+    features: {
+      rightToc: true,
+      search: true,
+      themeToggle: docs.appearance?.strict !== true,
+      toc: true,
     },
-  ],
-  colors: legacy.colors,
-  description: legacy.description,
-  favicon: legacy.favicon,
-  features: legacy.features,
-  fonts: legacy.fonts,
-  logo: legacy.logo,
-  metadata: legacy.metadata,
-  name: legacy.name,
-  navigation: legacy.navigation,
-  openapiProxy: legacy.openapiProxy,
-  scripts: legacy.scripts,
-  theme: legacy.theme,
-});
+    fonts,
+    logo: docs.logo
+      ? typeof docs.logo === "string"
+        ? {
+            dark: docs.logo,
+            light: docs.logo,
+          }
+        : {
+            dark: docs.logo.dark,
+            light: docs.logo.light,
+          }
+      : undefined,
+    name: docs.name,
+    navigation,
+    openapiProxy: {
+      enabled:
+        docs.api?.playground?.proxy !== false &&
+        Boolean(docs.api?.openapi || docs.api?.asyncapi),
+    },
+    theme: docs.theme,
+  };
+};
 
 const readJsonConfig = async (source: ContentSource, relativePath: string) =>
   JSON.parse(await source.readFile(relativePath)) as unknown;
 
-const loadCurrentConfig = async (
-  source: ContentSource,
-  relativePath: string
-): Promise<SiteConfigResult | null> => {
-  if (!(await source.exists(relativePath))) {
-    return null;
+const normalizeRefPath = (baseDirectory: string, reference: string) => {
+  if (
+    reference.startsWith("/") ||
+    reference.startsWith("\\") ||
+    reference.startsWith("http://") ||
+    reference.startsWith("https://")
+  ) {
+    throw new Error(
+      `Invalid $ref "${reference}". Only relative JSON files are supported.`
+    );
   }
 
-  try {
-    const parsed = await readJsonConfig(source, relativePath);
-    const result = validateSiteConfig(parsed);
-    if (!result.success) {
-      return { errors: result.errors, ok: false };
-    }
-    return { config: result.data, ok: true, warnings: [] };
-  } catch (error) {
-    return {
-      errors: [
-        error instanceof Error
-          ? error.message
-          : `Failed to load ${relativePath}`,
-      ],
-      ok: false,
-    };
+  const normalized = normalizePath(path.posix.join(baseDirectory, reference));
+  if (
+    !normalized ||
+    normalized === "." ||
+    normalized.startsWith("../") ||
+    normalized.includes("/../")
+  ) {
+    throw new Error(`Invalid $ref "${reference}".`);
   }
+  return normalized;
 };
 
-const loadLegacyConfig = async (
+const resolveJsonRefs = async (
+  source: ContentSource,
+  value: unknown,
+  baseDirectory: string,
+  seen: Set<string>
+): Promise<unknown> => {
+  if (Array.isArray(value)) {
+    return await Promise.all(
+      value.map((item) => resolveJsonRefs(source, item, baseDirectory, seen))
+    );
+  }
+
+  if (!value || typeof value !== "object") {
+    return value;
+  }
+
+  const record = value as Record<string, unknown>;
+  const reference = record.$ref;
+  if (typeof reference === "string") {
+    const resolvedPath = normalizeRefPath(baseDirectory, reference);
+    if (seen.has(resolvedPath)) {
+      throw new Error(`Circular $ref detected for "${resolvedPath}".`);
+    }
+
+    const nextSeen = new Set(seen);
+    nextSeen.add(resolvedPath);
+    const referenced = await readJsonConfig(source, resolvedPath);
+    const referencedValue = await resolveJsonRefs(
+      source,
+      referenced,
+      path.posix.dirname(resolvedPath) === "."
+        ? ""
+        : normalizePath(path.posix.dirname(resolvedPath)),
+      nextSeen
+    );
+
+    const siblingEntries = Object.entries(record).filter(
+      ([key]) => key !== "$ref"
+    );
+    if (
+      !siblingEntries.length ||
+      !referencedValue ||
+      typeof referencedValue !== "object" ||
+      Array.isArray(referencedValue)
+    ) {
+      return referencedValue;
+    }
+
+    const siblingValue = await resolveJsonRefs(
+      source,
+      Object.fromEntries(siblingEntries),
+      baseDirectory,
+      seen
+    );
+    return {
+      ...(referencedValue as Record<string, unknown>),
+      ...(siblingValue as Record<string, unknown>),
+    };
+  }
+
+  const resolvedEntries = await Promise.all(
+    Object.entries(record).map(async ([key, entryValue]) => [
+      key,
+      await resolveJsonRefs(source, entryValue, baseDirectory, seen),
+    ])
+  );
+  return Object.fromEntries(resolvedEntries);
+};
+
+const readResolvedJsonConfig = async (
+  source: ContentSource,
+  relativePath: string
+) =>
+  await resolveJsonRefs(
+    source,
+    await readJsonConfig(source, relativePath),
+    path.posix.dirname(relativePath) === "."
+      ? ""
+      : normalizePath(path.posix.dirname(relativePath)),
+    new Set([relativePath])
+  );
+
+const loadDocsConfig = async (
   source: ContentSource
 ): Promise<SiteConfigResult | null> => {
-  if (!(await source.exists(LEGACY_CONFIG_FILE))) {
+  if (!(await source.exists(DOCS_CONFIG_FILE))) {
     return null;
   }
 
   try {
-    const parsed = await readJsonConfig(source, LEGACY_CONFIG_FILE);
-    const result = validateLegacyDocsConfig(parsed);
+    const parsed = await readResolvedJsonConfig(source, DOCS_CONFIG_FILE);
+    const result = validateDocsConfig(parsed);
     if (!result.success) {
       return { errors: result.errors, ok: false };
     }
     return {
-      config: mapLegacyDocsConfig(result.data),
+      config: mapDocsConfig(result.data),
       ok: true,
-      warnings: ["docs.json is deprecated. Rename it to site.json."],
+      warnings: [],
     };
   } catch (error) {
     return {
       errors: [
         error instanceof Error
           ? error.message
-          : `Failed to load ${LEGACY_CONFIG_FILE}`,
+          : `Failed to load ${DOCS_CONFIG_FILE}`,
       ],
       ok: false,
     };
@@ -177,24 +381,13 @@ const loadLegacyConfig = async (
 export const loadSiteConfig = async (
   source: ContentSource
 ): Promise<SiteConfigResult> => {
-  const currentConfig =
-    (await loadCurrentConfig(source, BLODE_CONFIG_FILE)) ??
-    (await loadCurrentConfig(source, SITE_CONFIG_FILE)) ??
-    (await loadCurrentConfig(source, ALT_CONFIG_FILE));
-
-  if (currentConfig) {
-    return currentConfig;
-  }
-
-  const legacyConfig = await loadLegacyConfig(source);
-  if (legacyConfig) {
-    return legacyConfig;
+  const docsConfig = await loadDocsConfig(source);
+  if (docsConfig) {
+    return docsConfig;
   }
 
   return {
-    errors: [
-      "blode-docs.json, site.json, config.json, or docs.json not found.",
-    ],
+    errors: [`${DOCS_CONFIG_FILE} not found.`],
     ok: false,
   };
 };

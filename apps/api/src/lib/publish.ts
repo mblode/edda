@@ -4,7 +4,7 @@ import { normalizePath } from "@repo/common";
 import { list, put } from "@vercel/blob";
 
 const DEPLOYMENT_ROOT = "deployments";
-const SITE_CONFIG_FILES = new Set(["config.json", "docs.json", "site.json"]);
+const SITE_CONFIG_FILE = "docs.json";
 
 interface DeploymentManifestFile {
   path: string;
@@ -96,10 +96,8 @@ export const finalizeDeploymentManifest = async (input: {
   // oxlint-disable-next-line eslint-plugin-unicorn/no-array-sort
   files.sort((left, right) => left.path.localeCompare(right.path));
 
-  if (!files.some((file) => SITE_CONFIG_FILES.has(file.path))) {
-    throw new Error(
-      "Deployment is missing site.json, config.json, or docs.json."
-    );
+  if (!files.some((file) => file.path === SITE_CONFIG_FILE)) {
+    throw new Error(`Deployment is missing ${SITE_CONFIG_FILE}.`);
   }
 
   const manifest: DeploymentManifest = {

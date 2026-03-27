@@ -9,6 +9,12 @@ Multi-tenant preview URLs let you test tenant-specific experiences in preview de
   with the default `.vercel.app` suffix.
 </Callout>
 
+<Callout type="warning">
+  Atlas can resolve tenant-prefixed preview hosts at runtime, but the Atlas
+  publish API currently creates production deployments only. Use this pattern
+  with Vercel preview deployments that already exist.
+</Callout>
+
 ## The problem
 
 Standard preview URLs work for single-tenant apps, but multi-tenant platforms need previews per tenant. Without tenant-aware previews you would need to:
@@ -29,11 +35,11 @@ Vercel routes the request to `{preview-url}` and your code receives the full hos
 
 **Examples**
 
-| URL                                      | Routes to                       | Host header received                     |
-| ---------------------------------------- | ------------------------------- | ---------------------------------------- |
-| `acme---preview-xyz.vercel.dev`          | `preview-xyz.vercel.dev`        | `acme---preview-xyz.vercel.dev`          |
-| `globex---my-app-git-feature.vercel.dev` | `my-app-git-feature.vercel.dev` | `globex---my-app-git-feature.vercel.dev` |
-| `tenant-123---my-app-abc123.vercel.dev`  | `my-app-abc123.vercel.dev`      | `tenant-123---my-app-abc123.vercel.dev`  |
+| URL                                             | Routes to                              | Host header received                            |
+| ----------------------------------------------- | -------------------------------------- | ----------------------------------------------- |
+| `acme---preview-xyz.previews.acme.dev`          | `preview-xyz.previews.acme.dev`        | `acme---preview-xyz.previews.acme.dev`          |
+| `globex---my-app-git-feature.previews.acme.dev` | `my-app-git-feature.previews.acme.dev` | `globex---my-app-git-feature.previews.acme.dev` |
+| `tenant-123---my-app-abc123.previews.acme.dev`  | `my-app-abc123.previews.acme.dev`      | `tenant-123---my-app-abc123.previews.acme.dev`  |
 
 ## How it works
 
@@ -44,12 +50,12 @@ Vercel routes the request to `{preview-url}` and your code receives the full hos
 
 ## Reference implementation
 
-```ts title="middleware.ts"
+```ts title="proxy.ts"
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import { getSubdomain } from "tldts";
 
-export async function middleware(request: NextRequest) {
+export const proxy = async (request: NextRequest) => {
   const hostname = request.headers.get("host") || request.nextUrl.hostname;
   const subdomain = getSubdomain(hostname) || "";
   const [tenantPart] = subdomain.includes("---") ? subdomain.split("---") : [];
@@ -62,7 +68,7 @@ export async function middleware(request: NextRequest) {
   const pathname = url.pathname;
   url.pathname = `/${tenantPart}${pathname}`;
   return NextResponse.rewrite(url);
-}
+};
 
 export const config = {
   matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
@@ -72,5 +78,8 @@ export const config = {
 ## Limitations
 
 - Works only with custom preview URL suffixes
+- Multi-tenant preview URLs are Enterprise-only on Vercel
+- The preview deployment suffix domain must be active in the same team
+- The preview deployment suffix domain must use Vercel nameservers
 - Prefix must appear before `---`
 - Total hostname length must remain under DNS limits

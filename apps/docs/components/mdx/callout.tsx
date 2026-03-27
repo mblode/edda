@@ -1,4 +1,4 @@
-import clsx from "clsx";
+import cx from "clsx";
 import type { ReactNode } from "react";
 
 const icons: Record<string, string> = {
@@ -15,7 +15,7 @@ interface CalloutProps {
 }
 
 export const Callout = ({ type = "info", title, children }: CalloutProps) => (
-  <div className={clsx("callout", `callout--${type}`)}>
+  <div className={cx("callout", `callout--${type}`)}>
     <div aria-hidden className="callout__icon">
       {icons[type] ?? "i"}
     </div>

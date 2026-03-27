@@ -38,6 +38,9 @@ const isBlobManifest = (value: unknown): value is BlobManifest => {
 
 const normalizeDirectory = (directory: string) => {
   const normalized = normalizePath(path.posix.normalize(directory));
+  if (!normalized || normalized === ".") {
+    return "";
+  }
   return normalized ? `${normalized}/` : "";
 };
 

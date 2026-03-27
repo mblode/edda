@@ -63,4 +63,4 @@ curl -X PATCH "https://api.vercel.com/v9/projects/api" \
 
 echo ""
 echo "Configuration complete! Now trigger deployments:"
-echo "  vercel --prod --cwd=/Users/mblode/Code/mblode/neue-docs"
+echo "  vercel --prod --cwd=/Users/mblode/Code/mblode/blode-docs"

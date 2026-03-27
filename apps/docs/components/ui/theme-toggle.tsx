@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 const STORAGE_KEY = "atlas-theme";
 
@@ -19,12 +19,12 @@ export const ThemeToggle = () => {
     document.documentElement.dataset.theme = nextMode;
   }, []);
 
-  const toggle = () => {
+  const toggle = useCallback(() => {
     const next = mode === "dark" ? "light" : "dark";
     setMode(next);
     document.documentElement.dataset.theme = next;
     window.localStorage.setItem(STORAGE_KEY, next);
-  };
+  }, [mode]);
 
   return (
     <button

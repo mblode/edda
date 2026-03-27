@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "portless run tsx watch src/index.ts",
+    "dev": "portless run sh -c 'set -a && . .env && set +a && tsx watch src/index.ts'",
     "build": "tsc -p tsconfig.json",
     "start": "node dist/index.js",
     "lint": "oxlint .",

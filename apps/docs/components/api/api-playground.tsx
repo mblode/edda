@@ -1,6 +1,7 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
+import type { ChangeEvent } from "react";
 
 import type { OpenApiEntry } from "@/lib/openapi";
 
@@ -12,11 +13,9 @@ const extractParams = (entry: OpenApiEntry, location: "path" | "query") =>
 export const ApiPlayground = ({
   entry,
   proxyEnabled,
-  tenantSlug,
 }: {
   entry: OpenApiEntry;
   proxyEnabled: boolean;
-  tenantSlug: string;
 }) => {
   const servers = entry.spec.servers ?? [];
   const [serverIndex, setServerIndex] = useState(0);
@@ -35,7 +34,7 @@ export const ApiPlayground = ({
   const baseUrl = servers[serverIndex]?.url ?? "";
   const canSend = Boolean(baseUrl);
 
-  const buildUrl = () => {
+  const buildUrl = useCallback(() => {
     let { path } = entry.operation;
     for (const param of pathParams) {
       const key = param.name ?? "";
@@ -53,9 +52,61 @@ export const ApiPlayground = ({
     }
 
     return url.toString();
-  };
+  }, [
+    baseUrl,
+    entry.operation,
+    pathParams,
+    pathValues,
+    queryParams,
+    queryValues,
+  ]);
 
-  const handleSend = async () => {
+  const handleUseProxyChange = useCallback(
+    (event: ChangeEvent<HTMLInputElement>) => {
+      setUseProxy(event.target.checked);
+    },
+    []
+  );
+  const handleServerChange = useCallback(
+    (event: ChangeEvent<HTMLSelectElement>) => {
+      setServerIndex(Number(event.target.value));
+    },
+    []
+  );
+  const handlePathValueChange = useCallback(
+    (event: ChangeEvent<HTMLInputElement>) => {
+      const { name, value } = event.target;
+      setPathValues((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
+    },
+    []
+  );
+  const handleQueryValueChange = useCallback(
+    (event: ChangeEvent<HTMLInputElement>) => {
+      const { name, value } = event.target;
+      setQueryValues((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
+    },
+    []
+  );
+  const handleAuthTokenChange = useCallback(
+    (event: ChangeEvent<HTMLInputElement>) => {
+      setAuthToken(event.target.value);
+    },
+    []
+  );
+  const handleBodyChange = useCallback(
+    (event: ChangeEvent<HTMLTextAreaElement>) => {
+      setBody(event.target.value);
+    },
+    []
+  );
+
+  const handleSend = useCallback(async () => {
     const url = buildUrl();
     setIsLoading(true);
     setResponse(null);
@@ -75,12 +126,11 @@ export const ApiPlayground = ({
         url,
       };
 
-      const requestUrl = useProxy ? "/api/proxy" : url;
+      const requestUrl = useProxy ? "/_internal/proxy" : url;
       const requestMethod = useProxy ? "POST" : method;
       const requestHeadersToSend = useProxy
         ? {
             "Content-Type": "application/json",
-            "x-tenant-slug": tenantSlug,
           }
         : requestHeaders;
 
@@ -114,7 +164,7 @@ export const ApiPlayground = ({
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [authToken, body, buildUrl, entry.operation, useProxy]);
 
   return (
     <section className="api-section">
@@ -125,10 +175,10 @@ export const ApiPlayground = ({
             <label className="api-playground__toggle">
               <input
                 checked={useProxy}
-                onChange={(event) => setUseProxy(event.target.checked)}
+                onChange={handleUseProxyChange}
                 type="checkbox"
               />
-              Use Atlas proxy
+              Use docs proxy
             </label>
           ) : null}
         </div>
@@ -136,10 +186,7 @@ export const ApiPlayground = ({
         {servers.length ? (
           <label className="api-playground__field">
             <span>Server</span>
-            <select
-              onChange={(event) => setServerIndex(Number(event.target.value))}
-              value={serverIndex}
-            >
+            <select onChange={handleServerChange} value={serverIndex}>
               {servers.map((server, index) => (
                 <option key={server.url} value={index}>
                   {server.url}
@@ -155,12 +202,8 @@ export const ApiPlayground = ({
               <label className="api-playground__field" key={param.name}>
                 <span>{param.name}</span>
                 <input
-                  onChange={(event) =>
-                    setPathValues((prev) => ({
-                      ...prev,
-                      [param.name ?? ""]: event.target.value,
-                    }))
-                  }
+                  name={param.name ?? ""}
+                  onChange={handlePathValueChange}
                   placeholder={param.required ? "Required" : "Optional"}
                   type="text"
                   value={pathValues[param.name ?? ""] ?? ""}
@@ -176,12 +219,8 @@ export const ApiPlayground = ({
               <label className="api-playground__field" key={param.name}>
                 <span>{param.name}</span>
                 <input
-                  onChange={(event) =>
-                    setQueryValues((prev) => ({
-                      ...prev,
-                      [param.name ?? ""]: event.target.value,
-                    }))
-                  }
+                  name={param.name ?? ""}
+                  onChange={handleQueryValueChange}
                   placeholder={param.required ? "Required" : "Optional"}
                   type="text"
                   value={queryValues[param.name ?? ""] ?? ""}
@@ -194,23 +233,19 @@ export const ApiPlayground = ({
         <label className="api-playground__field">
           <span>Auth token</span>
           <input
-            onChange={(event) => setAuthToken(event.target.value)}
+            onChange={handleAuthTokenChange}
             placeholder="Bearer token"
             type="password"
             value={authToken}
           />
         </label>
 
-        {entry.operation.method !== "GET" ? (
+        {entry.operation.method === "GET" ? null : (
           <label className="api-playground__field">
             <span>Request body</span>
-            <textarea
-              onChange={(event) => setBody(event.target.value)}
-              rows={6}
-              value={body}
-            />
+            <textarea onChange={handleBodyChange} rows={6} value={body} />
           </label>
-        ) : null}
+        )}
 
         <button
           className="api-playground__send"
@@ -226,12 +261,12 @@ export const ApiPlayground = ({
           </p>
         )}
 
-        {response !== null ? (
+        {response === null ? null : (
           <div className="api-playground__response">
             <div className="api-playground__status">Status: {status}</div>
             <pre>{response}</pre>
           </div>
-        ) : null}
+        )}
       </div>
     </section>
   );

@@ -19,22 +19,37 @@ Verification is required when a domain is already configured on another Vercel p
 ## Example check
 
 ```ts title="verify-domain.ts"
-import { Vercel } from "@vercel/sdk";
+import { VercelCore as Vercel } from "@vercel/sdk/core.js";
+import { projectsGetProjectDomain } from "@vercel/sdk/funcs/projectsGetProjectDomain.js";
+import { projectsVerifyProjectDomain } from "@vercel/sdk/funcs/projectsVerifyProjectDomain.js";
 
 const vercel = new Vercel({
   bearerToken: process.env.VERCEL_TOKEN,
 });
 
-const result = await vercel.domains.getDomainConfig({
-  domain: "example.com",
-  teamId: "team_1234",
-  slug: "my-team",
-});
+const domain = "example.com";
 
-if (!result.verified) {
+const [domainResponse, verifyResponse] = await Promise.all([
+  projectsGetProjectDomain(vercel, {
+    idOrName: "my-multi-tenant-app",
+    teamId: "team_1234",
+    domain,
+  }),
+  projectsVerifyProjectDomain(vercel, {
+    idOrName: "my-multi-tenant-app",
+    teamId: "team_1234",
+    domain,
+  }),
+]);
+
+const { value: result } = verifyResponse;
+
+if (!result?.verified) {
   console.log("Domain verification required.");
 }
 ```
+
+Use project-scoped domain APIs when you need to prove ownership for a tenant domain. `domains.getDomainConfig()` is useful for DNS inspection, but it does not replace project verification.
 
 ## Tips
 

@@ -1,0 +1,39 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "colors": {
+    "primary": "#3B82F6",
+    "light": "#DBEAFE",
+    "dark": "#172554"
+  },
+  "name": "Orbit Docs",
+  "navigation": {
+    "groups": [
+      {
+        "group": "Getting Started",
+        "pages": ["index", "quickstart"]
+      },
+      {
+        "group": "Concepts",
+        "pages": ["concepts"]
+      }
+    ]
+  },
+  "theme": "mint",
+  "description": "Ship product docs with a tenant-aware runtime.",
+  "fonts": {
+    "body": {
+      "family": "Space Grotesk"
+    },
+    "heading": {
+      "family": "Fraunces"
+    }
+  },
+  "navbar": {
+    "links": [
+      {
+        "href": "https://orbit.blode.md",
+        "label": "Website"
+      }
+    ]
+  }
+}

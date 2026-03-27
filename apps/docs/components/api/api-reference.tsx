@@ -4,11 +4,9 @@ import type { OpenApiEntry } from "@/lib/openapi";
 export const ApiReference = ({
   entry,
   proxyEnabled,
-  tenantSlug,
 }: {
   entry: OpenApiEntry;
   proxyEnabled: boolean;
-  tenantSlug: string;
 }) => {
   const { operation } = entry;
   const parameters = operation.parameters ?? [];
@@ -93,11 +91,7 @@ export const ApiReference = ({
         </section>
       ) : null}
 
-      <ApiPlayground
-        entry={entry}
-        proxyEnabled={proxyEnabled}
-        tenantSlug={tenantSlug}
-      />
+      <ApiPlayground entry={entry} proxyEnabled={proxyEnabled} />
     </div>
   );
 };

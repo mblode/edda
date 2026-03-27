@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
+import type { ChangeEvent } from "react";
 
 import { toDocHref } from "@/lib/routes";
 
@@ -18,6 +19,15 @@ export const Search = ({
   basePath: string;
 }) => {
   const [query, setQuery] = useState("");
+  const clearQuery = useCallback(() => {
+    setQuery("");
+  }, []);
+  const handleQueryChange = useCallback(
+    (event: ChangeEvent<HTMLInputElement>) => {
+      setQuery(event.target.value);
+    },
+    []
+  );
   const results = useMemo(() => {
     if (!query.trim()) {
       return [];
@@ -37,7 +47,7 @@ export const Search = ({
       <input
         aria-label="Search content"
         className="search__input"
-        onChange={(event) => setQuery(event.target.value)}
+        onChange={handleQueryChange}
         placeholder="Search content"
         value={query}
       />
@@ -48,7 +58,7 @@ export const Search = ({
               className="search__result"
               href={toDocHref(item.path, basePath)}
               key={item.path}
-              onClick={() => setQuery("")}
+              onClick={clearQuery}
             >
               <span>{item.title}</span>
               <small>/{item.path}</small>

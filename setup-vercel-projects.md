@@ -6,7 +6,7 @@ Your code is ready to deploy! Follow these steps to set up each app on Vercel:
 
 1. Go to https://vercel.com/new
 2. Select "Import from GitHub"
-3. Choose repository: **mblode/neue-docs**
+3. Choose repository: **mblode/blode-docs**
 4. Configure project:
    - **Project Name**: web
    - **Root Directory**: apps/web
@@ -19,7 +19,7 @@ Your code is ready to deploy! Follow these steps to set up each app on Vercel:
 
 1. Go to https://vercel.com/new
 2. Select "Import from GitHub"
-3. Choose repository: **mblode/neue-docs**
+3. Choose repository: **mblode/blode-docs**
 4. Configure project:
    - **Project Name**: dashboard
    - **Root Directory**: apps/dashboard
@@ -30,7 +30,7 @@ Your code is ready to deploy! Follow these steps to set up each app on Vercel:
 
 1. Go to https://vercel.com/new
 2. Select "Import from GitHub"
-3. Choose repository: **mblode/neue-docs**
+3. Choose repository: **mblode/blode-docs**
 4. Configure project:
    - **Project Name**: docs
    - **Root Directory**: apps/docs
@@ -41,7 +41,7 @@ Your code is ready to deploy! Follow these steps to set up each app on Vercel:
 
 1. Go to https://vercel.com/new
 2. Select "Import from GitHub"
-3. Choose repository: **mblode/neue-docs**
+3. Choose repository: **mblode/blode-docs**
 4. Configure project:
    - **Project Name**: api
    - **Root Directory**: apps/api

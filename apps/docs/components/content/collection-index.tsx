@@ -46,7 +46,7 @@ const buildMeta = (entry: CollectionEntry) => {
     }
     case "courses": {
       const order = frontmatter.order as number | undefined;
-      return order !== undefined ? [`Lesson ${order}`] : [];
+      return order === undefined ? [] : [`Lesson ${order}`];
     }
     case "products": {
       const sku = frontmatter.sku as string | undefined;

@@ -1,21 +1,13 @@
 import type { Metadata } from "next";
-import { Fraunces, JetBrains_Mono, Space_Grotesk } from "next/font/google";
+import localFont from "next/font/local";
 
 import "./globals.css";
 
-const bodyFont = Space_Grotesk({
-  subsets: ["latin"],
-  variable: "--font-body-default",
-});
-
-const headingFont = Fraunces({
-  subsets: ["latin"],
-  variable: "--font-heading-default",
-});
-
-const monoFont = JetBrains_Mono({
-  subsets: ["latin"],
-  variable: "--font-mono-default",
+const glide = localFont({
+  display: "swap",
+  src: [{ path: "../public/glide-variable.woff2" }],
+  variable: "--font-glide",
+  weight: "400 900",
 });
 
 export const metadata: Metadata = {
@@ -29,12 +21,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body
-        className={`${bodyFont.variable} ${headingFont.variable} ${monoFont.variable}`}
-      >
-        {children}
-      </body>
+    <html lang="en" className={glide.variable} suppressHydrationWarning>
+      <body>{children}</body>
     </html>
   );
 }

@@ -1,0 +1,12 @@
+{
+  "groups": [
+    {
+      "group": "Getting Started",
+      "pages": ["index", "installation"]
+    },
+    {
+      "group": "Customization",
+      "pages": ["typography", "theming"]
+    }
+  ]
+}
