@@ -1,24 +1,38 @@
 {
   "name": "blode-docs",
   "version": "0.0.3",
+  "description": "Blode Docs CLI",
   "repository": {
     "type": "git",
     "url": "https://github.com/mblode/blode-docs"
   },
   "bin": {
-    "blode-docs": "./dist/bin.mjs"
+    "blode-docs": "./dist/cli.mjs"
   },
   "files": [
     "dist"
   ],
   "type": "module",
+  "main": "./dist/index.mjs",
+  "types": "./dist/index.d.mts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.mts",
+      "import": "./dist/index.mjs",
+      "default": "./dist/index.mjs"
+    }
+  },
   "scripts": {
-    "build": "tsdown src/bin.ts --format esm --platform node --no-dts --out-dir dist",
+    "build": "tsdown",
     "check-types": "tsc --noEmit -p tsconfig.json",
     "lint": "oxlint .",
     "lint:fix": "oxlint --fix .",
     "format": "oxfmt --write .",
     "format:check": "oxfmt ."
+  },
+  "dependencies": {
+    "@clack/prompts": "^1.0.0",
+    "commander": "^14.0.0"
   },
   "devDependencies": {
     "@repo/typescript-config": "*",

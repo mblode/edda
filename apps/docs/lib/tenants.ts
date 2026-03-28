@@ -1,12 +1,8 @@
-import path from "node:path";
-
 import { TenantSchema } from "@repo/contracts";
 import type { Tenant } from "@repo/models";
 
+import { getTenantDocsPath } from "./content-root";
 import { docsApiBase } from "./env";
-
-const tenantDocsPath = (slug: string) =>
-  path.join(process.cwd(), "content", slug);
 
 export const getProjectTag = (slug: string) => `project:${slug}`;
 
@@ -24,7 +20,7 @@ const mapTenant = (tenant: {
   status: "active" | "disabled";
 }): Tenant => ({
   ...tenant,
-  docsPath: tenantDocsPath(tenant.slug),
+  docsPath: getTenantDocsPath(tenant.slug),
 });
 
 const fetchTenant = async (slug: string): Promise<Tenant | null> => {

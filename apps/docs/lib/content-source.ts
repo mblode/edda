@@ -1,9 +1,8 @@
-import path from "node:path";
-
 import type { SiteConfig, Tenant } from "@repo/models";
 import type { ContentSource } from "@repo/previewing";
 import { createBlobSource, createFsSource } from "@repo/previewing";
 
+import { getTenantDocsPath } from "./content-root";
 import { getProjectTag } from "./tenants";
 
 const ABSOLUTE_URL_REGEX = /^https?:\/\//i;
@@ -28,9 +27,7 @@ export const getTenantContentSource = (tenant: Tenant): ContentSource => {
     );
   }
 
-  return createFsSource(
-    tenant.docsPath ?? path.join(process.cwd(), "content", tenant.slug)
-  );
+  return createFsSource(tenant.docsPath ?? getTenantDocsPath(tenant.slug));
 };
 
 export const resolveSiteConfigAssets = async (
