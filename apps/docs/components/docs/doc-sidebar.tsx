@@ -111,7 +111,7 @@ export const DocSidebar = ({
               <SidebarGroupLabel className="font-medium text-muted-foreground">
                 {entry.title}
               </SidebarGroupLabel>
-              <SidebarGroupContent>
+              <SidebarGroupContent className="content-auto">
                 <SidebarMenu className="gap-0.5">
                   {entry.items.map((item) => (
                     <SidebarMenuItem key={item.path}>

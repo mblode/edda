@@ -1,6 +1,6 @@
 import { compileMDX } from "next-mdx-remote/rsc";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
-import rehypePrism from "rehype-prism-plus";
+import prettyCode from "rehype-pretty-code";
 import rehypeSlug from "rehype-slug";
 import remarkGfm from "remark-gfm";
 
@@ -24,7 +24,16 @@ export const renderMdx = async (source: string) =>
               },
             },
           ],
-          rehypePrism,
+          [
+            prettyCode,
+            {
+              keepBackground: false,
+              theme: {
+                dark: "github-dark",
+                light: "github-light",
+              },
+            },
+          ],
         ],
         remarkPlugins: [remarkGfm],
       },

@@ -12,6 +12,7 @@ export interface ApiKeyCreateInput {
   name: string;
   prefix: string;
   tokenHash?: string | null;
+  userId?: string | null;
 }
 
 export interface ApiKeyUpdateInput {

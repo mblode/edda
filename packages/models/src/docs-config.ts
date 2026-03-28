@@ -74,6 +74,7 @@ export const DocsNavGroupSchema = z
   .object({
     expanded: z.boolean().optional(),
     group: z.string().optional(),
+    hidden: z.boolean().optional(),
     openapi: z.union([z.string().min(1), DocsOpenApiSourceSchema]).optional(),
     pages: z.array(z.string()).optional(),
   })
@@ -100,6 +101,12 @@ export const DocsScriptsSchema = z
   .object({
     body: z.array(z.string()).optional(),
     head: z.array(z.string()).optional(),
+  })
+  .strict();
+
+export const DocsSeoSchema = z
+  .object({
+    indexing: z.enum(["all", "default"]).optional(),
   })
   .strict();
 
@@ -214,6 +221,7 @@ const MintlifyNavigationGroupSchema = z
   .object({
     expanded: z.boolean().optional(),
     group: z.string().min(1),
+    hidden: z.boolean().optional(),
     icon: z.string().optional(),
     pages: z.array(z.string()).optional(),
     root: z.string().optional(),
@@ -421,6 +429,7 @@ export const MintlifyDocsConfigSchema = z
     navbar: MintlifyNavbarSchema.optional(),
     navigation: MintlifyNavigationSchema,
     search: MintlifySearchSchema.optional(),
+    seo: DocsSeoSchema.optional(),
     theme: z.string().min(1),
   })
   .strict();
@@ -445,6 +454,7 @@ export type ContentType = z.infer<typeof ContentTypeSchema>;
 const FrontmatterBaseSchema = z
   .object({
     description: z.string().optional(),
+    hidden: z.boolean().optional(),
     title: z.string().min(1),
   })
   .passthrough();
@@ -490,10 +500,38 @@ const FrontmatterTodosSchema = FrontmatterBaseSchema.extend({
   date: z.string().min(1),
 }).passthrough();
 
+const PageModeSchema = z.enum(["default", "wide", "custom", "frame", "center"]);
+
+const FrontmatterDocsSchema = FrontmatterBaseSchema.extend({
+  deprecated: z.boolean().optional(),
+  hideApiMarker: z.boolean().optional(),
+  hideFooterPagination: z.boolean().optional(),
+  icon: z.string().optional(),
+  iconType: z
+    .enum([
+      "regular",
+      "solid",
+      "light",
+      "thin",
+      "sharp-solid",
+      "duotone",
+      "brands",
+    ])
+    .optional(),
+  keywords: z.array(z.string()).optional(),
+  mode: PageModeSchema.optional(),
+  noindex: z.boolean().optional(),
+  sidebarTitle: z.string().optional(),
+  tag: z.string().optional(),
+  url: z.string().url().optional(),
+}).passthrough();
+
+export type DocsFrontmatter = z.infer<typeof FrontmatterDocsSchema>;
+
 export const FrontmatterSchemaByType = {
   blog: FrontmatterBlogSchema,
   courses: FrontmatterCoursesSchema,
-  docs: FrontmatterBaseSchema,
+  docs: FrontmatterDocsSchema,
   forms: FrontmatterFormsSchema,
   notes: FrontmatterNotesSchema,
   products: FrontmatterProductsSchema,
@@ -560,6 +598,7 @@ export const SiteConfigSchema = z
     navigation: DocsNavigationSchema.optional(),
     openapiProxy: DocsOpenApiProxySchema.optional(),
     scripts: DocsScriptsSchema.optional(),
+    seo: DocsSeoSchema.optional(),
     theme: z.string().optional(),
   })
   .strict();

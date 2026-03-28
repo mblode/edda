@@ -1,8 +1,10 @@
+import type { UserRecord } from "@repo/db";
 import type { Context } from "hono";
 
 import { authenticateApiKey } from "./api-key-auth.js";
 import { adminApiToken } from "./config.js";
-import { apiKeyDao } from "./db.js";
+import { apiKeyDao, projectDao } from "./db.js";
+import { authenticateUser } from "./user-auth.js";
 
 export const getHeadersRecord = (c: Context): Record<string, string> =>
   Object.fromEntries(c.req.raw.headers.entries());
@@ -21,20 +23,41 @@ export const authorizeProjectRequest = async (
   options: {
     allowAdmin?: boolean;
     allowProjectApiKey?: boolean;
+    allowUser?: boolean;
   } = {}
 ) => {
   const allowAdmin = options.allowAdmin ?? true;
   const allowProjectApiKey = options.allowProjectApiKey ?? true;
+  const allowUser = options.allowUser ?? true;
   const headers = getHeadersRecord(c);
 
   if (allowAdmin && hasAdminAccess(headers)) {
     return true;
   }
 
-  if (!allowProjectApiKey) {
-    return false;
+  if (allowProjectApiKey) {
+    const apiKey = await authenticateApiKey(headers, apiKeyDao);
+    if (apiKey && apiKey.projectId === projectId) {
+      return true;
+    }
   }
 
-  const apiKey = await authenticateApiKey(headers, apiKeyDao);
-  return Boolean(apiKey && apiKey.projectId === projectId);
+  if (allowUser) {
+    const user = await authenticateUser(headers);
+    if (user) {
+      const project = await projectDao.getById(projectId);
+      if (project && project.userId === user.id) {
+        return true;
+      }
+    }
+  }
+
+  return false;
+};
+
+export const getAuthenticatedUser = (
+  c: Context
+): Promise<UserRecord | null> => {
+  const headers = getHeadersRecord(c);
+  return authenticateUser(headers);
 };

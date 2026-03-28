@@ -15,9 +15,7 @@
     "format:check": "oxfmt ."
   },
   "dependencies": {
-    "@repo/models": "*",
-    "ajv": "^8.18.0",
-    "ajv-formats": "^3.0.1"
+    "@repo/models": "*"
   },
   "devDependencies": {
     "@repo/typescript-config": "*",

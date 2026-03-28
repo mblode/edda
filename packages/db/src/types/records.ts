@@ -1,9 +1,21 @@
-import type { apiKeys, deployments, domains, projects } from "../schema.js";
+import type {
+  apiKeys,
+  deployments,
+  domains,
+  projects,
+  users,
+} from "../schema.js";
 
+type UserRow = typeof users.$inferSelect;
 type ProjectRow = typeof projects.$inferSelect;
 type DomainRow = typeof domains.$inferSelect;
 type DeploymentRow = typeof deployments.$inferSelect;
 type ApiKeyRow = typeof apiKeys.$inferSelect;
+
+export type UserRecord = Pick<
+  UserRow,
+  "authId" | "createdAt" | "email" | "id" | "name" | "updatedAt"
+>;
 
 export type ProjectRecord = Pick<
   ProjectRow,
@@ -14,6 +26,7 @@ export type ProjectRecord = Pick<
   | "name"
   | "slug"
   | "updatedAt"
+  | "userId"
 >;
 
 export type DomainRecord = Pick<

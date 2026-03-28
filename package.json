@@ -1,5 +1,5 @@
 {
-  "name": "blode-docs",
+  "name": "blodemd",
   "private": true,
   "workspaces": [
     "apps/*",
@@ -22,8 +22,8 @@
     "test:integration": "vitest run --config vitest.integration.config.ts",
     "test:smoke": "vitest run --config vitest.smoke.config.ts",
     "test:e2e": "playwright test",
-    "db:up": "docker compose up -d postgres",
-    "db:down": "docker compose down",
+    "db:start": "npx supabase start",
+    "db:stop": "npx supabase stop",
     "db:push": "npm run db:local:push --workspace=packages/db",
     "knip": "DATABASE_URL=postgresql://localhost/dummy npx knip"
   },

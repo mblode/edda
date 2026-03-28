@@ -6,12 +6,13 @@ import { logger } from "hono/logger";
 import { logError } from "./lib/logger.js";
 import { notFound } from "./lib/responses.js";
 import { apiKeys } from "./routes/api-keys.js";
+import { auth } from "./routes/auth.js";
 import { deployments } from "./routes/deployments.js";
 import { domains } from "./routes/domains.js";
 import { projects } from "./routes/projects.js";
 import { tenants } from "./routes/tenants.js";
 
-export const app = new Hono();
+const app = new Hono();
 
 app.use("*", logger());
 app.use(
@@ -40,6 +41,7 @@ app.get("/health", (c) =>
   )
 );
 
+app.route("/auth", auth);
 app.route("/tenants", tenants);
 app.route("/projects", projects);
 app.route("/projects", domains);

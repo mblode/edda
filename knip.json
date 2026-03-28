@@ -11,15 +11,14 @@
       "ignoreDependencies": ["tsx"]
     },
     "apps/docs": {
-      "ignoreBinaries": ["portless"]
+      "ignoreBinaries": ["portless"],
+      "ignoreDependencies": ["postcss"]
     },
     "packages/*": {},
     "packages/db": {
       "entry": ["seed.ts"]
     },
-    "apps/cli": {
-      "entry": ["src/bin.ts"]
-    },
+    "apps/cli": {},
     "packages/typescript-config": {
       "ignoreDependencies": ["next"]
     }

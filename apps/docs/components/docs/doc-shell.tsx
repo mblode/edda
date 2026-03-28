@@ -1,14 +1,10 @@
 import type { SiteConfig } from "@repo/models";
 import { ArrowLeftIcon, ArrowRightIcon } from "blode-icons-react";
+import dynamic from "next/dynamic";
 import Script from "next/script";
-import { Fragment } from "react";
+import { Fragment, Suspense } from "react";
 import type { ReactNode } from "react";
 
-import {
-  ContextualMenu,
-  ContextualTocItems,
-} from "@/components/docs/contextual-menu";
-import { CopyPageMenu } from "@/components/docs/copy-page-menu";
 import { DocHeader } from "@/components/docs/doc-header";
 import { DocSidebar } from "@/components/docs/doc-sidebar";
 import { DocToc } from "@/components/docs/doc-toc";
@@ -22,16 +18,33 @@ import {
 } from "@/components/ui/breadcrumb";
 import { Button } from "@/components/ui/button";
 import { SidebarProvider } from "@/components/ui/sidebar";
-import { flattenNav } from "@/lib/navigation";
 import type { NavEntry } from "@/lib/navigation";
 import { toDocHref } from "@/lib/routes";
 import { themeStylesFromConfig } from "@/lib/theme";
 import type { TocItem } from "@/lib/toc";
 import { cn } from "@/lib/utils";
 
-const renderScripts = (scripts?: string[]) =>
+const ContextualMenu = dynamic(async () => {
+  const m = await import("@/components/docs/contextual-menu");
+  return { default: m.ContextualMenu };
+});
+
+const ContextualTocItems = dynamic(async () => {
+  const m = await import("@/components/docs/contextual-menu");
+  return { default: m.ContextualTocItems };
+});
+
+const CopyPageMenu = dynamic(async () => {
+  const m = await import("@/components/docs/copy-page-menu");
+  return { default: m.CopyPageMenu };
+});
+
+const renderScripts = (
+  scripts?: string[],
+  strategy: "afterInteractive" | "lazyOnload" = "afterInteractive"
+) =>
   scripts?.map((script) => (
-    <Script key={script} src={script} strategy="afterInteractive" />
+    <Script key={script} src={script} strategy={strategy} />
   )) ?? null;
 
 const Breadcrumbs = ({
@@ -75,6 +88,7 @@ const Breadcrumbs = ({
 export const DocShell = ({
   config,
   nav,
+  flatNav,
   toc,
   content,
   currentPath,
@@ -89,6 +103,7 @@ export const DocShell = ({
 }: {
   config: SiteConfig;
   nav: NavEntry[];
+  flatNav: { title: string; path: string }[];
   toc: TocItem[];
   content: ReactNode;
   currentPath: string;
@@ -109,7 +124,7 @@ export const DocShell = ({
     config.features?.toc !== false &&
     (toc.length > 0 || (contextual && contextualDisplay === "toc"));
 
-  const pages = flattenNav(nav);
+  const pages = flatNav;
   const currentIndex = pages.findIndex((p) => p.path === currentPath);
   const prevPage = currentIndex > 0 ? pages[currentIndex - 1] : undefined;
   const nextPage =
@@ -157,7 +172,7 @@ export const DocShell = ({
         nav={nav}
         searchItems={searchItems}
       />
-      <div className="container-wrapper flex flex-1 flex-col px-2">
+      <div className="container-wrapper flex flex-1 flex-col px-6">
         <SidebarProvider
           className={cn(
             "min-h-min flex-1 items-start px-0 [--top-spacing:0] lg:[--top-spacing:calc(var(--spacing)*4)]",
@@ -210,9 +225,22 @@ export const DocShell = ({
                     ) : null}
                   </div>
                 </div>
-                <div className="grid gap-4.5 leading-relaxed [&_blockquote]:border-l-3 [&_blockquote]:border-primary [&_blockquote]:pl-3.5 [&_blockquote]:text-muted-foreground [&_h2]:mt-10 [&_h2]:mb-3 [&_h2]:text-2xl [&_h2]:font-bold [&_h3]:mt-8 [&_h3]:mb-2 [&_h3]:text-[1.375rem] [&_h3]:font-semibold [&_h4]:mt-6 [&_h4]:mb-2 [&_h4]:text-base [&_h4]:font-semibold [&_ol]:pl-5 [&_table]:w-full [&_table]:border-collapse [&_table]:text-sm [&_td]:border-b [&_td]:border-border [&_td]:px-2.5 [&_td]:py-2 [&_td]:text-left [&_th]:border-b [&_th]:border-border [&_th]:px-2.5 [&_th]:py-2 [&_th]:text-left [&_ul]:pl-5">
-                  {content}
-                </div>
+                <Suspense
+                  fallback={
+                    <div className="grid animate-pulse gap-4.5">
+                      <div className="h-4 w-full rounded bg-muted/40" />
+                      <div className="h-4 w-5/6 rounded bg-muted/40" />
+                      <div className="h-4 w-4/6 rounded bg-muted/40" />
+                      <div className="h-32 w-full rounded bg-muted/40" />
+                      <div className="h-4 w-full rounded bg-muted/40" />
+                      <div className="h-4 w-3/4 rounded bg-muted/40" />
+                    </div>
+                  }
+                >
+                  <div className="grid gap-4.5 leading-relaxed [&_blockquote]:border-l-3 [&_blockquote]:border-primary [&_blockquote]:pl-3.5 [&_blockquote]:text-muted-foreground [&_h2]:mt-10 [&_h2]:mb-3 [&_h2]:text-2xl [&_h2]:font-bold [&_h3]:mt-8 [&_h3]:mb-2 [&_h3]:text-[1.375rem] [&_h3]:font-semibold [&_h4]:mt-6 [&_h4]:mb-2 [&_h4]:text-base [&_h4]:font-semibold [&_ol]:pl-5 [&_table]:w-full [&_table]:border-collapse [&_table]:text-sm [&_td]:border-b [&_td]:border-border [&_td]:px-2.5 [&_td]:py-2 [&_td]:text-left [&_th]:border-b [&_th]:border-border [&_th]:px-2.5 [&_th]:py-2 [&_th]:text-left [&_ul]:pl-5">
+                    {content}
+                  </div>
+                </Suspense>
                 {prevPage || nextPage ? (
                   <nav className="hidden h-16 w-full items-center gap-2 px-4 sm:flex sm:px-0">
                     {prevPage ? (
@@ -246,7 +274,7 @@ export const DocShell = ({
           </div>
         </SidebarProvider>
       </div>
-      {renderScripts(config.scripts?.body)}
+      {renderScripts(config.scripts?.body, "lazyOnload")}
     </div>
   );
 };

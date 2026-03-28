@@ -1,5 +1,6 @@
 import { normalizePath } from "@repo/common";
 import type { DocsNavigation } from "@repo/models";
+import type { PageMetadata } from "@repo/previewing";
 
 import type { OpenApiRegistry } from "./openapi";
 
@@ -9,6 +10,14 @@ export interface NavPage {
   path: string;
   source: "mdx" | "openapi";
   identifier?: string;
+  sidebarTitle?: string;
+  icon?: string;
+  iconType?: string;
+  tag?: string;
+  hidden?: boolean;
+  deprecated?: boolean;
+  url?: string;
+  hideApiMarker?: boolean;
 }
 
 export interface NavGroup {
@@ -16,6 +25,7 @@ export interface NavGroup {
   title: string;
   items: NavPage[];
   expanded?: boolean;
+  hidden?: boolean;
 }
 
 export type NavEntry = NavGroup | NavPage;
@@ -57,22 +67,28 @@ const createPageItem = (
   };
 };
 
+// oxlint-disable-next-line eslint/complexity
 export const buildNavigation = (
   navigation: DocsNavigation | undefined,
   registry: OpenApiRegistry,
   slugPrefix = ""
-  // biome-ignore lint/complexity/noExcessiveCognitiveComplexity: TODO: Refactor by extracting group and page processing into separate functions
 ) => {
   const entries: NavEntry[] = [];
   const groups = navigation?.groups ?? [];
+  const hiddenPages = new Set(navigation?.hidden);
 
   for (const group of groups) {
     const title = group.group ?? "Untitled";
     const items: NavPage[] = [];
+    const groupHidden = group.hidden === true;
 
     if (group.pages?.length) {
       for (const page of group.pages) {
-        items.push(createPageItem(page, registry, slugPrefix));
+        const item = createPageItem(page, registry, slugPrefix);
+        if (groupHidden || hiddenPages.has(page)) {
+          item.hidden = true;
+        }
+        items.push(item);
       }
     } else if (group.openapi) {
       const sourceKey =
@@ -82,6 +98,7 @@ export const buildNavigation = (
       const sourceEntries = registry.bySource.get(sourceKey) ?? [];
       for (const entry of sourceEntries) {
         items.push({
+          hidden: groupHidden || undefined,
           identifier: entry.identifier,
           path: entry.slug,
           source: "openapi",
@@ -92,16 +109,79 @@ export const buildNavigation = (
     }
 
     if (items.length) {
-      entries.push({ expanded: group.expanded, items, title, type: "group" });
+      entries.push({
+        expanded: group.expanded,
+        hidden: groupHidden || undefined,
+        items,
+        title,
+        type: "group",
+      });
     }
   }
 
   const topPages = navigation?.pages ?? [];
   for (const page of topPages) {
-    entries.push(createPageItem(page, registry, slugPrefix));
+    const item = createPageItem(page, registry, slugPrefix);
+    if (hiddenPages.has(page)) {
+      item.hidden = true;
+    }
+    entries.push(item);
   }
 
   return entries;
+};
+
+const enrichPage = (
+  page: NavPage,
+  metadataMap: Map<string, PageMetadata>
+): NavPage => {
+  const meta = metadataMap.get(page.path);
+  if (!meta) {
+    return page;
+  }
+  return {
+    ...page,
+    deprecated: meta.deprecated ?? page.deprecated,
+    hidden: meta.hidden ?? page.hidden,
+    hideApiMarker: meta.hideApiMarker ?? page.hideApiMarker,
+    icon: meta.icon ?? page.icon,
+    iconType: meta.iconType ?? page.iconType,
+    sidebarTitle: meta.sidebarTitle ?? page.sidebarTitle,
+    tag: meta.tag ?? page.tag,
+    url: meta.url ?? page.url,
+  };
+};
+
+export const enrichNavWithMetadata = (
+  entries: NavEntry[],
+  metadataMap: Map<string, PageMetadata>
+): NavEntry[] =>
+  entries.map((entry) => {
+    if (entry.type === "page") {
+      return enrichPage(entry, metadataMap);
+    }
+    return {
+      ...entry,
+      items: entry.items.map((item) => enrichPage(item, metadataMap)),
+    };
+  });
+
+export const getVisibleNavigation = (entries: NavEntry[]): NavEntry[] => {
+  const visible: NavEntry[] = [];
+  for (const entry of entries) {
+    if (entry.hidden) {
+      continue;
+    }
+    if (entry.type === "group") {
+      const visibleItems = entry.items.filter((item) => !item.hidden);
+      if (visibleItems.length) {
+        visible.push({ ...entry, items: visibleItems });
+      }
+    } else {
+      visible.push(entry);
+    }
+  }
+  return visible;
 };
 
 export const flattenNav = (entries: NavEntry[]): NavPage[] => {

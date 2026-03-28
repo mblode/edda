@@ -1,13 +1,13 @@
 /**
- * Seed script for blode-docs.
- * Creates the 5 blode.md projects and generates an API key for each.
+ * Seed script for blodemd.
+ * Creates a seed user, projects, and generates an API key for each.
  *
  * Usage:
  *   DATABASE_URL=... tsx packages/db/seed.ts
  */
 import { createHash, randomBytes } from "node:crypto";
 
-import { ApiKeyDao, ProjectDao } from "./src/index.js";
+import { ApiKeyDao, ProjectDao, UserDao } from "./src/index.js";
 
 const API_KEY_PREFIX = "ndk_";
 const API_KEY_PREFIX_LENGTH = 8;
@@ -20,6 +20,12 @@ const createApiKeyToken = () => {
   const secret = randomBytes(24).toString("hex");
   const token = `${prefix}.${secret}`;
   return { prefix, token, tokenHash: hashToken(token) };
+};
+
+const SEED_USER = {
+  authId: "seed-user-00000000-0000-0000-0000-000000000000",
+  email: "seed@blode.md",
+  name: "Seed User",
 };
 
 const PROJECTS = [
@@ -48,12 +54,32 @@ const PROJECTS = [
     name: "DnD Grid",
     slug: "dnd-grid",
   },
+  {
+    description: "Build a Mintlify-style documentation platform on Vercel.",
+    name: "Atlas",
+    slug: "atlas",
+  },
+  {
+    description:
+      "An opinionated shadcn/ui component registry built with good taste, care, and craft.",
+    name: "Blode",
+    slug: "blode",
+  },
+  {
+    description: "Ship product docs with a tenant-aware runtime.",
+    name: "Orbit",
+    slug: "orbit",
+  },
 ] as const;
 
+const userDao = new UserDao();
 const projectDao = new ProjectDao();
 const apiKeyDao = new ApiKeyDao();
 
-console.log("Seeding blode-docs projects...\n");
+console.log("Seeding blodemd...\n");
+
+const user = await userDao.upsertByAuthId(SEED_USER);
+console.log(`  [user] ${user.email} (id: ${user.id})\n`);
 
 for (const proj of PROJECTS) {
   const existing = await projectDao.getBySlugUnique(proj.slug);
@@ -67,6 +93,7 @@ for (const proj of PROJECTS) {
     description: proj.description,
     name: proj.name,
     slug: proj.slug,
+    userId: user.id,
   });
 
   const { prefix, token, tokenHash } = createApiKeyToken();
@@ -75,6 +102,7 @@ for (const proj of PROJECTS) {
     prefix,
     projectId: project.id,
     tokenHash,
+    userId: user.id,
   });
 
   console.log(`  [ok]   ${proj.slug}`);

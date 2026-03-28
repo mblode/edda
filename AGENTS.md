@@ -3,14 +3,14 @@
 ## Project Structure
 
 - Turborepo monorepo; workspaces defined in root `package.json`.
-- `apps/` — product apps: `apps/docs` (Next.js, port 3001) and `apps/api` (Fastify, port 3000).
-- `packages/` — shared libraries (`@repo/contracts`, `@repo/db`, `@repo/models`, `@repo/common`, `@repo/validation`, `@repo/ui`, `@repo/api-client`, `@repo/prebuild`, `@repo/previewing`, `@repo/docs-cli`) and config packages (`@repo/typescript-config`).
+- `apps/` — product apps: `apps/docs` (Next.js, port 3001), `apps/api` (Hono, port 4000), and `apps/cli` (CLI tool).
+- `packages/` — shared libraries (`@repo/contracts`, `@repo/db`, `@repo/models`, `@repo/common`, `@repo/validation`, `@repo/ui`, `@repo/api-client`, `@repo/prebuild`, `@repo/previewing`) and config packages (`@repo/typescript-config`).
 - Root config: `turbo.json`, `.oxlintrc.json`, `.oxfmtrc.jsonc`.
 
 ## Commands
 
 ```sh
-npm run dev              # start all apps (docs → :3001, api → :3000)
+npm run dev              # start all apps (docs → :3001, api → :4000)
 npm run build            # build all packages/apps
 npm run check-types      # TypeScript type check across workspaces
 npm run lint             # Oxlint lint check

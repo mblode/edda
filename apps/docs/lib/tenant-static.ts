@@ -224,18 +224,3 @@ export const getLlmPageText = async (tenant: Tenant, slug: string) => {
   const body = stripFrontmatter(raw);
   return `# ${entry.title}\n\n${body}`;
 };
-
-export const getTenantMetadata = async (tenant: Tenant) => {
-  const contentSource = getTenantContentSource(tenant);
-  const configResult = await loadSiteConfig(contentSource);
-  if (!configResult.ok) {
-    return null;
-  }
-
-  const config = await resolveSiteConfigAssets(
-    configResult.config,
-    contentSource
-  );
-
-  return config;
-};

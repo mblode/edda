@@ -1,13 +1,13 @@
 {
-  "name": "blode-docs",
+  "name": "blodemd",
   "version": "0.0.3",
   "description": "Blode Docs CLI",
   "repository": {
     "type": "git",
-    "url": "https://github.com/mblode/blode-docs"
+    "url": "https://github.com/mblode/blodemd"
   },
   "bin": {
-    "blode-docs": "./dist/cli.mjs"
+    "blodemd": "./dist/cli.mjs"
   },
   "files": [
     "dist"
@@ -32,7 +32,8 @@
   },
   "dependencies": {
     "@clack/prompts": "^1.0.0",
-    "commander": "^14.0.0"
+    "commander": "^14.0.0",
+    "open": "^10.2.0"
   },
   "devDependencies": {
     "@repo/typescript-config": "*",

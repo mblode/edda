@@ -39,25 +39,4 @@ const fetchTenant = async (slug: string): Promise<Tenant | null> => {
   return mapTenant(parsed.data);
 };
 
-const fetchTenants = async (): Promise<Tenant[]> => {
-  const url = new URL("/tenants", docsApiBase);
-  const response = await fetch(url.toString(), {
-    next: { tags: ["tenants"] },
-  });
-  if (!response.ok) {
-    return [];
-  }
-  const json = (await response.json()) as unknown;
-  const parsed = TenantSchema.array().safeParse(json);
-  if (!parsed.success) {
-    return [];
-  }
-  return parsed.data.map(mapTenant);
-};
-
 export const getTenantBySlug = fetchTenant;
-
-export const getDefaultTenant = async () => {
-  const tenants = await fetchTenants();
-  return tenants[0] ?? null;
-};

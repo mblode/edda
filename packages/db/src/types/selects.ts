@@ -1,4 +1,13 @@
-import { apiKeys, deployments, domains, projects } from "../schema.js";
+import { apiKeys, deployments, domains, projects, users } from "../schema.js";
+
+export const userSelect = {
+  authId: users.authId,
+  createdAt: users.createdAt,
+  email: users.email,
+  id: users.id,
+  name: users.name,
+  updatedAt: users.updatedAt,
+} as const;
 
 export const projectSelect = {
   createdAt: projects.createdAt,
@@ -8,6 +17,7 @@ export const projectSelect = {
   name: projects.name,
   slug: projects.slug,
   updatedAt: projects.updatedAt,
+  userId: projects.userId,
 } as const;
 
 export const domainSelect = {

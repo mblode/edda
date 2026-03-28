@@ -2,12 +2,14 @@ import { normalizePath } from "@repo/common";
 import type { ContentType } from "@repo/models";
 import {
   buildContentIndex,
+  buildPageMetadataMap,
   loadContentSource,
   loadSiteConfig,
 } from "@repo/previewing";
 import type { Metadata } from "next";
 import { headers } from "next/headers";
 import { notFound } from "next/navigation";
+import { cache } from "react";
 
 import { ApiReference } from "@/components/api/api-reference";
 import { CollectionIndex } from "@/components/content/collection-index";
@@ -17,7 +19,12 @@ import {
   resolveSiteConfigAssets,
 } from "@/lib/content-source";
 import { renderMdx } from "@/lib/mdx";
-import { buildNavigation, findBreadcrumbs, flattenNav } from "@/lib/navigation";
+import {
+  buildNavigation,
+  findBreadcrumbs,
+  flattenNav,
+  getVisibleNavigation,
+} from "@/lib/navigation";
 import { buildOpenApiRegistry } from "@/lib/openapi";
 import {
   getCanonicalOrigin,
@@ -60,7 +67,7 @@ const labelFromType = (type: ContentType) => {
 };
 
 // oxlint-disable-next-line eslint/complexity
-const getDocData = async (tenantSlug: string, slugKey: string) => {
+const getDocData = cache(async (tenantSlug: string, slugKey: string) => {
   const tenant = await getTenantBySlug(tenantSlug);
   if (!tenant) {
     return null;
@@ -121,23 +128,37 @@ const getDocData = async (tenantSlug: string, slugKey: string) => {
         docsCollection?.slugPrefix ?? ""
       )
     : [];
+  const visibleNav = getVisibleNavigation(nav);
   const flatNav = flattenNav(nav);
+  const visibleFlatNav = flattenNav(visibleNav);
   const anchors = docsNavigation?.global?.anchors ?? [];
+  const indexAll = config.seo?.indexing === "all";
   const searchItems = new Map<string, { title: string; path: string }>();
-  for (const item of flatNav) {
+  for (const item of visibleFlatNav) {
     searchItems.set(item.path, { path: item.path, title: item.title });
   }
   for (const entry of contentIndex.entries) {
+    if (!indexAll && entry.kind === "entry" && entry.hidden) {
+      continue;
+    }
     searchItems.set(entry.slug, { path: entry.slug, title: entry.title });
+  }
+  if (indexAll) {
+    for (const item of flatNav) {
+      if (!searchItems.has(item.path)) {
+        searchItems.set(item.path, { path: item.path, title: item.title });
+      }
+    }
   }
 
   const currentPath = normalizePath(slugKey) || "index";
   const openApiEntry = registry.bySlug.get(currentPath);
 
   if (openApiEntry) {
+    const isHidden = flatNav.some((p) => p.path === currentPath && p.hidden);
     return {
       anchors,
-      breadcrumbs: findBreadcrumbs(nav, currentPath),
+      breadcrumbs: findBreadcrumbs(visibleNav, currentPath),
       config,
       content: (
         <ApiReference
@@ -146,9 +167,10 @@ const getDocData = async (tenantSlug: string, slugKey: string) => {
         />
       ),
       currentPath,
-      flatNav,
+      flatNav: visibleFlatNav,
       headerLabel: "Docs",
-      nav,
+      hidden: isHidden,
+      nav: visibleNav,
       pageDescription: openApiEntry.operation.description,
       pageTitle: openApiEntry.operation.summary ?? openApiEntry.identifier,
       rawContent: openApiEntry.operation.description ?? "",
@@ -185,9 +207,10 @@ const getDocData = async (tenantSlug: string, slugKey: string) => {
       config,
       content: null,
       currentPath,
-      flatNav,
+      flatNav: visibleFlatNav,
       headerLabel: labelFromType(entry.type),
-      nav: showDocsNav ? nav : [],
+      hidden: false,
+      nav: showDocsNav ? visibleNav : [],
       pageDescription: entry.description,
       pageTitle: entry.title,
       searchItems: [...searchItems.values()],
@@ -204,7 +227,13 @@ const getDocData = async (tenantSlug: string, slugKey: string) => {
   const pageDescription =
     (frontmatter?.description as string | undefined) ?? entry.description;
   const showDocsNav = entry.type === "docs";
-  const breadcrumbs = showDocsNav ? findBreadcrumbs(nav, currentPath) : [];
+  const breadcrumbs = showDocsNav
+    ? findBreadcrumbs(visibleNav, currentPath)
+    : [];
+  const isHiddenByFrontmatter = frontmatter?.hidden === true;
+  const isHiddenByNav = flatNav.some((p) => p.path === currentPath && p.hidden);
+  const isHidden =
+    isHiddenByFrontmatter || isHiddenByNav || entry.hidden === true;
 
   return {
     anchors: showDocsNav ? anchors : [],
@@ -212,9 +241,10 @@ const getDocData = async (tenantSlug: string, slugKey: string) => {
     config,
     content,
     currentPath,
-    flatNav,
+    flatNav: visibleFlatNav,
     headerLabel: labelFromType(entry.type),
-    nav: showDocsNav ? nav : [],
+    hidden: isHidden,
+    nav: showDocsNav ? visibleNav : [],
     pageDescription,
     pageTitle,
     rawContent: source,
@@ -222,8 +252,9 @@ const getDocData = async (tenantSlug: string, slugKey: string) => {
     tenant,
     toc,
   };
-};
+});
 
+// oxlint-disable-next-line eslint/complexity
 export const generateMetadata = async ({
   params,
 }: {
@@ -239,7 +270,7 @@ export const generateMetadata = async ({
     };
   }
 
-  const { config, pageTitle, pageDescription, tenant } = data;
+  const { config, hidden, pageTitle, pageDescription, tenant } = data;
 
   const baseTitle = config?.name ?? "Docs";
   const titleTemplate = `%s · ${baseTitle}`;
@@ -262,6 +293,7 @@ export const generateMetadata = async ({
   const canonicalOrigin = getCanonicalOrigin(tenant, requestContext);
   const ogImage = config?.metadata?.ogImage;
   const favicon = config?.favicon;
+  const noindex = hidden && config.seo?.indexing !== "all";
 
   return {
     alternates: {
@@ -275,6 +307,7 @@ export const generateMetadata = async ({
           url: `${canonicalOrigin}${fullCanonical}`,
         }
       : undefined,
+    robots: noindex ? { index: false } : undefined,
     title,
     twitter: ogImage
       ? {
@@ -345,6 +378,7 @@ const DocPage = async ({
         )
       }
       currentPath={data.currentPath}
+      flatNav={data.flatNav}
       headerLabel={data.headerLabel}
       nav={data.nav}
       pageDescription={data.pageDescription}

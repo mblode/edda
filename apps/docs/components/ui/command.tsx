@@ -115,17 +115,6 @@ const CommandGroup = ({
   />
 );
 
-const CommandSeparator = ({
-  className,
-  ...props
-}: React.ComponentProps<typeof CommandPrimitive.Separator>) => (
-  <CommandPrimitive.Separator
-    className={cn("-mx-1 h-px bg-border", className)}
-    data-slot="command-separator"
-    {...props}
-  />
-);
-
 const CommandItem = ({
   className,
   ...props
@@ -140,28 +129,11 @@ const CommandItem = ({
   />
 );
 
-const CommandShortcut = ({
-  className,
-  ...props
-}: React.ComponentProps<"span">) => (
-  <span
-    className={cn(
-      "ml-auto text-muted-foreground text-xs tracking-widest",
-      className
-    )}
-    data-slot="command-shortcut"
-    {...props}
-  />
-);
-
 export {
-  Command,
   CommandDialog,
   CommandInput,
   CommandList,
   CommandEmpty,
   CommandGroup,
   CommandItem,
-  CommandShortcut,
-  CommandSeparator,
 };

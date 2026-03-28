@@ -8,6 +8,14 @@ const cleanEnv = (value) => {
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   assetPrefix: cleanEnv(process.env.PLATFORM_ASSET_PREFIX),
+  experimental: {
+    optimizePackageImports: [
+      "blode-icons-react",
+      "radix-ui",
+      "@base-ui/react",
+      "cmdk",
+    ],
+  },
   images: {
     remotePatterns: [
       {
@@ -15,6 +23,9 @@ const nextConfig = {
         protocol: "https",
       },
     ],
+  },
+  outputFileTracingIncludes: {
+    "/sites/**": ["./content/**/*"],
   },
   rewrites() {
     const assetPrefix = cleanEnv(process.env.PLATFORM_ASSET_PREFIX);

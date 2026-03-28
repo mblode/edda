@@ -27,6 +27,7 @@ export type ContentEntry =
       slug: string;
       title: string;
       description?: string;
+      hidden?: boolean;
       type: ContentType;
       collectionId: string;
       sourcePath: string;
@@ -48,6 +49,72 @@ export interface ContentIndex {
   byCollection: Map<string, ContentEntry[]>;
   errors: string[];
 }
+
+export interface PageMetadata {
+  sidebarTitle?: string;
+  icon?: string;
+  iconType?: string;
+  tag?: string;
+  hidden?: boolean;
+  deprecated?: boolean;
+  url?: string;
+  mode?: string;
+  noindex?: boolean;
+  hideFooterPagination?: boolean;
+  hideApiMarker?: boolean;
+  keywords?: string[];
+}
+
+export const buildPageMetadataMap = (
+  index: ContentIndex
+): Map<string, PageMetadata> => {
+  const map = new Map<string, PageMetadata>();
+  for (const entry of index.entries) {
+    if (entry.kind !== "entry") {
+      continue;
+    }
+    const fm = entry.frontmatter as Record<string, unknown>;
+    const meta: PageMetadata = {};
+    if (typeof fm.sidebarTitle === "string") {
+      meta.sidebarTitle = fm.sidebarTitle;
+    }
+    if (typeof fm.icon === "string") {
+      meta.icon = fm.icon;
+    }
+    if (typeof fm.iconType === "string") {
+      meta.iconType = fm.iconType;
+    }
+    if (typeof fm.tag === "string") {
+      meta.tag = fm.tag;
+    }
+    if (typeof fm.hidden === "boolean") {
+      meta.hidden = fm.hidden;
+    }
+    if (typeof fm.deprecated === "boolean") {
+      meta.deprecated = fm.deprecated;
+    }
+    if (typeof fm.url === "string") {
+      meta.url = fm.url;
+    }
+    if (typeof fm.mode === "string") {
+      meta.mode = fm.mode;
+    }
+    if (typeof fm.noindex === "boolean") {
+      meta.noindex = fm.noindex;
+    }
+    if (typeof fm.hideFooterPagination === "boolean") {
+      meta.hideFooterPagination = fm.hideFooterPagination;
+    }
+    if (typeof fm.hideApiMarker === "boolean") {
+      meta.hideApiMarker = fm.hideApiMarker;
+    }
+    if (Array.isArray(fm.keywords)) {
+      meta.keywords = fm.keywords as string[];
+    }
+    map.set(entry.slug, meta);
+  }
+  return map;
+};
 
 const DOCS_CONFIG_FILE = "docs.json";
 const DOC_FILE_EXTENSION_REGEX = /\.(mdx|md)$/;
@@ -162,6 +229,7 @@ const mapDocsConfig = (docs: MintlifyDocsConfig): SiteConfig => {
     groups: docs.navigation.groups?.map((group) => ({
       expanded: group.expanded,
       group: group.group,
+      hidden: group.hidden,
       pages: group.root
         ? [
             group.root,
@@ -227,6 +295,7 @@ const mapDocsConfig = (docs: MintlifyDocsConfig): SiteConfig => {
         docs.api?.playground?.proxy !== false &&
         Boolean(docs.api?.openapi || docs.api?.asyncapi),
     },
+    seo: docs.seo,
     theme: docs.theme,
   };
 };
@@ -554,10 +623,16 @@ const buildEntryFromFile = async ({
       ? resolvedFrontmatter.description
       : undefined;
 
+  const hidden =
+    typeof resolvedFrontmatter?.hidden === "boolean"
+      ? resolvedFrontmatter.hidden
+      : undefined;
+
   return {
     collectionId: collection.id,
     description,
     frontmatter: resolvedFrontmatter,
+    hidden: hidden || undefined,
     kind: "entry",
     relativePath: sourcePath,
     slug,

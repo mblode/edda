@@ -12,6 +12,7 @@ export interface ProjectCreateInput {
   name: string;
   deploymentName: string;
   description?: string | null;
+  userId?: string | null;
 }
 
 export interface ProjectUpdateInput {
@@ -25,6 +26,14 @@ export class ProjectDao {
     return await db
       .select(projectSelect)
       .from(projects)
+      .orderBy(desc(projects.createdAt));
+  }
+
+  async listByUser(userId: string): Promise<ProjectRecord[]> {
+    return await db
+      .select(projectSelect)
+      .from(projects)
+      .where(eq(projects.userId, userId))
       .orderBy(desc(projects.createdAt));
   }
 

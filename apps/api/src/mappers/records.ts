@@ -1,9 +1,16 @@
-import type { ApiKey, Deployment, Domain, Project } from "@repo/contracts";
+import type {
+  ApiKey,
+  Deployment,
+  Domain,
+  Project,
+  User,
+} from "@repo/contracts";
 import type {
   ApiKeyRecord,
   DeploymentRecord,
   DomainRecord,
   ProjectRecord,
+  UserRecord,
 } from "@repo/db";
 import {
   mapDeploymentStatusToContract,
@@ -11,6 +18,13 @@ import {
 } from "@repo/db";
 
 const toIso = (value: Date) => value.toISOString();
+
+export const mapUser = (record: UserRecord): User => ({
+  createdAt: toIso(record.createdAt),
+  email: record.email,
+  id: record.id,
+  name: record.name,
+});
 
 export const mapProject = (record: ProjectRecord): Project => ({
   createdAt: toIso(record.createdAt),

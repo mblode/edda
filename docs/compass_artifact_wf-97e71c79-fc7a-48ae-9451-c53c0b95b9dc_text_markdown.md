@@ -1,10 +1,10 @@
-# Blode-docs: architecture for a headless, open-source Mintlify alternative
+# Blodemd: architecture for a headless, open-source Mintlify alternative
 
-**Blode-docs can be built as a single Next.js/fumadocs deployment on Vercel that serves every project's docs on its own custom domain, using middleware-based tenant routing, blob-stored MDX pushed via CLI or GitHub App, and on-demand ISR for instant content updates — all without per-project rebuilds.** This architecture mirrors Mintlify's proven approach (one Vercel project serving 2,500+ custom domains) but strips it down to an open-source, headless core. The key enablers are Vercel's Platforms Starter Kit pattern, fumadocs' `multiple()` source API with `@fumadocs/mdx-remote` for runtime compilation, and a SHA-based incremental push flow. What follows is a complete blueprint.
+**Blodemd can be built as a single Next.js/fumadocs deployment on Vercel that serves every project's docs on its own custom domain, using middleware-based tenant routing, blob-stored MDX pushed via CLI or GitHub App, and on-demand ISR for instant content updates — all without per-project rebuilds.** This architecture mirrors Mintlify's proven approach (one Vercel project serving 2,500+ custom domains) but strips it down to an open-source, headless core. The key enablers are Vercel's Platforms Starter Kit pattern, fumadocs' `multiple()` source API with `@fumadocs/mdx-remote` for runtime compilation, and a SHA-based incremental push flow. What follows is a complete blueprint.
 
 ---
 
-## How Mintlify actually works — and where Blode-docs diverges
+## How Mintlify actually works — and where Blodemd diverges
 
 Mintlify runs **one Next.js application on a single Vercel project** that serves every customer's documentation site. Co-founder Hahnbee Lee confirmed this directly: "Multi-tenancy and all the custom domains connecting to one Vercel project is so epic." As of mid-2024, that single deployment handled **2,500+ custom domains** with automatic SSL. Content never triggers a full rebuild — Mintlify uses ISR so updates propagate in seconds via on-demand revalidation.
 
@@ -12,7 +12,7 @@ The content pipeline is GitHub-first. There is no `mintlify deploy` command. Use
 
 Mintlify's config file (`docs.json`, formerly `mint.json`) controls everything: **9 theme presets**, custom colors/logos/fonts, recursive navigation structure with tabs and groups, API playground configuration, analytics integrations, SEO settings, redirects, and even AI assistant behavior. The MDX rendering layer is open-source — `@mintlify/mdx` wraps `next-mdx-remote-client` with syntax highlighting, and `@mintlify/components` provides Tailwind-based React components (Accordion, Card, Tabs, CodeBlock, etc.).
 
-**Where Blode-docs diverges**: Mintlify's rendering engine and platform are proprietary (Elastic-2.0 license). Blode-docs can be fully open-source, built on fumadocs (which is MIT-licensed and more composable), and self-hostable. Mintlify recently added an enterprise "custom frontend" option using Astro — acknowledging that developers want control over their rendering layer. Blode-docs is headless from day one.
+**Where Blodemd diverges**: Mintlify's rendering engine and platform are proprietary (Elastic-2.0 license). Blodemd can be fully open-source, built on fumadocs (which is MIT-licensed and more composable), and self-hostable. Mintlify recently added an enterprise "custom frontend" option using Astro — acknowledging that developers want control over their rendering layer. Blodemd is headless from day one.
 
 ---
 
@@ -41,8 +41,8 @@ export async function middleware(request: NextRequest) {
   // Resolve tenant: check subdomain first, then custom domain
   let projectSlug: string | null = null;
 
-  if (hostname.endsWith(".blode-docs.app")) {
-    projectSlug = hostname.replace(".blode-docs.app", "");
+  if (hostname.endsWith(".blodemd.app")) {
+    projectSlug = hostname.replace(".blodemd.app", "");
   } else {
     // Custom domain lookup via Edge Config (sub-10ms)
     const mapping = await get<string>(`domain:${hostname}`);
@@ -66,7 +66,7 @@ export async function middleware(request: NextRequest) {
 
 ### Fumadocs integration for multi-project rendering
 
-Fumadocs is well-suited for this because it operates on **virtual file systems**, not the real filesystem. The `Source` interface accepts any array of virtual files, and the `multiple()` API combines sources. For Blode-docs, the key is `@fumadocs/mdx-remote` — it compiles MDX at runtime from any source (blob storage, database, API) without a build step:
+Fumadocs is well-suited for this because it operates on **virtual file systems**, not the real filesystem. The `Source` interface accepts any array of virtual files, and the `multiple()` API combines sources. For Blodemd, the key is `@fumadocs/mdx-remote` — it compiles MDX at runtime from any source (blob storage, database, API) without a build step:
 
 ```typescript
 // app/docs/[project]/[[...slug]]/page.tsx
@@ -100,7 +100,7 @@ export default async function ProjectDocPage({
 }
 ```
 
-Each project gets its own dynamic route segment (`/docs/[project]/`), but users never see this — middleware rewrites `docs.acme.com/quickstart` to `/docs/acme/quickstart` transparently. Per-project layouts apply branding (colors, logos, fonts) by reading the project's `blode-docs.json` config from the database and injecting CSS variables.
+Each project gets its own dynamic route segment (`/docs/[project]/`), but users never see this — middleware rewrites `docs.acme.com/quickstart` to `/docs/acme/quickstart` transparently. Per-project layouts apply branding (colors, logos, fonts) by reading the project's `blodemd.json` config from the database and injecting CSS variables.
 
 ### Per-project theming via CSS variables
 
@@ -134,20 +134,20 @@ This gives complete per-project branding isolation — different logos, colors, 
 
 ## Content storage: blob + database hybrid
 
-After evaluating four storage strategies (git-based, blob, database, hybrid), **the hybrid approach wins for Blode-docs**: blob storage for MDX content, a database for metadata and config.
+After evaluating four storage strategies (git-based, blob, database, hybrid), **the hybrid approach wins for Blodemd**: blob storage for MDX content, a database for metadata and config.
 
 | Layer               | Storage                            | What lives here                                                                        | Why                                                            |
 | ------------------- | ---------------------------------- | -------------------------------------------------------------------------------------- | -------------------------------------------------------------- |
 | **Raw MDX**         | Cloudflare R2 or Vercel Blob       | `.mdx` files, images, assets                                                           | Cheap ($0/GB for R2 free tier), fast CDN reads, simple PUT/GET |
 | **Compiled cache**  | Same blob, separate prefix         | Pre-compiled MDX output                                                                | Avoids re-compilation on every ISR hit                         |
 | **Metadata**        | Turso (SQLite at edge) or Postgres | Project configs, navigation trees, deployment history, domain mappings, file manifests | Structured queries, version tracking, fast edge reads          |
-| **Source of truth** | User's own Git repo                | Everything                                                                             | Blode-docs never becomes the git host                          |
+| **Source of truth** | User's own Git repo                | Everything                                                                             | Blodemd never becomes the git host                             |
 
 **Storage key scheme for blob:**
 
 ```
 /{projectId}/deployments/{deploymentId}/docs/getting-started.mdx
-/{projectId}/deployments/{deploymentId}/blode-docs.json
+/{projectId}/deployments/{deploymentId}/blodemd.json
 /{projectId}/deployments/{deploymentId}/assets/logo.svg
 /{projectId}/current → symlink/pointer to latest deploymentId
 ```
@@ -165,25 +165,25 @@ After evaluating four storage strategies (git-based, blob, database, hybrid), **
 
 ---
 
-## CLI design: `blode-docs push`
+## CLI design: `blodemd push`
 
 The CLI follows the Vercel/Netlify pattern of **SHA-based incremental sync** — only changed files are uploaded. The CLI is the secondary deployment method (GitHub App is primary).
 
 ### Core commands
 
 ```bash
-blode-docs init          # Interactive setup: create blode-docs.json, link project
-blode-docs dev           # Local preview (wraps fumadocs dev server)
-blode-docs push          # Sync docs to platform
-blode-docs push --preview # Create preview deployment
-blode-docs domains add docs.acme.com  # Add custom domain
-blode-docs status        # Check deployment status
+blodemd init          # Interactive setup: create blodemd.json, link project
+blodemd dev           # Local preview (wraps fumadocs dev server)
+blodemd push          # Sync docs to platform
+blodemd push --preview # Create preview deployment
+blodemd domains add docs.acme.com  # Add custom domain
+blodemd status        # Check deployment status
 ```
 
-### How `blode-docs push` works
+### How `blodemd push` works
 
 ```
-1. Read blode-docs.json (validate against schema)
+1. Read blodemd.json (validate against schema)
 2. Scan content directory (default: ./docs/)
 3. Compute SHA-256 hash of every file
 4. POST /api/v1/deployments/prepare
@@ -201,15 +201,15 @@ blode-docs status        # Check deployment status
 
 - **Presigned URLs** for direct-to-blob uploads avoid proxying large files through the API server
 - **Content-addressed storage** means unchanged files are never re-uploaded, even across deployments
-- **Project linking** via `.blode-docs/` directory (stores project ID and API key locally, gitignored)
+- **Project linking** via `.blodemd/` directory (stores project ID and API key locally, gitignored)
 - **API keys** use a clear prefix: `nd_live_sk_` for production, `nd_test_sk_` for preview
 - **CI mode**: `BLODE_DOCS_API_KEY` env var + `--ci` flag for non-interactive use
 
 ### Authentication flow
 
 ```bash
-blode-docs login         # Opens browser OAuth flow, stores token in ~/.blode-docs/auth.json
-blode-docs init          # Links current dir to a project, stores in .blode-docs/project.json
+blodemd login         # Opens browser OAuth flow, stores token in ~/.blodemd/auth.json
+blodemd init          # Links current dir to a project, stores in .blodemd/project.json
 ```
 
 For CI/CD, a project-scoped API key replaces the OAuth token.
@@ -222,9 +222,9 @@ For CI/CD, a project-scoped API key replaces the OAuth token.
 
 The GitHub App is the zero-config option. After installation:
 
-1. User installs the Blode-docs GitHub App on their repo
+1. User installs the Blodemd GitHub App on their repo
 2. App receives `push` webhook on default branch
-3. Blode-docs backend pulls changed files via GitHub API (using installation token)
+3. Blodemd backend pulls changed files via GitHub API (using installation token)
 4. Runs the same pipeline as CLI push: store in blob → update metadata → revalidate ISR
 5. PR pushes create preview deployments; bot comments with preview URL
 
@@ -233,19 +233,19 @@ The GitHub App is the zero-config option. After installation:
 ### GitHub Action (CI flexibility)
 
 ```yaml
-# .github/workflows/blode-docs.yml
+# .github/workflows/blodemd.yml
 name: Deploy Docs
 on:
   push:
     branches: [main]
-    paths: ["docs/**", "blode-docs.json"]
+    paths: ["docs/**", "blodemd.json"]
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: blode-docs/deploy-action@v1
+      - uses: blodemd/deploy-action@v1
         with:
           api-key: ${{ secrets.BLODE_DOCS_API_KEY }}
           docs-dir: ./docs
@@ -255,13 +255,13 @@ The Action internally runs the same SHA-based incremental sync as the CLI. It's 
 
 ---
 
-## The `blode-docs.json` config schema
+## The `blodemd.json` config schema
 
 Inspired by Mintlify's `docs.json` but simplified for a headless, open-source context. Only **three fields are required**: `name`, `colors.primary`, and `navigation`.
 
 ```jsonc
 {
-  "$schema": "https://blode-docs.app/schema.json",
+  "$schema": "https://blodemd.app/schema.json",
 
   // Identity (required)
   "name": "Acme Docs",
@@ -305,7 +305,7 @@ Inspired by Mintlify's `docs.json` but simplified for a headless, open-source co
   },
 
   // Domain
-  "domain": "docs.acme.com", // Custom domain (optional, defaults to {slug}.blode-docs.app)
+  "domain": "docs.acme.com", // Custom domain (optional, defaults to {slug}.blodemd.app)
 
   // Top bar
   "topbar": {
@@ -339,7 +339,7 @@ Inspired by Mintlify's `docs.json` but simplified for a headless, open-source co
 
 ## Custom domains: programmatic setup via Vercel API
 
-Adding a custom domain is a three-step process triggered by `blode-docs domains add` or the dashboard:
+Adding a custom domain is a three-step process triggered by `blodemd domains add` or the dashboard:
 
 **Step 1 — Register domain with Vercel:**
 
@@ -347,7 +347,7 @@ Adding a custom domain is a three-step process triggered by `blode-docs domains 
 import { projectsAddProjectDomain } from "@vercel/sdk/funcs/projectsAddProjectDomain.js";
 
 await projectsAddProjectDomain(vercel, {
-  idOrName: "blode-docs-platform",
+  idOrName: "blodemd-platform",
   teamId: VERCEL_TEAM_ID,
   requestBody: { name: "docs.acme.com" },
 });
@@ -358,7 +358,7 @@ The platform returns the required DNS records. For a subdomain like `docs.acme.c
 
 ```typescript
 await projectsVerifyProjectDomain(vercel, {
-  idOrName: "blode-docs-platform",
+  idOrName: "blodemd-platform",
   domain: "docs.acme.com",
 });
 ```
@@ -372,13 +372,13 @@ await edgeConfig.set(`domain:docs.acme.com`, "acme");
 
 SSL certificates are provisioned automatically by Vercel (Let's Encrypt) once DNS propagates. **No manual SSL configuration is needed.**
 
-For the default experience, `*.blode-docs.app` is configured as a wildcard domain on the Vercel project, giving every project `{slug}.blode-docs.app` out of the box. This requires Vercel's nameservers for the `blode-docs.app` domain.
+For the default experience, `*.blodemd.app` is configured as a wildcard domain on the Vercel project, giving every project `{slug}.blodemd.app` out of the box. This requires Vercel's nameservers for the `blodemd.app` domain.
 
 ---
 
 ## Build and deploy strategy: ISR with tiered revalidation
 
-The central app is **never fully rebuilt** when a single project's content changes. This is the critical scaling insight from Mintlify's architecture. Instead, Blode-docs uses a tiered revalidation strategy:
+The central app is **never fully rebuilt** when a single project's content changes. This is the critical scaling insight from Mintlify's architecture. Instead, Blodemd uses a tiered revalidation strategy:
 
 **Tier 1 — Content-only changes** (MDX files modified): On-demand `revalidateTag` for each changed page. The push pipeline knows exactly which files changed (from the SHA diff), so it revalidates only those paths. Sub-second updates.
 
@@ -389,7 +389,7 @@ for (const changedFile of deployment.changedFiles) {
 }
 ```
 
-**Tier 2 — Config changes** (`blode-docs.json` modified): `revalidateTag` for the entire project. This refreshes navigation, theming, and all pages.
+**Tier 2 — Config changes** (`blodemd.json` modified): `revalidateTag` for the entire project. This refreshes navigation, theming, and all pages.
 
 ```typescript
 revalidateTag(`project:${projectId}`);
@@ -408,14 +408,14 @@ revalidateTag(`project:${projectId}`);
 ```
 ┌─────────────────────────────────────────────────────────┐
 │                    User's Git Repo                       │
-│   docs/*.mdx  +  blode-docs.json  +  assets/             │
+│   docs/*.mdx  +  blodemd.json  +  assets/             │
 └──────────┬──────────────────────┬────────────────────────┘
            │                      │
-     CLI: blode-docs push    GitHub App webhook
+     CLI: blodemd push    GitHub App webhook
            │                      │
            ▼                      ▼
 ┌─────────────────────────────────────────────────────────┐
-│                  Blode-docs API Server                    │
+│                  Blodemd API Server                    │
 │                                                          │
 │  POST /deployments/prepare  → SHA diff, return missing   │
 │  PUT  (presigned URLs)      → Direct-to-blob upload      │
@@ -458,21 +458,21 @@ revalidateTag(`project:${projectId}`);
 │    → Render with fumadocs-ui components                  │
 │    → Cache via ISR, tagged per project+page              │
 │                                                          │
-│  *.blode-docs.app (wildcard) + custom domains via API     │
+│  *.blodemd.app (wildcard) + custom domains via API     │
 └─────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## How Blode-docs is simpler and more headless than Mintlify
+## How Blodemd is simpler and more headless than Mintlify
 
-Mintlify is a polished commercial product with a web editor, team management, analytics dashboards, AI assistant, and dozens of integrations. Blode-docs deliberately omits all of that to focus on the infrastructure layer.
+Mintlify is a polished commercial product with a web editor, team management, analytics dashboards, AI assistant, and dozens of integrations. Blodemd deliberately omits all of that to focus on the infrastructure layer.
 
-**What Blode-docs keeps**: Multi-tenant custom domain routing, ISR-based content delivery, MDX rendering with rich components, per-project branding, CLI push workflow, GitHub integration, config-driven navigation. These are the hard infrastructure problems that every docs platform needs to solve.
+**What Blodemd keeps**: Multi-tenant custom domain routing, ISR-based content delivery, MDX rendering with rich components, per-project branding, CLI push workflow, GitHub integration, config-driven navigation. These are the hard infrastructure problems that every docs platform needs to solve.
 
-**What Blode-docs drops**: Web WYSIWYG editor, team/permissions management, built-in analytics dashboards, AI chat assistant, proprietary themes, managed search (users bring their own Algolia/Orama). This keeps the platform lean, self-hostable, and composable.
+**What Blodemd drops**: Web WYSIWYG editor, team/permissions management, built-in analytics dashboards, AI chat assistant, proprietary themes, managed search (users bring their own Algolia/Orama). This keeps the platform lean, self-hostable, and composable.
 
-**Where Blode-docs can be better**: Full source access means users can customize every component. Fumadocs' headless `fumadocs-core` layer means the rendering can be completely replaced while keeping the content infrastructure. The CLI-first approach with `blode-docs push` gives explicit control that Mintlify's purely Git-triggered model doesn't offer. And being open-source means no vendor lock-in — the entire platform can be forked and self-hosted on any Vercel-compatible infrastructure.
+**Where Blodemd can be better**: Full source access means users can customize every component. Fumadocs' headless `fumadocs-core` layer means the rendering can be completely replaced while keeping the content infrastructure. The CLI-first approach with `blodemd push` gives explicit control that Mintlify's purely Git-triggered model doesn't offer. And being open-source means no vendor lock-in — the entire platform can be forked and self-hosted on any Vercel-compatible infrastructure.
 
 The key technical risk is **fumadocs' remote MDX limitations** — `@fumadocs/mdx-remote` doesn't support imports/exports in MDX files, and search indexing for remote content requires manual setup rather than fumadocs' auto-generated indexes. Both are solvable: custom components are injected at compile time (not imported), and Orama Cloud or Algolia handle search independently of the content source. The single-maintainer risk on fumadocs is real but mitigated by its MIT license and growing adoption (used by Vercel, Unkey, and Orama themselves).
 
@@ -480,4 +480,4 @@ The key technical risk is **fumadocs' remote MDX limitations** — `@fumadocs/md
 
 The architecture reduces to a surprisingly simple core: **one Next.js app, one Vercel project, middleware that maps domains to projects, blob storage for content, a database for metadata, and ISR for instant updates without rebuilds.** Mintlify proved this scales to thousands of tenants. Fumadocs provides the composable rendering layer. The CLI and GitHub App handle content ingestion. Vercel's Domains API and Edge Config handle the multi-tenant plumbing.
 
-The most important implementation order is: (1) get middleware-based multi-tenant routing working with hardcoded content, (2) add blob storage and the `blode-docs push` CLI, (3) implement on-demand ISR revalidation, (4) build the GitHub App, (5) add custom domain management via Vercel API. Each step is independently valuable, and the system is usable after step 2.
+The most important implementation order is: (1) get middleware-based multi-tenant routing working with hardcoded content, (2) add blob storage and the `blodemd push` CLI, (3) implement on-demand ISR revalidation, (4) build the GitHub App, (5) add custom domain management via Vercel API. Each step is independently valuable, and the system is usable after step 2.

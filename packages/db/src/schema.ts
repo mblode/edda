@@ -34,6 +34,22 @@ export type DeploymentEnvironment =
 const timestampColumn = (name: string) =>
   timestamp(name, { mode: "date", withTimezone: true });
 
+export const users = pgTable(
+  "users",
+  {
+    authId: text("auth_id").notNull(),
+    createdAt: timestampColumn("created_at").defaultNow().notNull(),
+    email: text("email").notNull(),
+    id: uuid("id").defaultRandom().primaryKey(),
+    name: text("name"),
+    updatedAt: timestampColumn("updated_at").defaultNow().notNull(),
+  },
+  (table) => [
+    uniqueIndex("users_auth_id_key").on(table.authId),
+    uniqueIndex("users_email_key").on(table.email),
+  ]
+);
+
 export const projects = pgTable(
   "projects",
   {
@@ -44,6 +60,9 @@ export const projects = pgTable(
     name: text("name").notNull(),
     slug: text("slug").notNull(),
     updatedAt: timestampColumn("updated_at").defaultNow().notNull(),
+    userId: uuid("user_id").references(() => users.id, {
+      onDelete: "set null",
+    }),
   },
   (table) => [uniqueIndex("projects_slug_key").on(table.slug)]
 );
@@ -99,6 +118,9 @@ export const apiKeys = pgTable(
       .references(() => projects.id, { onDelete: "cascade" }),
     revokedAt: timestampColumn("revoked_at"),
     tokenHash: text("token_hash"),
+    userId: uuid("user_id").references(() => users.id, {
+      onDelete: "cascade",
+    }),
   },
   (table) => [uniqueIndex("api_keys_prefix_key").on(table.prefix)]
 );

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
+import Script from "next/script";
 
 import "./globals.css";
 
@@ -15,6 +16,8 @@ export const metadata: Metadata = {
   title: "Atlas Docs Runtime",
 };
 
+const THEME_SCRIPT = `(function(){try{var t=localStorage.getItem("atlas-theme");if(!t){t=matchMedia("(prefers-color-scheme:dark)").matches?"dark":"light"}document.documentElement.dataset.theme=t;if(t==="dark")document.documentElement.classList.add("dark")}catch(e){}})()`;
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -22,6 +25,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={glide.variable} suppressHydrationWarning>
+      <head>
+        <Script id="theme-init" strategy="beforeInteractive">
+          {THEME_SCRIPT}
+        </Script>
+      </head>
       <body className="relative flex w-full flex-col justify-center overflow-x-hidden scroll-smooth bg-background font-sans antialiased [--header-height:calc(var(--spacing)*14)]">
         {children}
       </body>

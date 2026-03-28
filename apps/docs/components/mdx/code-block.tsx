@@ -34,7 +34,7 @@ export const CodeBlock = ({
   }, [code]);
 
   return (
-    <div className="group relative overflow-hidden rounded-xl border border-border bg-code text-code-foreground">
+    <div className="group">
       <button
         className="absolute top-3 right-2 z-10 inline-flex size-7 items-center justify-center rounded-md bg-code opacity-0 transition-opacity hover:opacity-100 focus-visible:opacity-100 group-hover:opacity-100"
         data-slot="copy-button"

@@ -3,7 +3,7 @@ import type {
   ContextualCustomOption,
 } from "@repo/models";
 
-export interface BuiltinOptionDefinition {
+interface BuiltinOptionDefinition {
   title: string;
   description: string;
   iconName: string;

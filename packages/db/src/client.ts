@@ -1,28 +1,14 @@
-import { drizzle } from "drizzle-orm/node-postgres";
-import { Pool } from "pg";
+import { drizzle } from "drizzle-orm/postgres-js";
+import postgres from "postgres";
 
 import * as schema from "./schema.js";
 
-const createDatabase = () => {
-  const pool = new Pool({
-    allowExitOnIdle: true,
-    connectionString: process.env.DATABASE_URL,
-  });
+const connectionString = process.env.DATABASE_URL;
 
-  return {
-    db: drizzle({ client: pool, schema }),
-    pool,
-  };
-};
-
-const globalForDatabase = globalThis as {
-  database?: ReturnType<typeof createDatabase>;
-};
-
-const database = globalForDatabase.database ?? createDatabase();
-
-if (process.env.NODE_ENV !== "production") {
-  globalForDatabase.database = database;
+if (!connectionString) {
+  throw new Error("DATABASE_URL is required.");
 }
 
-export const { db, pool } = database;
+const client = postgres(connectionString, { prepare: false });
+
+export const db = drizzle({ client, schema });

@@ -1,4 +1,4 @@
-# blode-docs
+# blodemd
 
 ## 0.0.3
 

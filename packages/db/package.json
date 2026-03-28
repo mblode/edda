@@ -28,12 +28,11 @@
   "dependencies": {
     "@repo/contracts": "*",
     "drizzle-orm": "^1.0.0-beta.19",
-    "pg": "^8.20.0"
+    "postgres": "^3.4.8"
   },
   "devDependencies": {
     "@repo/typescript-config": "*",
     "@types/node": "^22.19.15",
-    "@types/pg": "^8.20.0",
     "drizzle-kit": "^1.0.0-beta.19",
     "oxfmt": "^0.42.0",
     "oxlint": "^1.57.0",

@@ -1,13 +1,14 @@
-# blode-docs
+# blodemd
 
-Multi-tenant documentation platform — serve versioned MDX docs per tenant from a shared Next.js frontend backed by a Fastify API.
+Multi-tenant documentation platform — serve versioned MDX docs per tenant from a shared Next.js frontend backed by a Hono API.
 
 ## Apps
 
 | App         | Description                                                                  | Port |
 | ----------- | ---------------------------------------------------------------------------- | ---- |
 | `apps/docs` | Next.js documentation frontend with dynamic tenant routing and MDX rendering | 3001 |
-| `apps/api`  | Fastify REST API for multi-tenant data, content, and Vercel Blob storage     | 3000 |
+| `apps/api`  | Hono REST API for multi-tenant data, content, and Vercel Blob storage        | 4000 |
+| `apps/cli`  | CLI tool for deploying docs content via the API                              | —    |
 
 ## Packages
 
@@ -22,7 +23,6 @@ Multi-tenant documentation platform — serve versioned MDX docs per tenant from
 | `@repo/api-client`        | HTTP client utilities for consuming the API |
 | `@repo/prebuild`          | Pre-build YAML processing                   |
 | `@repo/previewing`        | Preview data handling                       |
-| `@repo/docs-cli`          | CLI tool for docs operations                |
 | `@repo/typescript-config` | Shared `tsconfig.json` configurations       |
 | `@repo/deploy-action`     | Deployment automation helpers               |
 
@@ -36,7 +36,7 @@ Multi-tenant documentation platform — serve versioned MDX docs per tenant from
 ```sh
 npm install
 cp .env.example .env.local   # fill in DATABASE_URL, BLOB_READ_WRITE_TOKEN, etc.
-npm run dev                  # docs → http://localhost:3001  api → http://localhost:3000
+npm run dev                  # docs → http://localhost:3001  api → http://localhost:4000
 ```
 
 ## Development
@@ -73,3 +73,7 @@ npm run check-types   # TypeScript type check across all workspaces
 npm run lint          # Oxlint across monorepo
 npm run format        # Oxfmt across monorepo
 ```
+
+## License
+
+[MIT](LICENSE)

@@ -1,13 +1,22 @@
 import type { SiteConfig } from "@repo/models";
+import dynamic from "next/dynamic";
 import Image from "next/image";
 import Link from "next/link";
 
-import { MobileNav } from "@/components/docs/mobile-nav";
-import { Search } from "@/components/ui/search";
 import type { SearchItem } from "@/components/ui/search";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import type { NavEntry } from "@/lib/navigation";
 import { toDocHref } from "@/lib/routes";
+
+const MobileNav = dynamic(async () => {
+  const m = await import("@/components/docs/mobile-nav");
+  return { default: m.MobileNav };
+});
+
+const Search = dynamic(async () => {
+  const m = await import("@/components/ui/search");
+  return { default: m.Search };
+});
 
 const Dropdown = ({
   label,

@@ -1,26 +1,25 @@
 name: Blode Docs Deploy
-description: Publish a docs directory to blode-docs
+description: Deploy docs to blodemd
 
 inputs:
   api-key:
-    description: API key for machine publishing
+    description: API key
     required: true
   api-url:
-    description: Base URL for the blode-docs API
-    required: true
+    description: API base URL
+    required: false
   branch:
-    description: Git branch name to record on the deployment
+    description: Git branch name
     required: false
   commit-message:
-    description: Commit message to record on the deployment
+    description: Deploy message
     required: false
   directory:
-    default: docs
-    description: Directory containing the docs content
+    description: Docs directory
     required: false
   project:
-    description: Project slug to publish to
-    required: true
+    description: Project slug (reads from docs.json name if omitted)
+    required: false
 
 runs:
   using: composite
@@ -38,4 +37,4 @@ runs:
         BLODE_DOCS_BRANCH: ${{ inputs.branch }}
         BLODE_DOCS_COMMIT_MESSAGE: ${{ inputs.commit-message }}
         BLODE_DOCS_PROJECT: ${{ inputs.project }}
-      run: npx --yes tsx "$GITHUB_ACTION_PATH/../docs-cli/src/bin.ts" push "${{ inputs.directory }}"
+      run: npx --yes blodemd push ${{ inputs.directory }}
