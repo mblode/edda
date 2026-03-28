@@ -24,6 +24,9 @@ const buildTenantPathResolution = (
   basePath: string
 ) => {
   const slugPath = stripPrefix(pathname, basePath || null);
+  if (slugPath === null) {
+    return null;
+  }
   const rewrittenPath = slugPath
     ? `/sites/${tenant.slug}/${slugPath}`
     : `/sites/${tenant.slug}/`;
@@ -51,6 +54,25 @@ tenants.get(
     const host = normalizeHost(query.host);
     const pathname = query.path ?? "/";
 
+    const domain = await domainDao.getByHostname(host);
+    if (domain && domain.status === validConfiguredDomainStatus) {
+      const tenant = await buildTenant(domain.projectId);
+      if (!tenant) {
+        return notFound(c);
+      }
+      const resolution = buildTenantPathResolution(
+        tenant,
+        "custom-domain",
+        host,
+        pathname,
+        domain.pathPrefix ?? ""
+      );
+      if (!resolution) {
+        return notFound(c);
+      }
+      return c.json(resolution, 200);
+    }
+
     const previewPrefix = host.includes("---") ? host.split("---")[0] : null;
     if (previewPrefix) {
       const project = await projectDao.getBySlugUnique(previewPrefix);
@@ -59,35 +81,18 @@ tenants.get(
         if (!tenant) {
           return notFound(c);
         }
-        return c.json(
-          buildTenantPathResolution(
-            tenant,
-            "preview",
-            host,
-            pathname,
-            tenant.pathPrefix ?? ""
-          ),
-          200
-        );
-      }
-    }
-
-    const domain = await domainDao.getByHostname(host);
-    if (domain && domain.status === validConfiguredDomainStatus) {
-      const tenant = await buildTenant(domain.projectId);
-      if (!tenant) {
-        return notFound(c);
-      }
-      return c.json(
-        buildTenantPathResolution(
+        const resolution = buildTenantPathResolution(
           tenant,
-          "custom-domain",
+          "preview",
           host,
           pathname,
-          domain.pathPrefix ?? ""
-        ),
-        200
-      );
+          tenant.pathPrefix ?? ""
+        );
+        if (!resolution) {
+          return notFound(c);
+        }
+        return c.json(resolution, 200);
+      }
     }
 
     const localSuffixes = ["localhost", "127.0.0.1"];
@@ -103,16 +108,17 @@ tenants.get(
           if (!tenant) {
             return notFound(c);
           }
-          return c.json(
-            buildTenantPathResolution(
-              tenant,
-              "subdomain",
-              host,
-              pathname,
-              tenant.pathPrefix ?? ""
-            ),
-            200
+          const resolution = buildTenantPathResolution(
+            tenant,
+            "subdomain",
+            host,
+            pathname,
+            tenant.pathPrefix ?? ""
           );
+          if (!resolution) {
+            return notFound(c);
+          }
+          return c.json(resolution, 200);
         }
       }
     }
@@ -129,16 +135,17 @@ tenants.get(
           if (!tenant) {
             return notFound(c);
           }
-          return c.json(
-            buildTenantPathResolution(
-              tenant,
-              "subdomain",
-              host,
-              pathname,
-              tenant.pathPrefix ?? ""
-            ),
-            200
+          const resolution = buildTenantPathResolution(
+            tenant,
+            "subdomain",
+            host,
+            pathname,
+            tenant.pathPrefix ?? ""
           );
+          if (!resolution) {
+            return notFound(c);
+          }
+          return c.json(resolution, 200);
         }
       }
     }

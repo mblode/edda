@@ -5,6 +5,8 @@ const databaseUrl =
   "postgresql://postgres:postgres@127.0.0.1:54322/blode_docs_drizzle_test";
 process.env.DATABASE_URL = databaseUrl;
 process.env.NODE_ENV = "test";
+delete process.env.SUPABASE_URL;
+delete process.env.SUPABASE_SERVICE_ROLE_KEY;
 
 let request: (input: string, init?: RequestInit) => Promise<Response>;
 

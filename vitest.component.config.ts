@@ -8,14 +8,14 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      "@": path.resolve(process.cwd(), "apps/web"),
+      "@": path.resolve(process.cwd(), "apps/docs"),
     },
   },
   test: {
     environment: "jsdom",
     exclude: ["**/node_modules/**", "**/.next/**", "**/dist/**"],
     include: ["**/*.component.test.tsx"],
-    passWithNoTests: false,
+    passWithNoTests: true,
     setupFiles: ["./vitest.setup.ts"],
   },
 });

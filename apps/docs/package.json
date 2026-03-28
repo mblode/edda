@@ -20,7 +20,6 @@
     "@repo/models": "*",
     "@repo/prebuild": "*",
     "@repo/previewing": "*",
-    "@supabase/ssr": "^0.9.0",
     "@supabase/supabase-js": "^2.100.1",
     "@tailwindcss/postcss": "^4.2.2",
     "blode-icons-react": "^0.3.10",

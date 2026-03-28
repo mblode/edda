@@ -1,7 +1,7 @@
 import type { UserRecord } from "@repo/db";
 
 import { userDao } from "./db.js";
-import { supabase } from "./supabase.js";
+import { getSupabaseClient } from "./supabase.js";
 
 const getTokenFromHeaders = (headers: Record<string, unknown>) => {
   const { authorization } = headers;
@@ -21,6 +21,11 @@ export const authenticateUser = async (
 ): Promise<UserRecord | null> => {
   const token = getTokenFromHeaders(headers);
   if (!token || !isJwt(token)) {
+    return null;
+  }
+
+  const supabase = getSupabaseClient();
+  if (!supabase) {
     return null;
   }
 

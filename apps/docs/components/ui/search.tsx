@@ -16,6 +16,7 @@ import {
 import { toDocHref } from "@/lib/routes";
 
 export interface SearchItem {
+  href?: string;
   title: string;
   path: string;
 }
@@ -61,7 +62,14 @@ export const Search = ({
       Object.fromEntries(
         items.map((item) => [
           item.path,
-          () => runCommand(() => router.push(toDocHref(item.path, basePath))),
+          () =>
+            runCommand(() => {
+              if (item.href) {
+                window.open(item.href, "_blank", "noopener,noreferrer");
+                return;
+              }
+              router.push(toDocHref(item.path, basePath));
+            }),
         ])
       ),
     [items, runCommand, router, basePath]

@@ -1,4 +1,4 @@
-import type { SiteConfig } from "@repo/models";
+import type { PageMode, SiteConfig } from "@repo/models";
 import { ArrowLeftIcon, ArrowRightIcon } from "blode-icons-react";
 import dynamic from "next/dynamic";
 import Script from "next/script";
@@ -17,6 +17,7 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { Button } from "@/components/ui/button";
+import type { SearchItem } from "@/components/ui/search";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import type { NavEntry } from "@/lib/navigation";
 import { toDocHref } from "@/lib/routes";
@@ -100,6 +101,9 @@ export const DocShell = ({
   basePath,
   headerLabel,
   rawContent,
+  mode,
+  deprecated,
+  hideFooterPagination,
 }: {
   config: SiteConfig;
   nav: NavEntry[];
@@ -110,16 +114,28 @@ export const DocShell = ({
   breadcrumbs: { label: string; path: string }[];
   pageTitle: string;
   pageDescription?: string;
-  searchItems: { title: string; path: string }[];
+  searchItems: SearchItem[];
   anchors?: { label: string; href: string }[];
   basePath: string;
   headerLabel?: string;
   rawContent?: string;
+  mode?: PageMode;
+  deprecated?: boolean;
+  hideFooterPagination?: boolean;
 }) => {
-  const hasSidebar = Boolean((nav?.length ?? 0) || (anchors?.length ?? 0));
+  const pageMode = mode ?? "default";
+  const isCustomMode = pageMode === "custom";
+  const showSidebar =
+    pageMode !== "custom" &&
+    pageMode !== "center" &&
+    Boolean((nav?.length ?? 0) || (anchors?.length ?? 0));
   const { contextual } = config;
   const contextualDisplay = contextual?.display ?? "header";
   const hasToc =
+    pageMode !== "custom" &&
+    pageMode !== "wide" &&
+    pageMode !== "frame" &&
+    pageMode !== "center" &&
     config.features?.rightToc !== false &&
     config.features?.toc !== false &&
     (toc.length > 0 || (contextual && contextualDisplay === "toc"));
@@ -176,7 +192,7 @@ export const DocShell = ({
         <SidebarProvider
           className={cn(
             "min-h-min flex-1 items-start px-0 [--top-spacing:0] lg:[--top-spacing:calc(var(--spacing)*4)]",
-            hasSidebar &&
+            showSidebar &&
               "lg:grid lg:grid-cols-[var(--sidebar-width)_minmax(0,1fr)]"
           )}
           style={
@@ -185,7 +201,7 @@ export const DocShell = ({
             } as React.CSSProperties
           }
         >
-          {hasSidebar ? (
+          {showSidebar ? (
             <DocSidebar
               anchors={anchors}
               basePath={basePath}
@@ -195,82 +211,99 @@ export const DocShell = ({
           ) : null}
           <div className="flex min-w-0 flex-1 flex-col">
             <div className="h-(--top-spacing) shrink-0" />
-            <main
-              className={cn(
-                "flex scroll-mt-24 items-stretch gap-1 px-4 lg:px-8",
-                !hasSidebar && "mx-auto max-w-[960px]"
-              )}
-              id="main-content"
-            >
-              <div className="mx-auto flex w-full min-w-0 max-w-[40rem] flex-1 flex-col gap-6 px-4 py-6 text-neutral-800 md:px-0 lg:py-8 dark:text-neutral-300">
-                <div className="flex flex-col gap-2">
-                  <Breadcrumbs basePath={basePath} breadcrumbs={breadcrumbs} />
-                  <div className="flex flex-col gap-2">
-                    <div className="flex items-center justify-between md:items-start">
-                      <h1 className="scroll-m-24 text-3xl font-semibold tracking-tight sm:text-3xl">
-                        {pageTitle}
-                      </h1>
-                      {headerContextualMenu ??
-                        (rawContent === undefined ? null : (
-                          <CopyPageMenu
-                            content={rawContent}
-                            title={pageTitle}
-                          />
-                        ))}
-                    </div>
-                    {pageDescription ? (
-                      <p className="text-[1.05rem] text-muted-foreground sm:text-balance sm:text-base md:max-w-[80%]">
-                        {pageDescription}
-                      </p>
-                    ) : null}
-                  </div>
-                </div>
-                <Suspense
-                  fallback={
-                    <div className="grid animate-pulse gap-4.5">
-                      <div className="h-4 w-full rounded bg-muted/40" />
-                      <div className="h-4 w-5/6 rounded bg-muted/40" />
-                      <div className="h-4 w-4/6 rounded bg-muted/40" />
-                      <div className="h-32 w-full rounded bg-muted/40" />
-                      <div className="h-4 w-full rounded bg-muted/40" />
-                      <div className="h-4 w-3/4 rounded bg-muted/40" />
-                    </div>
-                  }
+            {isCustomMode ? (
+              <main id="main-content">{content}</main>
+            ) : (
+              <main
+                className={cn(
+                  "flex scroll-mt-24 items-stretch gap-1 px-4 lg:px-8",
+                  !showSidebar && "mx-auto max-w-[960px]"
+                )}
+                id="main-content"
+              >
+                <div
+                  className={cn(
+                    "mx-auto flex w-full min-w-0 flex-1 flex-col gap-6 px-4 py-6 text-neutral-800 md:px-0 lg:py-8 dark:text-neutral-300",
+                    pageMode === "wide" ? "max-w-[60rem]" : "max-w-[40rem]"
+                  )}
                 >
-                  <div className="grid gap-4.5 leading-relaxed [&_blockquote]:border-l-3 [&_blockquote]:border-primary [&_blockquote]:pl-3.5 [&_blockquote]:text-muted-foreground [&_h2]:mt-10 [&_h2]:mb-3 [&_h2]:text-2xl [&_h2]:font-bold [&_h3]:mt-8 [&_h3]:mb-2 [&_h3]:text-[1.375rem] [&_h3]:font-semibold [&_h4]:mt-6 [&_h4]:mb-2 [&_h4]:text-base [&_h4]:font-semibold [&_ol]:pl-5 [&_table]:w-full [&_table]:border-collapse [&_table]:text-sm [&_td]:border-b [&_td]:border-border [&_td]:px-2.5 [&_td]:py-2 [&_td]:text-left [&_th]:border-b [&_th]:border-border [&_th]:px-2.5 [&_th]:py-2 [&_th]:text-left [&_ul]:pl-5">
-                    {content}
+                  <div className="flex flex-col gap-2">
+                    <Breadcrumbs
+                      basePath={basePath}
+                      breadcrumbs={breadcrumbs}
+                    />
+                    <div className="flex flex-col gap-2">
+                      <div className="flex items-center justify-between md:items-start">
+                        <h1 className="scroll-m-24 text-3xl font-semibold tracking-tight sm:text-3xl">
+                          {pageTitle}
+                          {deprecated ? (
+                            <span className="ml-3 inline-flex translate-y-[-2px] items-center rounded-md bg-yellow-100 px-2 py-0.5 align-middle text-xs font-medium text-yellow-800 dark:bg-yellow-900/40 dark:text-yellow-300">
+                              Deprecated
+                            </span>
+                          ) : null}
+                        </h1>
+                        {headerContextualMenu ??
+                          (rawContent === undefined ? null : (
+                            <CopyPageMenu
+                              content={rawContent}
+                              title={pageTitle}
+                            />
+                          ))}
+                      </div>
+                      {pageDescription ? (
+                        <p className="text-[1.05rem] text-muted-foreground sm:text-balance sm:text-base md:max-w-[80%]">
+                          {pageDescription}
+                        </p>
+                      ) : null}
+                    </div>
                   </div>
-                </Suspense>
-                {prevPage || nextPage ? (
-                  <nav className="hidden h-16 w-full items-center gap-2 px-4 sm:flex sm:px-0">
-                    {prevPage ? (
-                      <Button asChild size="sm" variant="secondary">
-                        <a href={toDocHref(prevPage.path, basePath)}>
-                          <ArrowLeftIcon aria-hidden="true" />
-                          {prevPage.title}
-                        </a>
-                      </Button>
-                    ) : null}
-                    {nextPage ? (
-                      <Button
-                        asChild
-                        className="ml-auto"
-                        size="sm"
-                        variant="secondary"
-                      >
-                        <a href={toDocHref(nextPage.path, basePath)}>
-                          {nextPage.title}
-                          <ArrowRightIcon aria-hidden="true" />
-                        </a>
-                      </Button>
-                    ) : null}
-                  </nav>
+                  <Suspense
+                    fallback={
+                      <div className="grid animate-pulse gap-4.5">
+                        <div className="h-4 w-full rounded bg-muted/40" />
+                        <div className="h-4 w-5/6 rounded bg-muted/40" />
+                        <div className="h-4 w-4/6 rounded bg-muted/40" />
+                        <div className="h-32 w-full rounded bg-muted/40" />
+                        <div className="h-4 w-full rounded bg-muted/40" />
+                        <div className="h-4 w-3/4 rounded bg-muted/40" />
+                      </div>
+                    }
+                  >
+                    <div className="grid gap-4.5 leading-relaxed [&_blockquote]:border-l-3 [&_blockquote]:border-primary [&_blockquote]:pl-3.5 [&_blockquote]:text-muted-foreground [&_h2]:mt-10 [&_h2]:mb-3 [&_h2]:text-2xl [&_h2]:font-bold [&_h3]:mt-8 [&_h3]:mb-2 [&_h3]:text-[1.375rem] [&_h3]:font-semibold [&_h4]:mt-6 [&_h4]:mb-2 [&_h4]:text-base [&_h4]:font-semibold [&_ol]:pl-5 [&_table]:w-full [&_table]:border-collapse [&_table]:text-sm [&_td]:border-b [&_td]:border-border [&_td]:px-2.5 [&_td]:py-2 [&_td]:text-left [&_th]:border-b [&_th]:border-border [&_th]:px-2.5 [&_th]:py-2 [&_th]:text-left [&_ul]:pl-5">
+                      {content}
+                    </div>
+                  </Suspense>
+                  {!hideFooterPagination && (prevPage || nextPage) ? (
+                    <nav className="hidden h-16 w-full items-center gap-2 px-4 sm:flex sm:px-0">
+                      {prevPage ? (
+                        <Button asChild size="sm" variant="secondary">
+                          <a href={toDocHref(prevPage.path, basePath)}>
+                            <ArrowLeftIcon aria-hidden="true" />
+                            {prevPage.title}
+                          </a>
+                        </Button>
+                      ) : null}
+                      {nextPage ? (
+                        <Button
+                          asChild
+                          className="ml-auto"
+                          size="sm"
+                          variant="secondary"
+                        >
+                          <a href={toDocHref(nextPage.path, basePath)}>
+                            {nextPage.title}
+                            <ArrowRightIcon aria-hidden="true" />
+                          </a>
+                        </Button>
+                      ) : null}
+                    </nav>
+                  ) : null}
+                </div>
+                {hasToc ? (
+                  <DocToc contextualItems={contextualTocItems} toc={toc} />
                 ) : null}
-              </div>
-              {hasToc ? (
-                <DocToc contextualItems={contextualTocItems} toc={toc} />
-              ) : null}
-            </main>
+              </main>
+            )}
           </div>
         </SidebarProvider>
       </div>

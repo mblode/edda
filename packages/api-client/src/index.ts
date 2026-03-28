@@ -50,6 +50,11 @@ const parseJson = async (response: Response) => {
     return null;
   }
 
+  const contentType = response.headers.get("content-type") ?? "";
+  if (!contentType.includes("application/json")) {
+    return text;
+  }
+
   return JSON.parse(text) as unknown;
 };
 

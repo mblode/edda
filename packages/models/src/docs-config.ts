@@ -500,7 +500,15 @@ const FrontmatterTodosSchema = FrontmatterBaseSchema.extend({
   date: z.string().min(1),
 }).passthrough();
 
-const PageModeSchema = z.enum(["default", "wide", "custom", "frame", "center"]);
+export const PageModeSchema = z.enum([
+  "default",
+  "wide",
+  "custom",
+  "frame",
+  "center",
+]);
+
+export type PageMode = z.infer<typeof PageModeSchema>;
 
 const FrontmatterDocsSchema = FrontmatterBaseSchema.extend({
   deprecated: z.boolean().optional(),

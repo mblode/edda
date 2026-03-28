@@ -9,11 +9,13 @@ type DbModule = typeof RepoDb;
 
 const databaseUrl =
   process.env.DATABASE_URL ??
-  "postgresql://postgres:postgres@127.0.0.1:5432/blode_docs_drizzle_test";
+  "postgresql://postgres:postgres@127.0.0.1:54322/blode_docs_drizzle_test";
 process.env.DATABASE_URL = databaseUrl;
 process.env.NODE_ENV = "test";
 process.env.PLATFORM_ROOT_DOMAIN = "blode.md\n";
 process.env.ADMIN_API_TOKEN = "test-admin-token";
+delete process.env.SUPABASE_URL;
+delete process.env.SUPABASE_SERVICE_ROLE_KEY;
 
 let request: (input: string, init?: RequestInit) => Promise<Response>;
 let dbModule: DbModule;

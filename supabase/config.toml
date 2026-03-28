@@ -38,8 +38,7 @@ enabled = true
 site_url = "http://localhost:3001"
 additional_redirect_urls = [
   "http://localhost:3001",
-  "http://localhost:9876/callback",
-  "http://127.0.0.1:9876/callback",
+  "http://127.0.0.1:8787/auth/callback",
 ]
 jwt_expiry = 3600
 enable_refresh_token_rotation = true
@@ -56,6 +55,11 @@ max_frequency = "1s"
 
 [auth.sms]
 enable_signup = false
+
+[auth.oauth_server]
+enabled = true
+authorization_url_path = "/oauth/consent"
+allow_dynamic_registration = true
 
 [edge_runtime]
 enabled = false

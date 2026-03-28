@@ -1,8 +1,8 @@
 import type { TenantResolution } from "@repo/contracts";
 import type { Tenant } from "@repo/models";
-import type { ContentEntry } from "@repo/previewing";
 import {
   buildContentIndex,
+  buildPageMetadataMap,
   loadContentSource,
   loadSiteConfig,
 } from "@repo/previewing";
@@ -11,7 +11,13 @@ import {
   getTenantContentSource,
   resolveSiteConfigAssets,
 } from "@/lib/content-source";
-import { buildNavigation, flattenNav } from "@/lib/navigation";
+import {
+  buildNavigation,
+  enrichNavWithMetadata,
+  flattenNav,
+  getVisibleNavigation,
+} from "@/lib/navigation";
+import type { OpenApiEntry } from "@/lib/openapi";
 import { buildOpenApiRegistry } from "@/lib/openapi";
 import { toDocHref } from "@/lib/routes";
 import { getRequestProtocol } from "@/lib/tenancy";
@@ -95,23 +101,123 @@ const loadTenantUrlData = async (tenant: Tenant) => {
     docsCollectionWithNavigation,
     contentSource
   );
-  const nav = docsNavigation
+  const metadataMap = buildPageMetadataMap(contentIndex);
+  const rawNav = docsNavigation
     ? buildNavigation(
         docsNavigation,
         registry,
         docsCollection?.slugPrefix ?? ""
       )
     : [];
-  const navPages = flattenNav(nav).map((page) => page.path);
-  const contentPages = contentIndex.entries.map((entry) => entry.slug);
+  const nav = enrichNavWithMetadata(rawNav, metadataMap);
+  const visibleNav = getVisibleNavigation(nav);
+  const hiddenSlugs = new Set<string>();
+  for (const [slug, meta] of metadataMap) {
+    if (meta.hidden || meta.noindex) {
+      hiddenSlugs.add(slug);
+    }
+  }
+
+  const navPages = flattenNav(visibleNav).map((page) => page.path);
+  const contentPages = contentIndex.entries
+    .filter(
+      (entry) =>
+        !(entry.kind === "entry" && entry.hidden) &&
+        !hiddenSlugs.has(entry.slug)
+    )
+    .map((entry) => entry.slug);
 
   return {
     config,
     contentIndex,
     contentSource,
+    hiddenSlugs,
     pages: [...new Set([...navPages, ...contentPages])],
+    registry,
   };
 };
+
+const formatOpenApiPageText = (entry: OpenApiEntry): string => {
+  const parts = [
+    `Method: ${entry.operation.method}`,
+    `Path: ${entry.operation.path}`,
+  ];
+
+  if (entry.operation.description) {
+    parts.push(entry.operation.description);
+  }
+  if (entry.operation.tags.length) {
+    parts.push(`Tags: ${entry.operation.tags.join(", ")}`);
+  }
+  if (entry.operation.parameters.length) {
+    parts.push(
+      `Parameters:\n${JSON.stringify(entry.operation.parameters, null, 2)}`
+    );
+  }
+  if (entry.operation.requestBody) {
+    parts.push(
+      `Request Body:\n${JSON.stringify(entry.operation.requestBody, null, 2)}`
+    );
+  }
+  if (entry.operation.responses) {
+    parts.push(
+      `Responses:\n${JSON.stringify(entry.operation.responses, null, 2)}`
+    );
+  }
+
+  return parts.join("\n\n");
+};
+
+const resolveLlmPages = (
+  data: Awaited<ReturnType<typeof loadTenantUrlData>>
+): (
+  | {
+      kind: "content";
+      relativePath: string;
+      slug: string;
+      title: string;
+      description?: string;
+    }
+  | {
+      kind: "openapi";
+      entry: OpenApiEntry;
+      slug: string;
+      title: string;
+      description?: string;
+    }
+)[] =>
+  data.pages
+    .map((slug) => {
+      const contentEntry = data.contentIndex.bySlug.get(slug);
+      if (
+        contentEntry &&
+        contentEntry.kind === "entry" &&
+        !contentEntry.hidden &&
+        !data.hiddenSlugs.has(contentEntry.slug)
+      ) {
+        return {
+          description: contentEntry.description,
+          kind: "content" as const,
+          relativePath: contentEntry.relativePath,
+          slug: contentEntry.slug,
+          title: contentEntry.title,
+        };
+      }
+
+      const openApiEntry = data.registry.bySlug.get(slug);
+      if (!openApiEntry) {
+        return null;
+      }
+
+      return {
+        description: openApiEntry.operation.description,
+        entry: openApiEntry,
+        kind: "openapi" as const,
+        slug,
+        title: openApiEntry.operation.summary ?? openApiEntry.identifier,
+      };
+    })
+    .filter((page) => page !== null);
 
 export const buildTenantSitemapXml = async (
   tenant: Tenant,
@@ -152,14 +258,11 @@ export const buildTenantLlmsTxt = async (
   tenant: Tenant,
   context: TenantRequestContext = {}
 ) => {
-  const { config, contentIndex } = await loadTenantUrlData(tenant);
+  const data = await loadTenantUrlData(tenant);
+  const { config } = data;
   const origin = getCanonicalOrigin(tenant, context);
   const basePath = getCanonicalDocBasePath(tenant, context);
-
-  const entries = contentIndex.entries.filter(
-    (entry): entry is Extract<ContentEntry, { kind: "entry" }> =>
-      entry.kind === "entry"
-  );
+  const pages = resolveLlmPages(data);
 
   const lines = [
     `# ${config.name}`,
@@ -168,10 +271,10 @@ export const buildTenantLlmsTxt = async (
     `Sitemap: ${origin}/sitemap.xml`,
     "",
     "## Docs",
-    ...entries.map((entry) => {
-      const url = `${origin}${toDocHref(entry.slug, basePath)}`;
-      const desc = entry.description ? `: ${entry.description}` : "";
-      return `- [${entry.title}](${url})${desc}`;
+    ...pages.map((page) => {
+      const url = `${origin}${toDocHref(page.slug, basePath)}`;
+      const desc = page.description ? `: ${page.description}` : "";
+      return `- [${page.title}](${url})${desc}`;
     }),
   ];
 
@@ -182,21 +285,24 @@ export const buildTenantLlmsFullTxt = async (
   tenant: Tenant,
   context: TenantRequestContext = {}
 ) => {
-  const { contentIndex, contentSource } = await loadTenantUrlData(tenant);
+  const data = await loadTenantUrlData(tenant);
   const origin = getCanonicalOrigin(tenant, context);
   const basePath = getCanonicalDocBasePath(tenant, context);
-
-  const entries = contentIndex.entries.filter(
-    (entry): entry is Extract<ContentEntry, { kind: "entry" }> =>
-      entry.kind === "entry"
-  );
+  const pages = resolveLlmPages(data);
 
   const parts = await Promise.all(
-    entries.map(async (entry) => {
-      const raw = await loadContentSource(contentSource, entry.relativePath);
+    pages.map(async (page) => {
+      const url = `${origin}${toDocHref(page.slug, basePath)}`;
+      if (page.kind === "openapi") {
+        return `# ${page.title} (${url})\n\n${formatOpenApiPageText(page.entry)}`;
+      }
+
+      const raw = await loadContentSource(
+        data.contentSource,
+        page.relativePath
+      );
       const body = stripFrontmatter(raw);
-      const url = `${origin}${toDocHref(entry.slug, basePath)}`;
-      return `# ${entry.title} (${url})\n\n${body}`;
+      return `# ${page.title} (${url})\n\n${body}`;
     })
   );
 
@@ -204,23 +310,16 @@ export const buildTenantLlmsFullTxt = async (
 };
 
 export const getLlmPageText = async (tenant: Tenant, slug: string) => {
-  const contentSource = getTenantContentSource(tenant);
-  const configResult = await loadSiteConfig(contentSource);
-  if (!configResult.ok) {
+  const data = await loadTenantUrlData(tenant);
+  const page = resolveLlmPages(data).find((item) => item.slug === slug);
+  if (!page) {
     return null;
   }
-
-  const config = await resolveSiteConfigAssets(
-    configResult.config,
-    contentSource
-  );
-  const contentIndex = await buildContentIndex(contentSource, config);
-  const entry = contentIndex.bySlug.get(slug);
-  if (!entry || entry.kind !== "entry") {
-    return null;
+  if (page.kind === "openapi") {
+    return `# ${page.title}\n\n${formatOpenApiPageText(page.entry)}`;
   }
 
-  const raw = await loadContentSource(contentSource, entry.relativePath);
+  const raw = await loadContentSource(data.contentSource, page.relativePath);
   const body = stripFrontmatter(raw);
-  return `# ${entry.title}\n\n${body}`;
+  return `# ${page.title}\n\n${body}`;
 };

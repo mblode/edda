@@ -16,7 +16,7 @@
     }
   },
   "scripts": {
-    "build": "tsc",
+    "build": "rm -rf dist && tsc",
     "check-types": "tsc --noEmit",
     "lint": "oxlint .",
     "lint:fix": "oxlint --fix .",

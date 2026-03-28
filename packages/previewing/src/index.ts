@@ -6,8 +6,10 @@ import type {
   ContentType,
   FrontmatterByType,
   MintlifyDocsConfig,
+  PageMode,
   SiteConfig,
 } from "@repo/models";
+import { PageModeSchema } from "@repo/models";
 import { validateDocsConfig, validateFrontmatter } from "@repo/validation";
 import YAML from "yaml";
 
@@ -51,6 +53,7 @@ export interface ContentIndex {
 }
 
 export interface PageMetadata {
+  title?: string;
   sidebarTitle?: string;
   icon?: string;
   iconType?: string;
@@ -58,12 +61,14 @@ export interface PageMetadata {
   hidden?: boolean;
   deprecated?: boolean;
   url?: string;
-  mode?: string;
+  mode?: PageMode;
   noindex?: boolean;
   hideFooterPagination?: boolean;
   hideApiMarker?: boolean;
   keywords?: string[];
 }
+
+const validModes = new Set<string>(PageModeSchema.options);
 
 export const buildPageMetadataMap = (
   index: ContentIndex
@@ -74,7 +79,10 @@ export const buildPageMetadataMap = (
       continue;
     }
     const fm = entry.frontmatter as Record<string, unknown>;
-    const meta: PageMetadata = {};
+    const meta: PageMetadata = {
+      title: entry.title,
+    };
+    const hasFields = true;
     if (typeof fm.sidebarTitle === "string") {
       meta.sidebarTitle = fm.sidebarTitle;
     }
@@ -96,8 +104,8 @@ export const buildPageMetadataMap = (
     if (typeof fm.url === "string") {
       meta.url = fm.url;
     }
-    if (typeof fm.mode === "string") {
-      meta.mode = fm.mode;
+    if (typeof fm.mode === "string" && validModes.has(fm.mode)) {
+      meta.mode = fm.mode as PageMode;
     }
     if (typeof fm.noindex === "boolean") {
       meta.noindex = fm.noindex;
@@ -111,7 +119,9 @@ export const buildPageMetadataMap = (
     if (Array.isArray(fm.keywords)) {
       meta.keywords = fm.keywords as string[];
     }
-    map.set(entry.slug, meta);
+    if (hasFields) {
+      map.set(entry.slug, meta);
+    }
   }
   return map;
 };

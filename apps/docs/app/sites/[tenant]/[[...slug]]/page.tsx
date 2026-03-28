@@ -21,6 +21,7 @@ import {
 import { renderMdx } from "@/lib/mdx";
 import {
   buildNavigation,
+  enrichNavWithMetadata,
   findBreadcrumbs,
   flattenNav,
   getVisibleNavigation,
@@ -33,8 +34,11 @@ import {
 import { getTenantBySlug } from "@/lib/tenants";
 import { extractToc } from "@/lib/toc";
 
-const labelFromType = (type: ContentType) => {
+function labelFromType(type: ContentType): string | undefined {
   switch (type) {
+    case "docs": {
+      return "Docs";
+    }
     case "blog": {
       return "Blog";
     }
@@ -62,9 +66,11 @@ const labelFromType = (type: ContentType) => {
     case "site": {
       return "Site";
     }
-    // no default
+    default: {
+      return undefined;
+    }
   }
-};
+}
 
 // oxlint-disable-next-line eslint/complexity
 const getDocData = cache(async (tenantSlug: string, slugKey: string) => {
@@ -121,32 +127,50 @@ const getDocData = cache(async (tenantSlug: string, slugKey: string) => {
       tenant,
     };
   }
-  const nav = docsNavigation
+  const pageMetadataMap = buildPageMetadataMap(contentIndex);
+  const rawNav = docsNavigation
     ? buildNavigation(
         docsNavigation,
         registry,
         docsCollection?.slugPrefix ?? ""
       )
     : [];
+  const nav = enrichNavWithMetadata(rawNav, pageMetadataMap);
   const visibleNav = getVisibleNavigation(nav);
   const flatNav = flattenNav(nav);
   const visibleFlatNav = flattenNav(visibleNav);
   const anchors = docsNavigation?.global?.anchors ?? [];
   const indexAll = config.seo?.indexing === "all";
-  const searchItems = new Map<string, { title: string; path: string }>();
+  const searchItems = new Map<
+    string,
+    { href?: string; title: string; path: string }
+  >();
   for (const item of visibleFlatNav) {
-    searchItems.set(item.path, { path: item.path, title: item.title });
+    searchItems.set(item.path, {
+      href: item.url,
+      path: item.path,
+      title: item.sidebarTitle ?? item.title,
+    });
   }
   for (const entry of contentIndex.entries) {
     if (!indexAll && entry.kind === "entry" && entry.hidden) {
       continue;
     }
-    searchItems.set(entry.slug, { path: entry.slug, title: entry.title });
+    const pageMeta = pageMetadataMap.get(entry.slug);
+    searchItems.set(entry.slug, {
+      href: pageMeta?.url,
+      path: entry.slug,
+      title: pageMeta?.sidebarTitle ?? entry.title,
+    });
   }
   if (indexAll) {
     for (const item of flatNav) {
       if (!searchItems.has(item.path)) {
-        searchItems.set(item.path, { path: item.path, title: item.title });
+        searchItems.set(item.path, {
+          href: item.url,
+          path: item.path,
+          title: item.sidebarTitle ?? item.title,
+        });
       }
     }
   }
@@ -167,10 +191,14 @@ const getDocData = cache(async (tenantSlug: string, slugKey: string) => {
         />
       ),
       currentPath,
+      deprecated: false,
       flatNav: visibleFlatNav,
       headerLabel: "Docs",
       hidden: isHidden,
+      hideFooterPagination: false,
+      mode: undefined,
       nav: visibleNav,
+      noindex: false,
       pageDescription: openApiEntry.operation.description,
       pageTitle: openApiEntry.operation.summary ?? openApiEntry.identifier,
       rawContent: openApiEntry.operation.description ?? "",
@@ -195,7 +223,11 @@ const getDocData = cache(async (tenantSlug: string, slugKey: string) => {
           ): collectionEntry is Extract<
             (typeof contentIndex.entries)[number],
             { kind: "entry" }
-          > => collectionEntry.kind === "entry"
+          > =>
+            collectionEntry.kind === "entry" &&
+            collectionEntry.hidden !== true &&
+            !pageMetadataMap.get(collectionEntry.slug)?.hidden &&
+            !pageMetadataMap.get(collectionEntry.slug)?.noindex
         ) ?? [];
     const showDocsNav = entry.type === "docs";
     return {
@@ -207,10 +239,14 @@ const getDocData = cache(async (tenantSlug: string, slugKey: string) => {
       config,
       content: null,
       currentPath,
+      deprecated: false,
       flatNav: visibleFlatNav,
       headerLabel: labelFromType(entry.type),
       hidden: false,
+      hideFooterPagination: false,
+      mode: undefined,
       nav: showDocsNav ? visibleNav : [],
+      noindex: false,
       pageDescription: entry.description,
       pageTitle: entry.title,
       searchItems: [...searchItems.values()],
@@ -234,6 +270,7 @@ const getDocData = cache(async (tenantSlug: string, slugKey: string) => {
   const isHiddenByNav = flatNav.some((p) => p.path === currentPath && p.hidden);
   const isHidden =
     isHiddenByFrontmatter || isHiddenByNav || entry.hidden === true;
+  const pageMeta = pageMetadataMap.get(currentPath);
 
   return {
     anchors: showDocsNav ? anchors : [],
@@ -241,10 +278,14 @@ const getDocData = cache(async (tenantSlug: string, slugKey: string) => {
     config,
     content,
     currentPath,
+    deprecated: pageMeta?.deprecated ?? false,
     flatNav: visibleFlatNav,
     headerLabel: labelFromType(entry.type),
     hidden: isHidden,
+    hideFooterPagination: pageMeta?.hideFooterPagination ?? false,
+    mode: pageMeta?.mode,
     nav: showDocsNav ? visibleNav : [],
+    noindex: pageMeta?.noindex ?? false,
     pageDescription,
     pageTitle,
     rawContent: source,
@@ -270,7 +311,14 @@ export const generateMetadata = async ({
     };
   }
 
-  const { config, hidden, pageTitle, pageDescription, tenant } = data;
+  const {
+    config,
+    hidden,
+    noindex: pageNoindex,
+    pageTitle,
+    pageDescription,
+    tenant,
+  } = data;
 
   const baseTitle = config?.name ?? "Docs";
   const titleTemplate = `%s · ${baseTitle}`;
@@ -293,7 +341,7 @@ export const generateMetadata = async ({
   const canonicalOrigin = getCanonicalOrigin(tenant, requestContext);
   const ogImage = config?.metadata?.ogImage;
   const favicon = config?.favicon;
-  const noindex = hidden && config.seo?.indexing !== "all";
+  const noindex = pageNoindex || (hidden && config.seo?.indexing !== "all");
 
   return {
     alternates: {
@@ -361,16 +409,22 @@ const DocPage = async ({
     );
   }
 
+  const basePath =
+    basePathHeader ||
+    (headerTenant
+      ? data.tenant.pathPrefix || ""
+      : `/sites/${data.tenant.slug}`);
+
   return (
     <DocShell
       anchors={data.anchors}
-      basePath={basePathHeader || data.tenant.pathPrefix || ""}
+      basePath={basePath}
       breadcrumbs={data.breadcrumbs}
       config={data.config}
       content={
         data.collectionIndex ? (
           <CollectionIndex
-            basePath={basePathHeader || data.tenant.pathPrefix || ""}
+            basePath={basePath}
             entries={data.collectionIndex.entries}
           />
         ) : (
@@ -378,8 +432,11 @@ const DocPage = async ({
         )
       }
       currentPath={data.currentPath}
+      deprecated={data.deprecated}
       flatNav={data.flatNav}
       headerLabel={data.headerLabel}
+      hideFooterPagination={data.hideFooterPagination}
+      mode={data.mode}
       nav={data.nav}
       pageDescription={data.pageDescription}
       pageTitle={data.pageTitle}

@@ -3,6 +3,7 @@ import type { DocsNavigation } from "@repo/models";
 import type { PageMetadata } from "@repo/previewing";
 
 import type { OpenApiRegistry } from "./openapi";
+import { toDocHref } from "./routes";
 
 export interface NavPage {
   type: "page";
@@ -29,6 +30,12 @@ export interface NavGroup {
 }
 
 export type NavEntry = NavGroup | NavPage;
+
+export const getNavPageTitle = (page: NavPage): string =>
+  page.sidebarTitle ?? page.title;
+
+export const getNavPageHref = (page: NavPage, basePath: string): string =>
+  page.url ?? toDocHref(page.path, basePath);
 
 const titleFromSlug = (slug: string) => {
   const clean = slug.replaceAll("-", " ").split("/").pop() ?? slug;
@@ -93,8 +100,10 @@ export const buildNavigation = (
     } else if (group.openapi) {
       const sourceKey =
         typeof group.openapi === "string"
-          ? `${group.openapi}::`
-          : `${group.openapi.source}::${group.openapi.directory ?? ""}`;
+          ? `${group.openapi}::::`
+          : `${group.openapi.source}::${group.openapi.directory ?? ""}::${(
+              group.openapi.include ?? []
+            ).join("|")}`;
       const sourceEntries = registry.bySource.get(sourceKey) ?? [];
       for (const entry of sourceEntries) {
         items.push({
@@ -148,6 +157,7 @@ const enrichPage = (
     iconType: meta.iconType ?? page.iconType,
     sidebarTitle: meta.sidebarTitle ?? page.sidebarTitle,
     tag: meta.tag ?? page.tag,
+    title: meta.title ?? page.title,
     url: meta.url ?? page.url,
   };
 };
@@ -200,14 +210,14 @@ export const findBreadcrumbs = (entries: NavEntry[], path: string) => {
   const normalized = normalizePath(path);
   for (const entry of entries) {
     if (entry.type === "page" && entry.path === normalized) {
-      return [{ label: entry.title, path: entry.path }];
+      return [{ label: getNavPageTitle(entry), path: entry.path }];
     }
     if (entry.type === "group") {
       const found = entry.items.find((item) => item.path === normalized);
       if (found) {
         return [
           { label: entry.title, path: "" },
-          { label: found.title, path: found.path },
+          { label: getNavPageTitle(found), path: found.path },
         ];
       }
     }

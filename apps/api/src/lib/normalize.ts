@@ -33,7 +33,10 @@ export const slugifyPath = (value: string) => {
   return trimmed.replace(LEADING_SLASHES_REGEX, "");
 };
 
-export const stripPrefix = (pathname: string, prefix: string | null) => {
+export const stripPrefix = (
+  pathname: string,
+  prefix: string | null
+): string | null => {
   if (!prefix) {
     return slugifyPath(pathname);
   }
@@ -48,5 +51,5 @@ export const stripPrefix = (pathname: string, prefix: string | null) => {
   if (normalizedPath.startsWith(`${normalizedPrefix}/`)) {
     return normalizedPath.slice(normalizedPrefix.length + 1);
   }
-  return normalizedPath;
+  return null;
 };

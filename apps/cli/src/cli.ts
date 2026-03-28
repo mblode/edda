@@ -1,31 +1,53 @@
 import { spawnSync } from "node:child_process";
-import { createHash, randomBytes } from "node:crypto";
 import fs from "node:fs/promises";
-import { createServer } from "node:http";
-import os from "node:os";
 import path from "node:path";
-import { styleText } from "node:util";
 
 import {
   confirm,
   intro,
   isCancel,
   log,
-  outro,
   password,
   spinner,
 } from "@clack/prompts";
+import chalk from "chalk";
 import { Command } from "commander";
 import open from "open";
 
+import { resolveAuthToken, resolveTokenStatus } from "./auth-session.js";
+import {
+  BLODE_API_URL_ENV,
+  BLODE_BRANCH_ENV,
+  BLODE_COMMIT_MESSAGE_ENV,
+  BLODE_PROJECT_ENV,
+  DEFAULT_API_URL,
+  DEFAULT_OAUTH_CALLBACK_PATH,
+  DEFAULT_OAUTH_CALLBACK_PORT,
+  DEFAULT_OAUTH_TIMEOUT_SECONDS,
+} from "./constants.js";
+import { waitForOAuthCode } from "./oauth-callback.js";
+import { exchangeAuthorizationCode } from "./oauth-token.js";
+import {
+  createCodeChallenge,
+  createCodeVerifier,
+  createOAuthState,
+} from "./pkce.js";
+import {
+  clearStoredCredentials,
+  readStoredApiKey,
+  readStoredAuthSession,
+  writeStoredApiKey,
+  writeStoredAuthSession,
+} from "./storage.js";
+import {
+  buildOAuthUrls,
+  resolveOAuthClientId,
+  resolveSupabaseConfig,
+  tokenResponseToStoredSession,
+} from "./supabase.js";
 import type { DeploymentResponse } from "./types.js";
 
 const CONFIG_FILE = "docs.json";
-const CREDENTIALS_DIR = path.join(os.homedir(), ".blodemd");
-const CREDENTIALS_FILE = path.join(CREDENTIALS_DIR, "credentials.json");
-const DEFAULT_API_URL = "https://api.blode.md";
-const DEFAULT_AUTH_URL = "https://blode.md";
-const CALLBACK_PORT = 9876;
 
 const TEXT_CONTENT_TYPES: Record<string, string> = {
   ".css": "text/css; charset=utf-8",
@@ -38,84 +60,6 @@ const TEXT_CONTENT_TYPES: Record<string, string> = {
   ".txt": "text/plain; charset=utf-8",
   ".yaml": "application/yaml; charset=utf-8",
   ".yml": "application/yaml; charset=utf-8",
-};
-
-// --- Credentials ---
-
-interface SessionCredentials {
-  type: "session";
-  accessToken: string;
-  refreshToken: string;
-}
-
-interface ApiKeyCredentials {
-  type: "api-key";
-  apiKey: string;
-}
-
-type Credentials = SessionCredentials | ApiKeyCredentials;
-
-const readCredentials = async (): Promise<Credentials | undefined> => {
-  try {
-    const raw = await fs.readFile(CREDENTIALS_FILE, "utf8");
-    const parsed = JSON.parse(raw) as Record<string, unknown>;
-    if (parsed.accessToken && typeof parsed.accessToken === "string") {
-      return {
-        accessToken: parsed.accessToken as string,
-        refreshToken: (parsed.refreshToken as string) ?? "",
-        type: "session",
-      };
-    }
-    if (parsed.apiKey && typeof parsed.apiKey === "string") {
-      return { apiKey: parsed.apiKey as string, type: "api-key" };
-    }
-    return undefined;
-  } catch {
-    return undefined;
-  }
-};
-
-const writeCredentials = async (credentials: Credentials): Promise<void> => {
-  await fs.mkdir(CREDENTIALS_DIR, { mode: 0o700, recursive: true });
-  await fs.writeFile(CREDENTIALS_FILE, JSON.stringify(credentials, null, 2), {
-    mode: 0o600,
-  });
-};
-
-const deleteCredentials = async (): Promise<void> => {
-  try {
-    await fs.unlink(CREDENTIALS_FILE);
-  } catch {
-    // Already gone
-  }
-};
-
-const getAuthToken = async (
-  optApiKey?: string
-): Promise<string | undefined> => {
-  const envApiKey = optApiKey ?? process.env.BLODE_DOCS_API_KEY;
-  if (envApiKey) {
-    return envApiKey;
-  }
-
-  const credentials = await readCredentials();
-  if (!credentials) {
-    return undefined;
-  }
-
-  return credentials.type === "api-key"
-    ? credentials.apiKey
-    : credentials.accessToken;
-};
-
-// --- PKCE helpers ---
-
-const base64url = (buffer: Buffer): string => buffer.toString("base64url");
-
-const generatePkce = () => {
-  const verifier = base64url(randomBytes(32));
-  const challenge = base64url(createHash("sha256").update(verifier).digest());
-  return { challenge, verifier };
 };
 
 // --- File helpers ---
@@ -262,19 +206,22 @@ const resolvePushConfig = async (
   }
 ): Promise<PushConfig> => {
   const project =
-    options.project ?? process.env.BLODE_DOCS_PROJECT ?? config.name;
+    options.project ?? process.env[BLODE_PROJECT_ENV] ?? config.name;
   const apiUrl =
-    options.apiUrl ?? process.env.BLODE_DOCS_API_URL ?? DEFAULT_API_URL;
-  const authToken = await getAuthToken(options.apiKey);
+    options.apiUrl ?? process.env[BLODE_API_URL_ENV] ?? DEFAULT_API_URL;
+
+  const resolved = await resolveAuthToken(options.apiKey);
+  const authToken = resolved?.token;
+
   const branch =
     options.branch ??
-    process.env.BLODE_DOCS_BRANCH ??
+    process.env[BLODE_BRANCH_ENV] ??
     process.env.GITHUB_REF_NAME ??
     readGitValue(["rev-parse", "--abbrev-ref", "HEAD"]) ??
     "main";
   const commitMessage =
     options.message ??
-    process.env.BLODE_DOCS_COMMIT_MESSAGE ??
+    process.env[BLODE_COMMIT_MESSAGE_ENV] ??
     readGitValue(["log", "-1", "--pretty=%s"]);
 
   if (!project) {
@@ -296,8 +243,8 @@ const autoCreateProject = async (
   apiUrl: string,
   headers: Record<string, string>
 ): Promise<boolean> => {
-  const credentials = await readCredentials();
-  if (!credentials || credentials.type !== "session") {
+  const session = await readStoredAuthSession();
+  if (!session) {
     throw new Error(
       `Project "${project}" not found. Create it at blode.md or login with "blodemd login" to auto-create.`
     );
@@ -324,10 +271,8 @@ const autoCreateProject = async (
     "Failed to create project"
   );
 
-  log.success(
-    `Project ${styleText("cyan", createResult.project.slug)} created`
-  );
-  log.info(`API key for CI: ${styleText("dim", createResult.token)}`);
+  log.success(`Project ${chalk.cyan(createResult.project.slug)} created`);
+  log.info(`API key for CI: ${chalk.dim(createResult.token)}`);
   return true;
 };
 
@@ -360,61 +305,8 @@ const uploadFiles = async (
 
     s.message(`Uploading files (${index + 1}/${files.length})`);
   }
-  s.stop(`Uploaded ${styleText("cyan", String(files.length))} files`);
+  s.stop(`Uploaded ${chalk.cyan(String(files.length))} files`);
 };
-
-// --- Browser login ---
-
-const startCallbackServer = (
-  port: number
-): Promise<{ accessToken: string; refreshToken: string }> =>
-  // oxlint-disable-next-line eslint-plugin-promise/avoid-new -- wrapping callback-based HTTP server
-  new Promise((resolve, reject) => {
-    const server = createServer((req, res) => {
-      const url = new URL(req.url ?? "/", `http://localhost:${port}`);
-
-      if (url.pathname === "/callback") {
-        const accessToken = url.searchParams.get("access_token");
-        const refreshToken = url.searchParams.get("refresh_token");
-
-        if (accessToken) {
-          res.writeHead(200, { "Content-Type": "text/html" });
-          res.end(
-            "<html><body><h2>Logged in! You can close this tab.</h2></body></html>"
-          );
-          server.close();
-          resolve({
-            accessToken,
-            refreshToken: refreshToken ?? "",
-          });
-        } else {
-          res.writeHead(400, { "Content-Type": "text/html" });
-          res.end(
-            "<html><body><h2>Login failed. Please try again.</h2></body></html>"
-          );
-          server.close();
-          reject(new Error("No access token received."));
-        }
-        return;
-      }
-
-      res.writeHead(404);
-      res.end();
-    });
-
-    server.listen(port, "127.0.0.1");
-    server.on("error", reject);
-
-    const timeout = setTimeout(
-      () => {
-        server.close();
-        reject(new Error("Login timed out. Please try again."));
-      },
-      5 * 60 * 1000
-    );
-
-    server.on("close", () => clearTimeout(timeout));
-  });
 
 // --- CLI ---
 
@@ -428,77 +320,133 @@ program
   .command("login")
   .description("Authenticate with Blode Docs")
   .option("--token", "Paste an API key instead of using browser login")
-  .action(async (options: { token?: boolean }) => {
-    intro(styleText("bold", "blodemd login"));
+  .option(
+    "--port <port>",
+    "Loopback callback port",
+    String(DEFAULT_OAUTH_CALLBACK_PORT)
+  )
+  .option(
+    "--timeout <seconds>",
+    "OAuth timeout in seconds",
+    String(DEFAULT_OAUTH_TIMEOUT_SECONDS)
+  )
+  .option("--no-open", "Print URL instead of opening the browser")
+  .action(
+    async (options: {
+      token?: boolean;
+      port: string;
+      timeout: string;
+      open: boolean;
+    }) => {
+      intro(chalk.bold("blodemd login"));
 
-    try {
-      if (options.token) {
-        const apiKey = await password({
-          message: "Enter your API key",
-          validate: (value) => {
-            if (!value) {
-              return "API key is required.";
-            }
-          },
-        });
+      try {
+        if (options.token) {
+          const apiKey = await password({
+            message: "Enter your API key",
+            validate: (value) => {
+              if (!value) {
+                return "API key is required.";
+              }
+            },
+          });
 
-        if (isCancel(apiKey)) {
-          outro("Cancelled");
+          if (isCancel(apiKey)) {
+            log.warn("Cancelled");
+            return;
+          }
+
+          await writeStoredApiKey({ apiKey, type: "api-key" });
+
+          const prefix = apiKey.split(".")[0] ?? apiKey.slice(0, 12);
+          log.success(`Authenticated as ${chalk.cyan(prefix)}`);
+          log.info("Done");
           return;
         }
 
-        await writeCredentials({ apiKey, type: "api-key" });
+        // OAuth 2.1 authorization code flow with PKCE
+        const config = resolveSupabaseConfig();
+        const { authorizeUrl, tokenUrl } = buildOAuthUrls(config);
+        const clientId = resolveOAuthClientId();
 
-        const prefix = apiKey.split(".")[0] ?? apiKey.slice(0, 12);
-        log.success(`Authenticated as ${styleText("cyan", prefix)}`);
-        outro("Done");
-        return;
-      }
-
-      // Browser-based login
-      const authUrl = process.env.BLODE_DOCS_AUTH_URL ?? DEFAULT_AUTH_URL;
-      const { challenge } = generatePkce();
-
-      const loginUrl = new URL("/auth/cli", authUrl);
-      loginUrl.searchParams.set("code_challenge", challenge);
-      loginUrl.searchParams.set(
-        "redirect_uri",
-        `http://localhost:${CALLBACK_PORT}/callback`
-      );
-
-      log.info("Opening browser for authentication...");
-      log.info(
-        `If the browser doesn't open, visit: ${styleText("cyan", loginUrl.toString())}`
-      );
-
-      const tokenPromise = startCallbackServer(CALLBACK_PORT);
-      await open(loginUrl.toString());
-
-      const { accessToken, refreshToken } = await tokenPromise;
-      await writeCredentials({ accessToken, refreshToken, type: "session" });
-
-      const apiUrl = process.env.BLODE_DOCS_API_URL ?? DEFAULT_API_URL;
-      try {
-        const user = await requestJson<{ email: string }>(
-          `${apiUrl}/auth/me`,
-          { headers: { Authorization: `Bearer ${accessToken}` } },
-          "Failed to fetch user info"
+        const port = Number.parseInt(options.port, 10);
+        const timeoutSeconds = Number.parseInt(options.timeout, 10);
+        const redirectUrl = new URL(
+          `http://127.0.0.1:${port}${DEFAULT_OAUTH_CALLBACK_PATH}`
         );
-        log.success(`Logged in as ${styleText("cyan", user.email)}`);
-      } catch {
-        log.success("Logged in successfully.");
-      }
 
-      log.info(`Credentials saved to ${styleText("dim", CREDENTIALS_FILE)}`);
-      outro("Done");
-    } catch (error: unknown) {
-      log.error(
-        `Login failed: ${error instanceof Error ? error.message : String(error)}`
-      );
-      outro("Failed");
-      process.exitCode = 1;
+        const state = createOAuthState();
+        const codeVerifier = createCodeVerifier();
+        const codeChallenge = createCodeChallenge(codeVerifier);
+
+        const authUrl = new URL(authorizeUrl);
+        authUrl.searchParams.set("response_type", "code");
+        authUrl.searchParams.set("client_id", clientId);
+        authUrl.searchParams.set("redirect_uri", redirectUrl.toString());
+        authUrl.searchParams.set("code_challenge", codeChallenge);
+        authUrl.searchParams.set("code_challenge_method", "S256");
+        authUrl.searchParams.set("state", state);
+        authUrl.searchParams.set("scope", "openid email profile");
+
+        const callbackPromise = waitForOAuthCode({
+          expectedState: state,
+          redirectUrl,
+          timeoutMs: timeoutSeconds * 1000,
+        });
+
+        if (options.open) {
+          log.info("Opening browser for authentication...");
+          log.info(
+            `If the browser doesn't open, visit: ${chalk.cyan(authUrl.toString())}`
+          );
+          await open(authUrl.toString());
+        } else {
+          log.info("Open this URL to continue authentication:");
+          log.info(chalk.cyan(authUrl.toString()));
+        }
+
+        const code = await callbackPromise;
+
+        const tokenResponse = await exchangeAuthorizationCode(
+          { clientId, tokenUrl },
+          code,
+          codeVerifier,
+          redirectUrl.toString()
+        );
+
+        const storedSession = tokenResponseToStoredSession(tokenResponse);
+        await writeStoredAuthSession(storedSession);
+
+        if (storedSession.user?.email) {
+          log.success(`Logged in as ${chalk.cyan(storedSession.user.email)}`);
+        } else {
+          const apiUrl = process.env[BLODE_API_URL_ENV] ?? DEFAULT_API_URL;
+          try {
+            const user = await requestJson<{ email: string }>(
+              `${apiUrl}/auth/me`,
+              {
+                headers: {
+                  Authorization: `Bearer ${storedSession.accessToken}`,
+                },
+              },
+              "Failed to fetch user info"
+            );
+            log.success(`Logged in as ${chalk.cyan(user.email)}`);
+          } catch {
+            log.success("Logged in successfully.");
+          }
+        }
+
+        log.info("Done");
+      } catch (error: unknown) {
+        log.error(
+          `Login failed: ${error instanceof Error ? error.message : String(error)}`
+        );
+        log.info("Failed");
+        process.exitCode = 1;
+      }
     }
-  });
+  );
 
 // logout
 
@@ -506,11 +454,18 @@ program
   .command("logout")
   .description("Remove stored credentials")
   .action(async () => {
-    intro(styleText("bold", "blodemd logout"));
+    intro(chalk.bold("blodemd logout"));
 
-    await deleteCredentials();
-    log.success("Credentials removed.");
-    outro("Done");
+    const session = await readStoredAuthSession();
+    const apiKey = await readStoredApiKey();
+    await clearStoredCredentials();
+
+    if (session || apiKey) {
+      log.success("Credentials removed.");
+    } else {
+      log.info("No stored credentials found.");
+    }
+    log.info("Done");
   });
 
 // whoami
@@ -519,32 +474,53 @@ program
   .command("whoami")
   .description("Show current authentication")
   .action(async () => {
-    const credentials = await readCredentials();
+    const resolved = await resolveAuthToken();
 
-    if (!credentials) {
+    if (!resolved) {
       log.warn('Not logged in. Run "blodemd login" to authenticate.');
       return;
     }
 
-    if (credentials.type === "api-key") {
-      const prefix =
-        credentials.apiKey.split(".")[0] ?? credentials.apiKey.slice(0, 12);
-      log.info(`Logged in with API key ${styleText("cyan", prefix)}`);
+    if (resolved.source === "environment") {
+      log.info("Authenticated via BLODE_DOCS_API_KEY environment variable");
       return;
     }
 
-    const apiUrl = process.env.BLODE_DOCS_API_URL ?? DEFAULT_API_URL;
-    try {
-      const user = await requestJson<{ email: string }>(
-        `${apiUrl}/auth/me`,
-        { headers: { Authorization: `Bearer ${credentials.accessToken}` } },
-        "Failed to fetch user info"
-      );
-      log.info(`Logged in as ${styleText("cyan", user.email)}`);
-    } catch {
-      log.warn(
-        'Session may have expired. Run "blodemd login" to re-authenticate.'
-      );
+    const apiKey = await readStoredApiKey();
+    if (apiKey) {
+      const prefix = apiKey.apiKey.split(".")[0] ?? apiKey.apiKey.slice(0, 12);
+      log.info(`Logged in with API key ${chalk.cyan(prefix)}`);
+      return;
+    }
+
+    const status = resolveTokenStatus(resolved);
+
+    if (resolved.user?.email) {
+      log.info(`Logged in as ${chalk.cyan(resolved.user.email)}`);
+    } else {
+      const apiUrl = process.env[BLODE_API_URL_ENV] ?? DEFAULT_API_URL;
+      try {
+        const user = await requestJson<{ email: string }>(
+          `${apiUrl}/auth/me`,
+          { headers: { Authorization: `Bearer ${resolved.token}` } },
+          "Failed to fetch user info"
+        );
+        log.info(`Logged in as ${chalk.cyan(user.email)}`);
+      } catch {
+        log.info("Logged in (could not fetch user details).");
+      }
+    }
+
+    if (resolved.expiresAt) {
+      if (status.expired) {
+        log.warn(
+          'Session has expired. Run "blodemd login" to re-authenticate.'
+        );
+      } else if (status.expiresInSeconds !== null) {
+        const hours = Math.floor(status.expiresInSeconds / 3600);
+        const minutes = Math.floor((status.expiresInSeconds % 3600) / 60);
+        log.info(`Session expires in ${hours}h ${minutes}m`);
+      }
     }
   });
 
@@ -555,7 +531,7 @@ program
   .description("Scaffold a docs folder")
   .argument("[dir]", "target directory", "docs")
   .action(async (dir: string) => {
-    intro(styleText("bold", "blodemd init"));
+    intro(chalk.bold("blodemd init"));
 
     try {
       const root = path.resolve(process.cwd(), dir);
@@ -580,16 +556,14 @@ program
         "---\ntitle: Welcome\n---\n\nStart writing your docs here.\n"
       );
 
-      log.success(`Docs scaffolded in ${styleText("cyan", root)}`);
-      log.info(
-        `Set ${styleText("cyan", "name")} in docs.json to your project slug.`
-      );
-      outro("Done");
+      log.success(`Docs scaffolded in ${chalk.cyan(root)}`);
+      log.info(`Set ${chalk.cyan("name")} in docs.json to your project slug.`);
+      log.info("Done");
     } catch (error: unknown) {
       log.error(
         `Init failed: ${error instanceof Error ? error.message : String(error)}`
       );
-      outro("Failed");
+      log.info("Failed");
       process.exitCode = 1;
     }
   });
@@ -601,18 +575,18 @@ program
   .description("Validate docs.json")
   .argument("[dir]", "docs directory")
   .action(async (dir?: string) => {
-    intro(styleText("bold", "blodemd validate"));
+    intro(chalk.bold("blodemd validate"));
 
     try {
       const root = await resolveDocsRoot(dir);
       await readConfig(root);
-      log.success(`${styleText("cyan", CONFIG_FILE)} is valid.`);
-      outro("Done");
+      log.success(`${chalk.cyan(CONFIG_FILE)} is valid.`);
+      log.info("Done");
     } catch (error: unknown) {
       log.error(
         `Validation failed: ${error instanceof Error ? error.message : String(error)}`
       );
-      outro("Failed");
+      log.info("Failed");
       process.exitCode = 1;
     }
   });
@@ -639,7 +613,7 @@ program
         project?: string;
       }
     ) => {
-      intro(styleText("bold", "blodemd push"));
+      intro(chalk.bold("blodemd push"));
       const s = spinner();
 
       try {
@@ -657,7 +631,7 @@ program
         if (files.length === 0) {
           throw new Error("No files found to deploy.");
         }
-        s.stop(`Found ${styleText("cyan", String(files.length))} files`);
+        s.stop(`Found ${chalk.cyan(String(files.length))} files`);
 
         const headers = {
           Authorization: `Bearer ${authToken}`,
@@ -691,7 +665,7 @@ program
 
           const created = await autoCreateProject(project, apiUrl, headers);
           if (!created) {
-            outro("Cancelled");
+            log.info("Cancelled");
             return;
           }
 
@@ -702,7 +676,7 @@ program
             "Failed to create deployment"
           );
         }
-        s.stop(`Deployment ${styleText("cyan", deployment.id)} created`);
+        s.stop(`Deployment ${chalk.cyan(deployment.id)} created`);
 
         await uploadFiles(files, root, apiPath, deployment.id, headers, s);
 
@@ -718,7 +692,7 @@ program
         );
         s.stop("Deployment finalized");
 
-        log.success(`Published ${styleText("cyan", finalized.id)}`);
+        log.success(`Published ${chalk.cyan(finalized.id)}`);
         if (finalized.manifestUrl) {
           log.info(`Manifest: ${finalized.manifestUrl}`);
         }
@@ -726,11 +700,11 @@ program
           log.info(`Files: ${finalized.fileCount}`);
         }
 
-        outro("Done");
+        log.info("Done");
       } catch (error: unknown) {
         s.stop("Failed");
         log.error(error instanceof Error ? error.message : String(error));
-        outro("Failed");
+        log.info("Failed");
         process.exitCode = 1;
       }
     }
@@ -742,14 +716,14 @@ program
   .command("dev")
   .description("Start the docs dev server")
   .action(() => {
-    intro(styleText("bold", "blodemd dev"));
+    intro(chalk.bold("blodemd dev"));
     log.info(
-      `Run ${styleText("cyan", "npm run dev --filter=docs")} from the repo root.`
+      `Run ${chalk.cyan("npm run dev --filter=docs")} from the repo root.`
     );
     log.info(
-      `Then open ${styleText("cyan", "http://localhost:3001")} to view the docs site.`
+      `Then open ${chalk.cyan("http://localhost:3001")} to view the docs site.`
     );
-    outro("Done");
+    log.info("Done");
   });
 
 program.parse();

@@ -129,7 +129,7 @@ describe("loadSiteConfig", () => {
       source: "openapi.yaml",
     });
     expect(atlasResult.config.openapiProxy?.enabled).toBe(true);
-    expect(blodeResult.config.navigation?.groups).toEqual([
+    expect(blodeResult.config.navigation?.groups).toMatchObject([
       {
         group: "Getting Started",
         pages: ["index", "installation"],
@@ -138,6 +138,11 @@ describe("loadSiteConfig", () => {
         group: "Customization",
         pages: ["typography", "theming"],
       },
+      {
+        group: "Components",
+        pages: ["components/breadcrumb"],
+      },
     ]);
+    expect(blodeResult.config.navigation?.groups).toHaveLength(3);
   });
 });

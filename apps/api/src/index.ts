@@ -48,6 +48,7 @@ app.route("/projects", domains);
 app.route("/projects", deployments);
 app.route("/projects", apiKeys);
 
+export { app };
 export type AppType = typeof app;
 
 const start = () => {

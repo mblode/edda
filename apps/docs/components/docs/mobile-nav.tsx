@@ -9,8 +9,8 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import type { NavEntry } from "@/lib/navigation";
-import { toDocHref } from "@/lib/routes";
+import { getNavPageHref, getNavPageTitle } from "@/lib/navigation";
+import type { NavEntry, NavPage } from "@/lib/navigation";
 import { cn } from "@/lib/utils";
 
 const MobileLink = ({
@@ -46,6 +46,23 @@ export const MobileNav = ({
 }) => {
   const [open, setOpen] = useState(false);
   const handleClose = useCallback(() => setOpen(false), []);
+
+  const renderPageLink = (page: NavPage) => {
+    const href = getNavPageHref(page, basePath);
+    const isExternal = Boolean(page.url);
+
+    return (
+      <MobileLink
+        href={href}
+        key={page.path}
+        onClose={handleClose}
+        rel={isExternal ? "noopener noreferrer" : undefined}
+        target={isExternal ? "_blank" : undefined}
+      >
+        {getNavPageTitle(page)}
+      </MobileLink>
+    );
+  };
 
   return (
     <Popover onOpenChange={setOpen} open={open}>
@@ -101,15 +118,7 @@ export const MobileNav = ({
           ) : null}
           {entries.map((entry) => {
             if (entry.type === "page") {
-              return (
-                <MobileLink
-                  href={toDocHref(entry.path, basePath)}
-                  key={entry.path}
-                  onClose={handleClose}
-                >
-                  {entry.title}
-                </MobileLink>
-              );
+              return renderPageLink(entry);
             }
             return (
               <div className="flex flex-col gap-4" key={entry.title}>
@@ -117,16 +126,11 @@ export const MobileNav = ({
                   {entry.title}
                 </div>
                 <div className="flex flex-col gap-3">
-                  {entry.items.map((item) => (
-                    <MobileLink
-                      className="flex items-center gap-2"
-                      href={toDocHref(item.path, basePath)}
-                      key={item.path}
-                      onClose={handleClose}
-                    >
-                      {item.title}
-                    </MobileLink>
-                  ))}
+                  {entry.items.map((item) =>
+                    renderPageLink({
+                      ...item,
+                    })
+                  )}
                 </div>
               </div>
             );

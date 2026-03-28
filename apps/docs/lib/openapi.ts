@@ -25,6 +25,11 @@ export interface OpenApiRegistry {
   bySource: Map<string, OpenApiEntry[]>;
 }
 
+const getOpenApiSourceKey = (source: DocsOpenApiSource): string =>
+  `${source.source}::${source.directory ?? ""}::${(source.include ?? []).join(
+    "|"
+  )}`;
+
 const toSourceObject = (
   value: string | DocsOpenApiSource
 ): DocsOpenApiSource => {
@@ -54,7 +59,7 @@ const collectOpenApiSources = (collection?: CollectionConfig) => {
 
   const seen = new Set<string>();
   return sources.filter((source) => {
-    const key = `${source.source}::${source.directory ?? ""}`;
+    const key = getOpenApiSourceKey(source);
     if (seen.has(key)) {
       return false;
     }
@@ -87,16 +92,23 @@ export const buildOpenApiRegistry = async (
     const spec = parseOpenApiSpec(rawSpec, source.source);
     const directory = source.directory ?? "api";
     const { operations } = extractOpenApiOperations(spec, directory);
-    const sourceKey = `${source.source}::${source.directory ?? ""}`;
+    const sourceKey = getOpenApiSourceKey(source);
+    const includeIdentifiers = source.include?.length
+      ? new Set(source.include)
+      : null;
 
     for (const operation of operations) {
+      const identifier = openApiIdentifier(operation.method, operation.path);
+      if (includeIdentifiers && !includeIdentifiers.has(identifier)) {
+        continue;
+      }
+
       const baseSlug = normalizePath(
         openApiSlug(operation.method, operation.path, directory)
       );
       const slug = slugPrefix
         ? normalizePath(`${slugPrefix}/${baseSlug}`)
         : baseSlug;
-      const identifier = openApiIdentifier(operation.method, operation.path);
       const entry: OpenApiEntry = {
         identifier,
         operation,
