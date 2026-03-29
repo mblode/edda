@@ -39,7 +39,6 @@ const Dropdown = ({
             className="px-3 py-2 hover:bg-accent"
             href={item.url}
             key={item.label}
-            prefetch={false}
           >
             {item.label}
           </Link>
@@ -86,7 +85,6 @@ const HeaderTabs = ({
           key={tab.label}
           rel={isExternal ? "noopener noreferrer" : undefined}
           target={isExternal ? "_blank" : undefined}
-          prefetch={false}
         >
           {tab.label}
           {isActive ? (
@@ -134,7 +132,6 @@ export const DocHeader = ({
           <Link
             className="flex items-center gap-2.5"
             href={toDocHref("index", basePath)}
-            prefetch={false}
           >
             {config.logo?.light ? (
               <Image

@@ -33,7 +33,7 @@ const tenantResolutionCache = createTimedPromiseCache<
   Awaited<ReturnType<typeof fetchTenantResolution>>
 >({
   maxEntries: 512,
-  ttlMs: 5 * 1000,
+  ttlMs: 30 * 1000,
 });
 
 export const getRequestHost = (headerSource: Pick<Headers, "get">) => {

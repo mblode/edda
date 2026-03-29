@@ -148,12 +148,13 @@ const DocPage = async ({
       }
       currentPath={data.currentPath}
       deprecated={data.deprecated}
-      flatNav={data.flatNav}
       hideFooterPagination={data.hideFooterPagination}
       mode={data.mode}
       nav={data.nav}
+      nextPage={data.nextPage}
       pageDescription={data.pageDescription}
       pageTitle={data.pageTitle}
+      prevPage={data.prevPage}
       rawContent={data.rawContent}
       tabs={data.tabs}
       toc={data.toc}

@@ -25,8 +25,8 @@ const mapTenant = (tenant: {
 });
 
 const tenantCache = createTimedPromiseCache<string, Tenant | null>({
-  maxEntries: 128,
-  ttlMs: 60 * 1000,
+  maxEntries: 512,
+  ttlMs: 5 * 60 * 1000,
 });
 
 const fetchTenant = async (slug: string): Promise<Tenant | null> => {

@@ -14,6 +14,9 @@ const nextConfig = {
       "radix-ui",
       "@base-ui/react",
       "cmdk",
+      "@repo/previewing",
+      "@repo/models",
+      "@repo/common",
     ],
   },
   images: {

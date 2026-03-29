@@ -96,9 +96,7 @@ const NavPageLink = ({
       className={MENU_BUTTON_CLASS}
       isActive={isActive}
     >
-      <Link href={getNavPageHref(item, basePath)} prefetch={false}>
-        {linkContent}
-      </Link>
+      <Link href={getNavPageHref(item, basePath)}>{linkContent}</Link>
     </SidebarMenuButton>
   );
 };

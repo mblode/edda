@@ -76,16 +76,16 @@ interface TenantArtifacts {
 
 type TenantArtifactsResult = ConfigErrorResult | TenantArtifacts | null;
 
-const ARTIFACT_CACHE_TTL_MS = 5 * 60 * 1000;
-const PAGE_RENDER_CACHE_TTL_MS = 15 * 60 * 1000;
+const ARTIFACT_CACHE_TTL_MS = 30 * 60 * 1000;
+const PAGE_RENDER_CACHE_TTL_MS = 4 * 60 * 60 * 1000;
 
 const artifactsCache = createTimedPromiseCache<string, TenantArtifactsResult>({
-  maxEntries: 32,
+  maxEntries: 512,
   ttlMs: ARTIFACT_CACHE_TTL_MS,
 });
 
 const renderedPageCache = createTimedPromiseCache<string, RenderedPageData>({
-  maxEntries: 256,
+  maxEntries: 2048,
   ttlMs: PAGE_RENDER_CACHE_TTL_MS,
 });
 
@@ -191,17 +191,15 @@ const getTenantArtifacts = async (tenantSlug: string) => {
       };
     }
 
-    const config = await resolveSiteConfigAssets(
-      configResult.config,
-      contentSource
-    );
-    const docsCollection = getDocsCollection(config);
-    const docsNavigation = getDocsNavigation(config);
+    const rawConfig = configResult.config;
+    const docsCollection = getDocsCollection(rawConfig);
+    const docsNavigation = getDocsNavigation(rawConfig);
     const docsCollectionWithNavigation =
-      getDocsCollectionWithNavigation(config);
+      getDocsCollectionWithNavigation(rawConfig);
 
-    const [contentIndex, registryResult] = await Promise.all([
-      buildContentIndex(contentSource, config),
+    const [config, contentIndex, registryResult] = await Promise.all([
+      resolveSiteConfigAssets(rawConfig, contentSource),
+      buildContentIndex(contentSource, rawConfig),
       buildOpenApiRegistry(docsCollectionWithNavigation, contentSource)
         .then((registry) => ({ ok: true as const, registry }))
         .catch((error: unknown) => ({
@@ -316,6 +314,23 @@ export const clearDocsRuntimeCaches = () => {
   renderedPageCache.clear();
 };
 
+const computePrevNext = (
+  flatNav: NavPage[],
+  currentPath: string
+): {
+  nextPage: { title: string; path: string } | undefined;
+  prevPage: { title: string; path: string } | undefined;
+} => {
+  const currentIndex = flatNav.findIndex((p) => p.path === currentPath);
+  return {
+    nextPage:
+      currentIndex !== -1 && currentIndex < flatNav.length - 1
+        ? flatNav[currentIndex + 1]
+        : undefined,
+    prevPage: currentIndex > 0 ? flatNav[currentIndex - 1] : undefined,
+  };
+};
+
 // oxlint-disable-next-line eslint/complexity
 export const getDocData = cache(async (tenantSlug: string, slugKey: string) => {
   const artifacts = await getTenantArtifacts(tenantSlug);
@@ -331,6 +346,7 @@ export const getDocData = cache(async (tenantSlug: string, slugKey: string) => {
     ? getVisibleNavigation(artifacts.tabs[activeTabIndex]?.entries ?? [])
     : null;
   const activeTabFlatNav = activeTabNav ? flattenNav(activeTabNav) : null;
+  const effectiveFlatNav = activeTabFlatNav ?? artifacts.visibleFlatNav;
   const openApiEntry = artifacts.registry.bySlug.get(currentPath);
 
   if (openApiEntry) {
@@ -354,14 +370,15 @@ export const getDocData = cache(async (tenantSlug: string, slugKey: string) => {
       ),
       currentPath,
       deprecated: false,
-      flatNav: activeTabFlatNav ?? artifacts.visibleFlatNav,
       hidden: isHidden,
       hideFooterPagination: false,
       mode: undefined,
       nav: activeTabNav ?? artifacts.visibleNav,
+      nextPage: computePrevNext(effectiveFlatNav, currentPath).nextPage,
       noindex: false,
       pageDescription: openApiEntry.operation.description,
       pageTitle: openApiEntry.operation.summary ?? openApiEntry.identifier,
+      prevPage: computePrevNext(effectiveFlatNav, currentPath).prevPage,
       rawContent: openApiEntry.operation.description ?? "",
       tabs: artifacts.tabs,
       tenant: artifacts.tenant,
@@ -403,14 +420,15 @@ export const getDocData = cache(async (tenantSlug: string, slugKey: string) => {
       content: null,
       currentPath,
       deprecated: false,
-      flatNav: activeTabFlatNav ?? artifacts.visibleFlatNav,
       hidden: false,
       hideFooterPagination: false,
       mode: undefined,
       nav: showDocsNav ? (activeTabNav ?? artifacts.visibleNav) : [],
+      nextPage: computePrevNext(effectiveFlatNav, currentPath).nextPage,
       noindex: false,
       pageDescription: entry.description,
       pageTitle: entry.title,
+      prevPage: computePrevNext(effectiveFlatNav, currentPath).prevPage,
       tabs: artifacts.tabs,
       tenant: artifacts.tenant,
       toc: [],
@@ -450,7 +468,7 @@ export const getDocData = cache(async (tenantSlug: string, slugKey: string) => {
     content: renderedPage.content,
     currentPath,
     deprecated: pageMeta?.deprecated ?? false,
-    flatNav: activeTabFlatNav ?? artifacts.visibleFlatNav,
+    ...computePrevNext(effectiveFlatNav, currentPath),
     hidden: isHidden,
     hideFooterPagination: pageMeta?.hideFooterPagination ?? false,
     mode: pageMeta?.mode,
