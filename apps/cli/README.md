@@ -1,4 +1,4 @@
-<h1 align="center">blodemd</h1>
+<h1 align="center">Blode.md</h1>
 
 <p align="center">Deploy and manage documentation sites from the command line.</p>
 

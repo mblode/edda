@@ -1,5 +1,5 @@
 name: Blode.md Deploy
-description: Deploy docs to blodemd
+description: Deploy docs to Blode.md
 
 inputs:
   api-key:
