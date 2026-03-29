@@ -354,13 +354,13 @@ const uploadFiles = async (
 
 const program = new Command();
 
-program.name("blodemd").description("Blode Docs CLI").version("0.0.3");
+program.name("blodemd").description("Blode.md CLI").version("0.0.3");
 
 // login
 
 program
   .command("login")
-  .description("Authenticate with Blode Docs")
+  .description("Authenticate with Blode.md")
   .option("--token", "Paste an API key instead of using browser login")
   .option(
     "--port <port>",

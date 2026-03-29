@@ -6,7 +6,7 @@
   <a href="https://www.npmjs.com/package/blodemd"><img src="https://img.shields.io/npm/v/blodemd.svg" alt="npm version"></a>
 </p>
 
-- **One-command deploy:** Push your entire docs folder to Blode Docs with `blodemd push`.
+- **One-command deploy:** Push your entire docs folder to Blode.md with `blodemd push`.
 - **Scaffold in seconds:** Generate a ready-to-edit docs folder with `blodemd init`.
 - **Config validation:** Catch `docs.json` errors before deploying.
 - **CI-friendly:** Authenticate via environment variables and use the GitHub Action for automated deploys.

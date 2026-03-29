@@ -1,4 +1,4 @@
-name: Blode Docs Deploy
+name: Blode.md Deploy
 description: Deploy docs to blodemd
 
 inputs:
