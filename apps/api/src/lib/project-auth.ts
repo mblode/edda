@@ -46,8 +46,14 @@ export const authorizeProjectRequest = async (
     const user = await authenticateUser(headers);
     if (user) {
       const project = await projectDao.getById(projectId);
-      if (project && project.userId === user.id) {
-        return true;
+      if (project) {
+        if (project.userId === user.id) {
+          return true;
+        }
+        if (!project.userId) {
+          await projectDao.update(project.id, { userId: user.id });
+          return true;
+        }
       }
     }
   }
