@@ -1,6 +1,5 @@
 "use client";
 
-import { Menu } from "@base-ui/react/menu";
 import type { ContextualOption } from "@repo/models";
 import {
   Checkmark1Icon,
@@ -20,7 +19,7 @@ import {
   SparkleIcon,
   WindIcon,
 } from "blode-icons-react";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { ComponentType, ReactNode, SVGProps } from "react";
 
 import {
@@ -77,28 +76,28 @@ const resolveOptions = (
   const resolved: ResolvedOption[] = [];
   for (const option of options) {
     if (typeof option === "string") {
-      const def = builtinOptions[option];
-      if (!def) {
+      const definition = builtinOptions[option];
+      if (!definition) {
         continue;
       }
-      if (def.type === "action") {
+      if (definition.type === "action") {
         resolved.push({
           action: option as ActionId,
-          description: def.description,
-          icon: getBuiltinIcon(def.iconName),
+          description: definition.description,
+          icon: getBuiltinIcon(definition.iconName),
           key: option,
-          title: def.title,
+          title: definition.title,
           type: "action",
         });
       } else {
         const href = buildBuiltinUrl(option, context);
         if (href) {
           resolved.push({
-            description: def.description,
+            description: definition.description,
             href,
-            icon: getBuiltinIcon(def.iconName),
+            icon: getBuiltinIcon(definition.iconName),
             key: option,
-            title: def.title,
+            title: definition.title,
             type: "link",
           });
         }
@@ -166,22 +165,34 @@ const MenuIcon = ({ children }: { children: ReactNode }) => (
   </div>
 );
 
-const MenuLink = ({
+const MenuItem = ({
   children,
   href,
+  onSelect,
 }: {
   children: ReactNode;
-  href: string;
-}) => (
-  <Menu.Item
-    className="flex cursor-pointer select-none items-center gap-3 rounded-lg px-3 py-2.5 text-sm outline-none data-[highlighted]:bg-secondary/25"
-    render={
-      <a href={href} rel="noopener noreferrer" target="_blank">
-        {children}
-      </a>
-    }
-  />
-);
+  href?: string;
+  onSelect?: () => void;
+}) =>
+  href ? (
+    <a
+      className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors hover:bg-secondary/25"
+      href={href}
+      onClick={onSelect}
+      rel="noopener noreferrer"
+      target="_blank"
+    >
+      {children}
+    </a>
+  ) : (
+    <button
+      className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm transition-colors hover:bg-secondary/25"
+      onClick={onSelect}
+      type="button"
+    >
+      {children}
+    </button>
+  );
 
 const ExternalArrow = () => (
   <svg
@@ -211,25 +222,69 @@ export const ContextualMenu = ({
   title,
   pagePath,
 }: ContextualMenuProps) => {
+  const menuRef = useRef<HTMLDivElement>(null);
   const context = usePageContext(content, title, pagePath);
   const { copiedId, handleAction } = useContextualActions(content, title);
-  const resolved = resolveOptions(options, context);
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  const resolved = useMemo(
+    () => resolveOptions(options, context),
+    [context, options]
+  );
 
   const [primaryOption] = resolved;
 
-  const handlePrimaryAction = useCallback(
-    () => handleAction(primaryOption?.action ?? ""),
-    [handleAction, primaryOption?.action]
-  );
+  useEffect(() => {
+    if (!menuOpen) {
+      return;
+    }
 
-  const itemHandlers = useMemo(
+    const handlePointerDown = (event: MouseEvent) => {
+      if (menuRef.current?.contains(event.target as Node)) {
+        return;
+      }
+      setMenuOpen(false);
+    };
+
+    document.addEventListener("mousedown", handlePointerDown);
+    return () => document.removeEventListener("mousedown", handlePointerDown);
+  }, [menuOpen]);
+
+  const closeMenu = useCallback(() => {
+    setMenuOpen(false);
+  }, []);
+
+  const toggleMenu = useCallback(() => {
+    setMenuOpen((current) => !current);
+  }, []);
+
+  const handlePrimaryAction = useCallback(async () => {
+    if (!primaryOption) {
+      return;
+    }
+
+    if (primaryOption.type === "link" && primaryOption.href) {
+      window.open(primaryOption.href, "_blank", "noopener,noreferrer");
+      return;
+    }
+
+    await handleAction(primaryOption.action ?? "", primaryOption.key);
+  }, [handleAction, primaryOption]);
+
+  const actionHandlers = useMemo(
     () =>
       Object.fromEntries(
         resolved
           .filter((item) => item.type === "action")
-          .map((item) => [item.key, () => handleAction(item.action ?? "")])
+          .map((item) => [
+            item.key,
+            async () => {
+              await handleAction(item.action ?? "", item.key);
+              closeMenu();
+            },
+          ])
       ),
-    [resolved, handleAction]
+    [closeMenu, handleAction, resolved]
   );
 
   if (!primaryOption) {
@@ -239,119 +294,93 @@ export const ContextualMenu = ({
   const isCopied = copiedId === primaryOption.key;
 
   return (
-    <div className="flex shrink-0 items-center">
-      {primaryOption.type === "action" ? (
-        <button
-          className="inline-flex items-center gap-2 rounded-l-xl border border-r-0 border-border px-3 py-1.5 text-sm font-medium transition-colors hover:bg-secondary/25"
-          onClick={handlePrimaryAction}
-          type="button"
-        >
-          {isCopied ? (
-            <Checkmark1Icon aria-hidden="true" className="size-[18px]" />
-          ) : (
-            <primaryOption.icon aria-hidden="true" className="size-[18px]" />
-          )}
-          <span>{isCopied ? "Copied" : primaryOption.title}</span>
-        </button>
-      ) : (
-        <a
-          className="inline-flex items-center gap-2 rounded-l-xl border border-r-0 border-border px-3 py-1.5 text-sm font-medium transition-colors hover:bg-secondary/25"
-          href={primaryOption.href}
-          rel="noopener noreferrer"
-          target="_blank"
-        >
+    <div className="relative flex shrink-0 items-center" ref={menuRef}>
+      <button
+        className="inline-flex items-center gap-2 rounded-l-xl border border-r-0 border-border px-3 py-1.5 text-sm font-medium transition-colors hover:bg-secondary/25"
+        onClick={handlePrimaryAction}
+        type="button"
+      >
+        {primaryOption.type === "action" && isCopied ? (
+          <Checkmark1Icon aria-hidden="true" className="size-[18px]" />
+        ) : (
           <primaryOption.icon aria-hidden="true" className="size-[18px]" />
-          <span>{primaryOption.title}</span>
-        </a>
-      )}
+        )}
+        <span>
+          {primaryOption.type === "action" && isCopied
+            ? "Copied"
+            : primaryOption.title}
+        </span>
+      </button>
 
-      <Menu.Root>
-        <Menu.Trigger
-          aria-label="More actions"
-          className="inline-flex items-center self-stretch rounded-r-xl border border-border px-2 transition-colors hover:bg-secondary/25"
-        >
-          <ChevronDownSmallIcon
-            aria-hidden="true"
-            className="size-[18px] text-muted-foreground"
-          />
-        </Menu.Trigger>
-
-        <Menu.Portal>
-          <Menu.Positioner align="end" side="bottom" sideOffset={4}>
-            <Menu.Popup className="z-50 min-w-[280px] origin-[var(--transform-origin)] rounded-xl border border-border bg-background p-1 shadow-lg transition-[transform,scale,opacity] data-[ending-style]:scale-95 data-[ending-style]:opacity-0 data-[starting-style]:scale-95 data-[starting-style]:opacity-0">
-              {resolved.map((item) => {
-                const isItemCopied = copiedId === item.key;
-                const Icon = isItemCopied ? Checkmark1Icon : item.icon;
-
-                if (item.type === "action") {
-                  return (
-                    <Menu.Item
-                      className="flex cursor-pointer select-none items-center gap-3 rounded-lg px-3 py-2.5 text-sm outline-none data-[highlighted]:bg-secondary/25"
-                      key={item.key}
-                      // oxlint-disable-next-line eslint-plugin-react/jsx-handler-names
-                      onSelect={itemHandlers[item.key]}
-                    >
-                      <MenuIcon>
-                        <Icon aria-hidden="true" className="size-[18px]" />
-                      </MenuIcon>
-                      <div>
-                        <div className="font-medium">
-                          {isItemCopied ? "Copied" : item.title}
-                        </div>
-                        <div className="text-xs text-muted-foreground">
-                          {item.description}
-                        </div>
-                      </div>
-                    </Menu.Item>
-                  );
-                }
-
-                return (
-                  <MenuLink href={item.href ?? "#"} key={item.key}>
-                    <MenuIcon>
-                      <Icon aria-hidden="true" className="size-[18px]" />
-                    </MenuIcon>
-                    <div className="flex-1">
-                      <div className="font-medium">
-                        {item.title}
-                        <ExternalArrow />
-                      </div>
-                      <div className="text-xs text-muted-foreground">
-                        {item.description}
-                      </div>
+      {resolved.length > 1 ? (
+        <>
+          <button
+            aria-expanded={menuOpen}
+            aria-label="More actions"
+            className="inline-flex items-center self-stretch rounded-r-xl border border-border px-2 transition-colors hover:bg-secondary/25"
+            onClick={toggleMenu}
+            type="button"
+          >
+            <ChevronDownSmallIcon
+              aria-hidden="true"
+              className="size-[18px] text-muted-foreground"
+            />
+          </button>
+          {menuOpen ? (
+            <div className="absolute right-0 top-[calc(100%+0.25rem)] z-50 min-w-[320px] rounded-xl border border-border bg-background p-1 shadow-lg">
+              {resolved.slice(1).map((item) => (
+                <MenuItem
+                  href={item.type === "link" ? item.href : undefined}
+                  key={item.key}
+                  onSelect={
+                    item.type === "action"
+                      ? actionHandlers[item.key]
+                      : closeMenu
+                  }
+                >
+                  <MenuIcon>
+                    {item.type === "action" && copiedId === item.key ? (
+                      <Checkmark1Icon
+                        aria-hidden="true"
+                        className="size-[18px]"
+                      />
+                    ) : (
+                      <item.icon aria-hidden="true" className="size-[18px]" />
+                    )}
+                  </MenuIcon>
+                  <div className="flex-1">
+                    <div className="font-medium">
+                      {item.title}
+                      {item.type === "link" ? <ExternalArrow /> : null}
                     </div>
-                  </MenuLink>
-                );
-              })}
-            </Menu.Popup>
-          </Menu.Positioner>
-        </Menu.Portal>
-      </Menu.Root>
+                    <div className="text-xs text-muted-foreground">
+                      {item.description}
+                    </div>
+                  </div>
+                </MenuItem>
+              ))}
+            </div>
+          ) : null}
+        </>
+      ) : null}
     </div>
   );
 };
 
 export const ContextualTocItems = ({
-  options,
   content,
+  options,
   title,
   pagePath,
 }: ContextualMenuProps) => {
   const context = usePageContext(content, title, pagePath);
-  const { copiedId, handleAction } = useContextualActions(content, title);
-  const resolved = resolveOptions(options, context);
-
-  const tocItemHandlers = useMemo(
+  const resolved = useMemo(
     () =>
-      Object.fromEntries(
-        resolved
-          .filter((item) => item.type === "action")
-          .map((item) => [
-            item.key,
-            () => handleAction(item.action ?? "", item.key),
-          ])
+      resolveOptions(options, context).filter(
+        (item): item is ResolvedOption & { href: string; type: "link" } =>
+          item.type === "link" && Boolean(item.href)
       ),
-    [resolved, handleAction]
+    [context, options]
   );
 
   if (!resolved.length) {
@@ -359,40 +388,19 @@ export const ContextualTocItems = ({
   }
 
   return (
-    <div className="flex flex-col gap-2 border-t border-border pt-4">
-      <p className="font-medium text-muted-foreground text-xs">AI Tools</p>
-      {resolved.map((item) => {
-        const isItemCopied = copiedId === item.key;
-        const Icon = isItemCopied ? Checkmark1Icon : item.icon;
-
-        if (item.type === "action") {
-          return (
-            <button
-              className="flex items-center gap-2 text-left text-[0.8rem] text-muted-foreground no-underline transition-colors hover:text-foreground"
-              key={item.key}
-              // oxlint-disable-next-line eslint-plugin-react/jsx-handler-names
-              onClick={tocItemHandlers[item.key]}
-              type="button"
-            >
-              <Icon aria-hidden="true" className="size-3.5 shrink-0" />
-              <span>{isItemCopied ? "Copied" : item.title}</span>
-            </button>
-          );
-        }
-
-        return (
-          <a
-            className="flex items-center gap-2 text-[0.8rem] text-muted-foreground no-underline transition-colors hover:text-foreground"
-            href={item.href}
-            key={item.key}
-            rel="noopener noreferrer"
-            target="_blank"
-          >
-            <Icon aria-hidden="true" className="size-3.5 shrink-0" />
-            <span>{item.title}</span>
-          </a>
-        );
-      })}
+    <div className="grid gap-1.5">
+      {resolved.map((item) => (
+        <a
+          className="inline-flex items-center gap-2 rounded-md px-2 py-1.5 text-xs text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+          href={item.href}
+          key={item.key}
+          rel="noopener noreferrer"
+          target="_blank"
+        >
+          <item.icon aria-hidden="true" className="size-3.5 shrink-0" />
+          <span className="truncate">{item.title}</span>
+        </a>
+      ))}
     </div>
   );
 };

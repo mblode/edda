@@ -1,0 +1,124 @@
+---
+title: OpenAPI integration
+description: Generate API reference documentation from OpenAPI specifications.
+---
+
+You can generate a complete API reference from an OpenAPI specification. Drop your spec file into your content directory, configure it in `docs.json`, and blode.md creates a page for every operation.
+
+## Setup
+
+<Steps>
+  <Step title="Add your spec file">
+    Place an `openapi.yaml` or `openapi.json` file in your content directory:
+
+    <Tree>
+      <Tree.Folder name="docs" defaultOpen>
+        <Tree.File name="docs.json" />
+        <Tree.File name="index.mdx" />
+        <Tree.File name="openapi.yaml" />
+      </Tree.Folder>
+    </Tree>
+
+  </Step>
+  <Step title="Configure in docs.json">
+    Add the `api.openapi` section to your `docs.json`:
+
+    ```json title="docs.json"
+    {
+      "api": {
+        "openapi": {
+          "source": "openapi.yaml",
+          "directory": "api"
+        }
+      }
+    }
+    ```
+
+  </Step>
+  <Step title="Deploy">
+    Run `blodemd push` and your API reference pages are generated automatically at `/api/{operation-id}`.
+
+  </Step>
+</Steps>
+
+## Configuration options
+
+<TypeTable
+  type={{
+    source: {
+      description:
+        "Path to your OpenAPI spec file, relative to the content directory.",
+      type: "string",
+      required: true,
+    },
+    directory: {
+      description:
+        'URL path prefix for generated API pages. Defaults to "api".',
+      type: "string",
+      default: '"api"',
+    },
+    include: {
+      description:
+        "Filter which operations to include. Accepts an array of operation IDs or path patterns.",
+      type: "string[]",
+    },
+    basePath: {
+      description: "Override the base path for API requests in the playground.",
+      type: "string",
+    },
+  }}
+/>
+
+## Navigation
+
+You can add your OpenAPI operations directly to the navigation by referencing the spec file in a navigation group:
+
+```json title="docs.json"
+{
+  "navigation": {
+    "groups": [
+      {
+        "group": "API Reference",
+        "openapi": "openapi.yaml"
+      }
+    ]
+  }
+}
+```
+
+This automatically creates navigation entries for each operation in your spec, grouped by tag.
+
+## API playground
+
+Blode.md can render an interactive API playground alongside your documentation. Configure it with the `api.playground` option:
+
+```json title="docs.json"
+{
+  "api": {
+    "openapi": {
+      "source": "openapi.yaml",
+      "directory": "api"
+    },
+    "playground": {
+      "display": "interactive",
+      "proxy": "https://api.example.com",
+      "credentials": true
+    }
+  }
+}
+```
+
+### Display modes
+
+| Mode          | Behavior                                                            |
+| ------------- | ------------------------------------------------------------------- |
+| `interactive` | Full playground with editable parameters and a "Send" button.       |
+| `simple`      | Read-only display of request and response examples.                 |
+| `auth`        | Interactive playground that requires authentication before sending. |
+| `none`        | No playground. Only the endpoint documentation is shown.            |
+
+<Callout type="tip">
+  Set `credentials: true` to include cookies and auth headers in playground
+  requests. Use `proxy` to route requests through your backend and avoid CORS
+  issues.
+</Callout>

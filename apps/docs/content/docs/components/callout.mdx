@@ -1,0 +1,117 @@
+---
+title: Callout
+description: Highlight important information with colored alert boxes.
+---
+
+Use the `Callout` component to draw attention to important information. Each callout type has a distinct color to signal its intent.
+
+## Basic usage
+
+Wrap your content in a `<Callout>` with a `type` prop:
+
+```mdx
+<Callout type="info">This is an informational callout.</Callout>
+```
+
+<Callout type="info">This is an informational callout.</Callout>
+
+## Types
+
+There are seven built-in callout types:
+
+<Callout type="note">Use **note** for general-purpose annotations.</Callout>
+
+<Callout type="info">Use **info** for supplemental context.</Callout>
+
+<Callout type="tip">
+  Use **tip** for helpful suggestions and best practices.
+</Callout>
+
+<Callout type="check">Use **check** to confirm a successful outcome.</Callout>
+
+<Callout type="warning">
+  Use **warning** when something could cause issues.
+</Callout>
+
+<Callout type="danger">
+  Use **danger** for critical information about destructive actions.
+</Callout>
+
+<Callout type="success">
+  Use **success** to highlight a positive result.
+</Callout>
+
+## Shorthand aliases
+
+Each callout type has a shorthand component that you can use without the `type` prop:
+
+```mdx
+<Note>A concise note for your readers.</Note>
+
+<Warning>This action cannot be undone.</Warning>
+
+<Tip>You can combine callouts with other components.</Tip>
+```
+
+<Note>A concise note for your readers.</Note>
+
+<Warning>This action cannot be undone.</Warning>
+
+<Info>Shorthand aliases keep your MDX clean and readable.</Info>
+
+<Tip>You can combine callouts with other components.</Tip>
+
+<Check>Your configuration is valid.</Check>
+
+<Danger>Deleting a project removes all associated data permanently.</Danger>
+
+The available aliases are `<Note>`, `<Warning>`, `<Info>`, `<Tip>`, `<Check>`, and `<Danger>`.
+
+## With a title
+
+Add a `title` prop to display a heading above the callout content:
+
+```mdx
+<Callout type="warning" title="Breaking change">
+  The `v2` API removes the `legacy` parameter. Update your integration before
+  upgrading.
+</Callout>
+```
+
+<Callout type="warning" title="Breaking change">
+  The `v2` API removes the `legacy` parameter. Update your integration before
+  upgrading.
+</Callout>
+
+## Props
+
+<TypeTable
+  type={{
+    type: {
+      description: "Visual style of the callout.",
+      type: '"info" | "success" | "warning" | "danger" | "note" | "tip" | "check"',
+      default: '"info"',
+      required: false,
+    },
+    title: {
+      description: "Optional heading displayed above the content.",
+      type: "string",
+      required: false,
+    },
+    icon: {
+      description: "Custom icon rendered before the content.",
+      type: "ReactNode",
+      required: false,
+    },
+    color: {
+      description: "Custom border and background color (hex or CSS color).",
+      type: "string",
+      required: false,
+    },
+    children: {
+      description: "The callout content.",
+      type: "ReactNode",
+      required: true,
+    },
+  }}
+/>

@@ -1,0 +1,62 @@
+---
+title: Frame
+description: Wrap content in a bordered container with an optional caption.
+---
+
+Use the `Frame` component to visually set apart screenshots, diagrams, or other media with a bordered container and an optional caption.
+
+## Basic frame
+
+```mdx
+<Frame>![Dashboard overview](/images/dashboard.png)</Frame>
+```
+
+## With a caption
+
+Add a `caption` prop to display centered text below the frame:
+
+```mdx
+<Frame caption="The project dashboard shows recent deployments and page analytics.">
+  ![Dashboard overview](/images/dashboard.png)
+</Frame>
+```
+
+<Frame caption="The project dashboard shows recent deployments and page analytics.">
+  A placeholder for a screenshot or diagram.
+</Frame>
+
+## With a hint
+
+Use the `hint` prop to display helper text above the frame:
+
+```mdx
+<Frame hint="Click to enlarge" caption="Navigation configuration in docs.json">
+  ![Navigation config](/images/nav-config.png)
+</Frame>
+```
+
+<Frame hint="Click to enlarge" caption="Navigation configuration in docs.json">
+  A placeholder for a screenshot or diagram.
+</Frame>
+
+## Props
+
+<TypeTable
+  type={{
+    caption: {
+      description: "Text displayed below the frame as a figcaption.",
+      type: "string",
+      required: false,
+    },
+    hint: {
+      description: "Helper text displayed above the frame.",
+      type: "string",
+      required: false,
+    },
+    children: {
+      description: "Content rendered inside the bordered container.",
+      type: "ReactNode",
+      required: true,
+    },
+  }}
+/>

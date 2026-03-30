@@ -1,10 +1,10 @@
 import { normalizePath } from "@repo/common";
 import type { PageMode, Tenant } from "@repo/models";
 import {
-  buildUtilityIndex,
-  buildSearchIndex,
   buildContentIndex,
   buildPageMetadataMap,
+  buildSearchIndex,
+  buildUtilityIndex,
   loadContentSource,
   loadPrebuiltContentIndex,
   loadPrebuiltSearchIndex,
@@ -42,7 +42,7 @@ import {
   getVisibleNavigation,
 } from "@/lib/navigation";
 import type { NavEntry, NavPage, NavTab } from "@/lib/navigation";
-import { buildOpenApiRegistry } from "@/lib/openapi";
+import { loadOpenApiRegistry } from "@/lib/openapi";
 import type { OpenApiRegistry } from "@/lib/openapi";
 import { createTimedPromiseCache } from "@/lib/server-cache";
 import { getTenantBySlug } from "@/lib/tenants";
@@ -57,7 +57,7 @@ interface ConfigErrorResult {
 interface RenderedPageData {
   content: Awaited<ReturnType<typeof renderMdx>>["content"];
   frontmatter: Awaited<ReturnType<typeof renderMdx>>["frontmatter"];
-  rawContent: string;
+  rawContent?: string;
   toc: ReturnType<typeof extractToc>;
 }
 
@@ -69,7 +69,6 @@ interface TenantArtifacts {
   flatNav: NavPage[];
   pageMetadataMap: Map<string, PageMetadata>;
   registry: OpenApiRegistry;
-  searchItems: SearchIndexItem[];
   tabs: NavTab[] | null;
   tenant: Tenant;
   tocBySlug: Map<string, TocItem[]>;
@@ -83,6 +82,11 @@ const ARTIFACT_CACHE_TTL_MS = 30 * 60 * 1000;
 const PAGE_RENDER_CACHE_TTL_MS = 4 * 60 * 60 * 1000;
 
 const artifactsCache = createTimedPromiseCache<string, TenantArtifactsResult>({
+  maxEntries: 512,
+  ttlMs: ARTIFACT_CACHE_TTL_MS,
+});
+
+const searchItemsCache = createTimedPromiseCache<string, SearchIndexItem[]>({
   maxEntries: 512,
   ttlMs: ARTIFACT_CACHE_TTL_MS,
 });
@@ -180,29 +184,21 @@ const getTenantArtifacts = async (tenantSlug: string) => {
     const docsCollectionWithNavigation =
       getDocsCollectionWithNavigation(rawConfig);
 
-    const [
-      config,
-      contentIndex,
-      registryResult,
-      prebuiltSearchIndex,
-      prebuiltTocIndex,
-      prebuiltUtilityIndex,
-    ] = await Promise.all([
-      resolveSiteConfigAssets(rawConfig, contentSource),
-      loadPrebuiltContentIndex(contentSource).then(
-        async (prebuilt) =>
-          prebuilt ?? (await buildContentIndex(contentSource, rawConfig))
-      ),
-      buildOpenApiRegistry(docsCollectionWithNavigation, contentSource)
-        .then((registry) => ({ ok: true as const, registry }))
-        .catch((error: unknown) => ({
-          error,
-          ok: false as const,
-        })),
-      loadPrebuiltSearchIndex(contentSource),
-      loadPrebuiltTocIndex(contentSource),
-      loadPrebuiltUtilityIndex(contentSource),
-    ]);
+    const [config, contentIndex, registryResult, prebuiltTocIndex] =
+      await Promise.all([
+        resolveSiteConfigAssets(rawConfig, contentSource),
+        loadPrebuiltContentIndex(contentSource).then(
+          async (prebuilt) =>
+            prebuilt ?? (await buildContentIndex(contentSource, rawConfig))
+        ),
+        loadOpenApiRegistry(docsCollectionWithNavigation, contentSource)
+          .then((registry) => ({ ok: true as const, registry }))
+          .catch((error: unknown) => ({
+            error,
+            ok: false as const,
+          })),
+        loadPrebuiltTocIndex(contentSource),
+      ]);
 
     if (contentIndex.errors.length) {
       return {
@@ -243,10 +239,6 @@ const getTenantArtifacts = async (tenantSlug: string) => {
         ...tab,
         entries: enrichNavWithMetadata(tab.entries, pageMetadataMap),
       })) ?? null;
-    const utilityIndexForSearch =
-      prebuiltSearchIndex || prebuiltUtilityIndex
-        ? prebuiltUtilityIndex
-        : await buildUtilityIndex(contentIndex, contentSource, rawConfig);
 
     return {
       anchors: docsNavigation?.global?.anchors ?? [],
@@ -256,18 +248,6 @@ const getTenantArtifacts = async (tenantSlug: string) => {
       flatNav,
       pageMetadataMap,
       registry: registryResult.registry,
-      searchItems: mergeSearchItems({
-        baseItems:
-          prebuiltSearchIndex ??
-          buildSearchItems({
-            config,
-            contentIndex,
-            utilityIndex: utilityIndexForSearch,
-          }),
-        config,
-        flatNav,
-        visibleFlatNav,
-      }),
       tabs,
       tenant,
       tocBySlug: prebuiltTocIndex ?? new Map(),
@@ -283,7 +263,34 @@ export const getTenantSearchItems = cache(async (tenantSlug: string) => {
     return null;
   }
 
-  return artifacts.searchItems;
+  const cacheKey = `${getTenantArtifactsCacheKey(artifacts.tenant)}:search`;
+
+  return await searchItemsCache.getOrCreate(cacheKey, async () => {
+    const prebuiltSearchIndex = await loadPrebuiltSearchIndex(
+      artifacts.contentSource
+    );
+    const utilityIndex = prebuiltSearchIndex
+      ? null
+      : ((await loadPrebuiltUtilityIndex(artifacts.contentSource)) ??
+        (await buildUtilityIndex(
+          artifacts.contentIndex,
+          artifacts.contentSource,
+          artifacts.config
+        )));
+
+    return mergeSearchItems({
+      baseItems:
+        prebuiltSearchIndex ??
+        buildSearchItems({
+          config: artifacts.config,
+          contentIndex: artifacts.contentIndex,
+          utilityIndex,
+        }),
+      config: artifacts.config,
+      flatNav: artifacts.flatNav,
+      visibleFlatNav: artifacts.visibleFlatNav,
+    });
+  });
 });
 
 const getRenderedPageData = async ({
@@ -291,44 +298,48 @@ const getRenderedPageData = async ({
   currentPath,
   relativePath,
   rawContent: preloadedRawContent,
+  toc: preloadedToc,
   useToc,
 }: {
   artifacts: TenantArtifacts;
   currentPath: string;
   relativePath: string;
   rawContent?: string;
+  toc?: TocItem[];
   useToc: boolean;
 }) => {
   const cacheKey = `${getTenantArtifactsCacheKey(artifacts.tenant)}:${currentPath}`;
 
   return await renderedPageCache.getOrCreate(cacheKey, async () => {
-    const rawContent =
-      preloadedRawContent ??
-      (await loadContentSource(artifacts.contentSource, relativePath));
-
-    // Try pre-compiled content first (fast path: <1ms)
     const compiled =
       await artifacts.contentSource.readCompiledMdx?.(relativePath);
+    const rawContent =
+      preloadedRawContent ??
+      (compiled
+        ? undefined
+        : await loadContentSource(artifacts.contentSource, relativePath));
     const rendered = compiled
       ? await renderFromCompiled(compiled.compiledSource)
-      : await renderMdx(rawContent);
+      : await renderMdx(rawContent ?? "");
 
     return {
       content: rendered.content,
       frontmatter: rendered.frontmatter,
       rawContent,
-      toc: useToc ? extractToc(rawContent) : [],
+      toc: preloadedToc ?? (useToc && rawContent ? extractToc(rawContent) : []),
     };
   });
 };
 
 export const clearDocsRuntimeCaches = () => {
   artifactsCache.clear();
+  searchItemsCache.clear();
   renderedPageCache.clear();
 };
 
 export const clearDocsRuntimeCachesForTenant = (tenantId: string) => {
   artifactsCache.deleteByPrefix(tenantId);
+  searchItemsCache.deleteByPrefix(tenantId);
   renderedPageCache.deleteByPrefix(tenantId);
 };
 
@@ -457,6 +468,10 @@ export const getDocShellData = cache(
     const isHiddenByNav = artifacts.flatNav.some(
       (page) => page.path === currentPath && page.hidden
     );
+    const { nextPage, prevPage } = computePrevNext(
+      effectiveFlatNav,
+      currentPath
+    );
     const useToc =
       entry.type === "docs" && artifacts.config.features?.toc !== false;
 
@@ -491,11 +506,11 @@ export const getDocShellData = cache(
       kind: "page" as const,
       mode: pageMeta?.mode,
       nav: showDocsNav ? (activeTabNav ?? artifacts.visibleNav) : [],
-      nextPage: computePrevNext(effectiveFlatNav, currentPath).nextPage,
+      nextPage,
       noindex: pageMeta?.noindex ?? false,
       pageDescription: entry.description,
       pageTitle: entry.title,
-      prevPage: computePrevNext(effectiveFlatNav, currentPath).prevPage,
+      prevPage,
       rawContent,
       tabs: artifacts.tabs,
       tenant: artifacts.tenant,
@@ -509,7 +524,12 @@ export const getDocShellData = cache(
  * from deploy when available, otherwise falls back to runtime compilation.
  */
 export const getDocPageContent = cache(
-  async (tenantSlug: string, slugKey: string, rawContent?: string) => {
+  async (
+    tenantSlug: string,
+    slugKey: string,
+    rawContent?: string,
+    toc?: TocItem[]
+  ) => {
     const artifacts = await getTenantArtifacts(tenantSlug);
     if (!artifacts || isConfigErrorResult(artifacts)) {
       return null;
@@ -529,6 +549,7 @@ export const getDocPageContent = cache(
       currentPath,
       rawContent,
       relativePath: entry.relativePath,
+      toc,
       useToc,
     });
   }

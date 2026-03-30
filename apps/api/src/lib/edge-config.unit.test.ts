@@ -16,14 +16,14 @@ describe("buildTenantEdgeConfigItems", () => {
       activeDeploymentId: "11111111-1111-4111-8111-111111111111",
       activeDeploymentManifestUrl: "https://example.com/manifest.json",
       customDomains: ["docs.example.com"],
-      description: "Atlas docs",
+      description: "Example docs",
       id: "22222222-2222-4222-8222-222222222222",
-      name: "Atlas",
+      name: "Example",
       pathPrefix: "/docs",
       primaryDomain: "docs.example.com",
-      slug: "atlas",
+      slug: "example",
       status: "active" as const,
-      subdomain: "atlas",
+      subdomain: "example",
     };
 
     const items = buildTenantEdgeConfigItems({
@@ -44,16 +44,18 @@ describe("buildTenantEdgeConfigItems", () => {
     });
 
     expect(
-      items.find((item) => item.key === getTenantEdgeSlugKey("atlas"))
+      items.find((item) => item.key === getTenantEdgeSlugKey("example"))
     ).toMatchObject({
-      key: getTenantEdgeSlugKey("atlas"),
+      key: getTenantEdgeSlugKey("example"),
       operation: "upsert",
     });
 
     expect(
-      items.find((item) => item.key === getTenantEdgeHostKey("atlas.blode.md"))
+      items.find(
+        (item) => item.key === getTenantEdgeHostKey("example.blode.md")
+      )
     ).toMatchObject({
-      key: getTenantEdgeHostKey("atlas.blode.md"),
+      key: getTenantEdgeHostKey("example.blode.md"),
       operation: "upsert",
     });
 

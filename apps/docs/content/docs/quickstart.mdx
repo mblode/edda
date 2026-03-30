@@ -1,0 +1,71 @@
+---
+title: Quickstart
+description: Go from zero to deployed documentation in five minutes.
+---
+
+This guide walks you through installing the CLI, scaffolding a docs project, and deploying it.
+
+## Prerequisites
+
+You need [Node.js](https://nodejs.org) 20 or later.
+
+## Steps
+
+<Steps>
+  <Step title="Install the CLI">
+    <Installer command="npm install -g blodemd" />
+  </Step>
+  <Step title="Authenticate">
+    ```bash
+    blodemd login
+    ```
+
+    This opens your browser for OAuth authentication. You can also use an API key with `blodemd login --token`.
+
+  </Step>
+  <Step title="Scaffold your docs">
+    ```bash
+    blodemd init docs
+    ```
+
+    This creates a `docs/` directory with a starter `docs.json` and `index.mdx`:
+
+    <Tree>
+      <Tree.Folder name="docs" defaultOpen>
+        <Tree.File name="docs.json" />
+        <Tree.File name="index.mdx" />
+      </Tree.Folder>
+    </Tree>
+
+  </Step>
+  <Step title="Set your project name">
+    Open `docs/docs.json` and set `name` to your project slug. This determines your subdomain:
+
+    ```json title="docs/docs.json"
+    {
+      "name": "my-project",
+      "theme": "mint",
+      "colors": { "primary": "#0D9373" },
+      "navigation": {
+        "groups": [{ "group": "Getting Started", "pages": ["index"] }]
+      }
+    }
+    ```
+
+  </Step>
+  <Step title="Deploy">
+    ```bash
+    blodemd push docs
+    ```
+
+    Your docs are live at `my-project.blode.md`.
+
+  </Step>
+</Steps>
+
+## What's next
+
+- [Configure navigation and branding](/configuration/docs-json)
+- [Add MDX components](/content/mdx-basics) to your pages
+- [Set up CI/CD](/deployment/github-actions) with GitHub Actions
+- [Run a local dev server](/features/dev-server) for real-time preview

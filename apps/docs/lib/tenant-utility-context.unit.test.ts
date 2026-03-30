@@ -7,17 +7,17 @@ import {
 
 describe("tenant utility context", () => {
   it("round-trips tenant utility rewrite context through search params", () => {
-    const url = new URL("https://blode.md/sites/atlas/sitemap.xml");
+    const url = new URL("https://blode.md/sites/example/sitemap.xml");
 
     applyTenantUtilityContextSearchParams(url, {
-      basePath: "/atlas",
+      basePath: "/example",
       protocol: "https",
       requestedHost: "blode.md",
       strategy: "path",
     });
 
     expect(getTenantRequestContextFromUrl(url)).toEqual({
-      basePath: "/atlas",
+      basePath: "/example",
       protocol: "https",
       requestedHost: "blode.md",
       strategy: "path",
@@ -27,7 +27,7 @@ describe("tenant utility context", () => {
   it("returns null when no rewrite context is present", () => {
     expect(
       getTenantRequestContextFromUrl(
-        new URL("https://blode.md/sites/atlas/sitemap.xml")
+        new URL("https://blode.md/sites/example/sitemap.xml")
       )
     ).toBeNull();
   });

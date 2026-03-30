@@ -1,0 +1,90 @@
+---
+title: Custom domains
+description: Use your own domain for your documentation site.
+---
+
+Every project deployed with blode.md gets a subdomain at `your-project.blode.md` automatically. You can also point your own domain to your docs site for a fully branded experience.
+
+## Default subdomain
+
+When you run `blodemd push`, your docs are published to `{name}.blode.md`, where `name` is the value in your `docs.json`. No DNS configuration is required.
+
+## Add a custom domain
+
+<Steps>
+  <Step title="Choose your domain">
+    Decide whether to use a subdomain (e.g., `docs.example.com`) or an apex domain (e.g., `example.com`).
+
+    <Callout type="tip">
+      Subdomains are recommended. They are simpler to configure and do not interfere with your root domain's other records.
+    </Callout>
+
+  </Step>
+  <Step title="Configure DNS">
+    Add a CNAME record pointing your domain to `cname.vercel-dns.com`.
+
+    | Type  | Name   | Value                  |
+    | ----- | ------ | ---------------------- |
+    | CNAME | `docs` | `cname.vercel-dns.com` |
+
+    For apex domains, some DNS providers require an `A` record instead of a CNAME. Check your provider's documentation for CNAME flattening or ALIAS record support.
+
+  </Step>
+  <Step title="Verify ownership">
+    If prompted, add the TXT verification record provided in your project dashboard:
+
+    | Type | Name                       | Value                          |
+    | ---- | -------------------------- | ------------------------------ |
+    | TXT  | `_vercel.docs.example.com` | `vc-domain-verify=...` |
+
+  </Step>
+  <Step title="Set the domain in your config">
+    Add the `domain` field to your `docs.json`:
+
+    ```json title="docs.json"
+    {
+      "name": "my-project",
+      "domain": "docs.example.com"
+    }
+    ```
+
+    Then redeploy with `blodemd push`.
+
+  </Step>
+</Steps>
+
+## Apex vs subdomain
+
+<TypeTable
+  type={{
+    "Subdomain (docs.example.com)": {
+      description:
+        "CNAME to cname.vercel-dns.com. Simplest setup, works with all DNS providers.",
+      type: "Recommended",
+    },
+    "Apex (example.com)": {
+      description:
+        "Requires A record or ALIAS/CNAME flattening. Not all DNS providers support this.",
+      type: "Advanced",
+    },
+  }}
+/>
+
+## Path prefix
+
+If you want your docs mounted at a subpath rather than the domain root, set `pathPrefix` in your `docs.json`:
+
+```json title="docs.json"
+{
+  "name": "my-project",
+  "domain": "docs.example.com",
+  "pathPrefix": "/docs"
+}
+```
+
+Your documentation will then be accessible at `docs.example.com/docs` instead of `docs.example.com`.
+
+<Callout type="note">
+  The path prefix is applied to all routes, including search, sitemaps, and API
+  reference pages.
+</Callout>

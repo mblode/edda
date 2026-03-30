@@ -1,0 +1,139 @@
+---
+title: Deploying with push
+description: Deploy your documentation to Blode.md with a single command.
+---
+
+You deploy documentation to Blode.md by running `blodemd push`. This page covers the command options, how directory resolution works, and what happens during a deployment.
+
+## Command
+
+```bash
+blodemd push [dir]
+```
+
+The optional `dir` argument specifies the path to your docs directory. If omitted, the CLI searches for `docs.json` automatically.
+
+## Options
+
+<TypeTable
+  type={{
+    "--project <slug>": {
+      description:
+        "Project slug. Overrides the `name` field in `docs.json`. Can also be set with `BLODEMD_PROJECT`.",
+      type: "string",
+    },
+    "--api-key <token>": {
+      description:
+        "API key for authentication. Overrides stored credentials. Can also be set with `BLODEMD_API_KEY`.",
+      type: "string",
+    },
+    "--api-url <url>": {
+      description: "API base URL. Can also be set with `BLODEMD_API_URL`.",
+      type: "string",
+      default: "https://api.blode.md",
+    },
+    "--branch <name>": {
+      description:
+        "Git branch name attached to the deployment. Can also be set with `BLODEMD_BRANCH`.",
+      type: "string",
+    },
+    "--message <msg>": {
+      description:
+        "Deploy message. Can also be set with `BLODEMD_COMMIT_MESSAGE`.",
+      type: "string",
+    },
+  }}
+/>
+
+## Directory resolution
+
+When you omit the `dir` argument, the CLI checks for `docs.json` in this order:
+
+1. Current working directory (`./`)
+2. `./docs/`
+3. `./apps/docs/`
+
+If none of these contain a `docs.json`, the CLI defaults to the current directory.
+
+<Callout type="info">
+  If you pass an explicit directory (e.g., `blodemd push my-docs`), the CLI uses
+  that path directly without searching.
+</Callout>
+
+## What happens during a push
+
+When you run `blodemd push`, the CLI performs these steps:
+
+<Steps>
+  <Step title="Validate configuration">
+    The CLI reads and parses `docs.json` from the resolved directory. If the
+    file is missing or invalid, the push fails immediately.
+  </Step>
+  <Step title="Resolve credentials">
+    Authentication is resolved in this order: `--api-key` flag,
+    `BLODEMD_API_KEY` environment variable, stored credentials from `blodemd
+    login`.
+  </Step>
+  <Step title="Collect files">
+    The CLI walks the docs directory recursively, skipping dotfiles (files and
+    directories starting with `.`) and `node_modules`. The file list is sorted
+    alphabetically.
+  </Step>
+  <Step title="Create deployment">
+    A new deployment record is created on the server with the resolved branch
+    name and commit message.
+  </Step>
+  <Step title="Upload files">
+    Files are base64-encoded and uploaded in batches. Each batch stays under 4
+    MB to work within serverless payload limits. The CLI shows progress as
+    batches complete.
+  </Step>
+  <Step title="Finalize deployment">
+    The deployment is finalized and promoted to live. Your docs are available
+    immediately at `your-project.blode.md`.
+  </Step>
+</Steps>
+
+## Project auto-creation
+
+If the project slug does not exist on Blode.md, the CLI offers to create it for you. This only works when you are logged in with browser OAuth (via `blodemd login`). API key authentication cannot auto-create projects.
+
+When a project is created, the CLI prints an API key for use in CI/CD pipelines. Save this key -- it is only displayed once.
+
+```
+Project my-project created
+API key for CI: bmd_abc123...
+```
+
+## File handling
+
+The CLI applies these rules when collecting files:
+
+- **Skipped entries**: any file or directory starting with `.` (e.g., `.git`, `.env`) and `node_modules`
+- **All other files**: included regardless of extension (MDX, JSON, images, fonts, etc.)
+- **Batch size**: files are uploaded in batches of up to 4 MB each
+- **Content types**: text files (MDX, JSON, YAML, CSS, JS, HTML, SVG) are uploaded with their correct MIME type; all others use `application/octet-stream`
+
+## Branch resolution
+
+The branch name is resolved in this order:
+
+1. `--branch` flag
+2. `BLODEMD_BRANCH` environment variable
+3. `GITHUB_REF_NAME` environment variable (auto-set by GitHub Actions)
+4. Current git branch (`git rev-parse --abbrev-ref HEAD`)
+5. Falls back to `main`
+
+## Commit message resolution
+
+The commit message is resolved in this order:
+
+1. `--message` flag
+2. `BLODEMD_COMMIT_MESSAGE` environment variable
+3. Latest git commit message (`git log -1 --pretty=%s`)
+
+## Related pages
+
+- [GitHub Actions](/deployment/github-actions) -- automate deployments in CI
+- [Environment variables](/deployment/environment-variables) -- all recognized environment variables
+- [docs.json reference](/configuration/docs-json) -- configuration file format

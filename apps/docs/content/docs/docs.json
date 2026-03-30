@@ -1,0 +1,126 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "theme": "mint",
+  "name": "docs",
+  "description": "Ship beautiful docs from your terminal. Write MDX locally, deploy with one command.",
+  "colors": {
+    "primary": "#0D9373",
+    "light": "#CFF6EE",
+    "dark": "#0C3A33"
+  },
+  "contextual": {
+    "options": [
+      "copy",
+      "view",
+      "chatgpt",
+      "claude",
+      "perplexity",
+      "grok",
+      "aistudio"
+    ]
+  },
+  "navbar": {
+    "links": [
+      {
+        "label": "GitHub",
+        "href": "https://github.com/mblode/blodemd"
+      }
+    ]
+  },
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Documentation",
+        "groups": [
+          {
+            "group": "Getting started",
+            "pages": ["index", "quickstart", "how-it-works"]
+          },
+          {
+            "group": "Writing content",
+            "pages": [
+              "content/mdx-basics",
+              "content/frontmatter",
+              "content/code-blocks"
+            ]
+          },
+          {
+            "group": "Configuration",
+            "pages": [
+              "configuration/docs-json",
+              "configuration/navigation",
+              "configuration/theming"
+            ]
+          },
+          {
+            "group": "Deployment",
+            "pages": [
+              "deployment/push",
+              "deployment/github-actions",
+              "deployment/environment-variables"
+            ]
+          },
+          {
+            "group": "Features",
+            "pages": [
+              "features/custom-domains",
+              "features/search",
+              "features/seo",
+              "features/openapi",
+              "features/collections",
+              "features/dev-server"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Components",
+        "groups": [
+          {
+            "group": "Content",
+            "pages": [
+              "components/callout",
+              "components/card",
+              "components/accordion",
+              "components/tabs",
+              "components/steps",
+              "components/expandable"
+            ]
+          },
+          {
+            "group": "Code",
+            "pages": ["components/code-group", "components/installer"]
+          },
+          {
+            "group": "Layout",
+            "pages": [
+              "components/columns",
+              "components/frame",
+              "components/tree"
+            ]
+          },
+          {
+            "group": "Data display",
+            "pages": ["components/type-table"]
+          }
+        ]
+      },
+      {
+        "tab": "CLI reference",
+        "groups": [
+          {
+            "group": "CLI",
+            "pages": [
+              "cli/overview",
+              "cli/login",
+              "cli/init",
+              "cli/push",
+              "cli/dev",
+              "cli/validate"
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

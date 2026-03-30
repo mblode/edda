@@ -1,0 +1,106 @@
+---
+title: CLI overview
+description: Install and use the blodemd command-line interface.
+---
+
+The blodemd CLI lets you authenticate, scaffold, validate, preview, and deploy documentation from your terminal.
+
+## Installation
+
+<Installer command="npm install -g blodemd" />
+
+Requires Node.js 20 or later. The current version is **0.0.3**.
+
+## Commands
+
+<TypeTable
+  type={{
+    login: {
+      description:
+        "Authenticate with Blode.md using browser OAuth or an API key.",
+      type: "command",
+    },
+    logout: {
+      description: "Remove stored credentials from your machine.",
+      type: "command",
+    },
+    whoami: {
+      description: "Show the current authentication status.",
+      type: "command",
+    },
+    init: {
+      description:
+        "Scaffold a new documentation directory with a starter docs.json and index page.",
+      type: "command",
+    },
+    validate: {
+      description:
+        "Validate your docs.json configuration file against the schema.",
+      type: "command",
+    },
+    push: {
+      description: "Deploy documentation to Blode.md.",
+      type: "command",
+    },
+    dev: {
+      description: "Start a local development server for real-time preview.",
+      type: "command",
+    },
+  }}
+/>
+
+## Command reference
+
+<Columns cols={2}>
+  <Card title="blodemd login" icon="key" href="/cli/login">
+    Authenticate with browser OAuth or an API key.
+  </Card>
+  <Card title="blodemd init" icon="folder-plus" href="/cli/init">
+    Scaffold a docs directory with starter files.
+  </Card>
+  <Card title="blodemd push" icon="rocket" href="/cli/push">
+    Deploy your documentation to Blode.md.
+  </Card>
+  <Card title="blodemd dev" icon="monitor" href="/cli/dev">
+    Run a local dev server with live reload.
+  </Card>
+  <Card title="blodemd validate" icon="check" href="/cli/validate">
+    Validate your docs.json before deploying.
+  </Card>
+</Columns>
+
+## Global behavior
+
+### Credentials
+
+All authentication state is stored locally at `~/.config/blodemd/credentials.json`. The CLI never sends credentials to any third party.
+
+### Environment variables
+
+You can configure the CLI with environment variables instead of flags. This is useful in CI/CD pipelines.
+
+<TypeTable
+  type={{
+    BLODEMD_API_KEY: {
+      description: "API key for authentication. Overrides stored credentials.",
+      type: "string",
+    },
+    BLODEMD_API_URL: {
+      description: "Override the API base URL.",
+      type: "string",
+      default: "https://api.blode.md",
+    },
+    BLODEMD_PROJECT: {
+      description: "Project slug. Overrides the name field in docs.json.",
+      type: "string",
+    },
+    BLODEMD_BRANCH: {
+      description: "Git branch name for the deployment.",
+      type: "string",
+    },
+    BLODEMD_COMMIT_MESSAGE: {
+      description: "Commit message attached to the deployment.",
+      type: "string",
+    },
+  }}
+/>

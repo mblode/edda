@@ -1,0 +1,129 @@
+---
+title: Accordion
+description: Collapsible content sections for FAQs and detailed information.
+---
+
+Use the `Accordion` component to hide content behind a toggle. Group multiple accordions together with `AccordionGroup` for a clean, bordered container.
+
+## Basic accordion
+
+```mdx
+<Accordion title="What formats does blodemd support?">
+  Blode.md uses MDX, which combines standard Markdown with JSX components. You
+  can also reference OpenAPI specs for auto-generated API docs.
+</Accordion>
+```
+
+<Accordion title="What formats does blodemd support?">
+  Blode.md uses MDX, which combines standard Markdown with JSX components. You
+  can also reference OpenAPI specs for auto-generated API docs.
+</Accordion>
+
+## Accordion group
+
+Wrap multiple accordions in an `AccordionGroup` to render them in a single bordered container with dividers:
+
+```mdx
+<AccordionGroup>
+  <Accordion title="How do I get started?">
+    Run `npx blodemd init` in your project directory, then `npx blodemd dev` to
+    preview locally.
+  </Accordion>
+  <Accordion title="Can I use custom domains?">
+    Yes. After deploying, add a custom domain in your project settings and
+    update your DNS records.
+  </Accordion>
+  <Accordion title="Is there a free tier?">
+    Blode.md offers a generous free tier for open-source and personal projects.
+  </Accordion>
+</AccordionGroup>
+```
+
+<AccordionGroup>
+  <Accordion title="How do I get started?">
+    Run `npx blodemd init` in your project directory, then `npx blodemd dev` to
+    preview locally.
+  </Accordion>
+  <Accordion title="Can I use custom domains?">
+    Yes. After deploying, add a custom domain in your project settings and
+    update your DNS records.
+  </Accordion>
+  <Accordion title="Is there a free tier?">
+    Blode.md offers a generous free tier for open-source and personal projects.
+  </Accordion>
+</AccordionGroup>
+
+## Default open
+
+Set `defaultOpen` to expand an accordion on page load:
+
+```mdx
+<Accordion title="This section is open by default" defaultOpen>
+  You can use this for content that should be visible immediately but still
+  collapsible.
+</Accordion>
+```
+
+<Accordion title="This section is open by default" defaultOpen>
+  You can use this for content that should be visible immediately but still
+  collapsible.
+</Accordion>
+
+## With a description
+
+Add a `description` prop to display secondary text below the title:
+
+```mdx
+<Accordion title="Deployment" description="How publishing works">
+  Run `blodemd push` to deploy your documentation. Changes go live in seconds.
+</Accordion>
+```
+
+<Accordion title="Deployment" description="How publishing works">
+  Run `blodemd push` to deploy your documentation. Changes go live in seconds.
+</Accordion>
+
+## Props
+
+### Accordion
+
+<TypeTable
+  type={{
+    title: {
+      description: "The heading text shown in the toggle button.",
+      type: "string",
+      required: true,
+    },
+    description: {
+      description: "Secondary text displayed below the title.",
+      type: "string",
+      required: false,
+    },
+    defaultOpen: {
+      description: "Whether the accordion starts expanded.",
+      type: "boolean",
+      default: "false",
+      required: false,
+    },
+    id: {
+      description:
+        "Custom anchor ID. Defaults to a slugified version of the title.",
+      type: "string",
+      required: false,
+    },
+    icon: {
+      description: "Icon displayed before the title.",
+      type: "ReactNode",
+      required: false,
+    },
+    children: {
+      description: "Content revealed when the accordion is open.",
+      type: "ReactNode",
+      required: true,
+    },
+  }}
+/>
+
+### AccordionGroup
+
+`AccordionGroup` accepts `children` (one or more `Accordion` components) and renders them in a bordered container.

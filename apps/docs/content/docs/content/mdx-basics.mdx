@@ -1,0 +1,64 @@
+---
+title: MDX basics
+description: Write documentation with Markdown and JSX components.
+---
+
+MDX combines Markdown with JSX components. You write standard Markdown, and when you need richer elements, you use built-in components directly in your content. No imports are needed.
+
+## Markdown
+
+All standard Markdown syntax works, including GitHub Flavored Markdown (GFM):
+
+- **Headings** — `#`, `##`, `###`, etc.
+- **Bold** and _italic_ text
+- Lists (ordered and unordered)
+- [Links](https://blode.md) and images
+- Blockquotes
+- Tables
+- Fenced code blocks with syntax highlighting
+
+## Using components
+
+Blode.md provides over 30 built-in components. Use them directly in your MDX without any import statements:
+
+```mdx
+This is a paragraph with standard Markdown.
+
+<Callout type="info">This is a callout component rendered inline.</Callout>
+```
+
+Components accept props just like JSX:
+
+```mdx
+<Card title="My card" icon="star" href="/some-page">
+  Card content goes here.
+</Card>
+```
+
+## Frontmatter
+
+Every page starts with YAML frontmatter between `---` delimiters:
+
+```mdx
+---
+title: My page title
+description: A brief summary of this page.
+---
+
+Page content starts here.
+```
+
+The `title` field is required. See the [frontmatter reference](/content/frontmatter) for all available fields.
+
+## File naming
+
+Pages are referenced by their file path without the `.mdx` extension. A file at `getting-started/installation.mdx` is referenced as `"getting-started/installation"` in your navigation config.
+
+<Note>
+  File names become URL slugs. Use lowercase with hyphens: `my-page.mdx`, not
+  `My Page.mdx`.
+</Note>
+
+## Component reference
+
+Browse all available components in the [Components](/components/callout) tab.

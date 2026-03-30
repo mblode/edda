@@ -1,0 +1,76 @@
+---
+title: blodemd validate
+description: Validate your docs.json configuration file.
+---
+
+Check that your `docs.json` file is valid JSON and can be parsed by the CLI before deploying.
+
+```bash
+blodemd validate [dir]
+```
+
+## Directory resolution
+
+If you omit the `dir` argument, the CLI searches for `docs.json` in these locations (in order):
+
+1. The current working directory
+2. `./docs`
+3. `./apps/docs`
+
+## Options
+
+<TypeTable
+  type={{
+    "[dir]": {
+      description: "Path to the docs directory containing docs.json.",
+      type: "string",
+    },
+  }}
+/>
+
+## Examples
+
+<CodeGroup>
+```bash title="Validate from default location"
+blodemd validate
+```
+
+```bash title="Validate a specific directory"
+blodemd validate ./my-docs
+```
+
+</CodeGroup>
+
+### Successful output
+
+```bash
+$ blodemd validate
+~ docs.json is valid.
+i Done
+```
+
+## Use in CI
+
+Add a validation step to your CI pipeline to catch configuration errors before deployment.
+
+```yaml title=".github/workflows/docs.yml"
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm install -g blodemd
+      - run: blodemd validate docs
+      - run: blodemd push docs
+        env:
+          BLODEMD_API_KEY: ${{ secrets.BLODEMD_API_KEY }}
+```
+
+<Callout type="info">
+  Running `blodemd push` also validates `docs.json` as its first step. A
+  standalone validate step is useful when you want to fail fast in CI without
+  needing authentication.
+</Callout>

@@ -1,0 +1,88 @@
+---
+title: Frontmatter
+description: All available YAML frontmatter fields for documentation pages.
+---
+
+Every MDX page starts with YAML frontmatter between `---` delimiters. The `title` field is required. All other fields are optional.
+
+## Fields
+
+<TypeTable
+  type={{
+    title: {
+      description: "Page title displayed in the header and browser tab.",
+      type: "string",
+      required: true,
+    },
+    description: {
+      description: "Summary used in meta tags and search results.",
+      type: "string",
+    },
+    sidebarTitle: {
+      description: "Override the title shown in the sidebar navigation.",
+      type: "string",
+    },
+    icon: {
+      description: "Icon displayed next to the page title in the sidebar.",
+      type: "string",
+    },
+    iconType: {
+      description: "Icon style variant.",
+      type: '"regular" | "solid" | "light" | "thin" | "sharp-solid" | "duotone" | "brands"',
+    },
+    mode: {
+      description: "Page layout mode.",
+      type: '"default" | "wide" | "custom" | "frame" | "center"',
+      default: '"default"',
+    },
+    hidden: {
+      description:
+        "Hide this page from navigation. The page is still accessible via direct URL.",
+      type: "boolean",
+      default: "false",
+    },
+    deprecated: {
+      description: "Mark the page as deprecated. Displays a deprecation badge.",
+      type: "boolean",
+      default: "false",
+    },
+    noindex: {
+      description: "Prevent search engines from indexing this page.",
+      type: "boolean",
+      default: "false",
+    },
+    keywords: {
+      description: "Additional keywords for search indexing.",
+      type: "string[]",
+    },
+    tag: {
+      description: "Display a tag badge next to the page title.",
+      type: "string",
+    },
+    url: {
+      description: "Override the navigation link to point to an external URL.",
+      type: "string",
+    },
+    hideApiMarker: {
+      description: "Hide the API method badge on OpenAPI pages.",
+      type: "boolean",
+    },
+    hideFooterPagination: {
+      description:
+        "Hide the previous/next navigation at the bottom of the page.",
+      type: "boolean",
+    },
+  }}
+/>
+
+## Example
+
+```yaml
+---
+title: Authentication
+description: Learn how to authenticate API requests.
+icon: lock
+tag: Updated
+mode: wide
+---
+```

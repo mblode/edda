@@ -1,0 +1,173 @@
+---
+title: Content types
+description: Use collections to publish blogs, courses, products, and more alongside your docs.
+---
+
+Blode.md supports more than just documentation. You can publish blogs, courses, product pages, and other content types by defining collections in your configuration. Each collection has its own content directory, URL prefix, and navigation structure.
+
+## Define a collection
+
+Collections use the SiteConfig format with a top-level `collections` array. Each collection is an object with its own `id`, `type`, and content root:
+
+```json title="docs.json"
+{
+  "collections": [
+    {
+      "id": "docs",
+      "type": "docs",
+      "root": "content/docs",
+      "slugPrefix": "/docs",
+      "navigation": {
+        "groups": [
+          { "group": "Getting started", "pages": ["index", "quickstart"] }
+        ]
+      }
+    },
+    {
+      "id": "blog",
+      "type": "blog",
+      "root": "content/blog",
+      "slugPrefix": "/blog",
+      "sort": "date:desc",
+      "index": true
+    }
+  ]
+}
+```
+
+## Collection properties
+
+<TypeTable
+  type={{
+    id: {
+      description: "Unique identifier for the collection.",
+      type: "string",
+      required: true,
+    },
+    type: {
+      description:
+        "The content type. Determines which frontmatter fields are available and how pages are rendered.",
+      type: "string",
+      required: true,
+    },
+    root: {
+      description:
+        "Path to the content directory for this collection, relative to the project root.",
+      type: "string",
+      required: true,
+    },
+    slugPrefix: {
+      description: "URL prefix for all pages in this collection.",
+      type: "string",
+    },
+    navigation: {
+      description:
+        "Navigation structure for this collection. Same format as the top-level navigation.",
+      type: "object",
+    },
+    sort: {
+      description:
+        'Sort order for listing pages. Format: "field:direction" (e.g., "date:desc").',
+      type: "string",
+    },
+    index: {
+      description:
+        "Whether to auto-generate an index page listing all pages in the collection.",
+      type: "boolean",
+      default: "false",
+    },
+  }}
+/>
+
+## Available types
+
+| Type       | Use case                                |
+| ---------- | --------------------------------------- |
+| `site`     | General-purpose website pages           |
+| `docs`     | Documentation with sidebar navigation   |
+| `blog`     | Blog posts sorted by date               |
+| `courses`  | Ordered learning content with progress  |
+| `products` | Product pages with pricing and metadata |
+| `notes`    | Short-form notes and snippets           |
+| `forms`    | Form pages with input fields            |
+| `sheets`   | Spreadsheet-style data pages            |
+| `slides`   | Presentation slides                     |
+| `todos`    | Task lists and checklists               |
+
+## Type-specific frontmatter
+
+Each collection type supports additional frontmatter fields beyond the standard `title` and `description`.
+
+<CodeGroup>
+```mdx title="Blog post"
+---
+title: Launch week recap
+description: Everything we shipped this week.
+date: 2025-01-15
+tags:
+  - announcements
+  - releases
+author: Jane Smith
+image: /images/launch-week.png
+---
+```
+
+```mdx title="Course lesson"
+---
+title: Your first lesson
+description: Getting started with the basics.
+order: 1
+duration: 5m
+---
+```
+
+```mdx title="Product page"
+---
+title: Pro plan
+description: For growing teams.
+price: 49
+currency: USD
+sku: PRO-001
+---
+```
+
+</CodeGroup>
+
+## Full example
+
+Here is a complete `docs.json` that defines both documentation and a blog:
+
+```json title="docs.json"
+{
+  "name": "my-project",
+  "theme": "mint",
+  "colors": { "primary": "#0D9373" },
+  "collections": [
+    {
+      "id": "docs",
+      "type": "docs",
+      "root": "content/docs",
+      "slugPrefix": "/docs",
+      "navigation": {
+        "groups": [
+          { "group": "Getting started", "pages": ["index", "quickstart"] },
+          { "group": "Guides", "pages": ["guides/setup", "guides/deploy"] }
+        ]
+      }
+    },
+    {
+      "id": "blog",
+      "type": "blog",
+      "root": "content/blog",
+      "slugPrefix": "/blog",
+      "sort": "date:desc",
+      "index": true
+    }
+  ]
+}
+```
+
+<Callout type="info">
+  When you use the `collections` array, it replaces the top-level `navigation`
+  field. Each collection manages its own navigation independently.
+</Callout>

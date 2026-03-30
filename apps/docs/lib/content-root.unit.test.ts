@@ -17,7 +17,7 @@ const createTempDir = async (prefix: string) => {
 
 const writeDocsConfig = async (filePath: string) => {
   await fs.mkdir(path.dirname(filePath), { recursive: true });
-  await fs.writeFile(filePath, JSON.stringify({ name: "Atlas" }), "utf8");
+  await fs.writeFile(filePath, JSON.stringify({ name: "Example" }), "utf8");
 };
 
 afterEach(async () => {
@@ -32,21 +32,23 @@ afterEach(async () => {
 describe("getTenantDocsPath", () => {
   it("uses the package-local content directory when running from apps/docs", async () => {
     const root = await createTempDir("docs-app-root-");
-    await writeDocsConfig(path.join(root, "content/atlas/docs.json"));
+    await writeDocsConfig(path.join(root, "content/example/docs.json"));
     process.chdir(root);
 
-    expect(getTenantDocsPath("atlas")).toBe(
-      path.join(process.cwd(), "content/atlas")
+    expect(getTenantDocsPath("example")).toBe(
+      path.join(process.cwd(), "content/example")
     );
   });
 
   it("uses the monorepo app content directory when running from the repo root", async () => {
     const root = await createTempDir("docs-monorepo-root-");
-    await writeDocsConfig(path.join(root, "apps/docs/content/atlas/docs.json"));
+    await writeDocsConfig(
+      path.join(root, "apps/docs/content/example/docs.json")
+    );
     process.chdir(root);
 
-    expect(getTenantDocsPath("atlas")).toBe(
-      path.join(process.cwd(), "apps/docs/content/atlas")
+    expect(getTenantDocsPath("example")).toBe(
+      path.join(process.cwd(), "apps/docs/content/example")
     );
   });
 });

@@ -1,0 +1,118 @@
+---
+title: Environment variables
+description: All environment variables recognized by the blodemd CLI.
+---
+
+You can configure the blodemd CLI entirely through environment variables. This is the recommended approach for CI/CD pipelines where you cannot use interactive login.
+
+## CLI environment variables
+
+<TypeTable
+  type={{
+    BLODEMD_API_KEY: {
+      description:
+        "API key for authentication. When set, the CLI skips stored credentials and uses this value directly. Required in CI environments.",
+      type: "string",
+    },
+    BLODEMD_API_URL: {
+      description:
+        "Override the API base URL. You only need this for self-hosted or staging environments.",
+      type: "string",
+      default: "https://api.blode.md",
+    },
+    BLODEMD_PROJECT: {
+      description: "Project slug. Overrides the `name` field in `docs.json`.",
+      type: "string",
+    },
+    BLODEMD_BRANCH: {
+      description:
+        "Git branch name attached to the deployment. Overrides auto-detection from git.",
+      type: "string",
+    },
+    BLODEMD_COMMIT_MESSAGE: {
+      description:
+        "Commit message attached to the deployment. Overrides auto-detection from `git log`.",
+      type: "string",
+    },
+  }}
+/>
+
+## Auto-detected variables
+
+The CLI also reads these variables when they are present in the environment:
+
+<TypeTable
+  type={{
+    GITHUB_REF_NAME: {
+      description:
+        "Automatically set by GitHub Actions to the branch or tag name. Used as the deployment branch when `BLODEMD_BRANCH` is not set.",
+      type: "string",
+    },
+  }}
+/>
+
+## Resolution order
+
+Each configuration value follows a precedence chain. The CLI uses the first available source:
+
+| Value          | CLI flag    | Environment variable     | Fallback                                                               |
+| -------------- | ----------- | ------------------------ | ---------------------------------------------------------------------- |
+| API key        | `--api-key` | `BLODEMD_API_KEY`        | Stored credentials                                                     |
+| API URL        | `--api-url` | `BLODEMD_API_URL`        | `https://api.blode.md`                                                 |
+| Project        | `--project` | `BLODEMD_PROJECT`        | `name` in `docs.json`                                                  |
+| Branch         | `--branch`  | `BLODEMD_BRANCH`         | `GITHUB_REF_NAME`, then `git rev-parse --abbrev-ref HEAD`, then `main` |
+| Commit message | `--message` | `BLODEMD_COMMIT_MESSAGE` | `git log -1 --pretty=%s`                                               |
+
+## Credentials file
+
+When you run `blodemd login`, the CLI stores your session locally. The file location depends on your operating system:
+
+<Tabs items={["macOS / Linux", "Windows"]}>
+  <Tab value="macOS / Linux">
+    ```
+    ~/.config/blodemd/credentials.json
+    ```
+
+    The CLI respects `XDG_CONFIG_HOME` if set. The full path is `$XDG_CONFIG_HOME/blodemd/credentials.json`.
+
+  </Tab>
+  <Tab value="Windows">
+    ```
+    %APPDATA%\blodemd\credentials.json
+    ```
+  </Tab>
+</Tabs>
+
+The credentials file stores either an OAuth session (from `blodemd login`) or an API key (from `blodemd login --token`). The `BLODEMD_API_KEY` environment variable always takes precedence over stored credentials.
+
+<Callout type="warn">
+  Do not commit the credentials file to version control. It is stored outside
+  your project directory by default, but make sure `~/.config/blodemd/` is not
+  inadvertently included in backups or shared environments.
+</Callout>
+
+## Example: GitHub Actions
+
+Set `BLODEMD_API_KEY` as a repository secret and reference it in your workflow:
+
+```yaml title=".github/workflows/deploy-docs.yml"
+- run: npx --yes blodemd push
+  env:
+    BLODEMD_API_KEY: ${{ secrets.BLODEMD_API_KEY }}
+```
+
+## Example: local development
+
+Export the variable in your shell to avoid passing `--api-key` every time:
+
+```bash
+export BLODEMD_API_KEY="bmd_your_key_here"
+blodemd push
+```
+
+Or use `blodemd login` for interactive authentication, which stores credentials automatically.
+
+## Related pages
+
+- [Deploying with push](/deployment/push) -- command reference and deployment flow
+- [GitHub Actions](/deployment/github-actions) -- automate deployments in CI

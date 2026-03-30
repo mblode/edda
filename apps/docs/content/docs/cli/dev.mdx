@@ -1,0 +1,66 @@
+---
+title: blodemd dev
+description: Start a local development server for real-time preview.
+---
+
+Run the full Blode.md rendering engine locally so you can preview your documentation as you write.
+
+```bash
+blodemd dev
+```
+
+## How it works
+
+The dev server starts a local Next.js instance that renders your documentation with the same engine used in production. A file watcher monitors your docs directory and triggers automatic browser refreshes when content changes. Changes to `docs.json` trigger a full server reload.
+
+## Options
+
+<TypeTable
+  type={{
+    "-p, --port <port>": {
+      description: "Port number for the local server.",
+      type: "number",
+      default: "3030",
+    },
+    "-d, --dir <dir>": {
+      description:
+        "Path to the docs directory containing docs.json. Uses the same resolution logic as blodemd push if omitted.",
+      type: "string",
+    },
+    "--no-open": {
+      description:
+        "Do not open the browser automatically when the server starts.",
+      type: "boolean",
+      default: "false",
+    },
+  }}
+/>
+
+## Examples
+
+<CodeGroup>
+```bash title="Start with defaults"
+blodemd dev
+```
+
+```bash title="Custom port"
+blodemd dev --port 4000
+```
+
+```bash title="Specific directory, no browser"
+blodemd dev --dir ./my-docs --no-open
+```
+
+</CodeGroup>
+
+## File watching
+
+The dev server watches all files in your docs directory for changes:
+
+- **Content changes** (`.mdx`, `.md`, `.json` files) trigger a hot reload in the browser.
+- **Config changes** (`docs.json`) trigger a full server reload to pick up navigation and theming updates.
+
+<Callout type="info">
+  The dev server requires a valid `docs.json` in your docs directory. Run
+  `blodemd init` first if you are starting from scratch.
+</Callout>

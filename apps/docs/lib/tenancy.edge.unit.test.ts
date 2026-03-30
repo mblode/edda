@@ -17,12 +17,12 @@ let resolveTenantFromEdgeConfig: typeof ResolveTenantFromEdgeConfig;
 const tenant = {
   customDomains: ["docs.example.com"],
   id: "tenant-id",
-  name: "Atlas",
+  name: "Example",
   pathPrefix: "/docs",
   primaryDomain: "docs.example.com",
-  slug: "atlas",
+  slug: "example",
   status: "active" as const,
-  subdomain: "atlas",
+  subdomain: "example",
 };
 
 describe("resolveTenantFromEdgeConfig", () => {
@@ -52,7 +52,7 @@ describe("resolveTenantFromEdgeConfig", () => {
     expect(resolution).toMatchObject({
       basePath: "/docs",
       host: "docs.example.com",
-      rewrittenPath: "/sites/atlas/getting-started",
+      rewrittenPath: "/sites/example/getting-started",
       strategy: "custom-domain",
     });
   });
@@ -74,7 +74,7 @@ describe("resolveTenantFromEdgeConfig", () => {
     expect(resolution).toMatchObject({
       basePath: "/docs",
       host: "docs.example.com",
-      rewrittenPath: "/sites/atlas/robots.txt",
+      rewrittenPath: "/sites/example/robots.txt",
       strategy: "custom-domain",
     });
   });
@@ -82,25 +82,25 @@ describe("resolveTenantFromEdgeConfig", () => {
   it("resolves a subdomain via the tenant slug record", async () => {
     edgeConfigMocks.getTenantEdgeHostRecord.mockResolvedValue(null);
     edgeConfigMocks.getTenantEdgeSlugRecord.mockResolvedValue({
-      slug: "atlas",
+      slug: "example",
       tenant: {
         ...tenant,
         customDomains: [],
         pathPrefix: undefined,
-        primaryDomain: "atlas.blode.md",
+        primaryDomain: "example.blode.md",
       },
       version: 1,
     });
 
     const resolution = await resolveTenantFromEdgeConfig(
-      "atlas.blode.md",
+      "example.blode.md",
       "/docs/cli"
     );
 
     expect(resolution).toMatchObject({
       basePath: "/docs",
-      host: "atlas.blode.md",
-      rewrittenPath: "/sites/atlas/cli",
+      host: "example.blode.md",
+      rewrittenPath: "/sites/example/cli",
       strategy: "subdomain",
     });
   });
@@ -108,25 +108,25 @@ describe("resolveTenantFromEdgeConfig", () => {
   it("resolves a localhost subdomain via the tenant slug record", async () => {
     edgeConfigMocks.getTenantEdgeHostRecord.mockResolvedValue(null);
     edgeConfigMocks.getTenantEdgeSlugRecord.mockResolvedValue({
-      slug: "atlas",
+      slug: "example",
       tenant: {
         ...tenant,
         customDomains: [],
         pathPrefix: undefined,
-        primaryDomain: "atlas.blode.md",
+        primaryDomain: "example.blode.md",
       },
       version: 1,
     });
 
     const resolution = await resolveTenantFromEdgeConfig(
-      "atlas.localhost",
+      "example.localhost",
       "/docs/cli"
     );
 
     expect(resolution).toMatchObject({
       basePath: "/docs",
-      host: "atlas.localhost",
-      rewrittenPath: "/sites/atlas/cli",
+      host: "example.localhost",
+      rewrittenPath: "/sites/example/cli",
       strategy: "subdomain",
     });
   });
@@ -134,25 +134,25 @@ describe("resolveTenantFromEdgeConfig", () => {
   it("resolves a root-domain path tenant via the tenant slug record", async () => {
     edgeConfigMocks.getTenantEdgeHostRecord.mockResolvedValue(null);
     edgeConfigMocks.getTenantEdgeSlugRecord.mockResolvedValue({
-      slug: "atlas",
+      slug: "example",
       tenant: {
         ...tenant,
         customDomains: [],
         pathPrefix: undefined,
-        primaryDomain: "atlas.blode.md",
+        primaryDomain: "example.blode.md",
       },
       version: 1,
     });
 
     const resolution = await resolveTenantFromEdgeConfig(
       "blode.md",
-      "/atlas/guides/intro"
+      "/example/guides/intro"
     );
 
     expect(resolution).toMatchObject({
-      basePath: "/atlas",
+      basePath: "/example",
       host: "blode.md",
-      rewrittenPath: "/sites/atlas/guides/intro",
+      rewrittenPath: "/sites/example/guides/intro",
       strategy: "path",
     });
   });

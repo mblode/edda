@@ -53,7 +53,7 @@ export default function HomePage() {
                 <a href="#get-started">Get started</a>
               </Button>
               <Button variant="outline" size="lg" asChild>
-                <a href="https://atlas.blode.md">See live example</a>
+                <a href="https://docs.blode.md">Read the docs</a>
               </Button>
             </div>
           </div>
@@ -212,15 +212,15 @@ export default function HomePage() {
             <div className="mt-12 flex flex-wrap gap-6">
               <a
                 className="text-sm text-muted-foreground underline underline-offset-4 transition-colors hover:text-foreground"
-                href="https://atlas.blode.md"
+                href="https://docs.blode.md"
               >
-                atlas.blode.md
+                docs.blode.md
               </a>
               <a
                 className="text-sm text-muted-foreground underline underline-offset-4 transition-colors hover:text-foreground"
-                href="https://orbit.blode.md"
+                href="https://example.blode.md"
               >
-                orbit.blode.md
+                example.blode.md
               </a>
             </div>
           </div>

@@ -2,17 +2,21 @@
 
 import { SearchIcon } from "blode-icons-react";
 import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-
-import { Button } from "@/components/ui/button";
 import {
-  CommandDialog,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "@/components/ui/command";
+  startTransition,
+  useCallback,
+  useDeferredValue,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
+import type {
+  ChangeEvent,
+  KeyboardEvent as ReactKeyboardEvent,
+  MouseEvent as ReactMouseEvent,
+} from "react";
+
 import { toDocHref } from "@/lib/routes";
 
 export interface SearchItem {
@@ -25,15 +29,54 @@ interface SearchResponse {
   items: SearchItem[];
 }
 
+const MAX_RESULTS = 12;
+
+const isEditableTarget = (target: EventTarget | null) =>
+  (target instanceof HTMLElement && target.isContentEditable) ||
+  target instanceof HTMLInputElement ||
+  target instanceof HTMLTextAreaElement ||
+  target instanceof HTMLSelectElement;
+
+const searchMatches = (item: SearchItem, query: string) => {
+  if (!query) {
+    return true;
+  }
+
+  const haystack =
+    `${item.title} ${item.path} ${item.href ?? ""}`.toLowerCase();
+  return haystack.includes(query);
+};
+
+const getWrappedNextIndex = (current: number, length: number) => {
+  if (length === 0 || current >= length - 1) {
+    return 0;
+  }
+
+  return current + 1;
+};
+
+const getWrappedPrevIndex = (current: number, length: number) => {
+  if (length === 0 || current <= 0) {
+    return length - 1;
+  }
+
+  return current - 1;
+};
+
 export const Search = ({ basePath }: { basePath: string }) => {
   const router = useRouter();
-  const [open, setOpen] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const requestRef = useRef<Promise<void> | null>(null);
+  const loadedRef = useRef(false);
+  const [activeIndex, setActiveIndex] = useState(0);
   const [items, setItems] = useState<SearchItem[]>([]);
+  const [open, setOpen] = useState(false);
+  const [query, setQuery] = useState("");
   const [status, setStatus] = useState<"idle" | "loading" | "ready" | "error">(
     "idle"
   );
-  const requestRef = useRef<Promise<void> | null>(null);
-  const loadedRef = useRef(false);
+
+  const deferredQuery = useDeferredValue(query.trim().toLowerCase());
 
   const loadSearchItems = useCallback(() => {
     if (loadedRef.current) {
@@ -58,9 +101,11 @@ export const Search = ({ basePath }: { basePath: string }) => {
 
         const payload = (await response.json()) as SearchResponse;
         const nextItems = Array.isArray(payload.items) ? payload.items : [];
-        setItems(nextItems);
         loadedRef.current = true;
-        setStatus("ready");
+        startTransition(() => {
+          setItems(nextItems);
+          setStatus("ready");
+        });
       } catch {
         setStatus("error");
       } finally {
@@ -69,55 +114,158 @@ export const Search = ({ basePath }: { basePath: string }) => {
     })();
 
     requestRef.current = request;
-    return requestRef.current;
+    return request;
   }, [basePath]);
 
-  useEffect(() => {
-    const down = async (e: KeyboardEvent) => {
-      if ((e.key === "k" && (e.metaKey || e.ctrlKey)) || e.key === "/") {
-        if (
-          (e.target instanceof HTMLElement && e.target.isContentEditable) ||
-          e.target instanceof HTMLInputElement ||
-          e.target instanceof HTMLTextAreaElement ||
-          e.target instanceof HTMLSelectElement
-        ) {
-          return;
-        }
-        e.preventDefault();
-        setOpen((prev) => !prev);
-        await loadSearchItems();
-      }
-    };
-    document.addEventListener("keydown", down);
-    return () => document.removeEventListener("keydown", down);
-  }, [loadSearchItems]);
+  const filteredItems = useMemo(
+    () =>
+      items
+        .filter((item) => searchMatches(item, deferredQuery))
+        .slice(0, MAX_RESULTS),
+    [deferredQuery, items]
+  );
 
-  const runCommand = useCallback((command: () => unknown) => {
+  const closeSearch = useCallback(() => {
     setOpen(false);
-    command();
+    setQuery("");
+    setActiveIndex(0);
   }, []);
 
-  const handleOpen = useCallback(async () => {
+  const runSelection = useCallback(
+    (item: SearchItem) => {
+      closeSearch();
+      if (item.href) {
+        window.open(item.href, "_blank", "noopener,noreferrer");
+        return;
+      }
+      router.push(toDocHref(item.path, basePath));
+    },
+    [basePath, closeSearch, router]
+  );
+
+  const openSearch = useCallback(async () => {
     setOpen(true);
     await loadSearchItems();
   }, [loadSearchItems]);
 
-  const itemHandlers = useMemo(
-    () =>
-      Object.fromEntries(
-        items.map((item) => [
-          item.path,
-          () =>
-            runCommand(() => {
-              if (item.href) {
-                window.open(item.href, "_blank", "noopener,noreferrer");
-                return;
-              }
-              router.push(toDocHref(item.path, basePath));
-            }),
-        ])
-      ),
-    [basePath, items, router, runCommand]
+  const warmSearch = useCallback(async () => {
+    try {
+      await loadSearchItems();
+    } catch {
+      // Ignore warm-up failures and let the explicit open path show the error state.
+    }
+  }, [loadSearchItems]);
+
+  const handleQueryChange = useCallback(
+    (event: ChangeEvent<HTMLInputElement>) => {
+      setQuery(event.target.value);
+    },
+    []
+  );
+
+  const handleResultClick = useCallback(
+    (event: ReactMouseEvent<HTMLButtonElement>) => {
+      const index = Number(event.currentTarget.dataset.index);
+      const item = filteredItems[index];
+      if (!item) {
+        return;
+      }
+
+      runSelection(item);
+    },
+    [filteredItems, runSelection]
+  );
+
+  const handleResultMouseEnter = useCallback(
+    (event: ReactMouseEvent<HTMLButtonElement>) => {
+      const index = Number(event.currentTarget.dataset.index);
+      if (Number.isNaN(index)) {
+        return;
+      }
+
+      setActiveIndex(index);
+    },
+    []
+  );
+
+  useEffect(() => {
+    if (!open) {
+      return;
+    }
+
+    inputRef.current?.focus();
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [open]);
+
+  useEffect(() => {
+    setActiveIndex(0);
+  }, [deferredQuery, open]);
+
+  useEffect(() => {
+    const handleKeydown = async (event: KeyboardEvent) => {
+      if (
+        (event.key === "k" && (event.metaKey || event.ctrlKey)) ||
+        event.key === "/"
+      ) {
+        if (isEditableTarget(event.target)) {
+          return;
+        }
+
+        event.preventDefault();
+        if (open) {
+          closeSearch();
+          return;
+        }
+        await openSearch();
+        return;
+      }
+
+      if (!open || event.key !== "Escape") {
+        return;
+      }
+
+      event.preventDefault();
+      closeSearch();
+    };
+
+    document.addEventListener("keydown", handleKeydown);
+    return () => document.removeEventListener("keydown", handleKeydown);
+  }, [closeSearch, open, openSearch]);
+
+  const handleDialogKeyDown = useCallback(
+    (event: ReactKeyboardEvent<HTMLDivElement>) => {
+      if (event.key === "ArrowDown") {
+        event.preventDefault();
+        setActiveIndex((current) =>
+          getWrappedNextIndex(current, filteredItems.length)
+        );
+        return;
+      }
+
+      if (event.key === "ArrowUp") {
+        event.preventDefault();
+        setActiveIndex((current) =>
+          getWrappedPrevIndex(current, filteredItems.length)
+        );
+        return;
+      }
+
+      if (event.key === "Enter") {
+        const activeItem = filteredItems[activeIndex];
+        if (!activeItem) {
+          return;
+        }
+
+        event.preventDefault();
+        runSelection(activeItem);
+      }
+    },
+    [activeIndex, filteredItems, runSelection]
   );
 
   return (
@@ -125,53 +273,108 @@ export const Search = ({ basePath }: { basePath: string }) => {
       <button
         aria-label="Search documentation"
         className="inline-flex size-8 items-center justify-center rounded-md hover:bg-accent hover:text-accent-foreground md:hidden"
-        onClick={handleOpen}
+        onClick={openSearch}
+        onFocus={warmSearch}
+        onMouseEnter={warmSearch}
         type="button"
       >
         <SearchIcon className="size-4.5" />
       </button>
-      <Button
-        className="relative hidden h-8 w-full justify-start rounded-lg bg-muted/50 pl-3 font-normal text-foreground shadow-none hover:bg-muted/80 sm:pr-12 md:flex md:w-48 lg:w-56 xl:w-64 dark:bg-card"
-        onClick={handleOpen}
-        variant="outline"
+      <button
+        className="relative hidden h-8 w-full items-center justify-start rounded-lg border border-border bg-muted/50 pl-3 text-sm font-normal text-foreground shadow-none transition-colors hover:bg-muted/80 md:flex md:w-48 lg:w-56 xl:w-64 dark:bg-card"
+        onClick={openSearch}
+        onFocus={warmSearch}
+        onMouseEnter={warmSearch}
+        type="button"
       >
         <span className="hidden lg:inline-flex">Search documentation...</span>
         <span className="inline-flex lg:hidden">Search...</span>
-      </Button>
-      <CommandDialog onOpenChange={setOpen} open={open}>
-        <CommandInput placeholder="Type a command or search..." />
-        <CommandList>
-          {status === "loading" ? (
-            <div className="py-6 text-center text-sm text-muted-foreground">
-              Loading search index...
+        <span className="ml-auto hidden pr-3 text-[11px] text-muted-foreground sm:inline-flex">
+          Cmd K
+        </span>
+      </button>
+      {open ? (
+        <div className="fixed inset-0 z-50">
+          <button
+            aria-label="Close search"
+            className="absolute inset-0 bg-background/80 backdrop-blur-sm"
+            onClick={closeSearch}
+            type="button"
+          />
+          <div
+            aria-modal="true"
+            className="relative mx-auto mt-[10vh] flex w-[calc(100%-2rem)] max-w-2xl flex-col overflow-hidden rounded-2xl border border-border bg-background shadow-2xl"
+            onKeyDown={handleDialogKeyDown}
+            role="dialog"
+          >
+            <div className="flex items-center gap-3 border-b border-border px-4 py-3">
+              <SearchIcon className="size-4 text-muted-foreground" />
+              <input
+                aria-label="Search documentation"
+                className="w-full bg-transparent text-sm text-foreground outline-none placeholder:text-muted-foreground"
+                onChange={handleQueryChange}
+                placeholder="Search docs..."
+                ref={inputRef}
+                type="text"
+                value={query}
+              />
+              <button
+                className="rounded-md border border-border px-2 py-1 text-[11px] text-muted-foreground hover:bg-accent hover:text-foreground"
+                onClick={closeSearch}
+                type="button"
+              >
+                Esc
+              </button>
             </div>
-          ) : null}
-          {status === "error" ? (
-            <div className="py-6 text-center text-sm text-muted-foreground">
-              Search is temporarily unavailable.
-            </div>
-          ) : null}
-          {status === "ready" ? (
-            <>
-              <CommandEmpty>No results found.</CommandEmpty>
-              {items.length ? (
-                <CommandGroup heading="Pages">
-                  {items.map((item) => (
-                    <CommandItem
-                      key={item.path}
-                      // oxlint-disable-next-line eslint-plugin-react/jsx-handler-names
-                      onSelect={itemHandlers[item.path]}
-                      value={item.title}
-                    >
-                      {item.title}
-                    </CommandItem>
-                  ))}
-                </CommandGroup>
+            <div className="max-h-[min(70vh,32rem)] overflow-y-auto p-2">
+              {status === "loading" ? (
+                <div className="px-3 py-10 text-center text-sm text-muted-foreground">
+                  Loading search index...
+                </div>
               ) : null}
-            </>
-          ) : null}
-        </CommandList>
-      </CommandDialog>
+              {status === "error" ? (
+                <div className="px-3 py-10 text-center text-sm text-muted-foreground">
+                  Search is temporarily unavailable.
+                </div>
+              ) : null}
+              {status === "ready" && filteredItems.length === 0 ? (
+                <div className="px-3 py-10 text-center text-sm text-muted-foreground">
+                  No results found.
+                </div>
+              ) : null}
+              {status === "ready" && filteredItems.length > 0 ? (
+                <div className="grid gap-1">
+                  {filteredItems.map((item, index) => {
+                    const isActive = index === activeIndex;
+
+                    return (
+                      <button
+                        className={`grid gap-1 rounded-xl px-3 py-2 text-left transition-colors ${
+                          isActive
+                            ? "bg-accent text-foreground"
+                            : "text-muted-foreground hover:bg-accent/70 hover:text-foreground"
+                        }`}
+                        data-index={index}
+                        key={`${item.path}-${item.href ?? "internal"}`}
+                        onClick={handleResultClick}
+                        onMouseEnter={handleResultMouseEnter}
+                        type="button"
+                      >
+                        <span className="text-sm font-medium text-foreground">
+                          {item.title}
+                        </span>
+                        <span className="text-xs">
+                          {item.href ?? toDocHref(item.path, basePath)}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+              ) : null}
+            </div>
+          </div>
+        </div>
+      ) : null}
     </>
   );
 };

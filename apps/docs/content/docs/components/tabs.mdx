@@ -1,0 +1,111 @@
+---
+title: Tabs
+description: Organize content into switchable tabbed panels.
+---
+
+Use the `Tabs` and `Tab` components to let readers switch between related content without leaving the page.
+
+## Basic tabs
+
+Each `Tab` needs a `title` prop to label its tab button:
+
+````mdx
+<Tabs>
+  <Tab title="npm">```bash npm install blodemd ```</Tab>
+  <Tab title="pnpm">```bash pnpm add blodemd ```</Tab>
+  <Tab title="yarn">```bash yarn add blodemd ```</Tab>
+</Tabs>
+````
+
+<Tabs>
+  <Tab title="npm">```bash npm install blodemd ```</Tab>
+  <Tab title="pnpm">```bash pnpm add blodemd ```</Tab>
+  <Tab title="yarn">```bash yarn add blodemd ```</Tab>
+</Tabs>
+
+## Content tabs
+
+Tabs work with any content, not just code:
+
+```mdx
+<Tabs>
+  <Tab title="Overview">
+    Blode.md turns your Markdown files into a production-ready documentation
+    site.
+  </Tab>
+  <Tab title="Features">
+    - Full-text search - Custom domains - OpenAPI integration - Built-in
+    components
+  </Tab>
+</Tabs>
+```
+
+<Tabs>
+  <Tab title="Overview">
+    Blode.md turns your Markdown files into a production-ready documentation
+    site.
+  </Tab>
+  <Tab title="Features">
+    - Full-text search - Custom domains - OpenAPI integration - Built-in
+    components
+  </Tab>
+</Tabs>
+
+## Default tab
+
+Use `defaultTabIndex` on `Tabs` to set which tab is active on load (zero-indexed):
+
+```mdx
+<Tabs defaultTabIndex={1}>
+  <Tab title="First">This tab is not selected by default.</Tab>
+  <Tab title="Second">This tab is selected by default.</Tab>
+</Tabs>
+```
+
+<Tabs defaultTabIndex={1}>
+  <Tab title="First">This tab is not selected by default.</Tab>
+  <Tab title="Second">This tab is selected by default.</Tab>
+</Tabs>
+
+## Props
+
+### Tabs
+
+<TypeTable
+  type={{
+    defaultTabIndex: {
+      description: "Index of the tab to show on initial render.",
+      type: "number",
+      default: "0",
+      required: false,
+    },
+    children: {
+      description: "One or more Tab components.",
+      type: "ReactNode",
+      required: true,
+    },
+  }}
+/>
+
+### Tab
+
+<TypeTable
+  type={{
+    title: {
+      description:
+        "Label displayed on the tab button. You can also use `label` as an alias.",
+      type: "string",
+      required: false,
+    },
+    icon: {
+      description: "Icon displayed before the tab label.",
+      type: "ReactNode",
+      required: false,
+    },
+    children: {
+      description: "Content shown when the tab is active.",
+      type: "ReactNode",
+      required: true,
+    },
+  }}
+/>

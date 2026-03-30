@@ -1,0 +1,139 @@
+---
+title: Tree
+description: Display interactive file and directory structures.
+---
+
+Use the `Tree` component to visualize file and folder hierarchies. Folders are collapsible by default, giving readers an interactive way to explore project structures.
+
+## Basic usage
+
+```mdx
+<Tree>
+  <Tree.Folder name="docs" defaultOpen>
+    <Tree.File name="index.mdx" />
+    <Tree.File name="quickstart.mdx" />
+    <Tree.Folder name="components" defaultOpen>
+      <Tree.File name="callout.mdx" />
+      <Tree.File name="card.mdx" />
+      <Tree.File name="tabs.mdx" />
+    </Tree.Folder>
+  </Tree.Folder>
+  <Tree.File name="docs.json" />
+  <Tree.File name="package.json" />
+</Tree>
+```
+
+<Tree>
+  <Tree.Folder name="docs" defaultOpen>
+    <Tree.File name="index.mdx" />
+    <Tree.File name="quickstart.mdx" />
+    <Tree.Folder name="components" defaultOpen>
+      <Tree.File name="callout.mdx" />
+      <Tree.File name="card.mdx" />
+      <Tree.File name="tabs.mdx" />
+    </Tree.Folder>
+  </Tree.Folder>
+  <Tree.File name="docs.json" />
+  <Tree.File name="package.json" />
+</Tree>
+
+## Collapsed by default
+
+Omit `defaultOpen` to keep folders collapsed. Readers can click to expand them:
+
+```mdx
+<Tree>
+  <Tree.Folder name="src">
+    <Tree.Folder name="components">
+      <Tree.File name="header.tsx" />
+      <Tree.File name="footer.tsx" />
+    </Tree.Folder>
+    <Tree.Folder name="lib">
+      <Tree.File name="utils.ts" />
+    </Tree.Folder>
+    <Tree.File name="index.ts" />
+  </Tree.Folder>
+</Tree>
+```
+
+<Tree>
+  <Tree.Folder name="src">
+    <Tree.Folder name="components">
+      <Tree.File name="header.tsx" />
+      <Tree.File name="footer.tsx" />
+    </Tree.Folder>
+    <Tree.Folder name="lib">
+      <Tree.File name="utils.ts" />
+    </Tree.Folder>
+    <Tree.File name="index.ts" />
+  </Tree.Folder>
+</Tree>
+
+## Non-openable folders
+
+Set `openable={false}` to display a folder that cannot be expanded, useful for indicating a directory without listing its contents:
+
+```mdx
+<Tree>
+  <Tree.Folder name="public" openable={false} />
+  <Tree.Folder name="src" defaultOpen>
+    <Tree.File name="app.tsx" />
+  </Tree.Folder>
+  <Tree.Folder name="node_modules" openable={false} />
+</Tree>
+```
+
+<Tree>
+  <Tree.Folder name="public" openable={false} />
+  <Tree.Folder name="src" defaultOpen>
+    <Tree.File name="app.tsx" />
+  </Tree.Folder>
+  <Tree.Folder name="node_modules" openable={false} />
+</Tree>
+
+## Props
+
+### Tree
+
+`Tree` renders a bordered container for the file hierarchy. It accepts `children`.
+
+### Tree.Folder
+
+<TypeTable
+  type={{
+    name: {
+      description: "Folder name displayed in the tree.",
+      type: "string",
+      required: true,
+    },
+    defaultOpen: {
+      description: "Whether the folder starts expanded.",
+      type: "boolean",
+      default: "false",
+      required: false,
+    },
+    openable: {
+      description: "Whether the folder can be toggled open and closed.",
+      type: "boolean",
+      default: "true",
+      required: false,
+    },
+    children: {
+      description: "Nested files and folders.",
+      type: "ReactNode",
+      required: false,
+    },
+  }}
+/>
+
+### Tree.File
+
+<TypeTable
+  type={{
+    name: {
+      description: "File name displayed in the tree.",
+      type: "string",
+      required: true,
+    },
+  }}
+/>

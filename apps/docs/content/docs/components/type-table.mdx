@@ -1,0 +1,159 @@
+---
+title: Type table
+description: Display structured property and type reference tables.
+---
+
+Use the `TypeTable` component to document object shapes, API responses, and component props in a structured table.
+
+## Basic usage
+
+Pass a `type` object where each key is a field name and the value describes its type, description, and constraints:
+
+```mdx
+<TypeTable
+  type={{
+    id: {
+      description: "Unique project identifier.",
+      type: "string",
+      required: true,
+    },
+    name: {
+      description: "Display name of the project.",
+      type: "string",
+      required: true,
+    },
+    slug: {
+      description: "URL-safe project slug.",
+      type: "string",
+      required: true,
+    },
+    customDomain: {
+      description: "Custom domain if configured.",
+      type: "string",
+      required: false,
+    },
+    createdAt: {
+      description: "ISO 8601 timestamp of project creation.",
+      type: "string",
+      required: true,
+    },
+  }}
+/>
+```
+
+<TypeTable
+  type={{
+    id: {
+      description: "Unique project identifier.",
+      type: "string",
+      required: true,
+    },
+    name: {
+      description: "Display name of the project.",
+      type: "string",
+      required: true,
+    },
+    slug: {
+      description: "URL-safe project slug.",
+      type: "string",
+      required: true,
+    },
+    customDomain: {
+      description: "Custom domain if configured.",
+      type: "string",
+      required: false,
+    },
+    createdAt: {
+      description: "ISO 8601 timestamp of project creation.",
+      type: "string",
+      required: true,
+    },
+  }}
+/>
+
+## With default values
+
+When any field includes a `default` property, a Default column appears automatically:
+
+```mdx
+<TypeTable
+  type={{
+    theme: {
+      description: "Color theme for the site.",
+      type: '"light" | "dark" | "system"',
+      default: '"system"',
+      required: false,
+    },
+    lang: {
+      description: "Default language for code blocks.",
+      type: "string",
+      default: '"plaintext"',
+      required: false,
+    },
+    toc: {
+      description: "Show a table of contents on each page.",
+      type: "boolean",
+      default: "true",
+      required: false,
+    },
+  }}
+/>
+```
+
+<TypeTable
+  type={{
+    theme: {
+      description: "Color theme for the site.",
+      type: '"light" | "dark" | "system"',
+      default: '"system"',
+      required: false,
+    },
+    lang: {
+      description: "Default language for code blocks.",
+      type: "string",
+      default: '"plaintext"',
+      required: false,
+    },
+    toc: {
+      description: "Show a table of contents on each page.",
+      type: "boolean",
+      default: "true",
+      required: false,
+    },
+  }}
+/>
+
+## Field options
+
+Each field in the `type` object supports these properties:
+
+<TypeTable
+  type={{
+    description: {
+      description: "Human-readable explanation of the field.",
+      type: "string",
+      required: false,
+    },
+    type: {
+      description: "The field's type annotation.",
+      type: "string",
+      required: false,
+    },
+    required: {
+      description:
+        "Whether the field is required. Defaults to the inverse of `optional`.",
+      type: "boolean",
+      required: false,
+    },
+    optional: {
+      description: "Whether the field is optional. Inverse of `required`.",
+      type: "boolean",
+      required: false,
+    },
+    default: {
+      description: "Default value shown in the table.",
+      type: "string",
+      required: false,
+    },
+  }}
+/>

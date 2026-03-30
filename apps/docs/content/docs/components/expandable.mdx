@@ -1,0 +1,90 @@
+---
+title: Expandable
+description: Collapsible sections for nested property details.
+---
+
+Use the `Expandable` component to hide supplementary details behind a toggle. This is useful for documenting nested objects, optional configuration, or advanced options without overwhelming the reader.
+
+## Basic usage
+
+```mdx
+<Expandable title="child properties">
+  - **name** (`string`) — Display name of the item. - **value** (`number`) —
+  Numeric value associated with the item. - **metadata** (`object`) — Additional
+  key-value pairs.
+</Expandable>
+```
+
+<Expandable title="child properties">
+  - **name** (`string`) — Display name of the item. - **value** (`number`) —
+  Numeric value associated with the item. - **metadata** (`object`) — Additional
+  key-value pairs.
+</Expandable>
+
+## Default open
+
+Set `defaultOpen` to reveal the content on page load:
+
+```mdx
+<Expandable title="response fields" defaultOpen>
+  - **id** (`string`) — Unique identifier. - **status** (`"active" |
+  "archived"`) — Current status. - **createdAt** (`string`) — ISO 8601
+  timestamp.
+</Expandable>
+```
+
+<Expandable title="response fields" defaultOpen>
+  - **id** (`string`) — Unique identifier. - **status** (`"active" |
+  "archived"`) — Current status. - **createdAt** (`string`) — ISO 8601
+  timestamp.
+</Expandable>
+
+## Nested expandables
+
+You can nest expandables to document deeply nested structures:
+
+```mdx
+<Expandable title="project properties">
+  - **name** (`string`) — Project name.
+  - **config** (`object`) — Project configuration.
+
+  <Expandable title="config properties">
+    - **theme** (`string`) — Color theme.
+    - **navigation** (`array`) — Sidebar navigation items.
+  </Expandable>
+</Expandable>
+```
+
+<Expandable title="project properties">
+  - **name** (`string`) — Project name.
+  - **config** (`object`) — Project configuration.
+
+  <Expandable title="config properties">
+    - **theme** (`string`) — Color theme.
+    - **navigation** (`array`) — Sidebar navigation items.
+  </Expandable>
+</Expandable>
+
+## Props
+
+<TypeTable
+  type={{
+    title: {
+      description: "Label for the toggle button.",
+      type: "string",
+      default: '"properties"',
+      required: false,
+    },
+    defaultOpen: {
+      description: "Whether the section starts expanded.",
+      type: "boolean",
+      default: "false",
+      required: false,
+    },
+    children: {
+      description: "Content revealed when expanded.",
+      type: "ReactNode",
+      required: true,
+    },
+  }}
+/>

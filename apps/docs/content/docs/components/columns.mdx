@@ -1,0 +1,121 @@
+---
+title: Columns
+description: Arrange content in multi-column layouts.
+---
+
+Use the `Columns` component to create responsive grid layouts. Columns stack on small screens and expand on larger viewports.
+
+## Two-column layout
+
+The default `cols` value is `2`:
+
+```mdx
+<Columns>
+  <Card title="Write in MDX">
+    Use standard Markdown with built-in components.
+  </Card>
+  <Card title="Deploy instantly">
+    Push your changes and go live in seconds.
+  </Card>
+</Columns>
+```
+
+<Columns>
+  <Card title="Write in MDX">
+    Use standard Markdown with built-in components.
+  </Card>
+  <Card title="Deploy instantly">
+    Push your changes and go live in seconds.
+  </Card>
+</Columns>
+
+## Three-column layout
+
+Set `cols={3}` for a three-column grid:
+
+```mdx
+<Columns cols={3}>
+  <Card title="CLI" href="/cli/overview">
+    Build and deploy from your terminal.
+  </Card>
+  <Card title="Components" href="/components/callout">
+    Rich UI elements for your content.
+  </Card>
+  <Card title="Search" href="/features/search">
+    Full-text search out of the box.
+  </Card>
+</Columns>
+```
+
+<Columns cols={3}>
+  <Card title="CLI" href="/cli/overview">
+    Build and deploy from your terminal.
+  </Card>
+  <Card title="Components" href="/components/callout">
+    Rich UI elements for your content.
+  </Card>
+  <Card title="Search" href="/features/search">
+    Full-text search out of the box.
+  </Card>
+</Columns>
+
+## With Column wrapper
+
+Use the `Column` component when you need to place non-card content in the grid:
+
+```mdx
+<Columns cols={2}>
+  <Column>
+    ### Left side
+
+    You can put any Markdown or components in a column.
+
+  </Column>
+  <Column>
+    ### Right side
+
+    Columns are useful for side-by-side comparisons.
+
+  </Column>
+</Columns>
+```
+
+<Columns cols={2}>
+  <Column>
+    ### Left side
+
+    You can put any Markdown or components in a column.
+
+  </Column>
+  <Column>
+    ### Right side
+
+    Columns are useful for side-by-side comparisons.
+
+  </Column>
+</Columns>
+
+## Props
+
+### Columns
+
+<TypeTable
+  type={{
+    cols: {
+      description: "Number of columns in the grid.",
+      type: "1 | 2 | 3 | 4",
+      default: "2",
+      required: false,
+    },
+    children: {
+      description:
+        "Grid content (cards, Column components, or other elements).",
+      type: "ReactNode",
+      required: true,
+    },
+  }}
+/>
+
+### Column
+
+`Column` accepts `children` and renders them inside a single grid cell.

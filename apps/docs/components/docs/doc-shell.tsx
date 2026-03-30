@@ -1,11 +1,15 @@
 import type { PageMode, SiteConfig } from "@repo/models";
 import { ArrowLeftIcon, ArrowRightIcon } from "blode-icons-react";
-import dynamic from "next/dynamic";
 import Link from "next/link";
 import Script from "next/script";
 import { Fragment } from "react";
 import type { ReactNode } from "react";
 
+import {
+  ContextualMenu,
+  ContextualTocItems,
+} from "@/components/docs/contextual-menu";
+import { CopyPageMenu } from "@/components/docs/copy-page-menu";
 import { DocHeader } from "@/components/docs/doc-header";
 import { DocSidebar } from "@/components/docs/doc-sidebar";
 import { DocToc } from "@/components/docs/doc-toc";
@@ -23,21 +27,6 @@ import { toDocHref } from "@/lib/routes";
 import { themeStylesFromConfig } from "@/lib/theme";
 import type { TocItem } from "@/lib/toc";
 import { cn } from "@/lib/utils";
-
-const ContextualMenu = dynamic(async () => {
-  const menuModule = await import("@/components/docs/contextual-menu");
-  return { default: menuModule.ContextualMenu };
-});
-
-const ContextualTocItems = dynamic(async () => {
-  const menuModule = await import("@/components/docs/contextual-menu");
-  return { default: menuModule.ContextualTocItems };
-});
-
-const CopyPageMenu = dynamic(async () => {
-  const menuModule = await import("@/components/docs/copy-page-menu");
-  return { default: menuModule.CopyPageMenu };
-});
 
 const renderScripts = (
   scripts?: string[],

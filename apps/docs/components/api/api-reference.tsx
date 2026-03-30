@@ -1,6 +1,12 @@
-import { ApiPlayground } from "@/components/api/api-playground";
+import dynamic from "next/dynamic";
+
 import type { OpenApiEntry } from "@/lib/openapi";
 import { cn } from "@/lib/utils";
+
+const ApiPlayground = dynamic(async () => {
+  const apiModule = await import("@/components/api/api-playground");
+  return { default: apiModule.ApiPlayground };
+});
 
 const methodColors: Record<string, string> = {
   delete: "bg-red-500",

@@ -125,25 +125,25 @@ describe("loadSiteConfig", () => {
   });
 
   it("loads the shipped tenant docs roots", async () => {
-    const atlasResult = await loadSiteConfig(
-      createFsSource(path.resolve(process.cwd(), "apps/docs/content/atlas"))
+    const exampleResult = await loadSiteConfig(
+      createFsSource(path.resolve(process.cwd(), "apps/docs/content/example"))
     );
     const blodeResult = await loadSiteConfig(
       createFsSource(path.resolve(process.cwd(), "apps/docs/content/blode"))
     );
 
-    expect(atlasResult.ok).toBe(true);
+    expect(exampleResult.ok).toBe(true);
     expect(blodeResult.ok).toBe(true);
 
-    if (!atlasResult.ok || !blodeResult.ok) {
+    if (!exampleResult.ok || !blodeResult.ok) {
       return;
     }
 
-    expect(atlasResult.config.collections[0]?.openapi).toEqual({
+    expect(exampleResult.config.collections[0]?.openapi).toEqual({
       directory: "api",
       source: "openapi.yaml",
     });
-    expect(atlasResult.config.openapiProxy?.enabled).toBe(true);
+    expect(exampleResult.config.openapiProxy?.enabled).toBe(true);
     expect(blodeResult.config.navigation?.groups).toMatchObject([
       {
         group: "Getting Started",

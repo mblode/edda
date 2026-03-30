@@ -9,17 +9,17 @@ import {
 const tenant = {
   customDomains: ["docs.example.com"],
   id: "tenant-id",
-  name: "Atlas",
+  name: "Example",
   primaryDomain: "docs.example.com",
-  slug: "atlas",
+  slug: "example",
   status: "active" as const,
-  subdomain: "atlas",
+  subdomain: "example",
 };
 
 describe("tenancy helpers", () => {
   it("extracts the forwarded host and normalizes it", () => {
     const headerStore = new Headers({
-      host: "atlas.blode.md:3001",
+      host: "example.blode.md:3001",
       "x-forwarded-host": "Docs.Example.com:443",
     });
 
@@ -29,17 +29,17 @@ describe("tenancy helpers", () => {
   it("treats internal and root static paths as reserved without blocking docs api routes", () => {
     expect(isReservedPath("/blodemd-internal/proxy")).toBe(true);
     expect(isReservedPath("/robots.txt")).toBe(true);
-    expect(isReservedPath("/logos/atlas-mark-dark.svg")).toBe(true);
+    expect(isReservedPath("/logos/example-mark-dark.svg")).toBe(true);
     expect(isReservedPath("/oauth/consent")).toBe(true);
     expect(isReservedPath("/api/overview")).toBe(false);
-    expect(isReservedPath("/atlas/sitemap.xml")).toBe(false);
+    expect(isReservedPath("/example/sitemap.xml")).toBe(false);
   });
 
   it("identifies the runtime root hosts", () => {
     expect(isRootRuntimeHost("blode.md")).toBe(true);
     expect(isRootRuntimeHost("localhost")).toBe(true);
-    expect(isRootRuntimeHost("atlas.blode.md")).toBe(false);
-    expect(isRootRuntimeHost("atlas.localhost")).toBe(false);
+    expect(isRootRuntimeHost("example.blode.md")).toBe(false);
+    expect(isRootRuntimeHost("example.localhost")).toBe(false);
   });
 
   it("builds canonical origin from tenant headers", () => {

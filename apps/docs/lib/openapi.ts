@@ -7,7 +7,8 @@ import {
   parseOpenApiSpec,
 } from "@repo/prebuild";
 import type { OpenApiOperation, OpenApiSpec } from "@repo/prebuild";
-import type { ContentSource } from "@repo/previewing";
+import { loadPrebuiltOpenApiIndex } from "@repo/previewing";
+import type { ContentSource, PrebuiltOpenApiEntry } from "@repo/previewing";
 
 export interface OpenApiEntry {
   slug: string;
@@ -24,6 +25,27 @@ export interface OpenApiRegistry {
   byIdentifier: Map<string, OpenApiEntry>;
   bySource: Map<string, OpenApiEntry[]>;
 }
+
+const toRegistry = (entries: OpenApiEntry[]): OpenApiRegistry => {
+  const bySlug = new Map<string, OpenApiEntry>();
+  const byIdentifier = new Map<string, OpenApiEntry>();
+  const bySource = new Map<string, OpenApiEntry[]>();
+
+  for (const entry of entries) {
+    bySlug.set(entry.slug, entry);
+    byIdentifier.set(entry.identifier, entry);
+    if (!bySource.has(entry.sourceKey)) {
+      bySource.set(entry.sourceKey, []);
+    }
+    bySource.get(entry.sourceKey)?.push(entry);
+  }
+
+  return { byIdentifier, bySlug, bySource, entries };
+};
+
+export const fromPrebuiltOpenApiEntries = (
+  entries: PrebuiltOpenApiEntry[]
+): OpenApiRegistry => toRegistry(entries);
 
 const getOpenApiSourceKey = (source: DocsOpenApiSource): string =>
   `${source.source}::${source.directory ?? ""}::${(source.include ?? []).join(
@@ -73,18 +95,10 @@ export const buildOpenApiRegistry = async (
   contentSource: ContentSource
 ): Promise<OpenApiRegistry> => {
   if (!collection || collection.type !== "docs") {
-    return {
-      byIdentifier: new Map<string, OpenApiEntry>(),
-      bySlug: new Map<string, OpenApiEntry>(),
-      bySource: new Map<string, OpenApiEntry[]>(),
-      entries: [],
-    };
+    return toRegistry([]);
   }
 
   const entries: OpenApiEntry[] = [];
-  const bySlug = new Map<string, OpenApiEntry>();
-  const byIdentifier = new Map<string, OpenApiEntry>();
-  const bySource = new Map<string, OpenApiEntry[]>();
   const slugPrefix = normalizePath(collection.slugPrefix ?? "");
 
   const sources = collectOpenApiSources(collection);
@@ -125,14 +139,20 @@ export const buildOpenApiRegistry = async (
         spec,
       };
       entries.push(entry);
-      bySlug.set(entry.slug, entry);
-      byIdentifier.set(entry.identifier, entry);
-      if (!bySource.has(sourceKey)) {
-        bySource.set(sourceKey, []);
-      }
-      bySource.get(sourceKey)?.push(entry);
     }
   }
 
-  return { byIdentifier, bySlug, bySource, entries };
+  return toRegistry(entries);
+};
+
+export const loadOpenApiRegistry = async (
+  collection: CollectionConfig | undefined,
+  contentSource: ContentSource
+): Promise<OpenApiRegistry> => {
+  const prebuilt = await loadPrebuiltOpenApiIndex(contentSource);
+  if (prebuilt) {
+    return fromPrebuiltOpenApiEntries(prebuilt);
+  }
+
+  return await buildOpenApiRegistry(collection, contentSource);
 };

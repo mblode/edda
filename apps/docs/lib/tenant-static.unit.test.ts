@@ -33,13 +33,13 @@ const createTempUtilityRoot = async (
 
 const tenant = {
   customDomains: ["docs.example.com"],
-  docsPath: path.resolve(process.cwd(), "apps/docs/content/atlas"),
+  docsPath: path.resolve(process.cwd(), "apps/docs/content/example"),
   id: "tenant-id",
-  name: "Atlas",
+  name: "Example",
   primaryDomain: "docs.example.com",
-  slug: "atlas",
+  slug: "example",
   status: "active" as const,
-  subdomain: "atlas",
+  subdomain: "example",
 };
 
 afterEach(async () => {
@@ -87,14 +87,14 @@ describe("tenant static LLM helpers", () => {
     const robots = buildTenantRobotsTxt(tenant, context);
     const sitemap = await buildTenantSitemapXml(tenant, context);
 
-    expect(llms).toContain("Sitemap: https://blode.md/atlas/sitemap.xml");
+    expect(llms).toContain("Sitemap: https://blode.md/example/sitemap.xml");
     expect(llms).toContain(
-      "[List projects](https://blode.md/atlas/api/get-projects)"
+      "[List projects](https://blode.md/example/api/get-projects)"
     );
-    expect(robots).toContain("Sitemap: https://blode.md/atlas/sitemap.xml");
-    expect(robots).toContain("# https://blode.md/atlas/llms.txt");
+    expect(robots).toContain("Sitemap: https://blode.md/example/sitemap.xml");
+    expect(robots).toContain("# https://blode.md/example/llms.txt");
     expect(sitemap).toContain(
-      "<loc>https://blode.md/atlas/api/get-projects</loc>"
+      "<loc>https://blode.md/example/api/get-projects</loc>"
     );
   });
 
@@ -120,13 +120,13 @@ describe("tenant static LLM helpers", () => {
 
     await expect(
       buildTenantLlmsTxt(prebuiltTenant, context)
-    ).resolves.toContain("Sitemap: https://blode.md/atlas/sitemap.xml");
+    ).resolves.toContain("Sitemap: https://blode.md/example/sitemap.xml");
     await expect(
       buildTenantLlmsFullTxt(prebuiltTenant, context)
-    ).resolves.toContain("# Overview (https://blode.md/atlas/)");
+    ).resolves.toContain("# Overview (https://blode.md/example/)");
     await expect(
       buildTenantSitemapXml(prebuiltTenant, context)
-    ).resolves.toContain("<loc>https://blode.md/atlas/</loc>");
+    ).resolves.toContain("<loc>https://blode.md/example/</loc>");
     await expect(getLlmPageText(prebuiltTenant, "index")).resolves.toBe(
       "# Overview\n\nPublished page text"
     );
@@ -155,11 +155,11 @@ describe("tenant static LLM helpers", () => {
       ...tenant,
       customDomains: [],
       docsPath,
-      primaryDomain: "atlas.blode.md",
+      primaryDomain: "example.blode.md",
     };
 
     await expect(buildTenantLlmsFullTxt(runtimeTenant)).resolves.toContain(
-      "# Guide (https://atlas.blode.md/guide)\n\nShip it."
+      "# Guide (https://example.blode.md/guide)\n\nShip it."
     );
     await expect(getLlmPageText(runtimeTenant, "guide")).resolves.toBe(
       "# Guide\n\nShip it."

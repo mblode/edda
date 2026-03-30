@@ -1,0 +1,347 @@
+---
+title: Navigation
+description: Configure sidebar groups, tabs, and page ordering in docs.json.
+---
+
+You control the sidebar hierarchy, tabbed sections, and hidden pages through the `navigation` object in `docs.json`. This page covers every navigation feature.
+
+## Groups
+
+Groups organize pages into collapsible sidebar sections. Each group has a label and a list of page slugs.
+
+```json title="docs.json"
+{
+  "navigation": {
+    "groups": [
+      {
+        "group": "Getting started",
+        "pages": ["index", "quickstart"]
+      },
+      {
+        "group": "Guides",
+        "pages": ["guides/authentication", "guides/deployment"]
+      }
+    ]
+  }
+}
+```
+
+<TypeTable
+  type={{
+    group: {
+      description: "Display label for the sidebar section.",
+      type: "string",
+    },
+    pages: {
+      description:
+        "Array of page slugs. Each slug maps to an MDX file relative to your docs root.",
+      type: "string[]",
+    },
+    expanded: {
+      description:
+        "Whether the group is expanded by default. Defaults to `true` for the first group.",
+      type: "boolean",
+    },
+    hidden: {
+      description:
+        "Hide this group from the sidebar while keeping its pages accessible by URL.",
+      type: "boolean",
+    },
+  }}
+/>
+
+### Directory paths
+
+Page slugs map directly to file paths. A slug like `domains/custom-domains` resolves to `domains/custom-domains.mdx` in your docs directory.
+
+```
+docs/
+  domains/
+    custom-domains.mdx   -> slug: "domains/custom-domains"
+    ssl.mdx              -> slug: "domains/ssl"
+  index.mdx              -> slug: "index"
+```
+
+## Tabs
+
+Tabs add top-level sections to your documentation. Each tab contains its own set of groups, creating separate sidebar navigations.
+
+```json title="docs.json"
+{
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Guides",
+        "groups": [
+          { "group": "Getting started", "pages": ["index", "quickstart"] }
+        ]
+      },
+      {
+        "tab": "API reference",
+        "groups": [
+          { "group": "Endpoints", "pages": ["api/users", "api/projects"] }
+        ]
+      },
+      {
+        "tab": "Changelog",
+        "href": "https://example.com/changelog"
+      }
+    ]
+  }
+}
+```
+
+<TypeTable
+  type={{
+    tab: {
+      description:
+        "Display label for the tab. This is the `label` field in the schema.",
+      type: "string",
+      required: true,
+    },
+    groups: {
+      description: "Array of sidebar groups displayed when this tab is active.",
+      type: "Array<Group>",
+    },
+    pages: {
+      description:
+        "Flat list of page slugs (alternative to groups for simple tabs).",
+      type: "string[]",
+    },
+    href: {
+      description:
+        "External URL. When set, clicking the tab navigates away instead of showing a sidebar.",
+      type: "string",
+    },
+    icon: {
+      description: "Icon name displayed next to the tab label.",
+      type: "string",
+    },
+  }}
+/>
+
+<Callout type="info">
+  A tab must define at least one of `groups`, `pages`, or `href`.
+</Callout>
+
+## Hidden pages
+
+Use the `hidden` array to keep pages accessible by URL without showing them in the sidebar. This is useful for deprecated pages, redirects, or unlisted content.
+
+```json title="docs.json"
+{
+  "navigation": {
+    "hidden": ["internal/debug", "legacy/old-api"],
+    "groups": [{ "group": "Guides", "pages": ["index", "quickstart"] }]
+  }
+}
+```
+
+## OpenAPI auto-generated pages
+
+You can generate API reference pages directly from an OpenAPI spec by adding an `openapi` field to a group instead of listing pages manually.
+
+<CodeGroup>
+```json title="String source"
+{
+  "group": "API reference",
+  "openapi": "openapi.yaml"
+}
+```
+
+```json title="Object source"
+{
+  "group": "API reference",
+  "openapi": {
+    "source": "openapi.yaml",
+    "basePath": "/api",
+    "directory": "api-ref",
+    "include": ["GET /users", "POST /users"]
+  }
+}
+```
+
+</CodeGroup>
+
+<TypeTable
+  type={{
+    source: {
+      description: "Path to your OpenAPI spec file.",
+      type: "string",
+      required: true,
+    },
+    basePath: {
+      description: "Base path prefix for generated page slugs.",
+      type: "string",
+    },
+    directory: {
+      description: "Output directory for generated MDX files.",
+      type: "string",
+    },
+    include: {
+      description: "Filter to specific operations (e.g., `GET /users`).",
+      type: "string[]",
+    },
+  }}
+/>
+
+## Splitting navigation with $ref
+
+For large projects, you can split your navigation into separate JSON files using `$ref`. This keeps your main `docs.json` manageable.
+
+```json title="docs.json"
+{
+  "navigation": {
+    "tabs": [{ "$ref": "./nav/guides.json" }, { "$ref": "./nav/api.json" }]
+  }
+}
+```
+
+```json title="nav/guides.json"
+{
+  "tab": "Guides",
+  "groups": [{ "group": "Getting started", "pages": ["index", "quickstart"] }]
+}
+```
+
+## Versions
+
+Version dropdowns let you maintain multiple documentation versions from a single project.
+
+```json title="docs.json"
+{
+  "navigation": {
+    "versions": [
+      { "label": "v2.0", "url": "/v2" },
+      { "label": "v1.0", "url": "/v1" }
+    ],
+    "groups": [...]
+  }
+}
+```
+
+<TypeTable
+  type={{
+    label: {
+      description: "Version label displayed in the dropdown.",
+      type: "string",
+      required: true,
+    },
+    url: {
+      description: "URL path or full URL for this version.",
+      type: "string",
+      required: true,
+    },
+  }}
+/>
+
+## Languages
+
+Language selectors let you link to translated versions of your documentation.
+
+```json title="docs.json"
+{
+  "navigation": {
+    "languages": [
+      { "label": "English", "url": "/en" },
+      { "label": "Japanese", "url": "/ja", "locale": "ja" }
+    ],
+    "groups": [...]
+  }
+}
+```
+
+<TypeTable
+  type={{
+    label: {
+      description: "Language name displayed in the selector.",
+      type: "string",
+      required: true,
+    },
+    url: {
+      description: "URL path or full URL for this language.",
+      type: "string",
+      required: true,
+    },
+    locale: {
+      description: "BCP 47 locale code (e.g., `ja`, `fr`, `zh-CN`).",
+      type: "string",
+    },
+  }}
+/>
+
+## Global anchors
+
+Global anchors appear as persistent links in the navigation, visible across all tabs. Use them for external resources like your dashboard, community, or changelog.
+
+```json title="docs.json"
+{
+  "navigation": {
+    "global": {
+      "anchors": [
+        { "label": "Community", "href": "https://discord.gg/example" },
+        { "label": "Dashboard", "href": "https://app.example.com" }
+      ],
+      "links": [
+        { "label": "Blog", "href": "https://blog.example.com" }
+      ]
+    },
+    "groups": [...]
+  }
+}
+```
+
+<TypeTable
+  type={{
+    "global.anchors": {
+      description: "Persistent anchor links shown across all tabs.",
+      type: "Array<{ label: string, href: string }>",
+    },
+    "global.links": {
+      description: "Additional navigation links shown globally.",
+      type: "Array<{ label: string, href: string }>",
+    },
+  }}
+/>
+
+## Complete navigation schema
+
+The full navigation object supports all of the following fields:
+
+<TypeTable
+  type={{
+    tabs: {
+      description: "Top-level tabbed sections. Each tab has its own sidebar.",
+      type: "Array<Tab>",
+    },
+    groups: {
+      description: "Sidebar groups when not using tabs.",
+      type: "Array<Group>",
+    },
+    pages: {
+      description: "Flat list of page slugs (simplest form, no grouping).",
+      type: "string[]",
+    },
+    hidden: {
+      description: "Page slugs accessible by URL but not shown in the sidebar.",
+      type: "string[]",
+    },
+    versions: {
+      description: "Version dropdown entries.",
+      type: "Array<{ label, url }>",
+    },
+    languages: {
+      description: "Language selector entries.",
+      type: "Array<{ label, url, locale? }>",
+    },
+    global: {
+      description: "Global anchors and links visible across all tabs.",
+      type: "{ anchors?, links? }",
+    },
+  }}
+/>
+
+<Callout type="info">
+  Your navigation must define at least one of `groups`, `pages`, `tabs`,
+  `languages`, or `versions`.
+</Callout>

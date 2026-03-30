@@ -39,9 +39,5 @@ export const Tile = ({ href, title, description, children }: TileProps) => {
     );
   }
 
-  return (
-    <Link href={href} prefetch={false}>
-      {inner}
-    </Link>
-  );
+  return <Link href={href}>{inner}</Link>;
 };

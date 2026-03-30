@@ -1,0 +1,144 @@
+---
+title: Card
+description: Display content in a styled container with optional links and icons.
+---
+
+Use the `Card` component to present content in a bordered container. Cards work well for feature highlights, navigation links, and content grids.
+
+## Basic card
+
+```mdx
+<Card title="Getting started">
+  Learn how to set up your first documentation project.
+</Card>
+```
+
+<Card title="Getting started">
+  Learn how to set up your first documentation project.
+</Card>
+
+## Link card
+
+Add an `href` prop to make the entire card clickable. An arrow indicator appears automatically:
+
+```mdx
+<Card title="Quickstart guide" href="/quickstart">
+  Set up a documentation site in under five minutes.
+</Card>
+```
+
+<Card title="Quickstart guide" href="/quickstart">
+  Set up a documentation site in under five minutes.
+</Card>
+
+## Card with call to action
+
+Use the `cta` prop to display a text label at the bottom of the card:
+
+```mdx
+<Card title="Custom domains" href="/features/custom-domains" cta="Learn more">
+  Serve your docs from your own domain with automatic SSL.
+</Card>
+```
+
+<Card title="Custom domains" href="/features/custom-domains" cta="Learn more">
+  Serve your docs from your own domain with automatic SSL.
+</Card>
+
+## Card grid
+
+Combine cards with `Columns` to create a responsive grid:
+
+```mdx
+<Columns cols={2}>
+  <Card title="CLI reference" href="/cli/overview">
+    Commands for building and deploying docs.
+  </Card>
+  <Card title="Configuration" href="/configuration/docs-json">
+    Customize your project settings.
+  </Card>
+  <Card title="MDX basics" href="/content/mdx-basics">
+    Write documentation with Markdown and JSX.
+  </Card>
+  <Card title="Search" href="/features/search">
+    Full-text search built into every project.
+  </Card>
+</Columns>
+```
+
+<Columns cols={2}>
+  <Card title="CLI reference" href="/cli/overview">
+    Commands for building and deploying docs.
+  </Card>
+  <Card title="Configuration" href="/configuration/docs-json">
+    Customize your project settings.
+  </Card>
+  <Card title="MDX basics" href="/content/mdx-basics">
+    Write documentation with Markdown and JSX.
+  </Card>
+  <Card title="Search" href="/features/search">
+    Full-text search built into every project.
+  </Card>
+</Columns>
+
+## Horizontal layout
+
+Set `horizontal` to arrange the icon and content side by side:
+
+```mdx
+<Card title="Horizontal card" horizontal>
+  Content flows beside the icon in a horizontal layout.
+</Card>
+```
+
+<Card title="Horizontal card" horizontal>
+  Content flows beside the icon in a horizontal layout.
+</Card>
+
+## Props
+
+<TypeTable
+  type={{
+    title: {
+      description: "Heading displayed at the top of the card.",
+      type: "string",
+      required: false,
+    },
+    icon: {
+      description: "Icon rendered above the title.",
+      type: "ReactNode",
+      required: false,
+    },
+    color: {
+      description: "Custom color for the icon.",
+      type: "string",
+      required: false,
+    },
+    href: {
+      description:
+        "URL that makes the card clickable. External links open in a new tab.",
+      type: "string",
+      required: false,
+    },
+    horizontal: {
+      description: "Arrange icon and content side by side.",
+      type: "boolean",
+      required: false,
+    },
+    img: {
+      description: "Image URL displayed at the top of the card.",
+      type: "string",
+      required: false,
+    },
+    cta: {
+      description: "Call-to-action text displayed at the bottom.",
+      type: "string",
+      required: false,
+    },
+    children: {
+      description: "Card body content.",
+      type: "ReactNode",
+      required: false,
+    },
+  }}
+/>

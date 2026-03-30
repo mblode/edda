@@ -86,11 +86,7 @@ const NavPageLink = ({
   }
 
   return (
-    <Link
-      className={className}
-      href={getNavPageHref(item, basePath)}
-      prefetch={false}
-    >
+    <Link className={className} href={getNavPageHref(item, basePath)}>
       {linkContent}
     </Link>
   );

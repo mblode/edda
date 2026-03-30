@@ -1,0 +1,83 @@
+---
+title: Local development
+description: Preview your documentation locally with real-time reloading.
+---
+
+The `blodemd dev` command starts a local preview server that renders your documentation exactly as it appears when deployed. Changes to your content and configuration are reflected in real time.
+
+## Start the dev server
+
+```bash
+blodemd dev
+```
+
+This starts the server at `http://localhost:3030` and opens it in your default browser.
+
+## Options
+
+<TypeTable
+  type={{
+    "-p, --port": {
+      description: "Port to run the dev server on.",
+      type: "number",
+      default: "3030",
+    },
+    "-d, --dir": {
+      description:
+        "Path to the docs directory. Defaults to the current directory.",
+      type: "string",
+    },
+    "--no-open": {
+      description: "Do not open the browser automatically on start.",
+      type: "boolean",
+      default: "false",
+    },
+  }}
+/>
+
+### Examples
+
+<CodeGroup>
+```bash title="Custom port"
+blodemd dev -p 4000
+```
+
+```bash title="Specific directory"
+blodemd dev -d ./my-docs
+```
+
+```bash title="No browser"
+blodemd dev --no-open
+```
+
+</CodeGroup>
+
+## How file watching works
+
+The dev server watches your content directory and reloads automatically when files change.
+
+| Change type         | Behavior                                                     |
+| ------------------- | ------------------------------------------------------------ |
+| MDX content edit    | Incremental update. Only the affected page is re-rendered.   |
+| `docs.json` edit    | Full reload. Navigation, theming, and all pages are rebuilt. |
+| New or deleted file | Incremental update. Navigation is refreshed automatically.   |
+
+<Callout type="info">
+  File changes are debounced with a 100ms delay to batch rapid edits into a
+  single reload.
+</Callout>
+
+## Ignored directories
+
+The file watcher skips these directories to avoid unnecessary reloads:
+
+- `.git`
+- `.next`
+- `dist`
+- `node_modules`
+
+<Callout type="tip">
+  The dev server runs the full blode.md rendering engine locally. What you see
+  in the browser matches your deployed site, including search, navigation, and
+  component rendering.
+</Callout>

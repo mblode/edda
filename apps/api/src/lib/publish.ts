@@ -1,8 +1,19 @@
 import path from "node:path";
 
-import { normalizePath } from "@repo/common";
+import { ensureArray, normalizePath } from "@repo/common";
 import { compileContent } from "@repo/mdx-compiler";
 import type { CompiledMdx } from "@repo/mdx-compiler";
+import type {
+  CollectionConfig,
+  DocsOpenApiSource,
+  SiteConfig,
+} from "@repo/models";
+import {
+  extractOpenApiOperations,
+  openApiIdentifier,
+  openApiSlug,
+  parseOpenApiSpec,
+} from "@repo/prebuild";
 import {
   buildUtilityArtifacts,
   buildSearchIndex,
@@ -12,15 +23,17 @@ import {
   createBlobSource,
   loadSiteConfig,
   PREBUILT_INDEX_PATH,
+  PREBUILT_OPENAPI_INDEX_PATH,
   PREBUILT_SEARCH_INDEX_PATH,
   PREBUILT_TOC_INDEX_PATH,
   PREBUILT_UTILITY_INDEX_PATH,
+  serializeOpenApiIndex,
   serializeSearchIndex,
   serializeTocIndex,
   serializeContentIndex,
   serializeUtilityIndex,
 } from "@repo/previewing";
-import type { ContentSource } from "@repo/previewing";
+import type { ContentSource, PrebuiltOpenApiEntry } from "@repo/previewing";
 import { list, put } from "@vercel/blob";
 
 const DEPLOYMENT_ROOT = "deployments";
@@ -35,6 +48,127 @@ interface DeploymentManifest {
   files: DeploymentManifestFile[];
   version: 1;
 }
+
+const getDocsCollection = (
+  config: SiteConfig
+): SiteConfig["collections"][number] | undefined =>
+  config.collections.find((collection) => collection.type === "docs");
+
+const getDocsNavigation = (config: SiteConfig) =>
+  getDocsCollection(config)?.navigation ?? config.navigation;
+
+const getDocsCollectionWithNavigation = (
+  config: SiteConfig
+): SiteConfig["collections"][number] | undefined => {
+  const docsCollection = getDocsCollection(config);
+  const docsNavigation = getDocsNavigation(config);
+
+  return docsCollection &&
+    docsNavigation &&
+    docsCollection.navigation !== docsNavigation
+    ? { ...docsCollection, navigation: docsNavigation }
+    : docsCollection;
+};
+
+const getOpenApiSourceKey = (source: DocsOpenApiSource): string =>
+  `${source.source}::${source.directory ?? ""}::${(source.include ?? []).join(
+    "|"
+  )}`;
+
+const toSourceObject = (
+  value: string | DocsOpenApiSource
+): DocsOpenApiSource => {
+  if (typeof value === "string") {
+    return { source: value };
+  }
+  return value;
+};
+
+const collectOpenApiSources = (collection?: CollectionConfig) => {
+  const sources: DocsOpenApiSource[] = [];
+
+  for (const item of ensureArray(collection?.openapi)) {
+    if (!item) {
+      continue;
+    }
+    sources.push(toSourceObject(item));
+  }
+
+  const groups = collection?.navigation?.groups ?? [];
+  for (const group of groups) {
+    if (!group.openapi) {
+      continue;
+    }
+    sources.push(toSourceObject(group.openapi));
+  }
+
+  const seen = new Set<string>();
+  return sources.filter((source) => {
+    const key = getOpenApiSourceKey(source);
+    if (seen.has(key)) {
+      return false;
+    }
+    seen.add(key);
+    return true;
+  });
+};
+
+const buildPrebuiltOpenApiIndex = async (
+  collection: CollectionConfig | undefined,
+  source: ContentSource
+): Promise<PrebuiltOpenApiEntry[]> => {
+  if (!collection || collection.type !== "docs") {
+    return [];
+  }
+
+  const entries: PrebuiltOpenApiEntry[] = [];
+  const slugPrefix = normalizePath(collection.slugPrefix ?? "");
+  const sources = collectOpenApiSources(collection);
+  const resolved = await Promise.all(
+    sources.map(async (openApiSource) => {
+      const rawSpec = await source.readFile(openApiSource.source);
+      const spec = parseOpenApiSpec(rawSpec, openApiSource.source);
+      const directory = openApiSource.directory ?? "api";
+      const { operations } = extractOpenApiOperations(spec, directory);
+      return { directory, operations, source: openApiSource, spec };
+    })
+  );
+
+  for (const {
+    directory,
+    operations,
+    source: openApiSource,
+    spec,
+  } of resolved) {
+    const sourceKey = getOpenApiSourceKey(openApiSource);
+    const includeIdentifiers = openApiSource.include?.length
+      ? new Set(openApiSource.include)
+      : null;
+
+    for (const operation of operations) {
+      const identifier = openApiIdentifier(operation.method, operation.path);
+      if (includeIdentifiers && !includeIdentifiers.has(identifier)) {
+        continue;
+      }
+
+      const baseSlug = normalizePath(
+        openApiSlug(operation.method, operation.path, directory)
+      );
+      entries.push({
+        identifier,
+        operation,
+        slug: slugPrefix
+          ? normalizePath(`${slugPrefix}/${baseSlug}`)
+          : baseSlug,
+        source: openApiSource,
+        sourceKey,
+        spec,
+      });
+    }
+  }
+
+  return entries;
+};
 
 const normalizeDeploymentFilePath = (value: string) => {
   if (value.startsWith("/") || value.startsWith("\\")) {
@@ -215,6 +349,9 @@ export const finalizeDeploymentManifest = async (input: {
     const source = createBlobSource(tempManifestBlob.url);
     const configResult = await loadSiteConfig(source);
     if (configResult.ok) {
+      const docsCollectionWithNavigation = getDocsCollectionWithNavigation(
+        configResult.config
+      );
       const filesPrefix = getFilesPrefix(input.projectSlug, input.deploymentId);
       const putJson = (blobPath: string, content: string) =>
         put(`${filesPrefix}${blobPath}`, content, {
@@ -232,23 +369,33 @@ export const finalizeDeploymentManifest = async (input: {
       );
       files.push({ path: PREBUILT_INDEX_PATH, url: indexBlob.url });
 
-      // Phase 2: toc + utility indices in parallel (both depend only on contentIndex)
-      const [tocIndex, utilityIndex] = await Promise.all([
+      // Phase 2: toc + utility + OpenAPI indices in parallel.
+      const [tocIndex, utilityIndex, openApiIndex] = await Promise.all([
         buildTocIndex(contentIndex, source),
         buildUtilityIndex(contentIndex, source, configResult.config),
+        buildPrebuiltOpenApiIndex(docsCollectionWithNavigation, source),
       ]);
 
-      const [tocIndexBlob, utilityIndexBlob] = await Promise.all([
-        putJson(PREBUILT_TOC_INDEX_PATH, serializeTocIndex(tocIndex)),
-        putJson(
-          PREBUILT_UTILITY_INDEX_PATH,
-          serializeUtilityIndex(utilityIndex)
-        ),
-      ]);
+      const [tocIndexBlob, utilityIndexBlob, openApiIndexBlob] =
+        await Promise.all([
+          putJson(PREBUILT_TOC_INDEX_PATH, serializeTocIndex(tocIndex)),
+          putJson(
+            PREBUILT_UTILITY_INDEX_PATH,
+            serializeUtilityIndex(utilityIndex)
+          ),
+          putJson(
+            PREBUILT_OPENAPI_INDEX_PATH,
+            serializeOpenApiIndex(openApiIndex)
+          ),
+        ]);
       files.push({ path: PREBUILT_TOC_INDEX_PATH, url: tocIndexBlob.url });
       files.push({
         path: PREBUILT_UTILITY_INDEX_PATH,
         url: utilityIndexBlob.url,
+      });
+      files.push({
+        path: PREBUILT_OPENAPI_INDEX_PATH,
+        url: openApiIndexBlob.url,
       });
 
       // Phase 3: search index + utility artifacts (sync builds, parallel uploads)

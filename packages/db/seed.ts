@@ -55,9 +55,9 @@ const PROJECTS = [
     slug: "dnd-grid",
   },
   {
-    description: "Build a Mintlify-style documentation platform on Vercel.",
-    name: "Atlas",
-    slug: "atlas",
+    description: "Example documentation site showcasing blode.md features.",
+    name: "Example",
+    slug: "example",
   },
   {
     description:
@@ -66,9 +66,9 @@ const PROJECTS = [
     slug: "blode",
   },
   {
-    description: "Ship product docs with a tenant-aware runtime.",
-    name: "Orbit",
-    slug: "orbit",
+    description: "Blode.md product documentation.",
+    name: "Docs",
+    slug: "docs",
   },
 ] as const;
 

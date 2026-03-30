@@ -17,7 +17,7 @@ import {
   openApiSlug,
   parseOpenApiSpec,
 } from "@repo/prebuild";
-import type { OpenApiOperation } from "@repo/prebuild";
+import type { OpenApiOperation, OpenApiSpec } from "@repo/prebuild";
 import { validateDocsConfig, validateFrontmatter } from "@repo/validation";
 import YAML from "yaml";
 
@@ -28,6 +28,7 @@ export { createFsSource, FsContentSource } from "./fs-source.js";
 export type { CompiledMdxResult, ContentSource } from "./content-source.js";
 
 export const PREBUILT_INDEX_PATH = "_content-index.json";
+export const PREBUILT_OPENAPI_INDEX_PATH = "_openapi-index.json";
 export const PREBUILT_SEARCH_INDEX_PATH = "_search-index.json";
 export const PREBUILT_TOC_INDEX_PATH = "_toc-index.json";
 export const PREBUILT_UTILITY_INDEX_PATH = "_utility-index.json";
@@ -114,6 +115,15 @@ export interface UtilityArtifact {
   content: string;
   contentType: string;
   path: string;
+}
+
+export interface PrebuiltOpenApiEntry {
+  identifier: string;
+  operation: OpenApiOperation;
+  slug: string;
+  source: DocsOpenApiSource;
+  sourceKey: string;
+  spec: OpenApiSpec;
 }
 
 const validModes = new Set<string>(PageModeSchema.options);
@@ -810,6 +820,11 @@ interface SerializedContentIndex {
   collections: Record<string, ContentEntry[]>;
 }
 
+interface SerializedOpenApiIndex {
+  entries: PrebuiltOpenApiEntry[];
+  version: 1;
+}
+
 interface SerializedSearchIndex {
   items: SearchIndexItem[];
   version: 1;
@@ -1340,6 +1355,14 @@ export const serializeContentIndex = (index: ContentIndex): string =>
     version: 1,
   } satisfies SerializedContentIndex);
 
+export const serializeOpenApiIndex = (
+  entries: PrebuiltOpenApiEntry[]
+): string =>
+  JSON.stringify({
+    entries,
+    version: 1,
+  } satisfies SerializedOpenApiIndex);
+
 export const loadPrebuiltContentIndex = async (
   source: ContentSource
 ): Promise<ContentIndex | null> => {
@@ -1369,6 +1392,22 @@ export const loadPrebuiltContentIndex = async (
       entries: data.entries,
       errors: [],
     };
+  } catch {
+    return null;
+  }
+};
+
+export const loadPrebuiltOpenApiIndex = async (
+  source: ContentSource
+): Promise<PrebuiltOpenApiEntry[] | null> => {
+  try {
+    const raw = await source.readFile(PREBUILT_OPENAPI_INDEX_PATH);
+    const data = JSON.parse(raw) as SerializedOpenApiIndex;
+    if (data.version !== 1 || !Array.isArray(data.entries)) {
+      return null;
+    }
+
+    return data.entries;
   } catch {
     return null;
   }

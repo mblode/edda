@@ -33,6 +33,7 @@ const TRAILING_SLASHES_REGEX = /\/+$/;
 const LEADING_SLASHES_REGEX = /^\/+/;
 const BACKSLASH_TO_SLASH_REGEX = /\\/g;
 const DEFAULT_DOCS_BASE_PATH = "/docs";
+const TENANT_RESOLUTION_REVALIDATE_SECONDS = 300;
 const ROOT_TENANT_UTILITY_PATHS = new Set([
   "/llms-full.txt",
   "/llms.txt",
@@ -77,7 +78,7 @@ const tenantResolutionCache = createTimedPromiseCache<
   Awaited<ReturnType<typeof fetchTenantResolution>>
 >({
   maxEntries: 512,
-  ttlMs: 30 * 1000,
+  ttlMs: TENANT_RESOLUTION_REVALIDATE_SECONDS * 1000,
 });
 
 export const getRequestHost = (headerSource: Pick<Headers, "get">) => {
@@ -184,7 +185,9 @@ const fetchTenantResolutionFromApi = async (host: string, pathname: string) => {
   url.searchParams.set("path", pathname);
   let response: Response;
   try {
-    response = await fetch(url.toString(), { next: { revalidate: 5 } });
+    response = await fetch(url.toString(), {
+      next: { revalidate: TENANT_RESOLUTION_REVALIDATE_SECONDS },
+    });
   } catch {
     return null;
   }

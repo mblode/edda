@@ -1,0 +1,124 @@
+---
+title: blodemd push
+description: Deploy documentation to Blode.md.
+---
+
+Upload your documentation files and publish them to Blode.md in a single command.
+
+```bash
+blodemd push [dir]
+```
+
+## Directory resolution
+
+If you omit the `dir` argument, the CLI searches for a `docs.json` file in these locations (in order):
+
+1. The current working directory
+2. `./docs`
+3. `./apps/docs`
+
+If none contain a `docs.json`, the current directory is used.
+
+## Options
+
+<TypeTable
+  type={{
+    "[dir]": {
+      description: "Path to the docs directory containing docs.json.",
+      type: "string",
+    },
+    "--project <slug>": {
+      description:
+        "Project slug. Falls back to the name field in docs.json, then the BLODEMD_PROJECT environment variable.",
+      type: "string",
+    },
+    "--api-url <url>": {
+      description: "API base URL.",
+      type: "string",
+      default: '"https://api.blode.md"',
+    },
+    "--api-key <token>": {
+      description:
+        "API key for authentication. Falls back to the BLODEMD_API_KEY environment variable.",
+      type: "string",
+    },
+    "--branch <name>": {
+      description:
+        "Git branch name attached to the deployment. Auto-detected from git if not provided. Falls back to BLODEMD_BRANCH, then GITHUB_REF_NAME.",
+      type: "string",
+      default: '"main"',
+    },
+    "--message <msg>": {
+      description:
+        "Deploy message. Auto-detected from the latest git commit if not provided. Falls back to BLODEMD_COMMIT_MESSAGE.",
+      type: "string",
+    },
+  }}
+/>
+
+## Deployment flow
+
+When you run `blodemd push`, the CLI executes these steps:
+
+<Steps>
+  <Step title="Validate configuration">
+    Reads and parses `docs.json` from the resolved docs directory.
+  </Step>
+  <Step title="Collect files">
+    Recursively collects all files in the directory. Dotfiles and `node_modules`
+    are skipped automatically.
+  </Step>
+  <Step title="Create deployment">
+    Sends a request to the Blode.md API to create a new deployment record with
+    the branch and commit message.
+  </Step>
+  <Step title="Upload files">
+    Uploads files in batches of up to 4 MB each. Large documentation sets are
+    split across multiple requests.
+  </Step>
+  <Step title="Finalize and promote">
+    Marks the deployment as complete and promotes it to production. Your docs
+    are live immediately.
+  </Step>
+</Steps>
+
+## Auto-create projects
+
+If the project slug does not match an existing project, the CLI prompts you to create one. This requires an OAuth session (from `blodemd login`), not just an API key.
+
+When a project is created, the CLI prints an API key you can use for CI/CD deployments.
+
+<Callout type="warn">
+  API key authentication cannot auto-create projects. You need to run `blodemd
+  login` first, or create the project from the dashboard.
+</Callout>
+
+## Examples
+
+<CodeGroup>
+```bash title="Push from default location"
+blodemd push
+```
+
+```bash title="Push a specific directory"
+blodemd push ./my-docs
+```
+
+```bash title="Push with explicit project and branch"
+blodemd push --project my-project --branch staging
+```
+
+```bash title="CI/CD with environment variables"
+export BLODEMD_API_KEY="your-api-key"
+export BLODEMD_PROJECT="my-project"
+blodemd push docs
+```
+
+</CodeGroup>
+
+## Skipped files
+
+The CLI skips the following entries during file collection:
+
+- Files and directories starting with `.` (dotfiles)
+- The `node_modules` directory

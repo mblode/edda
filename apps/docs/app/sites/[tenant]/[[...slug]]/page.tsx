@@ -1,17 +1,49 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { Suspense } from "react";
 
-import { ApiReference } from "@/components/api/api-reference";
-import { CollectionIndex } from "@/components/content/collection-index";
 import { DocShell } from "@/components/docs/doc-shell";
 import { getDocPageContent, getDocShellData } from "@/lib/docs-runtime";
 import { toDocHref } from "@/lib/routes";
 
 export const dynamic = "force-static";
-export const preferredRegion = "home";
 export const revalidate = 3600;
 
 const getTenantBasePath = (pathPrefix?: string) => pathPrefix ?? "";
+
+const DocContentFallback = () => (
+  <div className="grid gap-4">
+    <div className="h-5 w-3/4 rounded-md bg-border/60" />
+    <div className="h-4 w-full rounded-md bg-border/40" />
+    <div className="h-4 w-[92%] rounded-md bg-border/40" />
+    <div className="h-4 w-[84%] rounded-md bg-border/40" />
+    <div className="h-40 rounded-xl border border-dashed border-border/70 bg-muted/30" />
+  </div>
+);
+
+const DocContent = async ({
+  rawContent,
+  slugKey,
+  tenantSlug,
+  toc,
+}: {
+  rawContent?: string;
+  slugKey: string;
+  tenantSlug: string;
+  toc: { id: string; title: string; level: number }[];
+}) => {
+  const rendered = await getDocPageContent(
+    tenantSlug,
+    slugKey,
+    rawContent,
+    toc
+  );
+  if (!rendered) {
+    notFound();
+  }
+
+  return rendered.content ?? null;
+};
 
 // oxlint-disable-next-line eslint/complexity
 export const generateMetadata = async ({
@@ -130,6 +162,7 @@ const DocPage = async ({
       : undefined;
 
   if (shell.kind === "openapi") {
+    const { ApiReference } = await import("@/components/api/api-reference");
     content = (
       <ApiReference
         entry={shell.openApiEntry}
@@ -138,6 +171,8 @@ const DocPage = async ({
     );
     rawContent = shell.openApiEntry.operation.description ?? "";
   } else if (shell.kind === "index") {
+    const { CollectionIndex } =
+      await import("@/components/content/collection-index");
     content = (
       <CollectionIndex
         basePath={basePath}
@@ -147,8 +182,16 @@ const DocPage = async ({
   } else {
     ({ rawContent } = shell);
     ({ toc } = shell);
-    const rendered = await getDocPageContent(tenantSlug, slugKey, rawContent);
-    content = rendered?.content ?? null;
+    content = (
+      <Suspense fallback={<DocContentFallback />}>
+        <DocContent
+          rawContent={rawContent}
+          slugKey={slugKey}
+          tenantSlug={tenantSlug}
+          toc={toc}
+        />
+      </Suspense>
+    );
   }
 
   return (

@@ -4,7 +4,7 @@ import { NextResponse } from "next/server";
 
 import { getTenantContentSource } from "@/lib/content-source";
 import { getDocsCollectionWithNavigation } from "@/lib/docs-collection";
-import { buildOpenApiRegistry } from "@/lib/openapi";
+import { loadOpenApiRegistry } from "@/lib/openapi";
 import { getRequestHost, resolveTenant } from "@/lib/tenancy";
 import { getTenantBySlug } from "@/lib/tenants";
 
@@ -50,7 +50,7 @@ const resolveAllowedHosts = async (config: SiteConfig, tenant: Tenant) => {
     return configuredHosts;
   }
 
-  const registry = await buildOpenApiRegistry(
+  const registry = await loadOpenApiRegistry(
     getDocsCollectionWithNavigation(config),
     getTenantContentSource(tenant)
   );

@@ -1,0 +1,253 @@
+---
+title: docs.json reference
+description: Complete reference for the docs.json configuration file.
+---
+
+Every Blode.md project is configured through a single `docs.json` file at the root of your docs directory. This page covers every top-level field.
+
+## Minimal example
+
+```json title="docs.json"
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "name": "my-project",
+  "theme": "mint",
+  "colors": { "primary": "#0D9373" },
+  "navigation": {
+    "groups": [{ "group": "Getting started", "pages": ["index"] }]
+  }
+}
+```
+
+## Full example
+
+```json title="docs.json"
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "name": "my-project",
+  "theme": "mint",
+  "description": "Documentation for my product.",
+  "colors": {
+    "primary": "#0D9373",
+    "light": "#CFF6EE",
+    "dark": "#0C3A33"
+  },
+  "logo": {
+    "light": "/images/logo-light.svg",
+    "dark": "/images/logo-dark.svg"
+  },
+  "favicon": "/images/favicon.svg",
+  "fonts": {
+    "heading": "Inter",
+    "body": "Inter",
+    "provider": "google"
+  },
+  "navbar": {
+    "links": [{ "label": "GitHub", "href": "https://github.com/example/docs" }],
+    "primary": {
+      "type": "button",
+      "label": "Dashboard",
+      "href": "https://app.example.com"
+    }
+  },
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Guides",
+        "groups": [
+          { "group": "Getting started", "pages": ["index", "quickstart"] }
+        ]
+      }
+    ]
+  },
+  "appearance": { "default": "system" },
+  "search": { "prompt": "Search docs..." },
+  "seo": { "indexing": "all" },
+  "metadata": { "timestamp": true },
+  "contextual": {
+    "options": ["copy", "view", "chatgpt", "claude"]
+  },
+  "api": {
+    "openapi": "openapi.yaml",
+    "playground": { "display": "interactive" }
+  }
+}
+```
+
+## Top-level fields
+
+<TypeTable
+  type={{
+    $schema: {
+      description:
+        "JSON Schema URL for editor autocomplete. Use `https://mintlify.com/docs.json`.",
+      type: "string",
+    },
+    name: {
+      description:
+        "Project slug. Determines your `*.blode.md` subdomain and acts as the project identifier.",
+      type: "string",
+      required: true,
+    },
+    theme: {
+      description: "Visual theme for your documentation site.",
+      type: "string",
+      required: true,
+    },
+    description: {
+      description: "Short project description used in metadata and SEO.",
+      type: "string",
+    },
+    colors: {
+      description:
+        "Brand colors for the site. Only `primary` is required. See [Theming](/configuration/theming).",
+      type: "object",
+      required: true,
+    },
+    logo: {
+      description:
+        "Logo displayed in the navbar. Accepts a URL string or an object with `light` and `dark` variants.",
+      type: "string | { light, dark, href? }",
+    },
+    favicon: {
+      description:
+        "Favicon path or URL. Accepts a string or an object with `light` and `dark` variants.",
+      type: "string | { light, dark }",
+    },
+    fonts: {
+      description:
+        "Typography settings for body, heading, and monospace text. See [Theming](/configuration/theming).",
+      type: "object",
+    },
+    navbar: {
+      description:
+        "Top navigation bar configuration with links and a primary CTA button.",
+      type: "object",
+    },
+    navigation: {
+      description:
+        "Sidebar and tab structure. Defines the hierarchy of your pages. See [Navigation](/configuration/navigation).",
+      type: "object",
+      required: true,
+    },
+    api: {
+      description:
+        "API reference configuration including OpenAPI/AsyncAPI sources and playground settings.",
+      type: "object",
+    },
+    appearance: {
+      description:
+        "Dark/light mode settings. Set `default` to `dark`, `light`, or `system`. Use `strict` to lock to one mode.",
+      type: "object",
+    },
+    contextual: {
+      description:
+        "Contextual action buttons shown on each page (copy, view source, open in ChatGPT, Claude, etc.).",
+      type: "object",
+    },
+    search: {
+      description:
+        "Search configuration. Set `prompt` to customize the search placeholder text.",
+      type: "object",
+    },
+    seo: {
+      description:
+        "SEO settings. Set `indexing` to `all` or `default` to control search engine indexing.",
+      type: "object",
+    },
+    metadata: {
+      description:
+        "Metadata options. Set `timestamp: true` to show last-updated dates on pages.",
+      type: "object",
+    },
+  }}
+/>
+
+## Navbar
+
+The `navbar` object configures the top navigation bar.
+
+<TypeTable
+  type={{
+    "navbar.links": {
+      description: "Array of link objects displayed in the navbar.",
+      type: "Array<{ label: string, href: string }>",
+    },
+    "navbar.primary": {
+      description: "Primary CTA button in the navbar.",
+      type: "{ type: 'button' | 'discord' | 'github', label?: string, href: string }",
+    },
+  }}
+/>
+
+## API reference
+
+The `api` object controls OpenAPI/AsyncAPI rendering and the API playground.
+
+<TypeTable
+  type={{
+    "api.openapi": {
+      description:
+        "Path to your OpenAPI spec. Accepts a string, array of strings, or a source object with `source`, `basePath`, `directory`, and `include`.",
+      type: "string | string[] | OpenApiSource",
+    },
+    "api.asyncapi": {
+      description: "Path to your AsyncAPI spec. Same format as `openapi`.",
+      type: "string | string[] | OpenApiSource",
+    },
+    "api.playground": {
+      description: "API playground settings.",
+      type: "{ display?: 'auth' | 'interactive' | 'none' | 'simple', proxy?: boolean, credentials?: boolean }",
+    },
+    "api.examples": {
+      description: "Code example generation settings.",
+      type: "{ autogenerate?: boolean, defaults?: 'all' | 'required', languages?: string[], prefill?: boolean }",
+    },
+    "api.params": {
+      description: "Parameter display settings.",
+      type: "{ expanded?: 'all' | 'closed' }",
+    },
+    "api.mdx": {
+      description:
+        "MDX-based API page settings including auth method and server URL.",
+      type: "{ auth?: { method, name }, server?: string | string[] }",
+    },
+    "api.url": {
+      description:
+        "URL display mode. Set to `full` to show the complete URL in API pages.",
+      type: "'full'",
+    },
+  }}
+/>
+
+## Contextual actions
+
+The `contextual` object adds action buttons to each page, letting readers copy content, open it in AI assistants, or perform custom actions.
+
+<TypeTable
+  type={{
+    "contextual.display": {
+      description: "Where to render the action buttons.",
+      type: "'header' | 'toc'",
+    },
+    "contextual.options": {
+      description: "Array of built-in presets or custom action objects.",
+      type: "Array<string | CustomOption>",
+    },
+  }}
+/>
+
+Built-in option presets: `copy`, `view`, `chatgpt`, `claude`, `perplexity`, `grok`, `aistudio`, `cursor`, `vscode`, `windsurf`, `devin`, `mcp`, `add-mcp`, `devin-mcp`, `assistant`.
+
+## Validation
+
+Run `blodemd validate` to check your `docs.json` against the schema before deploying:
+
+```bash
+blodemd validate
+```
+
+## Related pages
+
+- [Navigation](/configuration/navigation) -- configure sidebar groups, tabs, and page ordering
+- [Theming and branding](/configuration/theming) -- customize colors, logos, fonts, and appearance

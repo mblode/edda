@@ -1,0 +1,141 @@
+---
+title: Steps
+description: Display numbered step-by-step instructions.
+---
+
+Use the `Steps` and `Step` components to present sequential instructions. Each step is automatically numbered.
+
+## Basic usage
+
+````mdx
+<Steps>
+  <Step title="Install the CLI">
+    Run the install command for your package manager:
+
+    ```bash
+    npm install -g blodemd
+    ```
+
+  </Step>
+  <Step title="Initialize your project">
+    Create a new docs project in the current directory:
+
+    ```bash
+    blodemd init
+    ```
+
+  </Step>
+  <Step title="Start the dev server">
+    Preview your documentation locally:
+
+    ```bash
+    blodemd dev
+    ```
+
+  </Step>
+</Steps>
+````
+
+<Steps>
+  <Step title="Install the CLI">
+    Run the install command for your package manager:
+
+    ```bash
+    npm install -g blodemd
+    ```
+
+  </Step>
+  <Step title="Initialize your project">
+    Create a new docs project in the current directory:
+
+    ```bash
+    blodemd init
+    ```
+
+  </Step>
+  <Step title="Start the dev server">
+    Preview your documentation locally:
+
+    ```bash
+    blodemd dev
+    ```
+
+  </Step>
+</Steps>
+
+## Title sizing
+
+Control the heading level of step titles with `titleSize`, either on individual steps or on the parent `Steps` component:
+
+```mdx
+<Steps titleSize="h3">
+  <Step title="Configure your project">
+    Edit `docs.json` to set your project name and navigation.
+  </Step>
+  <Step title="Write your content">
+    Create MDX files in the `docs/` directory.
+  </Step>
+</Steps>
+```
+
+<Steps titleSize="h3">
+  <Step title="Configure your project">
+    Edit `docs.json` to set your project name and navigation.
+  </Step>
+  <Step title="Write your content">
+    Create MDX files in the `docs/` directory.
+  </Step>
+</Steps>
+
+## Props
+
+### Steps
+
+<TypeTable
+  type={{
+    titleSize: {
+      description: "Default heading level for all child steps.",
+      type: '"p" | "h2" | "h3" | "h4"',
+      default: '"p"',
+      required: false,
+    },
+    children: {
+      description: "One or more Step components.",
+      type: "ReactNode",
+      required: true,
+    },
+  }}
+/>
+
+### Step
+
+<TypeTable
+  type={{
+    title: {
+      description: "The step heading text.",
+      type: "string",
+      required: true,
+    },
+    icon: {
+      description: "Custom icon to replace the step number.",
+      type: "ReactNode",
+      required: false,
+    },
+    stepNumber: {
+      description: "Override the automatic step number.",
+      type: "number",
+      required: false,
+    },
+    titleSize: {
+      description: "Heading level for this step. Overrides the parent value.",
+      type: '"p" | "h2" | "h3" | "h4"',
+      default: '"p"',
+      required: false,
+    },
+    children: {
+      description: "Content displayed below the step title.",
+      type: "ReactNode",
+      required: false,
+    },
+  }}
+/>

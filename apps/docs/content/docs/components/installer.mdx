@@ -1,0 +1,44 @@
+---
+title: Installer
+description: Display a styled package installation command.
+---
+
+Use the `Installer` component to show a copyable installation command in a styled container.
+
+## Basic usage
+
+Pass a `command` prop with the full install command:
+
+```mdx
+<Installer path="blodemd" command="npm install blodemd" />
+```
+
+<Installer path="blodemd" command="npm install blodemd" />
+
+## Default command
+
+If you omit the `command` prop, a default command is generated from the `path` value:
+
+```mdx
+<Installer path="blodemd" />
+```
+
+<Installer path="blodemd" />
+
+## Props
+
+<TypeTable
+  type={{
+    path: {
+      description: "Package path used to generate the default command.",
+      type: "string",
+      required: true,
+    },
+    command: {
+      description:
+        "Custom install command. Overrides the default generated from `path`.",
+      type: "string",
+      required: false,
+    },
+  }}
+/>

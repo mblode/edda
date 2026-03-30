@@ -1,0 +1,54 @@
+---
+title: Search
+description: Built-in full-text search for your documentation.
+---
+
+Search is enabled by default on every blode.md site. Your visitors can find content instantly without any configuration on your part.
+
+## Keyboard shortcuts
+
+You can open the search dialog with any of these shortcuts:
+
+| Shortcut                       | Platform       |
+| ------------------------------ | -------------- |
+| <kbd>Cmd</kbd> + <kbd>K</kbd>  | macOS          |
+| <kbd>Ctrl</kbd> + <kbd>K</kbd> | Windows, Linux |
+| <kbd>/</kbd>                   | All platforms  |
+
+## How it works
+
+When you deploy with `blodemd push`, your page titles, headings, and body content are automatically indexed. There is no external search service to configure and no API keys to manage.
+
+<Callout type="info">
+  The search index updates every time you deploy. New or edited pages are
+  searchable immediately after a successful push.
+</Callout>
+
+## Customize the search placeholder
+
+You can change the placeholder text shown in the search bar by setting `search.prompt` in your `docs.json`:
+
+```json title="docs.json"
+{
+  "search": {
+    "prompt": "Search the docs..."
+  }
+}
+```
+
+## Disable search
+
+If you do not need search, you can disable it entirely:
+
+```json title="docs.json"
+{
+  "features": {
+    "search": false
+  }
+}
+```
+
+<Callout type="note">
+  Disabling search removes the search bar from the navigation and hides the
+  keyboard shortcut hints.
+</Callout>

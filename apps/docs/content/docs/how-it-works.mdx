@@ -1,0 +1,66 @@
+---
+title: How it works
+description: Understand the architecture behind Blode.md's docs-as-code platform.
+---
+
+Blode.md turns local MDX files into a hosted documentation site. Here is how the pieces fit together.
+
+## Architecture
+
+```
+Your repo          CLI              API             CDN + Renderer
+─────────       ─────────       ─────────         ───────────────
+ docs/    ───►  blodemd   ───►  Hono API   ───►   Next.js app
+ ├ docs.json    push            ├ validate         ├ tenant routing
+ ├ index.mdx                    ├ store in         ├ MDX rendering
+ └ *.mdx                        │ Vercel Blob      ├ Shiki highlighting
+                                └ build indices    └ edge caching
+```
+
+## What happens when you push
+
+<Steps>
+  <Step title="Validate">
+    The CLI reads `docs.json` and validates it against the configuration schema.
+    If the config is invalid, the push stops with an error.
+  </Step>
+  <Step title="Collect files">
+    All files in your docs directory are collected. Dotfiles and `node_modules`
+    are skipped.
+  </Step>
+  <Step title="Create deployment">
+    The CLI creates a new deployment record via the API. If the project does not
+    exist yet, you are prompted to create it.
+  </Step>
+  <Step title="Upload">
+    Files are uploaded in batches (up to 4 MB per batch) and stored in Vercel
+    Blob storage.
+  </Step>
+  <Step title="Finalize">
+    The API builds search indices, compiles MDX to optimized JSON, generates a
+    deployment manifest, and promotes the deployment to live.
+  </Step>
+</Steps>
+
+## Content pipeline
+
+When a reader visits your docs site, the renderer:
+
+1. **Resolves the tenant** from the subdomain, custom domain, or path prefix.
+2. **Loads the deployment manifest** from Blob storage, which lists every file and its URL.
+3. **Renders MDX** using pre-compiled output for sub-millisecond execution. In development, MDX is compiled on the fly with full plugin support.
+4. **Applies syntax highlighting** via Shiki with dual themes (light and dark).
+5. **Caches the result** at the edge with automatic revalidation.
+
+## Multi-tenant model
+
+Each project is an isolated tenant. Tenants are identified by subdomain (`project.blode.md`), custom domain, or path prefix. Tenant configuration, content, and deployments are fully isolated from each other.
+
+## Pre-built indices
+
+During finalization, the API generates several indices alongside your content:
+
+- **Content index** — searchable page tree for the search feature
+- **Table of contents index** — heading structure for right-side navigation
+- **Utility index** — OpenAPI specs, `robots.txt`, `sitemap.xml`, and `llms.txt`
+- **Compiled MDX** — pre-compiled output for fast rendering

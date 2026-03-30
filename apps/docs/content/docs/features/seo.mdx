@@ -1,0 +1,101 @@
+---
+title: SEO
+description: Search engine optimization, sitemaps, and AI-friendly exports.
+---
+
+Blode.md automatically generates the files search engines and AI crawlers need to discover and index your documentation. You get sensible defaults out of the box, with options to customize behavior per page.
+
+## Auto-generated files
+
+Every deployed site includes these files at their standard paths:
+
+<TypeTable
+  type={{
+    "/robots.txt": {
+      description: "Standard robots file. Allows all crawlers by default.",
+      type: "Auto-generated",
+    },
+    "/sitemap.xml": {
+      description:
+        "XML sitemap listing all public pages with last-modified dates.",
+      type: "Auto-generated",
+    },
+    "/llms.txt": {
+      description: "Plaintext summary of your documentation for AI crawlers.",
+      type: "Auto-generated",
+    },
+    "/llms-full.txt": {
+      description: "Complete documentation content in plaintext format.",
+      type: "Auto-generated",
+    },
+    "/llms.mdx/{slug}": {
+      description:
+        "Individual pages in raw MDX format for programmatic access.",
+      type: "Auto-generated",
+    },
+  }}
+/>
+
+<Callout type="tip">
+  The `llms.txt` and `llms-full.txt` files follow the emerging [llms.txt
+  standard](https://llmstxt.org) for making documentation accessible to large
+  language models.
+</Callout>
+
+## Indexing mode
+
+Control how search engines index your site with the `seo.indexing` option in `docs.json`:
+
+<CodeGroup>
+```json title="Index all pages (default)"
+{
+  "seo": {
+    "indexing": "all"
+  }
+}
+```
+
+```json title="Respect page-level noindex"
+{
+  "seo": {
+    "indexing": "default"
+  }
+}
+```
+
+</CodeGroup>
+
+| Value       | Behavior                                                              |
+| ----------- | --------------------------------------------------------------------- |
+| `"all"`     | All pages are indexed. Page-level `noindex` frontmatter is ignored.   |
+| `"default"` | Pages with `noindex: true` in frontmatter are excluded from indexing. |
+
+## Page-level noindex
+
+To exclude a specific page from search engine indexing, add `noindex: true` to its frontmatter:
+
+```mdx title="internal-notes.mdx"
+---
+title: Internal notes
+noindex: true
+---
+
+This page will not appear in search engine results.
+```
+
+## Last-modified timestamps
+
+Enable last-modified metadata with the `metadata.timestamp` option. This adds `<meta>` tags and updates your sitemap entries with accurate dates:
+
+```json title="docs.json"
+{
+  "metadata": {
+    "timestamp": true
+  }
+}
+```
+
+<Callout type="info">
+  Timestamps are derived from your deployment history. Each page's last-modified
+  date reflects the most recent deploy that changed its content.
+</Callout>

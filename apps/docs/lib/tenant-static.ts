@@ -31,7 +31,7 @@ import {
   getVisibleNavigation,
 } from "@/lib/navigation";
 import type { OpenApiEntry } from "@/lib/openapi";
-import { buildOpenApiRegistry } from "@/lib/openapi";
+import { loadOpenApiRegistry } from "@/lib/openapi";
 import { toDocHref } from "@/lib/routes";
 import { getRequestProtocol } from "@/lib/tenancy";
 import type { TenantRequestContext } from "@/lib/tenant-utility-context";
@@ -127,7 +127,7 @@ const loadTenantUrlData = async (tenant: Tenant) => {
   const docsCollection = getDocsCollection(config);
   const docsNavigation = getDocsNavigation(config);
   const docsCollectionWithNavigation = getDocsCollectionWithNavigation(config);
-  const registry = await buildOpenApiRegistry(
+  const registry = await loadOpenApiRegistry(
     docsCollectionWithNavigation,
     contentSource
   );

@@ -1,0 +1,61 @@
+---
+title: Code blocks
+description: Syntax highlighting, titles, and multi-file code examples.
+---
+
+Fenced code blocks are automatically syntax-highlighted using Shiki with dual themes (light and dark).
+
+## Basic usage
+
+Use triple backticks with a language identifier:
+
+````mdx
+```javascript
+const greeting = "Hello, world!";
+console.log(greeting);
+```
+````
+
+## Titles
+
+Add a filename or label with the `title` attribute:
+
+````mdx
+```typescript title="src/config.ts"
+export const config = {
+  name: "my-project",
+  version: "1.0.0",
+};
+```
+````
+
+## Supported languages
+
+Shiki supports over 300 languages, including: `javascript`, `typescript`, `python`, `go`, `rust`, `bash`, `json`, `yaml`, `mdx`, `sql`, `css`, `html`, and many more.
+
+## Multi-file examples
+
+Use the `CodeGroup` component to show multiple related code blocks with tabbed navigation:
+
+````mdx
+<CodeGroup>
+```bash title="npm"
+npm install blodemd
+````
+
+```bash title="pnpm"
+pnpm add blodemd
+```
+
+```bash title="yarn"
+yarn add blodemd
+```
+
+</CodeGroup>
+```
+
+Tabs are automatically labeled from the `title` attribute. If no title is set, the language name is used.
+
+## Inline code
+
+Use single backticks for inline code: `` `blodemd push` `` renders as `blodemd push`.

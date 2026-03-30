@@ -8,6 +8,8 @@ import { createTimedPromiseCache } from "./server-cache";
 
 export const getProjectTag = (slug: string) => `project:${slug}`;
 
+const TENANT_REVALIDATE_SECONDS = 3600;
+
 const mapTenant = (tenant: {
   activeDeploymentId?: string;
   activeDeploymentManifestUrl?: string;
@@ -27,7 +29,7 @@ const mapTenant = (tenant: {
 
 const tenantCache = createTimedPromiseCache<string, Tenant | null>({
   maxEntries: 512,
-  ttlMs: 5 * 60 * 1000,
+  ttlMs: TENANT_REVALIDATE_SECONDS * 1000,
 });
 
 const fetchTenant = async (slug: string): Promise<Tenant | null> => {
@@ -39,7 +41,7 @@ const fetchTenant = async (slug: string): Promise<Tenant | null> => {
   const url = new URL(`/tenants/${slug}`, docsApiBase);
   const response = await fetch(url.toString(), {
     next: {
-      revalidate: 300,
+      revalidate: TENANT_REVALIDATE_SECONDS,
       tags: [getProjectTag(slug), "tenants"],
     },
   });
