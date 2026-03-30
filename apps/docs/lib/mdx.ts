@@ -48,6 +48,7 @@ export const renderMdx = async (source: string) => {
   const { body, frontmatter } = stripFrontmatter(source);
   const highlighter = await getHighlighter();
   const shikiTransformer = rehypeShikiFromHighlighter(highlighter, {
+    defaultColor: false,
     themes: {
       dark: "github-dark",
       light: "github-light",

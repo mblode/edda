@@ -25,6 +25,7 @@ export const compileContent = async (source: string): Promise<CompiledMdx> => {
   const body = source.replace(FRONTMATTER_REGEX, "");
   const highlighter = await getHighlighter();
   const shikiTransformer = rehypeShikiFromHighlighter(highlighter, {
+    defaultColor: false,
     themes: {
       dark: "github-dark",
       light: "github-light",

@@ -136,13 +136,13 @@ export const DocSidebar = ({
 
   return (
     <aside
-      className="sticky top-[calc(var(--header-height)+0.6rem)] z-30 hidden h-[calc(100svh-10rem)] w-[calc(var(--spacing)*56)] shrink-0 overscroll-none bg-transparent lg:flex"
+      className="sticky top-[calc(var(--header-height)+0.6rem)] z-30 hidden h-[calc(100svh-10rem)] w-[calc(var(--spacing)*56)] shrink-0 flex-col overscroll-none bg-transparent lg:flex"
       aria-label="Documentation navigation"
     >
       <div className="h-9" />
       <div className="absolute top-8 z-10 h-8 w-full shrink-0 bg-gradient-to-b from-background via-background/80 to-background/50 blur-xs" />
       <div className="absolute top-12 right-2 bottom-0 hidden h-full w-px bg-gradient-to-b from-transparent via-border to-transparent lg:flex" />
-      <div className="no-scrollbar mx-auto flex w-full flex-1 flex-col overflow-x-hidden px-2">
+      <div className="no-scrollbar mx-auto flex min-h-0 w-full flex-1 flex-col gap-2 overflow-y-auto overflow-x-hidden px-2">
         {anchors?.length ? (
           <Section paddedTop title="Pinned">
             <ul className="space-y-1">

@@ -272,12 +272,8 @@ export const devCommand = async ({
       }
     };
 
-    const onSignal = async () => {
-      await closeAll();
-    };
-
-    process.once("SIGINT", onSignal);
-    process.once("SIGTERM", onSignal);
+    process.once("SIGINT", closeAll);
+    process.once("SIGTERM", closeAll);
 
     try {
       await waitForServer({ child, port });
@@ -294,10 +290,6 @@ export const devCommand = async ({
         NodeJS.Signals | null,
       ];
 
-      await closeAll();
-      process.removeListener("SIGINT", onSignal);
-      process.removeListener("SIGTERM", onSignal);
-
       if (shuttingDown || signal === "SIGINT" || signal === "SIGTERM") {
         return;
       }
@@ -308,11 +300,10 @@ export const devCommand = async ({
           EXIT_CODES.ERROR
         );
       }
-    } catch (error) {
+    } finally {
       await closeAll();
-      process.removeListener("SIGINT", onSignal);
-      process.removeListener("SIGTERM", onSignal);
-      throw error;
+      process.removeListener("SIGINT", closeAll);
+      process.removeListener("SIGTERM", closeAll);
     }
   } catch (error) {
     const cliError = toCliError(error);

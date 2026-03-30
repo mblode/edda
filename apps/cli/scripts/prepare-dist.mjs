@@ -147,17 +147,10 @@ cpSync(
   path.join(cliRoot, "docs/app/globals.css")
 );
 
-// 4. Copy @repo packages
+// 4. Copy @repo packages (uses the same REPO_PACKAGES list as the build step)
 console.log("Copying @repo packages...");
 
-const COMPILED_PACKAGES = [
-  "common",
-  "contracts",
-  "models",
-  "previewing",
-  "validation",
-];
-for (const pkg of COMPILED_PACKAGES) {
+for (const pkg of REPO_PACKAGES) {
   const dest = path.join(cliRoot, `packages/@repo/${pkg}`);
   mkdirSync(dest, { recursive: true });
   cpSync(
@@ -167,29 +160,10 @@ for (const pkg of COMPILED_PACKAGES) {
   cpSync(path.join(repoRoot, `packages/${pkg}/dist`), path.join(dest, "dist"), {
     recursive: true,
   });
-  // Also copy src/ for packages that export types from source
   cpSync(path.join(repoRoot, `packages/${pkg}/src`), path.join(dest, "src"), {
     recursive: true,
   });
 }
-
-// prebuild: has both src/ (raw TypeScript for transpilePackages) and dist/ (built above)
-const prebuildDest = path.join(cliRoot, "packages/@repo/prebuild");
-mkdirSync(prebuildDest, { recursive: true });
-cpSync(
-  path.join(repoRoot, "packages/prebuild/package.json"),
-  path.join(prebuildDest, "package.json")
-);
-cpSync(
-  path.join(repoRoot, "packages/prebuild/dist"),
-  path.join(prebuildDest, "dist"),
-  { recursive: true }
-);
-cpSync(
-  path.join(repoRoot, "packages/prebuild/src"),
-  path.join(prebuildDest, "src"),
-  { recursive: true }
-);
 
 console.log("Done. Published package will include:");
 console.log("  dev-server/  - Next.js dev server");
