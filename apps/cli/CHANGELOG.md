@@ -1,5 +1,11 @@
 # blodemd
 
+## 0.0.6
+
+### Patch Changes
+
+- Add product documentation at docs.blode.md, remove orbit example, rename atlas to example
+
 ## 0.0.5
 
 ### Patch Changes
