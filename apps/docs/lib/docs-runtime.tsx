@@ -12,10 +12,8 @@ import type {
   ContentSource,
   PageMetadata,
 } from "@repo/previewing";
-import { headers } from "next/headers";
 import { cache } from "react";
 
-import { getTenantDocsPath } from "@/lib/content-root";
 import {
   getTenantContentSource,
   resolveSiteConfigAssets,
@@ -39,39 +37,8 @@ import type { NavEntry, NavPage, NavTab } from "@/lib/navigation";
 import { buildOpenApiRegistry } from "@/lib/openapi";
 import type { OpenApiRegistry } from "@/lib/openapi";
 import { createTimedPromiseCache } from "@/lib/server-cache";
-import { TENANT_HEADERS } from "@/lib/tenant-headers";
 import { getTenantBySlug } from "@/lib/tenants";
 import { extractToc } from "@/lib/toc";
-
-const getTenantFromHeaders = async (slug: string): Promise<Tenant | null> => {
-  const headerStore = await headers();
-  const id = headerStore.get(TENANT_HEADERS.ID);
-  const name = headerStore.get(TENANT_HEADERS.NAME);
-  const primaryDomain = headerStore.get(TENANT_HEADERS.PRIMARY_DOMAIN);
-  const subdomain = headerStore.get(TENANT_HEADERS.SUBDOMAIN);
-
-  if (!id || !name || !primaryDomain || !subdomain) {
-    return null;
-  }
-
-  return {
-    activeDeploymentId:
-      headerStore.get(TENANT_HEADERS.DEPLOYMENT_ID) ?? undefined,
-    activeDeploymentManifestUrl:
-      headerStore.get(TENANT_HEADERS.MANIFEST_URL) ?? undefined,
-    customDomains:
-      headerStore.get(TENANT_HEADERS.CUSTOM_DOMAINS)?.split(",") ?? [],
-    docsPath: getTenantDocsPath(slug),
-    id,
-    name,
-    pathPrefix: headerStore.get(TENANT_HEADERS.PATH_PREFIX) ?? undefined,
-    primaryDomain,
-    slug,
-    // Proxy only forwards headers for resolved (active) tenants
-    status: "active",
-    subdomain,
-  };
-};
 
 interface SearchItem {
   href?: string;
@@ -206,9 +173,7 @@ const buildSearchItems = ({
 };
 
 const getTenantArtifacts = async (tenantSlug: string) => {
-  const tenant =
-    (await getTenantFromHeaders(tenantSlug)) ??
-    (await getTenantBySlug(tenantSlug));
+  const tenant = await getTenantBySlug(tenantSlug);
   if (!tenant) {
     return null;
   }
@@ -322,20 +287,21 @@ const getRenderedPageData = async ({
   artifacts,
   currentPath,
   relativePath,
+  rawContent: preloadedRawContent,
   useToc,
 }: {
   artifacts: TenantArtifacts;
   currentPath: string;
   relativePath: string;
+  rawContent?: string;
   useToc: boolean;
 }) => {
   const cacheKey = `${getTenantArtifactsCacheKey(artifacts.tenant)}:${currentPath}`;
 
   return await renderedPageCache.getOrCreate(cacheKey, async () => {
-    const rawContent = await loadContentSource(
-      artifacts.contentSource,
-      relativePath
-    );
+    const rawContent =
+      preloadedRawContent ??
+      (await loadContentSource(artifacts.contentSource, relativePath));
 
     // Try pre-compiled content first (fast path: <1ms)
     const compiled =
@@ -536,7 +502,7 @@ export const getDocShellData = cache(
  * from deploy when available, otherwise falls back to runtime compilation.
  */
 export const getDocPageContent = cache(
-  async (tenantSlug: string, slugKey: string) => {
+  async (tenantSlug: string, slugKey: string, rawContent?: string) => {
     const artifacts = await getTenantArtifacts(tenantSlug);
     if (!artifacts || isConfigErrorResult(artifacts)) {
       return null;
@@ -554,6 +520,7 @@ export const getDocPageContent = cache(
     return await getRenderedPageData({
       artifacts,
       currentPath,
+      rawContent,
       relativePath: entry.relativePath,
       useToc,
     });

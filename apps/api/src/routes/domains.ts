@@ -10,6 +10,7 @@ import {
   validConfiguredDomainStatus,
 } from "../lib/config";
 import { domainDao } from "../lib/db";
+import { syncProjectTenantEdgeConfig } from "../lib/edge-config";
 import { logError, logWarn } from "../lib/logger";
 import { normalizeHostnameInput, normalizePathPrefix } from "../lib/normalize";
 import { authorizeProjectRequest } from "../lib/project-auth";
@@ -162,6 +163,12 @@ domains.post(
       verifiedAt,
     });
 
+    try {
+      await syncProjectTenantEdgeConfig(projectId);
+    } catch (error) {
+      logWarn("Failed to sync tenant Edge Config after domain create", error);
+    }
+
     return c.json({ domain: mapDomain(record), verification }, 201);
   }
 );
@@ -200,6 +207,14 @@ domains.get(
           status: toDomainStatus(true),
           verifiedAt: new Date(),
         });
+        try {
+          await syncProjectTenantEdgeConfig(projectId);
+        } catch (error) {
+          logWarn(
+            "Failed to sync tenant Edge Config after domain verification fetch",
+            error
+          );
+        }
       }
       return c.json(verification, 200);
     } catch (error) {
@@ -243,6 +258,11 @@ domains.post(
           status: toDomainStatus(true),
           verifiedAt: new Date(),
         });
+        try {
+          await syncProjectTenantEdgeConfig(projectId);
+        } catch (error) {
+          logWarn("Failed to sync tenant Edge Config after domain verify", error);
+        }
       }
       return c.json(verification, 200);
     } catch (error) {
@@ -278,6 +298,13 @@ domains.delete(
     }
 
     await domainDao.delete(domain.id);
+    try {
+      await syncProjectTenantEdgeConfig(projectId, {
+        removedHosts: [domain.hostname],
+      });
+    } catch (error) {
+      logWarn("Failed to sync tenant Edge Config after domain delete", error);
+    }
     return noContent();
   }
 );

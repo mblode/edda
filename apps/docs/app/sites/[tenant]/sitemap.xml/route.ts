@@ -1,12 +1,15 @@
-import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
 import {
   buildTenantSitemapXml,
-  getTenantRequestContextFromHeaders,
+  getStaticTenantRequestContext,
 } from "@/lib/tenant-static";
 import { getTenantBySlug } from "@/lib/tenants";
+
+export const dynamic = "force-static";
+export const preferredRegion = "home";
+export const revalidate = 3600;
 
 export const GET = async (
   _request: NextRequest,
@@ -18,15 +21,16 @@ export const GET = async (
     return new NextResponse("Not found", { status: 404 });
   }
 
-  const headerStore = await headers();
   const xml = await buildTenantSitemapXml(
     tenant,
-    getTenantRequestContextFromHeaders(tenant, headerStore)
+    getStaticTenantRequestContext(tenant)
   );
 
   return new NextResponse(xml, {
     headers: {
-      "CDN-Cache-Control": "s-maxage=3600",
+      "CDN-Cache-Control": "public, s-maxage=3600, stale-while-revalidate=86400",
+      "Vercel-CDN-Cache-Control":
+        "public, s-maxage=3600, stale-while-revalidate=86400",
       "content-type": "application/xml",
     },
   });

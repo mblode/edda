@@ -1,11 +1,14 @@
-import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 
 import {
   buildTenantLlmsTxt,
-  getTenantRequestContextFromHeaders,
+  getStaticTenantRequestContext,
 } from "@/lib/tenant-static";
 import { getTenantBySlug } from "@/lib/tenants";
+
+export const dynamic = "force-static";
+export const preferredRegion = "home";
+export const revalidate = 3600;
 
 export const GET = async (
   _request: Request,
@@ -17,16 +20,18 @@ export const GET = async (
     return new NextResponse("Not found", { status: 404 });
   }
 
-  const headerStore = await headers();
   const content = await buildTenantLlmsTxt(
     tenant,
-    getTenantRequestContextFromHeaders(tenant, headerStore)
+    getStaticTenantRequestContext(tenant)
   );
 
   return new NextResponse(content, {
     headers: {
+      "CDN-Cache-Control": "public, s-maxage=3600, stale-while-revalidate=86400",
       "Cache-Control": "public, max-age=3600",
       "Content-Type": "text/plain",
+      "Vercel-CDN-Cache-Control":
+        "public, s-maxage=3600, stale-while-revalidate=86400",
     },
   });
 };

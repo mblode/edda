@@ -47,10 +47,15 @@ const getCanonicalBasePath = (
   tenant: Tenant,
   basePath?: string,
   strategy?: TenantResolution["strategy"] | null
-) =>
-  strategy === "path"
-    ? basePath || `/${tenant.slug}`
-    : basePath || tenant.pathPrefix || "";
+) => {
+  if (strategy === "path") {
+    return basePath || `/${tenant.slug}`;
+  }
+  if (strategy === "custom-domain") {
+    return basePath ?? tenant.pathPrefix ?? "";
+  }
+  return basePath ?? "";
+};
 
 export const getTenantRequestContextFromHeaders = (
   tenant: Tenant,
@@ -62,6 +67,15 @@ export const getTenantRequestContextFromHeaders = (
   strategy: (headerStore.get("x-tenant-strategy") ?? null) as
     | TenantResolution["strategy"]
     | null,
+});
+
+export const getStaticTenantRequestContext = (
+  tenant: Tenant
+): TenantRequestContext => ({
+  basePath: tenant.pathPrefix ?? "",
+  protocol: "https",
+  requestedHost: tenant.primaryDomain,
+  strategy: tenant.customDomains.length > 0 ? "custom-domain" : null,
 });
 
 export const getCanonicalOrigin = (

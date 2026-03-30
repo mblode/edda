@@ -93,6 +93,7 @@ export const CollectionIndex = ({
         <Link
           className="block rounded-xl border border-border bg-surface p-4.5 transition-[border-color,box-shadow] hover:border-primary hover:shadow-md"
           href={toDocHref(entry.slug, basePath)}
+          prefetch={false}
           key={`${entry.collectionId}-${entry.slug}`}
         >
           <div className="text-lg font-semibold">{entry.title}</div>

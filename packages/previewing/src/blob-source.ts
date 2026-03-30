@@ -15,6 +15,7 @@ interface BlobManifest {
 
 type FetchInitWithNext = RequestInit & {
   next?: {
+    revalidate?: number;
     tags?: string[];
   };
 };
@@ -64,6 +65,7 @@ export class BlobContentSource implements ContentSource {
 
     return {
       next: {
+        revalidate: 3600,
         tags: [this.cacheTag],
       },
     };

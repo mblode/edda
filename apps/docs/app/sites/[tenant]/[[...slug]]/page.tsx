@@ -1,17 +1,16 @@
 import type { Metadata } from "next";
-import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 
 import { ApiReference } from "@/components/api/api-reference";
 import { CollectionIndex } from "@/components/content/collection-index";
 import { DocShell } from "@/components/docs/doc-shell";
 import { getDocPageContent, getDocShellData } from "@/lib/docs-runtime";
-import { TENANT_HEADERS } from "@/lib/tenant-headers";
-import {
-  getCanonicalDocBasePath,
-  getCanonicalOrigin,
-  getTenantRequestContextFromHeaders,
-} from "@/lib/tenant-static";
+
+export const dynamic = "force-static";
+export const preferredRegion = "home";
+export const revalidate = 3600;
+
+const getTenantBasePath = (pathPrefix?: string) => pathPrefix ?? "";
 
 // oxlint-disable-next-line eslint/complexity
 export const generateMetadata = async ({
@@ -42,18 +41,13 @@ export const generateMetadata = async ({
   const titleTemplate = `%s · ${baseTitle}`;
   const title = pageTitle ? titleTemplate.replace("%s", pageTitle) : baseTitle;
 
-  const headerStore = await headers();
-  const requestContext = getTenantRequestContextFromHeaders(
-    tenant,
-    headerStore
-  );
-  const canonicalBasePath = getCanonicalDocBasePath(tenant, requestContext);
+  const canonicalBasePath = getTenantBasePath(tenant.pathPrefix);
   const canonicalPath = slugKey ? `/${slugKey}` : "/";
   const fullCanonical = `${canonicalBasePath}${canonicalPath}`.replaceAll(
     /\/+/g,
     "/"
   );
-  const canonicalOrigin = getCanonicalOrigin(tenant, requestContext);
+  const canonicalOrigin = `https://${tenant.primaryDomain}`;
   const ogImage = config?.metadata?.ogImage;
   const favicon = config?.favicon;
   const noindex = pageNoindex || (hidden && config.seo?.indexing !== "all");
@@ -89,13 +83,6 @@ const DocPage = async ({
 }) => {
   const { slug = [], tenant: tenantSlug } = await params;
   const slugKey = slug.join("/");
-  const headerStore = await headers();
-  const headerTenant = headerStore.get(TENANT_HEADERS.SLUG);
-  const basePathHeader = headerStore.get(TENANT_HEADERS.BASE_PATH) ?? "";
-  if (headerTenant && headerTenant !== tenantSlug) {
-    return notFound();
-  }
-
   const shell = await getDocShellData(tenantSlug, slugKey);
   if (!shell) {
     return notFound();
@@ -126,11 +113,7 @@ const DocPage = async ({
     );
   }
 
-  const basePath =
-    basePathHeader ||
-    (headerTenant
-      ? shell.tenant.pathPrefix || ""
-      : `/sites/${shell.tenant.slug}`);
+  const basePath = getTenantBasePath(shell.tenant.pathPrefix);
 
   let content: React.ReactNode;
   let rawContent: string | undefined;
@@ -154,7 +137,7 @@ const DocPage = async ({
   } else {
     ({ rawContent } = shell);
     ({ toc } = shell);
-    const rendered = await getDocPageContent(tenantSlug, slugKey);
+    const rendered = await getDocPageContent(tenantSlug, slugKey, rawContent);
     content = rendered?.content ?? null;
   }
 

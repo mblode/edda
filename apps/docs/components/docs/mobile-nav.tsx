@@ -29,6 +29,7 @@ const MobileLink = ({
   <Link
     className={cn("flex items-center gap-2 text-2xl font-medium", className)}
     href={href}
+    prefetch={false}
     onClick={onClose}
     {...props}
   >

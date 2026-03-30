@@ -1,15 +1,11 @@
 import type { PageMode, SiteConfig } from "@repo/models";
 import { ArrowLeftIcon, ArrowRightIcon } from "blode-icons-react";
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import Script from "next/script";
 import { Fragment } from "react";
 import type { ReactNode } from "react";
 
-import {
-  ContextualMenu,
-  ContextualTocItems,
-} from "@/components/docs/contextual-menu";
-import { CopyPageMenu } from "@/components/docs/copy-page-menu";
 import { DocHeader } from "@/components/docs/doc-header";
 import { DocSidebar } from "@/components/docs/doc-sidebar";
 import { DocToc } from "@/components/docs/doc-toc";
@@ -22,12 +18,26 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { Button } from "@/components/ui/button";
-import { SidebarProvider } from "@/components/ui/sidebar";
 import type { NavEntry, NavTab } from "@/lib/navigation";
 import { toDocHref } from "@/lib/routes";
 import { themeStylesFromConfig } from "@/lib/theme";
 import type { TocItem } from "@/lib/toc";
 import { cn } from "@/lib/utils";
+
+const ContextualMenu = dynamic(async () => {
+  const menuModule = await import("@/components/docs/contextual-menu");
+  return { default: menuModule.ContextualMenu };
+});
+
+const ContextualTocItems = dynamic(async () => {
+  const menuModule = await import("@/components/docs/contextual-menu");
+  return { default: menuModule.ContextualTocItems };
+});
+
+const CopyPageMenu = dynamic(async () => {
+  const menuModule = await import("@/components/docs/copy-page-menu");
+  return { default: menuModule.CopyPageMenu };
+});
 
 const renderScripts = (
   scripts?: string[],
@@ -255,7 +265,7 @@ export const DocShell = ({
       />
       <div className="container-wrapper flex flex-1 flex-col px-6">
         {showSidebar ? (
-          <SidebarProvider
+          <div
             className="min-h-min flex-1 items-start px-0 [--top-spacing:0] lg:grid lg:grid-cols-[var(--sidebar-width)_minmax(0,1fr)] lg:[--top-spacing:calc(var(--spacing)*4)]"
             style={
               {
@@ -270,7 +280,7 @@ export const DocShell = ({
               entries={nav}
             />
             {innerContent}
-          </SidebarProvider>
+          </div>
         ) : (
           <div className="min-h-min flex-1 items-start px-0 [--top-spacing:0] lg:[--top-spacing:calc(var(--spacing)*4)]">
             {innerContent}

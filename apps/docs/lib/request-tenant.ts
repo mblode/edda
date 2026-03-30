@@ -1,7 +1,6 @@
 import { headers } from "next/headers";
 
 import { getRequestHost, getRequestProtocol, resolveTenant } from "./tenancy";
-import { getTenantBySlug } from "./tenants";
 
 export const resolveRequestTenant = async (pathname: string) => {
   const headerStore = await headers();
@@ -15,15 +14,10 @@ export const resolveRequestTenant = async (pathname: string) => {
     return null;
   }
 
-  const tenant = await getTenantBySlug(resolution.tenant.slug);
-  if (!tenant) {
-    return null;
-  }
-
   return {
     host,
     protocol: getRequestProtocol(headerStore),
     resolution,
-    tenant,
+    tenant: resolution.tenant,
   };
 };

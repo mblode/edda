@@ -102,10 +102,6 @@ export const Search = ({ basePath }: { basePath: string }) => {
     await loadSearchItems();
   }, [loadSearchItems]);
 
-  const prefetchSearchItems = useCallback(async () => {
-    await loadSearchItems();
-  }, [loadSearchItems]);
-
   const itemHandlers = useMemo(
     () =>
       Object.fromEntries(
@@ -129,10 +125,6 @@ export const Search = ({ basePath }: { basePath: string }) => {
       <button
         aria-label="Search documentation"
         className="inline-flex size-8 items-center justify-center rounded-md hover:bg-accent hover:text-accent-foreground md:hidden"
-        onFocus={prefetchSearchItems}
-        onMouseEnter={prefetchSearchItems}
-        onPointerEnter={prefetchSearchItems}
-        onTouchStart={prefetchSearchItems}
         onClick={handleOpen}
         type="button"
       >
@@ -140,10 +132,6 @@ export const Search = ({ basePath }: { basePath: string }) => {
       </button>
       <Button
         className="relative hidden h-8 w-full justify-start rounded-lg bg-muted/50 pl-3 font-normal text-foreground shadow-none hover:bg-muted/80 sm:pr-12 md:flex md:w-48 lg:w-56 xl:w-64 dark:bg-card"
-        onFocus={prefetchSearchItems}
-        onMouseEnter={prefetchSearchItems}
-        onPointerEnter={prefetchSearchItems}
-        onTouchStart={prefetchSearchItems}
         onClick={handleOpen}
         variant="outline"
       >

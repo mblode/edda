@@ -24,6 +24,7 @@
     "@shikijs/rehype": "^4.0.2",
     "@supabase/supabase-js": "^2.100.1",
     "@tailwindcss/postcss": "^4.2.2",
+    "@vercel/edge-config": "^1.4.3",
     "@vercel/speed-insights": "^2.0.0",
     "blode-icons-react": "^0.3.10",
     "class-variance-authority": "^0.7.1",

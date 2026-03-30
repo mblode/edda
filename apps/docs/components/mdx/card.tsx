@@ -95,7 +95,7 @@ export const Card = (props: CardProps) => {
       );
     }
     return (
-      <Link href={props.href}>
+      <Link href={props.href} prefetch={false}>
         <CardInner {...props} />
       </Link>
     );

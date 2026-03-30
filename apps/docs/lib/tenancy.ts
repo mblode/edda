@@ -1,5 +1,10 @@
+import type { Tenant } from "@repo/contracts";
 import { TenantResolutionSchema } from "@repo/contracts";
 
+import {
+  getTenantEdgeHostRecord,
+  getTenantEdgeSlugRecord,
+} from "./edge-config";
 import { docsApiBase } from "./env";
 import { platformConfig } from "./platform-config";
 import { createTimedPromiseCache } from "./server-cache";
@@ -24,9 +29,42 @@ const DEFAULT_RESERVED_PATHS = [
 ];
 
 const LOCAL_ROOT_HOSTS = new Set(["localhost", "127.0.0.1"]);
+const TRAILING_SLASHES_REGEX = /\/+$/;
+const LEADING_SLASHES_REGEX = /^\/+/;
+const BACKSLASH_TO_SLASH_REGEX = /\\/g;
+const DEFAULT_DOCS_BASE_PATH = "/docs";
 
 const normalizeHost = (host: string) =>
   host.trim().toLowerCase().replace(/:\d+$/, "");
+
+const slugifyPath = (value: string) => {
+  const trimmed = value
+    .replace(BACKSLASH_TO_SLASH_REGEX, "/")
+    .replace(TRAILING_SLASHES_REGEX, "");
+  return trimmed.replace(LEADING_SLASHES_REGEX, "");
+};
+
+const stripPrefix = (pathname: string, prefix: string | null) => {
+  if (!prefix) {
+    return slugifyPath(pathname);
+  }
+
+  const normalizedPath = slugifyPath(pathname);
+  const normalizedPrefix = slugifyPath(prefix);
+  if (!normalizedPrefix) {
+    return normalizedPath;
+  }
+
+  if (normalizedPath === normalizedPrefix) {
+    return "";
+  }
+
+  if (normalizedPath.startsWith(`${normalizedPrefix}/`)) {
+    return normalizedPath.slice(normalizedPrefix.length + 1);
+  }
+
+  return null;
+};
 
 const tenantResolutionCache = createTimedPromiseCache<
   string,
@@ -63,7 +101,69 @@ export const isReservedPath = (pathname: string) => {
   return DEFAULT_RESERVED_PATHS.some((prefix) => pathname.startsWith(prefix));
 };
 
-const fetchTenantResolution = async (host: string, pathname: string) => {
+const resolveSubdomainBasePath = (pathname: string): string => {
+  const normalizedPath = slugifyPath(pathname);
+
+  if (
+    normalizedPath === "docs" ||
+    normalizedPath.startsWith(`${slugifyPath(DEFAULT_DOCS_BASE_PATH)}/`)
+  ) {
+    return DEFAULT_DOCS_BASE_PATH;
+  }
+
+  return "";
+};
+
+const buildTenantPathResolution = (
+  tenant: Tenant,
+  strategy: "preview" | "subdomain" | "custom-domain",
+  host: string,
+  pathname: string,
+  basePath: string
+) => {
+  const slugPath = stripPrefix(pathname, basePath || null);
+  if (slugPath === null) {
+    return null;
+  }
+
+  const rewrittenPath = slugPath
+    ? `/sites/${tenant.slug}/${slugPath}`
+    : `/sites/${tenant.slug}/`;
+
+  return {
+    basePath,
+    host,
+    rewrittenPath,
+    strategy,
+    tenant,
+  };
+};
+
+const buildPathTenantResolution = (
+  tenant: Tenant,
+  host: string,
+  pathname: string
+) => {
+  const normalized = slugifyPath(pathname);
+  const parts = normalized ? normalized.split("/") : [];
+  const [projectSlug, ...rest] = parts;
+  if (!projectSlug || projectSlug !== tenant.slug) {
+    return null;
+  }
+
+  const remainder = rest.join("/");
+  return {
+    basePath: `/${tenant.slug}`,
+    host,
+    rewrittenPath: remainder
+      ? `/sites/${tenant.slug}/${remainder}`
+      : `/sites/${tenant.slug}/`,
+    strategy: "path" as const,
+    tenant,
+  };
+};
+
+const fetchTenantResolutionFromApi = async (host: string, pathname: string) => {
   const url = new URL("/tenants/resolve", docsApiBase);
   url.searchParams.set("host", normalizeHost(host));
   url.searchParams.set("path", pathname);
@@ -82,6 +182,109 @@ const fetchTenantResolution = async (host: string, pathname: string) => {
     return null;
   }
   return parsed.data;
+};
+
+export const resolveTenantFromEdgeConfig = async (
+  host: string,
+  pathname: string
+) => {
+  const normalizedHost = normalizeHost(host);
+  const hostRecord = await getTenantEdgeHostRecord(normalizedHost);
+  if (hostRecord) {
+    const basePath =
+      hostRecord.strategy === "subdomain"
+        ? resolveSubdomainBasePath(pathname)
+        : hostRecord.pathPrefix ?? "";
+
+    return buildTenantPathResolution(
+      hostRecord.tenant,
+      hostRecord.strategy,
+      normalizedHost,
+      pathname,
+      basePath
+    );
+  }
+
+  const previewPrefix = normalizedHost.includes("---")
+    ? normalizedHost.split("---")[0]
+    : null;
+  if (previewPrefix) {
+    const previewRecord = await getTenantEdgeSlugRecord(previewPrefix);
+    if (previewRecord) {
+      return buildTenantPathResolution(
+        previewRecord.tenant,
+        "preview",
+        normalizedHost,
+        pathname,
+        resolveSubdomainBasePath(pathname)
+      );
+    }
+  }
+
+  const localSuffixes = ["localhost", "127.0.0.1"];
+  const localSuffix = localSuffixes.find((suffix) =>
+    normalizedHost.endsWith(`.${suffix}`)
+  );
+  if (localSuffix) {
+    const subdomain = normalizedHost.slice(0, -1 * (localSuffix.length + 1));
+    if (subdomain) {
+      const subdomainRecord = await getTenantEdgeSlugRecord(subdomain);
+      if (subdomainRecord) {
+        return buildTenantPathResolution(
+          subdomainRecord.tenant,
+          "subdomain",
+          normalizedHost,
+          pathname,
+          resolveSubdomainBasePath(pathname)
+        );
+      }
+    }
+  }
+
+  if (normalizedHost.endsWith(`.${platformConfig.rootDomain}`)) {
+    const subdomain = normalizedHost.slice(
+      0,
+      -1 * (platformConfig.rootDomain.length + 1)
+    );
+    if (subdomain && !["www", "app", "admin", "dashboard"].includes(subdomain)) {
+      const subdomainRecord = await getTenantEdgeSlugRecord(subdomain);
+      if (subdomainRecord) {
+        return buildTenantPathResolution(
+          subdomainRecord.tenant,
+          "subdomain",
+          normalizedHost,
+          pathname,
+          resolveSubdomainBasePath(pathname)
+        );
+      }
+    }
+  }
+
+  if (isRootRuntimeHost(normalizedHost)) {
+    const normalizedPath = slugifyPath(pathname);
+    const projectSlug = normalizedPath.split("/")[0];
+    if (projectSlug) {
+      const pathRecord = await getTenantEdgeSlugRecord(projectSlug);
+      if (pathRecord) {
+        return buildPathTenantResolution(
+          pathRecord.tenant,
+          normalizedHost,
+          pathname
+        );
+      }
+    }
+  }
+
+  return null;
+};
+
+const fetchTenantResolution = async (host: string, pathname: string) => {
+  const edgeResolution = await resolveTenantFromEdgeConfig(host, pathname);
+  if (edgeResolution) {
+    return edgeResolution;
+  }
+
+  return await fetchTenantResolutionFromApi(host, pathname);
 };
 
 export const clearTenantResolutionCache = () => {

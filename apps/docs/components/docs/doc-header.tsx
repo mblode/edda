@@ -3,7 +3,6 @@ import dynamic from "next/dynamic";
 import Image from "next/image";
 import Link from "next/link";
 
-import { ThemeToggle } from "@/components/ui/theme-toggle";
 import type { NavEntry, NavTab } from "@/lib/navigation";
 import { toDocHref } from "@/lib/routes";
 import { cn } from "@/lib/utils";
@@ -16,6 +15,11 @@ const MobileNav = dynamic(async () => {
 const Search = dynamic(async () => {
   const m = await import("@/components/ui/search");
   return { default: m.Search };
+});
+
+const ThemeToggle = dynamic(async () => {
+  const m = await import("@/components/ui/theme-toggle");
+  return { default: m.ThemeToggle };
 });
 
 const Dropdown = ({

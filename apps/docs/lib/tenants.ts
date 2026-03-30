@@ -2,6 +2,7 @@ import { TenantSchema } from "@repo/contracts";
 import type { Tenant } from "@repo/models";
 
 import { getTenantDocsPath } from "./content-root";
+import { getTenantEdgeSlugRecord } from "./edge-config";
 import { docsApiBase } from "./env";
 import { createTimedPromiseCache } from "./server-cache";
 
@@ -30,9 +31,17 @@ const tenantCache = createTimedPromiseCache<string, Tenant | null>({
 });
 
 const fetchTenant = async (slug: string): Promise<Tenant | null> => {
+  const edgeRecord = await getTenantEdgeSlugRecord(slug);
+  if (edgeRecord) {
+    return mapTenant(edgeRecord.tenant);
+  }
+
   const url = new URL(`/tenants/${slug}`, docsApiBase);
   const response = await fetch(url.toString(), {
-    next: { tags: [getProjectTag(slug), "tenants"] },
+    next: {
+      revalidate: 300,
+      tags: [getProjectTag(slug), "tenants"],
+    },
   });
   if (!response.ok) {
     return null;

@@ -9,6 +9,7 @@ import { Hono } from "hono";
 import { z } from "zod";
 
 import { deploymentDao, projectDao } from "../lib/db";
+import { syncProjectTenantEdgeConfig } from "../lib/edge-config";
 import { logError, logWarn } from "../lib/logger";
 import { authorizeProjectRequest } from "../lib/project-auth";
 import {
@@ -63,6 +64,11 @@ deployments.patch(
       promotedAt: new Date(),
       status: "successful",
     });
+    try {
+      await syncProjectTenantEdgeConfig(projectId);
+    } catch (error) {
+      logWarn("Failed to sync tenant Edge Config after deployment promote", error);
+    }
     return c.json(mapDeployment(record), 200);
   }
 );
@@ -185,6 +191,15 @@ deployments.post(
       });
 
       if (shouldPromote) {
+        try {
+          await syncProjectTenantEdgeConfig(project.id);
+        } catch (error) {
+          logWarn(
+            "Failed to sync tenant Edge Config after deployment finalize",
+            error
+          );
+        }
+
         try {
           await revalidateProject(project.slug);
         } catch (error) {

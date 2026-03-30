@@ -1,27 +1,15 @@
-"use client";
-
 import { normalizePath } from "@repo/common";
 import { ArrowUpRightIcon } from "blode-icons-react";
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
 
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarGroup,
-  SidebarGroupContent,
-  SidebarGroupLabel,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-} from "@/components/ui/sidebar";
 import { getNavPageHref, getNavPageTitle } from "@/lib/navigation";
 import type { NavEntry, NavPage } from "@/lib/navigation";
 import { toDocHref } from "@/lib/routes";
+import { cn } from "@/lib/utils";
 
 const MENU_BUTTON_CLASS =
-  "data-[active=true]:bg-accent data-[active=true]:border-accent 3xl:fixed:w-full 3xl:fixed:max-w-48 relative h-[30px] w-fit overflow-visible border border-transparent text-[0.8rem] font-medium after:absolute after:inset-x-0 after:-inset-y-1 after:z-0 after:rounded-md";
+  "relative flex min-h-[30px] items-center gap-2 overflow-visible rounded-md border border-transparent px-2 text-[0.8rem] font-medium transition-colors hover:bg-accent/70 hover:text-foreground";
 
 const NavIcon = ({ icon }: { icon: string }) => {
   if (icon.startsWith("http") || icon.startsWith("/")) {
@@ -56,7 +44,6 @@ const NavPageLink = ({
 
   const linkContent = (
     <>
-      <span className="absolute inset-0 flex w-(--sidebar-menu-width) bg-transparent" />
       {item.icon ? <NavIcon icon={item.icon} /> : null}
       <span className={item.deprecated ? "line-through opacity-60" : undefined}>
         {displayTitle}
@@ -80,26 +67,44 @@ const NavPageLink = ({
     </>
   );
 
+  const className = cn(
+    MENU_BUTTON_CLASS,
+    isActive && "border-accent bg-accent text-foreground"
+  );
+
   if (item.url) {
     return (
-      <SidebarMenuButton asChild className={MENU_BUTTON_CLASS}>
-        <a href={item.url} rel="noopener noreferrer" target="_blank">
-          {linkContent}
-        </a>
-      </SidebarMenuButton>
+      <a className={className} href={item.url} rel="noopener noreferrer" target="_blank">
+        {linkContent}
+      </a>
     );
   }
 
   return (
-    <SidebarMenuButton
-      asChild
-      className={MENU_BUTTON_CLASS}
-      isActive={isActive}
-    >
-      <Link href={getNavPageHref(item, basePath)}>{linkContent}</Link>
-    </SidebarMenuButton>
+    <Link className={className} href={getNavPageHref(item, basePath)} prefetch={false}>
+      {linkContent}
+    </Link>
   );
 };
+
+const Section = ({
+  title,
+  children,
+  paddedTop = false,
+}: {
+  title?: string;
+  children: React.ReactNode;
+  paddedTop?: boolean;
+}) => (
+  <section className={cn("relative flex w-full min-w-0 flex-col p-2", paddedTop && "pt-6")}>
+    {title ? (
+      <div className="mb-2 px-2 font-medium text-muted-foreground text-xs">
+        {title}
+      </div>
+    ) : null}
+    <div className="w-full text-sm">{children}</div>
+  </section>
+);
 
 export const DocSidebar = ({
   entries,
@@ -112,99 +117,80 @@ export const DocSidebar = ({
   anchors?: { label: string; href: string }[];
   basePath: string;
 }) => {
-  const pathname = usePathname();
   const activePath = normalizePath(currentPath);
-  const currentPathname = normalizePath(pathname);
-
-  const isActive = (path: string) => {
-    const normalized = normalizePath(path);
-    return normalized === activePath || normalized === currentPathname;
-  };
+  const isActive = (path: string) => normalizePath(path) === activePath;
 
   return (
-    <Sidebar
-      className="sticky top-[calc(var(--header-height)+0.6rem)] z-30 hidden h-[calc(100svh-10rem)] overscroll-none bg-transparent [--sidebar-menu-width:--spacing(56)] lg:flex"
-      collapsible="none"
+    <aside
+      className="sticky top-[calc(var(--header-height)+0.6rem)] z-30 hidden h-[calc(100svh-10rem)] w-[calc(var(--spacing)*56)] shrink-0 overscroll-none bg-transparent lg:flex"
+      aria-label="Documentation navigation"
     >
       <div className="h-9" />
-      <div className="absolute top-8 z-10 h-8 w-(--sidebar-menu-width) shrink-0 bg-gradient-to-b from-background via-background/80 to-background/50 blur-xs" />
+      <div className="absolute top-8 z-10 h-8 w-full shrink-0 bg-gradient-to-b from-background via-background/80 to-background/50 blur-xs" />
       <div className="absolute top-12 right-2 bottom-0 hidden h-full w-px bg-gradient-to-b from-transparent via-border to-transparent lg:flex" />
-      <SidebarContent className="no-scrollbar mx-auto w-(--sidebar-menu-width) overflow-x-hidden px-2">
+      <div className="no-scrollbar mx-auto flex w-full flex-1 flex-col overflow-x-hidden px-2">
         {anchors?.length ? (
-          <SidebarGroup className="pt-6">
-            <SidebarGroupLabel className="font-medium text-muted-foreground">
-              Pinned
-            </SidebarGroupLabel>
-            <SidebarGroupContent>
-              <SidebarMenu>
-                {anchors.map((anchor) => (
-                  <SidebarMenuItem key={anchor.href}>
-                    <SidebarMenuButton asChild className={MENU_BUTTON_CLASS}>
-                      <a
-                        href={
-                          anchor.href.startsWith("http")
-                            ? anchor.href
-                            : toDocHref(anchor.href, basePath)
-                        }
-                      >
-                        <span className="absolute inset-0 flex w-(--sidebar-menu-width) bg-transparent" />
-                        {anchor.label}
-                      </a>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                ))}
-              </SidebarMenu>
-            </SidebarGroupContent>
-          </SidebarGroup>
+          <Section paddedTop title="Pinned">
+            <ul className="space-y-1">
+              {anchors.map((anchor) => (
+                <li key={anchor.href}>
+                  <a
+                    className={cn(MENU_BUTTON_CLASS, "text-foreground")}
+                    href={
+                      anchor.href.startsWith("http")
+                        ? anchor.href
+                        : toDocHref(anchor.href, basePath)
+                    }
+                  >
+                    {anchor.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </Section>
         ) : null}
         {entries.map((entry, index) => {
           if (entry.type === "page") {
             return (
-              <SidebarGroup
-                className={index === 0 && !anchors?.length ? "pt-6" : undefined}
+              <Section
                 key={entry.path}
+                paddedTop={index === 0 && !anchors?.length}
               >
-                <SidebarGroupContent>
-                  <SidebarMenu>
-                    <SidebarMenuItem>
-                      <NavPageLink
-                        basePath={basePath}
-                        isActive={isActive(entry.path)}
-                        item={entry}
-                      />
-                    </SidebarMenuItem>
-                  </SidebarMenu>
-                </SidebarGroupContent>
-              </SidebarGroup>
+                <ul>
+                  <li>
+                    <NavPageLink
+                      basePath={basePath}
+                      isActive={isActive(entry.path)}
+                      item={entry}
+                    />
+                  </li>
+                </ul>
+              </Section>
             );
           }
 
           return (
-            <SidebarGroup
-              className={index === 0 && !anchors?.length ? "pt-6" : undefined}
+            <Section
               key={entry.title}
+              paddedTop={index === 0 && !anchors?.length}
+              title={entry.title}
             >
-              <SidebarGroupLabel className="font-medium text-muted-foreground">
-                {entry.title}
-              </SidebarGroupLabel>
-              <SidebarGroupContent className="content-auto">
-                <SidebarMenu className="gap-0.5">
-                  {entry.items.map((item) => (
-                    <SidebarMenuItem key={item.path}>
-                      <NavPageLink
-                        basePath={basePath}
-                        isActive={isActive(item.path)}
-                        item={item}
-                      />
-                    </SidebarMenuItem>
-                  ))}
-                </SidebarMenu>
-              </SidebarGroupContent>
-            </SidebarGroup>
+              <ul className="space-y-0.5">
+                {entry.items.map((item) => (
+                  <li key={item.path}>
+                    <NavPageLink
+                      basePath={basePath}
+                      isActive={isActive(item.path)}
+                      item={item}
+                    />
+                  </li>
+                ))}
+              </ul>
+            </Section>
           );
         })}
         <div className="sticky -bottom-1 z-10 h-16 shrink-0 bg-gradient-to-t from-background via-background/80 to-background/50 blur-xs" />
-      </SidebarContent>
-    </Sidebar>
+      </div>
+    </aside>
   );
 };

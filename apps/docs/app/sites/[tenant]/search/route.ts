@@ -2,6 +2,10 @@ import { NextResponse } from "next/server";
 
 import { getTenantSearchItems } from "@/lib/docs-runtime";
 
+export const dynamic = "force-static";
+export const preferredRegion = "home";
+export const revalidate = 300;
+
 interface SearchItem {
   href?: string;
   title: string;
@@ -23,7 +27,10 @@ export const GET = async (
     { items },
     {
       headers: {
+        "CDN-Cache-Control": "public, s-maxage=300, stale-while-revalidate=900",
         "Cache-Control": "public, max-age=60, stale-while-revalidate=300",
+        "Vercel-CDN-Cache-Control":
+          "public, s-maxage=300, stale-while-revalidate=900",
       },
     }
   );

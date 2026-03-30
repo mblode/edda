@@ -1,12 +1,23 @@
 import fs from "node:fs";
+import os from "node:os";
 import path from "node:path";
 
 const DOCS_CONFIG_FILE = "docs.json";
 
-const getTenantDocsPathCandidates = (slug: string): [string, string] => [
-  path.join(process.cwd(), "content", slug),
-  path.join(process.cwd(), "apps/docs/content", slug),
-];
+const EXTERNAL_DOCS_ROOTS: Record<string, string> = {
+  allmd: path.join(os.homedir(), "Code/mblode/allmd/apps/docs"),
+  "dnd-grid": path.join(os.homedir(), "Code/mblode/dnd-grid/apps/docs"),
+  donebear: path.join(os.homedir(), "Code/donebear/donebear/apps/docs"),
+  shareful: path.join(os.homedir(), "Code/shareful-ai/shareful-ai/apps/docs"),
+  stratasync: path.join(os.homedir(), "Code/donebear/stratasync/apps/docs"),
+};
+
+const getTenantDocsPathCandidates = (slug: string): string[] =>
+  [
+    EXTERNAL_DOCS_ROOTS[slug],
+    path.join(process.cwd(), "content", slug),
+    path.join(process.cwd(), "apps/docs/content", slug),
+  ].filter((candidate): candidate is string => Boolean(candidate));
 
 export const getTenantDocsPath = (slug: string): string => {
   const candidates = getTenantDocsPathCandidates(slug);

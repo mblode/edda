@@ -26,6 +26,12 @@ const stripBasePath = (value: string, basePath: string) => {
   return value;
 };
 
+const isTenantUtilityPath = (pathname: string) =>
+  pathname === "/llms-full.txt" ||
+  pathname === "/llms.txt" ||
+  pathname === "/robots.txt" ||
+  pathname === "/sitemap.xml";
+
 // oxlint-disable-next-line eslint/complexity
 export const proxy = async (request: NextRequest) => {
   const { pathname } = request.nextUrl;
@@ -34,12 +40,15 @@ export const proxy = async (request: NextRequest) => {
     return NextResponse.next();
   }
 
-  if (isReservedPath(pathname)) {
+  const host = getRequestHost(request.headers);
+  if (!host) {
     return NextResponse.next();
   }
 
-  const host = getRequestHost(request.headers);
-  if (!host) {
+  const allowTenantUtilityRewrite =
+    !isRootRuntimeHost(host) && isTenantUtilityPath(pathname);
+
+  if (isReservedPath(pathname) && !allowTenantUtilityRewrite) {
     return NextResponse.next();
   }
 
@@ -83,11 +92,12 @@ export const proxy = async (request: NextRequest) => {
     const redirectUrl = new URL(request.url);
     const normalizedPath = stripBasePath(pathname, resolution.basePath);
     redirectUrl.hostname = resolution.tenant.primaryDomain;
-    redirectUrl.pathname =
-      `${resolution.tenant.pathPrefix ?? ""}${normalizedPath}`.replaceAll(
-        /\/+/g,
-        "/"
-      );
+    redirectUrl.pathname = preferCustomDomain
+      ? `${resolution.tenant.pathPrefix ?? ""}${normalizedPath}`.replaceAll(
+          /\/+/g,
+          "/"
+        )
+      : normalizedPath;
     return NextResponse.redirect(redirectUrl, 308);
   }
 
@@ -147,10 +157,15 @@ export const proxy = async (request: NextRequest) => {
     },
   });
 
-  // Cache HTML at Vercel CDN edge for 60s, serve stale for 1hr during revalidation
+  // Cache the rewritten HTML at the CDN layer even when Next marks the final
+  // response dynamic. Content changes are still invalidated explicitly.
   response.headers.set(
-    "Cache-Control",
-    "public, s-maxage=60, stale-while-revalidate=3600"
+    "CDN-Cache-Control",
+    "public, s-maxage=3600, stale-while-revalidate=86400"
+  );
+  response.headers.set(
+    "Vercel-CDN-Cache-Control",
+    "public, s-maxage=3600, stale-while-revalidate=86400"
   );
   // Multi-tenant: same path may serve different content per Host
   response.headers.set("Vary", "Host");

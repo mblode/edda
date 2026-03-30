@@ -3,6 +3,10 @@ import { NextResponse } from "next/server";
 import { getLlmPageText } from "@/lib/tenant-static";
 import { getTenantBySlug } from "@/lib/tenants";
 
+export const dynamic = "force-static";
+export const preferredRegion = "home";
+export const revalidate = 3600;
+
 export const GET = async (
   _request: Request,
   { params }: { params: Promise<{ tenant: string; slug?: string[] }> }
@@ -21,8 +25,11 @@ export const GET = async (
 
   return new NextResponse(content, {
     headers: {
+      "CDN-Cache-Control": "public, s-maxage=3600, stale-while-revalidate=86400",
       "Cache-Control": "public, max-age=3600",
       "Content-Type": "text/markdown",
+      "Vercel-CDN-Cache-Control":
+        "public, s-maxage=3600, stale-while-revalidate=86400",
     },
   });
 };
