@@ -1,5 +1,6 @@
 import type { MDXComponents } from "mdx/types";
 import Link from "next/link";
+import type { ComponentProps } from "react";
 
 import { Accordion, AccordionGroup } from "./accordion";
 import { Badge } from "./badge";
@@ -23,11 +24,21 @@ import { Step, Steps } from "./steps";
 import { Tab, Tabs } from "./tabs";
 import { Tile } from "./tile";
 import { Tooltip } from "./tooltip";
-import { Tree } from "./tree";
+import { Tree as TreeRoot, TreeFile, TreeFolder } from "./tree";
 import { TypeTable } from "./type-table";
 import { Update } from "./update";
 import { Video } from "./video";
 import { View, ViewGroup } from "./view";
+
+// Rebuild dotted MDX exports in the server module so Next's client references
+// still expose `Tree.Folder` and `Tree.File` during MDX evaluation.
+const Tree = Object.assign(
+  (props: ComponentProps<typeof TreeRoot>) => <TreeRoot {...props} />,
+  {
+    File: TreeFile,
+    Folder: TreeFolder,
+  }
+);
 
 const MdxLink = ({
   href,

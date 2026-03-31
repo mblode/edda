@@ -9,7 +9,7 @@ interface TreeFileProps {
   name: string;
 }
 
-const TreeFile = ({ name }: TreeFileProps) => (
+export const TreeFile = ({ name }: TreeFileProps) => (
   <div className="flex items-center gap-2 py-0.5 pl-5 text-sm">
     <svg
       aria-hidden
@@ -41,7 +41,7 @@ interface TreeFolderProps {
   children?: ReactNode;
 }
 
-const TreeFolder = ({
+export const TreeFolder = ({
   name,
   defaultOpen = false,
   openable = true,
@@ -108,13 +108,13 @@ const TreeFolder = ({
   );
 };
 
-const Tree = ({ children }: { children: ReactNode }) => (
+const TreeRoot = ({ children }: { children: ReactNode }) => (
   <div className="my-4 rounded-xl border border-border bg-card p-4 font-mono text-sm">
     {children}
   </div>
 );
 
-Tree.Folder = TreeFolder;
-Tree.File = TreeFile;
-
-export { Tree };
+export const Tree = Object.assign(TreeRoot, {
+  File: TreeFile,
+  Folder: TreeFolder,
+});

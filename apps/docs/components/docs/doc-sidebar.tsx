@@ -3,6 +3,7 @@ import { ArrowUpRightIcon } from "blode-icons-react";
 import Image from "next/image";
 import Link from "next/link";
 
+import { DocIcon } from "@/components/icons/doc-icon";
 import { getNavPageHref, getNavPageTitle } from "@/lib/navigation";
 import type { NavEntry, NavPage } from "@/lib/navigation";
 import { isExternalHref, toDocHref } from "@/lib/routes";
@@ -25,9 +26,11 @@ const NavIcon = ({ icon }: { icon: string }) => {
     );
   }
   return (
-    <span className="size-4 shrink-0 text-center text-[10px] leading-4 text-muted-foreground">
-      {icon.slice(0, 2)}
-    </span>
+    <DocIcon
+      className="size-4 shrink-0 text-muted-foreground"
+      icon={icon}
+      size={16}
+    />
   );
 };
 
