@@ -18,7 +18,11 @@ import {
   parseOpenApiSpec,
 } from "@repo/prebuild";
 import type { OpenApiOperation, OpenApiSpec } from "@repo/prebuild";
-import { validateDocsConfig, validateFrontmatter } from "@repo/validation";
+import {
+  validateDocsConfig,
+  validateFrontmatter,
+  validateSiteConfig,
+} from "@repo/validation";
 import YAML from "yaml";
 
 import type { ContentSource } from "./content-source.js";
@@ -452,15 +456,28 @@ const loadDocsConfig = async (
 
   try {
     const parsed = await readResolvedJsonConfig(source, DOCS_CONFIG_FILE);
-    const result = validateDocsConfig(parsed);
-    if (!result.success) {
-      return { errors: result.errors, ok: false };
+
+    // Try SiteConfig format first (has collections, theme, colors, etc.)
+    const siteResult = validateSiteConfig(parsed);
+    if (siteResult.success) {
+      return {
+        config: siteResult.data,
+        ok: true,
+        warnings: [],
+      };
     }
-    return {
-      config: mapDocsConfig(result.data),
-      ok: true,
-      warnings: [],
-    };
+
+    // Fall back to DocsConfig format (Mintlify-compatible) and map to SiteConfig
+    const docsResult = validateDocsConfig(parsed);
+    if (docsResult.success) {
+      return {
+        config: mapDocsConfig(docsResult.data),
+        ok: true,
+        warnings: [],
+      };
+    }
+
+    return { errors: docsResult.errors, ok: false };
   } catch (error) {
     return {
       errors: [

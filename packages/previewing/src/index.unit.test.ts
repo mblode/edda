@@ -111,6 +111,44 @@ describe("loadSiteConfig", () => {
     expect(result.config.openapiProxy?.enabled).toBe(true);
   });
 
+  it("loads SiteConfig-format docs.json with theme and colors", async () => {
+    const root = await createTempContentRoot({
+      "docs.json": JSON.stringify(
+        {
+          collections: [
+            {
+              id: "docs",
+              navigation: {
+                groups: [{ group: "Docs", pages: ["index"] }],
+              },
+              root: "docs",
+              slugPrefix: "docs",
+              type: "docs",
+            },
+          ],
+          colors: { primary: "#6366f1" },
+          name: "Site Config Test",
+          theme: "almond",
+        },
+        null,
+        2
+      ),
+      "docs/index.mdx": "---\ntitle: Welcome\n---\n",
+    });
+
+    const result = await loadSiteConfig(createFsSource(root));
+
+    expect(result.ok).toBe(true);
+    if (!result.ok) {
+      return;
+    }
+
+    expect(result.config.name).toBe("Site Config Test");
+    expect(result.config.theme).toBe("almond");
+    expect(result.config.colors?.primary).toBe("#6366f1");
+    expect(result.config.collections).toHaveLength(1);
+  });
+
   it("errors when docs.json is missing", async () => {
     const root = await createTempContentRoot({
       "site.json": JSON.stringify({ name: "Old config" }, null, 2),
