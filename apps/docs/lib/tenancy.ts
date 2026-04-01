@@ -19,18 +19,42 @@ const DEFAULT_RESERVED_PATHS = [
   "/docs.json",
   "/favicon.ico",
   "/llms.txt",
+  "/logos",
   "/oauth",
   "/robots.txt",
   "/sitemap.xml",
-  "/logos",
-  "/file-text.svg",
-  "/globe.svg",
-  "/next.svg",
-  "/turborepo-dark.svg",
-  "/turborepo-light.svg",
-  "/vercel.svg",
-  "/window.svg",
 ];
+
+const STATIC_ASSET_EXTENSIONS = new Set([
+  ".avif",
+  ".css",
+  ".eot",
+  ".gif",
+  ".ico",
+  ".jpeg",
+  ".jpg",
+  ".js",
+  ".json",
+  ".map",
+  ".png",
+  ".svg",
+  ".ttf",
+  ".webp",
+  ".woff",
+  ".woff2",
+]);
+
+const isRootStaticAsset = (pathname: string): boolean => {
+  const segments = pathname.split("/").filter(Boolean);
+  if (segments.length !== 1) {
+    return false;
+  }
+  const lastDot = pathname.lastIndexOf(".");
+  if (lastDot === -1) {
+    return false;
+  }
+  return STATIC_ASSET_EXTENSIONS.has(pathname.slice(lastDot).toLowerCase());
+};
 
 const LOCAL_ROOT_HOSTS = new Set(["localhost", "127.0.0.1"]);
 const TRAILING_SLASHES_REGEX = /\/+$/;
@@ -104,6 +128,9 @@ export const isRootRuntimeHost = (host: string) => {
 export const isReservedPath = (pathname: string) => {
   const { assetPrefix } = platformConfig;
   if (assetPrefix && pathname.startsWith(assetPrefix)) {
+    return true;
+  }
+  if (isRootStaticAsset(pathname)) {
     return true;
   }
   return DEFAULT_RESERVED_PATHS.some((prefix) => pathname.startsWith(prefix));

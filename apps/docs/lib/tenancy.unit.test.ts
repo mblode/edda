@@ -38,6 +38,20 @@ describe("tenancy helpers", () => {
     expect(isReservedPath("/example/sitemap.xml")).toBe(false);
   });
 
+  it("treats root-level static assets as reserved", () => {
+    expect(isReservedPath("/matthew-blode-profile.jpg")).toBe(true);
+    expect(isReservedPath("/web-app-manifest-192x192.png")).toBe(true);
+    expect(isReservedPath("/glide-variable.woff2")).toBe(true);
+    expect(isReservedPath("/file-text.svg")).toBe(true);
+    expect(isReservedPath("/some-new-image.webp")).toBe(true);
+  });
+
+  it("does not treat nested or extensionless paths as static assets", () => {
+    expect(isReservedPath("/my-tenant")).toBe(false);
+    expect(isReservedPath("/my-tenant/image.jpg")).toBe(false);
+    expect(isReservedPath("/docs/getting-started")).toBe(false);
+  });
+
   it("identifies the runtime root hosts", () => {
     expect(isRootRuntimeHost("blode.md")).toBe(true);
     expect(isRootRuntimeHost("localhost")).toBe(true);

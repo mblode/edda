@@ -2,17 +2,17 @@
 
 import { useCallback, useState } from "react";
 
-type UseControlledStateOptions<T> = {
+interface UseControlledStateOptions<T> {
   defaultValue?: T;
   onChange?: (value: T) => void;
   value?: T;
-};
+}
 
-export function useControlledState<T>({
+export const useControlledState = <T>({
   defaultValue,
   onChange,
   value,
-}: UseControlledStateOptions<T>): [T | undefined, (value: T) => void] {
+}: UseControlledStateOptions<T>): [T | undefined, (value: T) => void] => {
   const [internalValue, setInternalValue] = useState<T | undefined>(
     defaultValue
   );
@@ -31,4 +31,4 @@ export function useControlledState<T>({
   );
 
   return [currentValue, setValue];
-}
+};
