@@ -1,5 +1,11 @@
 # blodemd
 
+## 0.0.10
+
+### Patch Changes
+
+- Fix SiteConfig format validation in docs.json previewing
+
 ## 0.0.9
 
 ### Patch Changes

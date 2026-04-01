@@ -207,18 +207,19 @@ export const CopyPageMenu = ({
       // fetch). To keep clipboard access working, we call clipboard.write()
       // synchronously within the gesture and pass a Promise to ClipboardItem
       // so the content resolves later while the gesture context stays alive.
-      const blobPromise = getContent().then((nextContent) => {
+      const blobPromise = (async () => {
+        const nextContent = await getContent();
         const markdown = formatMarkdownForCopy(nextContent, title);
         return new Blob([markdown], { type: "text/plain" });
-      });
+      })();
 
-      if (typeof ClipboardItem !== "undefined") {
+      if (typeof ClipboardItem === "undefined") {
+        const blob = await blobPromise;
+        await navigator.clipboard.writeText(await blob.text());
+      } else {
         await navigator.clipboard.write([
           new ClipboardItem({ "text/plain": blobPromise }),
         ]);
-      } else {
-        const blob = await blobPromise;
-        await navigator.clipboard.writeText(await blob.text());
       }
 
       setTemporaryCopyStatus("copied");
