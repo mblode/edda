@@ -347,7 +347,7 @@
     border-color: var(--border);
     border-width: 0px;
     border-radius: var(--radius-xl);
-    @apply -mx-1 md:-mx-1;
+    @apply md:-mx-1;
 
     &:has([data-rehype-pretty-code-title]) [data-slot="copy-button"] {
       top: calc(var(--spacing) * 1.5) !important;

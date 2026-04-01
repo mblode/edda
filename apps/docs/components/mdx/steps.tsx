@@ -24,7 +24,7 @@ export const Step = ({
   const anchorId = id ?? title.toLowerCase().replaceAll(/\s+/g, "-");
 
   return (
-    <div className="relative pb-8 pl-10 last:pb-0" id={anchorId}>
+    <div className="relative pb-8 pl-8 sm:pl-10 last:pb-0" id={anchorId}>
       <div
         aria-hidden
         className="absolute left-0 flex size-7 items-center justify-center rounded-full border border-border bg-muted font-mono text-xs font-medium"
