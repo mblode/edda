@@ -61,7 +61,7 @@ export default function HomePage() {
                   you use for code works for docs.
                 </p>
               </div>
-              <div className="rounded-xl bg-surface p-6 font-mono text-sm shadow-xs md:p-8">
+              <div className="rounded-xl bg-surface p-6 font-mono text-sm md:p-8">
                 <div className="space-y-6">
                   <div>
                     <p className="text-muted-foreground"># authenticate once</p>
@@ -169,7 +169,7 @@ export default function HomePage() {
                   alongside your code.
                 </p>
               </div>
-              <pre className="overflow-x-auto rounded-xl bg-surface p-6 font-mono text-sm shadow-xs md:p-8">
+              <pre className="overflow-x-auto rounded-xl bg-surface p-6 font-mono text-sm md:p-8">
                 {
                   "- name: Deploy docs\n  run: npx blodemd push docs\n  env:\n    BLODEMD_API_KEY: $"
                 }
