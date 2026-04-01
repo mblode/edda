@@ -15,6 +15,7 @@ const DEFAULT_RESERVED_PATHS = [
   "/_internal",
   "/_next",
   "/.well-known",
+  "/api",
   "/docs.json",
   "/favicon.ico",
   "/llms.txt",
