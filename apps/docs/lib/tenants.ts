@@ -9,6 +9,7 @@ import { createTimedPromiseCache } from "./server-cache";
 export const getProjectTag = (slug: string) => `project:${slug}`;
 
 const TENANT_REVALIDATE_SECONDS = 3600;
+const TENANT_CACHE_TTL_MS = 5 * 1000;
 
 const mapTenant = (tenant: {
   activeDeploymentId?: string;
@@ -29,7 +30,10 @@ const mapTenant = (tenant: {
 
 const tenantCache = createTimedPromiseCache<string, Tenant | null>({
   maxEntries: 512,
-  ttlMs: TENANT_REVALIDATE_SECONDS * 1000,
+  // Keep the process-local cache short. Tag/path revalidation only clears the
+  // instance that handles the request, so long-lived in-memory entries can pin
+  // warm instances to an old deployment manifest after a publish.
+  ttlMs: TENANT_CACHE_TTL_MS,
 });
 
 const fetchTenantFromApi = async (slug: string): Promise<Tenant | null> => {

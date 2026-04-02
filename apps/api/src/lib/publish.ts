@@ -49,6 +49,17 @@ interface DeploymentManifest {
   version: 1;
 }
 
+interface MdxCompileFailure {
+  message: string;
+  relativePath: string;
+  slug: string;
+}
+
+interface MdxCompileResult {
+  compiledFiles: DeploymentManifestFile[];
+  failures: MdxCompileFailure[];
+}
+
 export class PublishValidationError extends Error {
   name = "PublishValidationError";
 }
@@ -271,25 +282,49 @@ export const uploadDeploymentFiles = async (
 
 const COMPILED_MDX_PREFIX = "_compiled/";
 const MDX_FILE_REGEX = /\.(mdx|md)$/;
+const MDX_COMPILE_REPORT_PATH = `${COMPILED_MDX_PREFIX}mdx-compile-report.json`;
 const GENERATED_MDX_PREFIX = "_utility/";
 const COMPILE_CONCURRENCY = 10;
+const STRICT_MDX_COMPILE_PROJECT_SLUGS = new Set(["docs"]);
+
+const getContentSlug = (relativePath: string) => {
+  const withoutExtension = relativePath.replace(MDX_FILE_REGEX, "");
+  return withoutExtension.endsWith("/index")
+    ? withoutExtension.slice(0, -"/index".length)
+    : withoutExtension || "index";
+};
+
+const getErrorMessage = (error: unknown) =>
+  error instanceof Error ? error.message : String(error);
+
+const formatMdxCompileFailures = (failures: MdxCompileFailure[]) =>
+  failures
+    .map(
+      (failure) =>
+        `- ${failure.relativePath} (${failure.slug}): ${failure.message}`
+    )
+    .join("\n");
 
 const compileDeploymentMdx = async (
   source: ContentSource,
   files: DeploymentManifestFile[],
   projectSlug: string,
   deploymentId: string
-): Promise<DeploymentManifestFile[]> => {
+): Promise<MdxCompileResult> => {
   const mdxFiles = files.filter(
     (file) =>
       MDX_FILE_REGEX.test(file.path) &&
       !file.path.startsWith(GENERATED_MDX_PREFIX)
   );
   if (!mdxFiles.length) {
-    return [];
+    return {
+      compiledFiles: [],
+      failures: [],
+    };
   }
 
   const compiledFiles: DeploymentManifestFile[] = [];
+  const failures: MdxCompileFailure[] = [];
   const filesPrefix = getFilesPrefix(projectSlug, deploymentId);
 
   // Process in batches to limit concurrency
@@ -314,15 +349,47 @@ const compileDeploymentMdx = async (
       })
     );
 
-    for (const result of results) {
+    for (const [index, result] of results.entries()) {
       if (result.status === "fulfilled") {
         compiledFiles.push(result.value);
+        continue;
       }
-      // Compilation failures are non-fatal — runtime falls back to on-demand compilation
+
+      const failedFile = batch[index];
+      if (!failedFile) {
+        continue;
+      }
+
+      failures.push({
+        message: getErrorMessage(result.reason),
+        relativePath: failedFile.path,
+        slug: getContentSlug(failedFile.path),
+      });
     }
   }
 
-  return compiledFiles;
+  if (failures.length) {
+    const report = JSON.stringify(
+      {
+        failures,
+        version: 1,
+      },
+      null,
+      2
+    );
+    const blob = await put(`${filesPrefix}${MDX_COMPILE_REPORT_PATH}`, report, {
+      access: "public",
+      addRandomSuffix: false,
+      allowOverwrite: true,
+      contentType: "application/json; charset=utf-8",
+    });
+    compiledFiles.push({ path: MDX_COMPILE_REPORT_PATH, url: blob.url });
+  }
+
+  return {
+    compiledFiles,
+    failures,
+  };
 };
 
 export const finalizeDeploymentManifest = async (input: {
@@ -437,19 +504,31 @@ export const finalizeDeploymentManifest = async (input: {
       files.push(...uploadResults);
 
       // Phase 4: pre-compile MDX (already parallelized internally)
-      try {
-        const compiledFiles = await compileDeploymentMdx(
-          source,
-          files,
-          input.projectSlug,
-          input.deploymentId
+      const { compiledFiles, failures } = await compileDeploymentMdx(
+        source,
+        files,
+        input.projectSlug,
+        input.deploymentId
+      );
+      files.push(...compiledFiles);
+
+      if (
+        failures.length &&
+        STRICT_MDX_COMPILE_PROJECT_SLUGS.has(input.projectSlug)
+      ) {
+        throw new PublishValidationError(
+          [
+            `MDX precompile failed for ${input.projectSlug}.`,
+            formatMdxCompileFailures(failures),
+          ].join("\n")
         );
-        files.push(...compiledFiles);
-      } catch {
-        // MDX compilation is optional — runtime falls back to on-demand compilation
       }
     }
-  } catch {
+  } catch (error) {
+    if (isPublishValidationError(error)) {
+      throw error;
+    }
+
     // Content index generation is optional — continue without it
   }
 
