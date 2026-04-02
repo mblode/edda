@@ -18,6 +18,6 @@ jobs:
       - run: npx tsdown --clean
         working-directory: apps/cli
       - name: Deploy docs
-        run: node apps/cli/dist/cli.mjs push apps/docs/content/docs
+        run: node apps/cli/dist/cli.mjs push apps/docs/content/docs --project docs
         env:
           BLODEMD_API_KEY: ${{ secrets.BLODEMD_API_KEY }}
