@@ -3233,7 +3233,7 @@
     "name": {
       "type": "string",
       "minLength": 1,
-      "description": "The name of the project, organization, or product"
+      "description": "Display name for your site, project, or organization."
     },
     "description": {
       "type": "string",
@@ -3561,6 +3561,12 @@
       },
       "additionalProperties": false,
       "description": "Metadata configuration for documentation pages"
+    },
+    "slug": {
+      "description": "URL-safe project slug used for deployments and the default `{slug}.blode.md` hostname.",
+      "minLength": 1,
+      "pattern": "^[a-z0-9-]+$",
+      "type": "string"
     }
   },
   "required": ["name", "navigation"],

@@ -1,6 +1,10 @@
 import { z } from "zod";
 
 const UrlOrPathSchema = z.string().min(1);
+const SlugSchema = z
+  .string()
+  .min(1)
+  .regex(/^[a-z0-9-]+$/);
 
 export const DocsColorsSchema = z
   .object({
@@ -432,6 +436,7 @@ export const DocsConfigSchema = z
     navigation: MintlifyNavigationSchema,
     search: MintlifySearchSchema.optional(),
     seo: DocsSeoSchema.optional(),
+    slug: SlugSchema.optional(),
   })
   .strict();
 
@@ -610,6 +615,7 @@ export const SiteConfigSchema = z
     openapiProxy: DocsOpenApiProxySchema.optional(),
     scripts: DocsScriptsSchema.optional(),
     seo: DocsSeoSchema.optional(),
+    slug: SlugSchema.optional(),
     theme: z.string().optional(),
   })
   .strict();

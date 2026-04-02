@@ -40,6 +40,8 @@ export const PREBUILT_UTILITY_SITEMAP_PATH = "_utility/sitemap.xml";
 export const PREBUILT_UTILITY_LLMS_PATH = "_utility/llms.txt";
 export const PREBUILT_UTILITY_LLMS_FULL_PATH = "_utility/llms-full.txt";
 export const UTILITY_DOCS_ROOT_TOKEN = "__BLODEMD_DOCS_ROOT__";
+export const LEGACY_PROJECT_NAME_FALLBACK_WARNING =
+  "docs.json.slug is recommended. Falling back to docs.json.name as the deployment slug is deprecated.";
 
 export type SiteConfigResult =
   | { ok: true; config: SiteConfig; warnings: string[] }
@@ -334,8 +336,12 @@ const mapDocsConfig = (docs: DocsConfig): SiteConfig => {
         Boolean(docs.api?.openapi || docs.api?.asyncapi),
     },
     seo: docs.seo,
+    slug: docs.slug,
   };
 };
+
+const getProjectWarnings = (config: { slug?: string }): string[] =>
+  config.slug ? [] : [LEGACY_PROJECT_NAME_FALLBACK_WARNING];
 
 const readJsonConfig = async (source: ContentSource, relativePath: string) =>
   JSON.parse(await source.readFile(relativePath)) as unknown;
@@ -463,7 +469,7 @@ const loadDocsConfig = async (
       return {
         config: siteResult.data,
         ok: true,
-        warnings: [],
+        warnings: getProjectWarnings(siteResult.data),
       };
     }
 
@@ -473,7 +479,7 @@ const loadDocsConfig = async (
       return {
         config: mapDocsConfig(docsResult.data),
         ok: true,
-        warnings: [],
+        warnings: getProjectWarnings(docsResult.data),
       };
     }
 

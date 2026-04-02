@@ -53,6 +53,13 @@ import {
   createCodeVerifier,
   createOAuthState,
 } from "./pkce.js";
+import {
+  deriveDisplayNameFromProjectSlug,
+  getProjectSlugError,
+  LEGACY_PROJECT_NAME_FALLBACK_WARNING,
+  resolveProjectTarget,
+  validateProjectSlug,
+} from "./project-config.js";
 import { assertSupportedNodeVersion, readCliVersion } from "./runtime.js";
 import {
   DEFAULT_SCAFFOLD_DIRECTORY,
@@ -61,7 +68,6 @@ import {
   isScaffoldTemplate,
   resolveScaffoldDirectory,
   SCAFFOLD_TEMPLATES,
-  validateProjectSlug,
 } from "./scaffold.js";
 import type { ScaffoldTemplate } from "./scaffold.js";
 import { loadValidatedSiteConfig } from "./site-config.js";
@@ -264,6 +270,27 @@ const promptForProjectSlug = async (
   return projectSlug.trim();
 };
 
+const promptForDisplayName = async (
+  initialValue: string
+): Promise<string | undefined> => {
+  const displayName = await text({
+    initialValue,
+    message: "Display name",
+    placeholder: initialValue,
+    validate: (value) => {
+      if (!value?.trim()) {
+        return "Display name is required.";
+      }
+    },
+  });
+
+  if (isCancel(displayName)) {
+    return;
+  }
+
+  return displayName.trim();
+};
+
 const resolveRequestedDirectory = async (
   directory: string | undefined,
   shouldPrompt: boolean
@@ -373,14 +400,14 @@ const confirmScaffoldTarget = async (
 };
 
 const resolveProjectSlug = async (
-  providedName: string | undefined,
+  providedSlug: string | undefined,
   directory: string,
   shouldPrompt: boolean
 ): Promise<string | undefined> => {
   const defaultProjectSlug = deriveDefaultProjectSlug(directory, process.cwd());
 
-  if (providedName) {
-    return providedName;
+  if (providedSlug) {
+    return providedSlug;
   }
 
   if (!shouldPrompt) {
@@ -390,12 +417,33 @@ const resolveProjectSlug = async (
   return await promptForProjectSlug(defaultProjectSlug);
 };
 
+const resolveDisplayName = async (
+  providedDisplayName: string | undefined,
+  projectSlug: string,
+  shouldPrompt: boolean
+): Promise<string | undefined> => {
+  const defaultDisplayName = deriveDisplayNameFromProjectSlug(projectSlug);
+
+  if (providedDisplayName?.trim()) {
+    return providedDisplayName.trim();
+  }
+
+  if (!shouldPrompt) {
+    return defaultDisplayName;
+  }
+
+  return await promptForDisplayName(defaultDisplayName);
+};
+
 const writeScaffoldFiles = async (
   root: string,
   template: ScaffoldTemplate,
-  projectSlug: string
+  options: {
+    displayName: string;
+    projectSlug: string;
+  }
 ) => {
-  for (const file of getScaffoldFiles(template, { projectSlug })) {
+  for (const file of getScaffoldFiles(template, options)) {
     const filePath = path.join(root, file.path);
     await fs.mkdir(path.dirname(filePath), { recursive: true });
 
@@ -432,14 +480,16 @@ const fetchUserEmail = async (
 
 interface PushConfig {
   project: string;
+  projectDisplayName: string;
   apiUrl: string;
   authToken: string;
   branch: string;
   commitMessage?: string;
+  usedLegacyNameFallback: boolean;
 }
 
 const resolvePushConfig = async (
-  config: { name?: string },
+  config: { name?: string; slug?: string },
   options: {
     apiKey?: string;
     apiUrl?: string;
@@ -448,8 +498,11 @@ const resolvePushConfig = async (
     project?: string;
   }
 ): Promise<PushConfig> => {
-  const project =
-    options.project ?? process.env[BLODE_PROJECT_ENV] ?? config.name;
+  const { project, usedLegacyNameFallback } = resolveProjectTarget({
+    cliProject: options.project,
+    config,
+    envProject: process.env[BLODE_PROJECT_ENV],
+  });
   const apiUrl =
     options.apiUrl ?? process.env[BLODE_API_URL_ENV] ?? DEFAULT_API_URL;
 
@@ -469,8 +522,19 @@ const resolvePushConfig = async (
 
   if (!project) {
     throw new Error(
-      'Missing project slug. Set "name" in docs.json, pass --project, or set BLODEMD_PROJECT.'
+      'Missing project slug. Set "slug" in docs.json, pass --project, or set BLODEMD_PROJECT.'
     );
+  }
+
+  const projectSlugError = getProjectSlugError(project);
+  if (projectSlugError) {
+    if (usedLegacyNameFallback) {
+      throw new Error(
+        `docs.json.name is not a valid deployment slug. Add "slug" to docs.json, pass --project, or set BLODEMD_PROJECT. ${projectSlugError}`
+      );
+    }
+
+    throw new Error(`Invalid project slug "${project}". ${projectSlugError}`);
   }
   if (!authToken) {
     throw new Error(
@@ -478,11 +542,20 @@ const resolvePushConfig = async (
     );
   }
 
-  return { apiUrl, authToken, branch, commitMessage, project };
+  return {
+    apiUrl,
+    authToken,
+    branch,
+    commitMessage,
+    project,
+    projectDisplayName: config.name?.trim() || project,
+    usedLegacyNameFallback,
+  };
 };
 
 const autoCreateProject = async (
   project: string,
+  projectDisplayName: string,
   apiUrl: string,
   headers: Record<string, string>
 ): Promise<boolean> => {
@@ -507,7 +580,7 @@ const autoCreateProject = async (
   }>(
     new URL("/projects", apiUrl).toString(),
     {
-      body: JSON.stringify({ name: project, slug: project }),
+      body: JSON.stringify({ name: projectDisplayName, slug: project }),
       headers,
       method: "POST",
     },
@@ -523,7 +596,9 @@ const scaffoldDocsSite = async (
   directory: string | undefined,
   options?: {
     deprecatedCommand?: string;
+    displayName?: string;
     name?: string;
+    slug?: string;
     template?: ScaffoldTemplate;
     yes?: boolean;
   }
@@ -533,6 +608,11 @@ const scaffoldDocsSite = async (
   if (options?.deprecatedCommand) {
     log.warn(
       `"${options.deprecatedCommand}" is deprecated. Use ${chalk.cyan("blodemd new")} instead.`
+    );
+  }
+  if (options?.name && !options.slug) {
+    log.warn(
+      `"${chalk.cyan("--name")}" is deprecated. Use ${chalk.cyan("--slug")} instead.`
     );
   }
 
@@ -564,7 +644,7 @@ const scaffoldDocsSite = async (
     }
 
     const projectSlug = await resolveProjectSlug(
-      options?.name,
+      options?.slug ?? options?.name,
       resolvedDirectory,
       shouldPrompt
     );
@@ -574,13 +654,25 @@ const scaffoldDocsSite = async (
       return;
     }
 
+    const displayName = await resolveDisplayName(
+      options?.displayName,
+      projectSlug,
+      shouldPrompt
+    );
+
+    if (!displayName) {
+      log.warn("Cancelled");
+      return;
+    }
+
     await fs.mkdir(root, { recursive: true });
-    await writeScaffoldFiles(root, template, projectSlug);
+    await writeScaffoldFiles(root, template, { displayName, projectSlug });
 
     log.success(`Docs scaffolded in ${chalk.cyan(root)}`);
     if (template === "starter") {
       log.info("Starter template includes brand assets and helper files.");
     }
+    log.info(`Display name: ${chalk.cyan(displayName)}`);
     log.info(`Project slug: ${chalk.cyan(projectSlug)}`);
     log.info("Done");
   } catch (error: unknown) {
@@ -844,7 +936,9 @@ program
   .command("new")
   .description("Create a new blode.md documentation site")
   .argument("[directory]", "target directory")
-  .option("--name <slug>", "project slug for docs.json", parseProjectSlug)
+  .option("--slug <slug>", "project slug for docs.json", parseProjectSlug)
+  .option("--name <slug>", "deprecated alias for --slug", parseProjectSlug)
+  .option("--display-name <name>", "display name for docs.json")
   .option(
     "-t, --template <template>",
     `scaffold template (${SCAFFOLD_TEMPLATES.join(", ")})`,
@@ -856,13 +950,17 @@ program
     async (
       directory: string | undefined,
       options: {
+        displayName?: string;
         name?: string;
+        slug?: string;
         template: ScaffoldTemplate;
         yes?: boolean;
       }
     ) => {
       await scaffoldDocsSite(directory, {
+        displayName: options.displayName,
         name: options.name,
+        slug: options.slug ?? options.name,
         template: options.template,
         yes: options.yes,
       });
@@ -872,7 +970,9 @@ program
 program
   .command("init", { hidden: true })
   .argument("[directory]", "target directory")
-  .option("--name <slug>", "project slug for docs.json", parseProjectSlug)
+  .option("--slug <slug>", "project slug for docs.json", parseProjectSlug)
+  .option("--name <slug>", "deprecated alias for --slug", parseProjectSlug)
+  .option("--display-name <name>", "display name for docs.json")
   .option(
     "-t, --template <template>",
     `scaffold template (${SCAFFOLD_TEMPLATES.join(", ")})`,
@@ -884,14 +984,18 @@ program
     async (
       directory: string | undefined,
       options: {
+        displayName?: string;
         name?: string;
+        slug?: string;
         template: ScaffoldTemplate;
         yes?: boolean;
       }
     ) => {
       await scaffoldDocsSite(directory, {
         deprecatedCommand: "blodemd init",
+        displayName: options.displayName,
         name: options.name,
+        slug: options.slug ?? options.name,
         template: options.template,
         yes: options.yes,
       });
@@ -955,8 +1059,19 @@ program
           log.warn(warning);
         }
 
-        const { project, apiUrl, authToken, branch, commitMessage } =
-          await resolvePushConfig(config, options);
+        const {
+          project,
+          projectDisplayName,
+          apiUrl,
+          authToken,
+          branch,
+          commitMessage,
+          usedLegacyNameFallback,
+        } = await resolvePushConfig(config, options);
+
+        if (usedLegacyNameFallback) {
+          log.warn(LEGACY_PROJECT_NAME_FALLBACK_WARNING);
+        }
 
         s.start("Collecting files");
         const files = await collectFiles(root);
@@ -995,7 +1110,12 @@ program
 
           s.stop("Project not found");
 
-          const created = await autoCreateProject(project, apiUrl, headers);
+          const created = await autoCreateProject(
+            project,
+            projectDisplayName,
+            apiUrl,
+            headers
+          );
           if (!created) {
             log.info("Cancelled");
             return;

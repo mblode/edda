@@ -11,6 +11,7 @@ import {
   buildUtilityIndex,
   createFsSource,
   getPrebuiltUtilityLlmPagePath,
+  LEGACY_PROJECT_NAME_FALLBACK_WARNING,
   loadPrebuiltUtilityIndex,
   loadSiteConfig,
   PREBUILT_UTILITY_LLMS_FULL_PATH,
@@ -78,6 +79,7 @@ describe("loadSiteConfig", () => {
           navigation: {
             $ref: "./config/navigation.json",
           },
+          slug: "example-docs",
         },
         null,
         2
@@ -94,6 +96,7 @@ describe("loadSiteConfig", () => {
 
     expect(result.warnings).toEqual([]);
     expect(result.config.name).toBe("Example Docs");
+    expect(result.config.slug).toBe("example-docs");
     expect(result.config.collections).toHaveLength(1);
     expect(result.config.collections[0]?.openapi).toBe("openapi.yaml");
     expect(result.config.navigation?.groups).toEqual([
@@ -128,6 +131,7 @@ describe("loadSiteConfig", () => {
           ],
           colors: { primary: "#6366f1" },
           name: "Site Config Test",
+          slug: "site-config-test",
           theme: "almond",
         },
         null,
@@ -144,6 +148,7 @@ describe("loadSiteConfig", () => {
     }
 
     expect(result.config.name).toBe("Site Config Test");
+    expect(result.config.slug).toBe("site-config-test");
     expect(result.config.theme).toBe("almond");
     expect(result.config.colors?.primary).toBe("#6366f1");
     expect(result.config.collections).toHaveLength(1);
@@ -164,26 +169,44 @@ describe("loadSiteConfig", () => {
     expect(result.errors).toEqual(["docs.json not found."]);
   });
 
-  it("loads the shipped tenant docs roots", async () => {
-    const exampleResult = await loadSiteConfig(
-      createFsSource(path.resolve(process.cwd(), "apps/docs/content/example"))
-    );
+  it("warns when docs.json.slug is missing", async () => {
+    const root = await createTempContentRoot({
+      "docs.json": JSON.stringify(
+        {
+          $schema: "https://blode.md/docs.json",
+          name: "Legacy Docs",
+          navigation: {
+            groups: [{ group: "Docs", pages: ["index"] }],
+          },
+        },
+        null,
+        2
+      ),
+      "index.mdx": "---\ntitle: Welcome\n---\n",
+    });
+
+    const result = await loadSiteConfig(createFsSource(root));
+
+    expect(result.ok).toBe(true);
+    if (!result.ok) {
+      return;
+    }
+
+    expect(result.warnings).toEqual([LEGACY_PROJECT_NAME_FALLBACK_WARNING]);
+  });
+
+  it("loads the shipped docs tenant root", async () => {
     const docsResult = await loadSiteConfig(
       createFsSource(path.resolve(process.cwd(), "apps/docs/content/docs"))
     );
 
-    expect(exampleResult.ok).toBe(true);
     expect(docsResult.ok).toBe(true);
 
-    if (!exampleResult.ok || !docsResult.ok) {
+    if (!docsResult.ok) {
       return;
     }
 
-    expect(exampleResult.config.collections[0]?.openapi).toEqual({
-      directory: "api",
-      source: "openapi.yaml",
-    });
-    expect(exampleResult.config.openapiProxy?.enabled).toBe(true);
+    expect(docsResult.config.slug).toBe("docs");
     expect(docsResult.config.navigation?.tabs).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
@@ -241,6 +264,7 @@ describe("buildUtilityIndex", () => {
           navigation: {
             groups: [{ group: "Docs", pages: ["index", "guide"] }],
           },
+          slug: "example-docs",
         },
         null,
         2

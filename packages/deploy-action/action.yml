@@ -18,7 +18,7 @@ inputs:
     description: Docs directory
     required: false
   project:
-    description: Project slug (reads from docs.json name if omitted)
+    description: Project slug (reads from docs.json slug if omitted)
     required: false
 
 runs:

@@ -3,11 +3,11 @@ title: Custom domains
 description: Use your own domain for your documentation site.
 ---
 
-Every project deployed with blode.md gets a subdomain at `your-project.blode.md` automatically. You can also point your own domain to your docs site for a fully branded experience.
+Every project deployed with blode.md gets a subdomain at `your-slug.blode.md` automatically. You can also point your own domain to your docs site for a fully branded experience.
 
 ## Default subdomain
 
-When you run `blodemd push`, your docs are published to `{name}.blode.md`, where `name` is the value in your `docs.json`. No per-project DNS setup is required because the platform wildcard handles `*.blode.md`.
+When you run `blodemd push`, your docs are published to `{slug}.blode.md`, where `slug` is the project slug resolved from `--project`, `BLODEMD_PROJECT`, or docs.json `slug`. No per-project DNS setup is required because the platform wildcard handles `*.blode.md`.
 
 ## Add a custom domain
 

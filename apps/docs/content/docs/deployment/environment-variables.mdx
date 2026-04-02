@@ -21,7 +21,8 @@ You can configure the blodemd CLI entirely through environment variables. This i
       default: "https://api.blode.md",
     },
     BLODEMD_PROJECT: {
-      description: "Project slug. Overrides the `name` field in `docs.json`.",
+      description:
+        "Project slug. Overrides docs.json `slug`. If `slug` is missing, the CLI temporarily falls back to docs.json `name` for backward compatibility.",
       type: "string",
     },
     BLODEMD_BRANCH: {
@@ -59,7 +60,7 @@ Each configuration value follows a precedence chain. The CLI uses the first avai
 | -------------- | ----------- | ------------------------ | ---------------------------------------------------------------------- |
 | API key        | `--api-key` | `BLODEMD_API_KEY`        | Stored credentials                                                     |
 | API URL        | `--api-url` | `BLODEMD_API_URL`        | `https://api.blode.md`                                                 |
-| Project        | `--project` | `BLODEMD_PROJECT`        | `name` in `docs.json`                                                  |
+| Project        | `--project` | `BLODEMD_PROJECT`        | `slug` in `docs.json`, then legacy fallback to `name`                  |
 | Branch         | `--branch`  | `BLODEMD_BRANCH`         | `GITHUB_REF_NAME`, then `git rev-parse --abbrev-ref HEAD`, then `main` |
 | Commit message | `--message` | `BLODEMD_COMMIT_MESSAGE` | `git log -1 --pretty=%s`                                               |
 

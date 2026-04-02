@@ -28,12 +28,13 @@ If you create the docs in a `docs/` subdirectory, `blodemd new` generates the fo
 
 ### docs.json
 
-The generated configuration uses the hosted Blode.md schema and a single "Getting Started" navigation group. The `name` field comes from the slug prompt, `--name`, or a derived default:
+The generated configuration uses the hosted Blode.md schema and a single "Getting Started" navigation group. The `slug` field comes from the slug prompt, `--slug`, or a derived default. The `name` field defaults to a title-cased display name based on that slug unless you pass `--display-name`.
 
 ```json title="docs/docs.json"
 {
   "$schema": "https://blode.md/docs.json",
-  "name": "my-project",
+  "name": "My Project",
+  "slug": "my-project",
   "navigation": {
     "groups": [
       {
@@ -92,9 +93,18 @@ blodemd new --template starter
       default:
         '"interactive flow depends on the current directory; non-interactive defaults to docs"',
     },
-    "--name <slug>": {
+    "--slug <slug>": {
       description:
         "Project slug written to docs.json. If omitted, interactive mode prompts and non-interactive mode derives it from the chosen location.",
+      type: "string",
+    },
+    "--name <slug>": {
+      description: "Deprecated alias for `--slug`.",
+      type: "string",
+    },
+    "--display-name <name>": {
+      description:
+        "Display name written to docs.json `name`. Defaults to a title-cased version of the slug.",
       type: "string",
     },
     "--template <name>": {
@@ -127,7 +137,11 @@ blodemd new .
 ```
 
 ```bash title="Set the slug explicitly"
-blodemd new --name acme-docs
+blodemd new --slug acme-docs
+```
+
+```bash title="Set slug and display name"
+blodemd new --slug docs --display-name "Blode.md"
 ```
 
 ```bash title="Custom directory"
@@ -148,7 +162,7 @@ blodemd new --template starter
 
 ## Next steps
 
-1. Review `docs.json` and change `name` if you want a different project slug. This determines the default `{name}.blode.md` subdomain.
+1. Review `docs.json` and change `slug` if you want a different deployment target or `{slug}.blode.md` subdomain. Change `name` if you want a different visible site title.
 2. If you used the starter template, replace the generated helper files and brand assets with project-specific content.
 3. Add more `.mdx` pages and update the `navigation` array.
 4. Run `blodemd push` to deploy.

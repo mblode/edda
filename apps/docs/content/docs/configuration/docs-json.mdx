@@ -16,7 +16,8 @@ Every Blode.md project is configured through a single `docs.json` file at the ro
 ```json title="docs.json"
 {
   "$schema": "https://blode.md/docs.json",
-  "name": "my-project",
+  "name": "My Project",
+  "slug": "my-project",
   "navigation": {
     "groups": [{ "group": "Getting started", "pages": ["index"] }]
   }
@@ -28,7 +29,8 @@ Every Blode.md project is configured through a single `docs.json` file at the ro
 ```json title="docs.json"
 {
   "$schema": "https://blode.md/docs.json",
-  "name": "my-project",
+  "name": "My Project",
+  "slug": "my-project",
   "description": "Documentation for my product.",
   "logo": {
     "light": "/logo/light.svg",
@@ -72,10 +74,14 @@ Every Blode.md project is configured through a single `docs.json` file at the ro
       type: "string",
     },
     name: {
-      description:
-        "Project name and default project slug. This determines the default `{name}.blode.md` hostname.",
+      description: "Display name for your site, project, or organization.",
       type: "string",
       required: true,
+    },
+    slug: {
+      description:
+        "Recommended URL-safe project slug used for deployments and the default `{slug}.blode.md` hostname.",
+      type: "string",
     },
     description: {
       description: "Short project description used in metadata and SEO.",

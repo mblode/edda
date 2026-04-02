@@ -22,6 +22,14 @@ const ALLOWED_TOP_LEVEL_FIELDS = new Set([
   "seo",
 ]);
 
+const PROJECT_SLUG_SCHEMA = {
+  description:
+    "URL-safe project slug used for deployments and the default `{slug}.blode.md` hostname.",
+  minLength: 1,
+  pattern: "^[a-z0-9-]+$",
+  type: "string",
+};
+
 const CONTEXTUAL_OPTIONS = [
   "add-mcp",
   "aistudio",
@@ -40,34 +48,80 @@ const CONTEXTUAL_OPTIONS = [
   "windsurf",
 ];
 
-const main = async () => {
-  const source = JSON.parse(await fs.readFile(sourcePath, "utf8"));
+const getBaseVariant = (source) => {
   const baseVariant = structuredClone(source.anyOf?.[0]);
   if (!baseVariant || typeof baseVariant !== "object") {
     throw new Error("Expected a theme variant in mintlify-docs-schema.json.");
   }
 
-  const properties = Object.fromEntries(
+  return baseVariant;
+};
+
+const getAllowedProperties = (baseVariant) =>
+  Object.fromEntries(
     Object.entries(baseVariant.properties ?? {}).filter(([key]) =>
       ALLOWED_TOP_LEVEL_FIELDS.has(key)
     )
   );
 
+const updateLogoProperty = (properties) => {
+  if (!properties.logo) {
+    return;
+  }
+
+  properties.logo.description =
+    "Your site logo. Provide a single image path or separate files for light and dark mode.";
+  const objectVariant = properties.logo.anyOf?.find(
+    (entry) => entry?.type === "object"
+  );
+  if (objectVariant?.properties?.alt) {
+    delete objectVariant.properties.alt;
+  }
+};
+
+const updateContextualProperty = (properties) => {
+  const contextualEnum =
+    properties.contextual?.properties?.options?.items?.anyOf?.find((entry) =>
+      Array.isArray(entry?.enum)
+    );
+
+  if (contextualEnum) {
+    contextualEnum.enum = CONTEXTUAL_OPTIONS;
+  }
+};
+
+const updateSeoProperty = (properties) => {
+  if (!properties.seo) {
+    return;
+  }
+
+  properties.seo = {
+    additionalProperties: false,
+    description: "SEO indexing configuration.",
+    properties: {
+      indexing: {
+        description:
+          "Set `all` to index every page, or `default` to respect page-level `noindex` frontmatter.",
+        enum: ["all", "default"],
+        type: "string",
+      },
+    },
+    type: "object",
+  };
+};
+
+const customizeProperties = (properties) => {
   if (properties.$schema) {
     properties.$schema.default = "https://blode.md/docs.json";
     properties.$schema.description = "JSON Schema URL for editor autocomplete.";
   }
 
-  if (properties.logo) {
-    properties.logo.description =
-      "Your site logo. Provide a single image path or separate files for light and dark mode.";
-    const objectVariant = properties.logo.anyOf?.find(
-      (entry) => entry?.type === "object"
-    );
-    if (objectVariant?.properties?.alt) {
-      delete objectVariant.properties.alt;
-    }
+  if (properties.name) {
+    properties.name.description =
+      "Display name for your site, project, or organization.";
   }
+
+  properties.slug = PROJECT_SLUG_SCHEMA;
 
   if (properties.favicon) {
     properties.favicon.description =
@@ -78,29 +132,16 @@ const main = async () => {
     properties.appearance.description = "Light and dark mode settings.";
   }
 
-  const contextualEnum =
-    properties.contextual?.properties?.options?.items?.anyOf?.find((entry) =>
-      Array.isArray(entry?.enum)
-    );
-  if (contextualEnum) {
-    contextualEnum.enum = CONTEXTUAL_OPTIONS;
-  }
+  updateLogoProperty(properties);
+  updateContextualProperty(properties);
+  updateSeoProperty(properties);
+};
 
-  if (properties.seo) {
-    properties.seo = {
-      additionalProperties: false,
-      description: "SEO indexing configuration.",
-      properties: {
-        indexing: {
-          description:
-            "Set `all` to index every page, or `default` to respect page-level `noindex` frontmatter.",
-          enum: ["all", "default"],
-          type: "string",
-        },
-      },
-      type: "object",
-    };
-  }
+const main = async () => {
+  const source = JSON.parse(await fs.readFile(sourcePath, "utf8"));
+  const baseVariant = getBaseVariant(source);
+  const properties = getAllowedProperties(baseVariant);
+  customizeProperties(properties);
 
   const schema = {
     $id: "https://blode.md/docs.json",

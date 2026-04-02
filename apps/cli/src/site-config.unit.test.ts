@@ -42,6 +42,7 @@ describe("loadValidatedSiteConfig", () => {
           navigation: {
             groups: [{ group: "Getting Started", pages: ["index"] }],
           },
+          slug: "example-docs",
         },
         null,
         2
@@ -52,6 +53,7 @@ describe("loadValidatedSiteConfig", () => {
     const result = await loadValidatedSiteConfig(root);
 
     expect(result.config.name).toBe("example-docs");
+    expect(result.config.slug).toBe("example-docs");
     expect(result.warnings).toEqual([]);
   });
 

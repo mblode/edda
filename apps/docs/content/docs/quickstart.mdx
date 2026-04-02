@@ -43,12 +43,13 @@ You need [Node.js](https://nodejs.org) 20.17 or later.
 
   </Step>
   <Step title="Review your project slug">
-    The scaffold writes `name` into `docs/docs.json`. Change it later if you want a different subdomain:
+    The scaffold writes both `name` and `slug` into `docs/docs.json`. Change `slug` later if you want a different subdomain, and change `name` if you want a different visible site title:
 
     ```json title="docs/docs.json"
     {
       "$schema": "https://blode.md/docs.json",
-      "name": "acme-docs",
+      "name": "Acme Docs",
+      "slug": "acme-docs",
       "navigation": {
         "groups": [{ "group": "Getting Started", "pages": ["index"] }]
       }

@@ -29,7 +29,7 @@ If none contain a `docs.json`, the current directory is used.
     },
     "--project <slug>": {
       description:
-        "Project slug. Falls back to the BLODEMD_PROJECT environment variable, then the name field in docs.json.",
+        "Project slug. Falls back to the BLODEMD_PROJECT environment variable, then docs.json `slug`. If `slug` is missing, the CLI temporarily falls back to docs.json `name` for backward compatibility.",
       type: "string",
     },
     "--api-url <url>": {

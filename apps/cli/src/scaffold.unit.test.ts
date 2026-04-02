@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 
+import { deriveDisplayNameFromProjectSlug } from "./project-config.js";
 import {
   deriveDefaultProjectSlug,
   getScaffoldFiles,
@@ -29,7 +30,10 @@ describe("scaffold templates", () => {
     expect(files.map((file) => file.path)).toEqual(["docs.json", "index.mdx"]);
     expect(
       docsJsonFile && "content" in docsJsonFile ? docsJsonFile.content : ""
-    ).toContain('"name": "my-project"');
+    ).toContain('"name": "My Project"');
+    expect(
+      docsJsonFile && "content" in docsJsonFile ? docsJsonFile.content : ""
+    ).toContain('"slug": "my-project"');
   });
 
   it("returns the starter scaffold with assets and helper files", () => {
@@ -66,7 +70,9 @@ describe("scaffold templates", () => {
       '"$schema": "https://blode.md/docs.json"'
     );
     expect(docsJsonContent).toContain('"light": "/logo/light.svg"');
-    expect(docsJsonContent).toContain('"alt": "my-project logo"');
+    expect(docsJsonContent).toContain('"alt": "My Project logo"');
+    expect(docsJsonContent).toContain('"name": "My Project"');
+    expect(docsJsonContent).toContain('"slug": "my-project"');
     expect(docsJsonContent).not.toContain('"theme"');
     expect(docsJsonContent).not.toContain('"colors"');
     expect(indexContent).toContain(
@@ -87,8 +93,20 @@ describe("scaffold templates", () => {
     const docsJsonContent = getFileContent(files, "docs.json");
     const lightLogoContent = getFileContent(files, "logo/light.svg");
 
-    expect(docsJsonContent).toContain('"name": "acme-docs"');
-    expect(lightLogoContent).toContain(">acme-docs</text>");
+    expect(docsJsonContent).toContain('"name": "Acme Docs"');
+    expect(docsJsonContent).toContain('"slug": "acme-docs"');
+    expect(lightLogoContent).toContain(">Acme Docs</text>");
+  });
+
+  it("uses an explicit display name when provided", () => {
+    const files = getScaffoldFiles("minimal", {
+      displayName: "Blode.md",
+      projectSlug: "docs",
+    });
+    const docsJsonContent = getFileContent(files, "docs.json");
+
+    expect(docsJsonContent).toContain('"name": "Blode.md"');
+    expect(docsJsonContent).toContain('"slug": "docs"');
   });
 });
 
@@ -121,5 +139,11 @@ describe("validateProjectSlug", () => {
     expect(validateProjectSlug("Acme Docs")).toBe(
       'Use lowercase letters, numbers, and hyphens. Try "acme-docs".'
     );
+  });
+});
+
+describe("deriveDisplayNameFromProjectSlug", () => {
+  it("formats slugs as title case display names", () => {
+    expect(deriveDisplayNameFromProjectSlug("acme-docs")).toBe("Acme Docs");
   });
 });
