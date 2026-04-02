@@ -12,8 +12,10 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-          registry-url: https://registry.npmjs.org
+          cache: npm
+      - run: npm ci
+      - run: npm run build --workspace=apps/cli
       - name: Deploy docs
-        run: npx blodemd@latest push docs
+        run: node apps/cli/dist/cli.mjs push apps/docs/content/docs
         env:
           BLODEMD_API_KEY: ${{ secrets.BLODEMD_API_KEY }}
