@@ -14,7 +14,8 @@ jobs:
           node-version: 20
           cache: npm
       - run: npm ci
-      - run: npm run build --workspace=apps/cli
+      - run: npx tsdown --clean
+        working-directory: apps/cli
       - name: Deploy docs
         run: node apps/cli/dist/cli.mjs push apps/docs/content/docs
         env:
