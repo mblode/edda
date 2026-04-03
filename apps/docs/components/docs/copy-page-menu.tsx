@@ -9,7 +9,7 @@ import {
   OpenaiIcon,
 } from "blode-icons-react";
 import type React from "react";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import {
   Popover,
@@ -24,6 +24,8 @@ interface CopyPageMenuProps {
 }
 
 type CopyStatus = "copied" | "error" | "idle";
+
+const MARKDOWN_ACCEPT = "text/markdown,text/plain;q=0.9,*/*;q=0.8";
 
 const LEADING_H1_REGEX = /^#\s+([^\r\n]+)(?:\r?\n(?:\r?\n)?)?/;
 
@@ -141,7 +143,15 @@ export const CopyPageMenu = ({
   const [copyStatus, setCopyStatus] = useState<CopyStatus>("idle");
   const [fetchedContent, setFetchedContent] = useState<string | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
-  const [pageUrl, setPageUrl] = useState("");
+
+  const pageUrl = useMemo(
+    () =>
+      typeof window === "undefined"
+        ? ""
+        : new URL(contentUrl ?? window.location.href, window.location.href)
+            .href,
+    [contentUrl]
+  );
 
   useEffect(
     () => () => {
@@ -153,10 +163,24 @@ export const CopyPageMenu = ({
   );
 
   useEffect(() => {
-    setPageUrl(
-      new URL(contentUrl ?? window.location.href, window.location.href).href
-    );
-  }, [contentUrl]);
+    if (content || !contentUrl) return;
+
+    const controller = new AbortController();
+
+    fetch(contentUrl, {
+      signal: controller.signal,
+      headers: { accept: MARKDOWN_ACCEPT },
+    })
+      .then((res) => (res.ok ? res.text() : null))
+      .then((text) => {
+        if (text) setFetchedContent(text);
+      })
+      .catch(() => {
+        // Ignore prefetch failures — the copy handler retries on demand
+      });
+
+    return () => controller.abort();
+  }, [content, contentUrl]);
 
   const closeMenu = useCallback(() => {
     setMenuOpen(false);
@@ -188,9 +212,7 @@ export const CopyPageMenu = ({
     }
 
     const response = await fetch(contentUrl, {
-      headers: {
-        accept: "text/markdown,text/plain;q=0.9,*/*;q=0.8",
-      },
+      headers: { accept: MARKDOWN_ACCEPT },
     });
     if (!response.ok) {
       throw new Error(`Failed to load page markdown: ${response.status}`);
@@ -203,25 +225,9 @@ export const CopyPageMenu = ({
 
   const handleCopy = useCallback(async () => {
     try {
-      // iOS Safari loses the user gesture context after any async gap (e.g. a
-      // fetch). To keep clipboard access working, we call clipboard.write()
-      // synchronously within the gesture and pass a Promise to ClipboardItem
-      // so the content resolves later while the gesture context stays alive.
-      const blobPromise = (async () => {
-        const nextContent = await getContent();
-        const markdown = formatMarkdownForCopy(nextContent, title);
-        return new Blob([markdown], { type: "text/plain" });
-      })();
-
-      if (typeof ClipboardItem === "undefined") {
-        const blob = await blobPromise;
-        await navigator.clipboard.writeText(await blob.text());
-      } else {
-        await navigator.clipboard.write([
-          new ClipboardItem({ "text/plain": blobPromise }),
-        ]);
-      }
-
+      const nextContent = await getContent();
+      const markdown = formatMarkdownForCopy(nextContent, title);
+      await navigator.clipboard.writeText(markdown);
       setTemporaryCopyStatus("copied");
       closeMenu();
     } catch {
