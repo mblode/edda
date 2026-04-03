@@ -1,0 +1,23 @@
+app = "blodemd-ssh"
+primary_region = "syd"
+
+[build]
+  dockerfile = "Dockerfile"
+
+[env]
+  SSH_PORT = "22"
+  PLATFORM_ROOT_DOMAIN = "blode.md"
+  # Set DOCS_APP_URL and SSH_HOST_KEY as secrets:
+  #   fly secrets set DOCS_APP_URL=https://blode.md
+  #   fly secrets set SSH_HOST_KEY=$(openssl genpkey -algorithm ed25519 | base64 -w0)
+
+[[services]]
+  protocol = "tcp"
+  internal_port = 22
+
+  [[services.ports]]
+    port = 22
+
+  [[services.tcp_checks]]
+    interval = "30s"
+    timeout = "5s"
