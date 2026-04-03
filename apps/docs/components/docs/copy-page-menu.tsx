@@ -225,9 +225,23 @@ export const CopyPageMenu = ({
 
   const handleCopy = useCallback(async () => {
     try {
-      const nextContent = await getContent();
-      const markdown = formatMarkdownForCopy(nextContent, title);
-      await navigator.clipboard.writeText(markdown);
+      // Use ClipboardItem with a promise-based blob so the clipboard "slot"
+      // is claimed synchronously during the tap gesture.  iOS Safari revokes
+      // user-activation if an async boundary (e.g. a network fetch) sits
+      // between the tap and the clipboard call, so the old writeText path
+      // fails when tapped before the pre-fetch finishes.
+      if (typeof ClipboardItem !== "undefined" && navigator.clipboard.write) {
+        const blobPromise = getContent().then((text: string) => {
+          const markdown = formatMarkdownForCopy(text, title);
+          return new Blob([markdown], { type: "text/plain" });
+        });
+        const item = new ClipboardItem({ "text/plain": blobPromise });
+        await navigator.clipboard.write([item]);
+      } else {
+        const nextContent = await getContent();
+        const markdown = formatMarkdownForCopy(nextContent, title);
+        await navigator.clipboard.writeText(markdown);
+      }
       setTemporaryCopyStatus("copied");
       closeMenu();
     } catch {
