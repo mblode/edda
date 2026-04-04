@@ -76,6 +76,21 @@ npm run lint          # Oxlint across monorepo
 npm run format        # Oxfmt across monorepo
 ```
 
+## Agent Skill
+
+Install the slash command for Claude Code or any [skills.sh](https://skills.sh)-compatible agent:
+
+```sh
+npx skills add mblode/blodemd -g --all -y
+```
+
+Scaffold and deploy docs with natural language:
+
+```
+/blodemd new my-project --template starter
+/blodemd push docs/ --project my-project
+```
+
 ## License
 
 [MIT](LICENSE)
