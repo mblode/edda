@@ -268,28 +268,55 @@ const DocPage = async ({
     );
   }
 
+  const canonicalOrigin = getCanonicalOrigin(shell.tenant, requestContext);
+  const canonicalUrl = `${canonicalOrigin}${basePath}${slugKey ? `/${slugKey}` : "/"}`.replaceAll(
+    /\/+/g,
+    "/"
+  );
+  const jsonLd: Record<string, unknown> = {
+    "@context": "https://schema.org",
+    "@type": "TechArticle",
+    description: shell.pageDescription,
+    headline: shell.pageTitle,
+    name: shell.pageTitle,
+    url: canonicalUrl,
+  };
+  if (markdownHref) {
+    jsonLd.encoding = {
+      "@type": "MediaObject",
+      contentUrl: `${canonicalOrigin}${markdownHref}`,
+      encodingFormat: "text/markdown",
+    };
+  }
+
   return (
-    <DocShell
-      activeTabIndex={shell.activeTabIndex}
-      anchors={shell.anchors}
-      basePath={basePath}
-      breadcrumbs={shell.breadcrumbs}
-      config={shell.config}
-      content={content}
-      currentPath={shell.currentPath}
-      deprecated={shell.deprecated}
-      hideFooterPagination={shell.hideFooterPagination}
-      mode={shell.mode}
-      nav={shell.nav}
-      nextPage={shell.nextPage}
-      pageDescription={shell.pageDescription}
-      pageTitle={shell.pageTitle}
-      prevPage={shell.prevPage}
-      markdownHref={markdownHref}
-      rawContent={rawContent}
-      tabs={shell.tabs}
-      toc={toc}
-    />
+    <>
+      <script
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        type="application/ld+json"
+      />
+      <DocShell
+        activeTabIndex={shell.activeTabIndex}
+        anchors={shell.anchors}
+        basePath={basePath}
+        breadcrumbs={shell.breadcrumbs}
+        config={shell.config}
+        content={content}
+        currentPath={shell.currentPath}
+        deprecated={shell.deprecated}
+        hideFooterPagination={shell.hideFooterPagination}
+        mode={shell.mode}
+        nav={shell.nav}
+        nextPage={shell.nextPage}
+        pageDescription={shell.pageDescription}
+        pageTitle={shell.pageTitle}
+        prevPage={shell.prevPage}
+        markdownHref={markdownHref}
+        rawContent={rawContent}
+        tabs={shell.tabs}
+        toc={toc}
+      />
+    </>
   );
 };
 
