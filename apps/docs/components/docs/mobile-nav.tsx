@@ -5,6 +5,7 @@ import { useCallback, useState } from "react";
 import type { ReactNode } from "react";
 
 import { Button } from "@/components/ui/button";
+import { MorphIcon } from "@/components/ui/morph-icon";
 import {
   Popover,
   PopoverContent,
@@ -92,20 +93,7 @@ export const MobileNav = ({
           variant="ghost"
         >
           <div className="relative flex size-10 items-center justify-center">
-            <div className="relative size-4">
-              <span
-                className={cn(
-                  "absolute left-0 block h-0.5 w-4 bg-foreground transition-all duration-100",
-                  open ? "top-[0.4rem] -rotate-45" : "top-1"
-                )}
-              />
-              <span
-                className={cn(
-                  "absolute left-0 block h-0.5 w-4 bg-foreground transition-all duration-100",
-                  open ? "top-[0.4rem] rotate-45" : "top-2.5"
-                )}
-              />
-            </div>
+            <MorphIcon icon={open ? "cross" : "menu"} size={16} strokeWidth={2} />
             <span className="sr-only">Toggle Menu</span>
           </div>
         </Button>
