@@ -157,7 +157,7 @@ export const CodeGroup = ({ children }: CodeGroupProps) => {
   }
 
   return (
-    <div className="my-4 overflow-hidden rounded-xl border border-border bg-code">
+    <div className="my-4 overflow-hidden rounded-xl bg-code">
       <div
         aria-orientation="horizontal"
         className="flex gap-1 border-b border-border bg-muted/50 px-2 pt-2"

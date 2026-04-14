@@ -141,13 +141,13 @@ export const Tabs = ({
   return (
     <div
       className={cn(
-        "overflow-hidden rounded-xl border border-border bg-surface",
+        "overflow-hidden rounded-xl bg-code",
         borderBottom && "border-b-2"
       )}
     >
       <div
         aria-orientation="horizontal"
-        className="flex gap-2 bg-muted p-2"
+        className="flex gap-1 border-b border-border bg-muted/50 px-2 pt-2"
         role="tablist"
       >
         {items.map((item, index) => {
@@ -158,10 +158,10 @@ export const Tabs = ({
               aria-controls={getPanelId(index)}
               aria-selected={isSelected}
               className={cn(
-                "inline-flex cursor-pointer items-center gap-1.5 rounded-full border-none bg-transparent px-3 py-2 text-sm transition-colors",
+                "inline-flex cursor-pointer items-center gap-1.5 rounded-t-md border-b-2 bg-transparent px-3 py-2 text-sm transition-colors",
                 isSelected
-                  ? "bg-primary text-primary-foreground"
-                  : "text-muted-foreground hover:text-foreground"
+                  ? "border-primary text-foreground"
+                  : "border-transparent text-muted-foreground hover:text-foreground"
               )}
               data-index={index}
               id={getTabId(index)}
