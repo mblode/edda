@@ -561,7 +561,9 @@ export const getLlmPageText = async (tenant: Tenant, slug: string) => {
   }
 
   const data = await loadTenantUtilityIndex(tenant);
-  const page = data.pages.find((item) => item.slug === slug);
+  const page = data.pages.find(
+    (item) => item.slug === slug || (slug === "index" && item.slug === "")
+  );
   if (!page) {
     return null;
   }
