@@ -226,7 +226,7 @@ export const proxy = async (request: NextRequest) => {
     !pathname.includes("/llms.mdx/")
   ) {
     const tenantPrefix = `/sites/${resolution.tenant.slug}`;
-    url.pathname = `${tenantPrefix}/llms.mdx/${effectiveMarkdownSlug}`;
+    url.pathname = `${tenantPrefix}/llms.mdx/${effectiveMarkdownSlug || "index"}`;
   } else if (utilityRewritePath) {
     url.pathname = utilityRewritePath;
   } else {
