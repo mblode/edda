@@ -128,23 +128,3 @@ export const gitConnections = pgTable(
   },
   (table) => [uniqueIndex("git_connections_project_id_key").on(table.projectId)]
 );
-
-export const apiKeys = pgTable(
-  "api_keys",
-  {
-    createdAt: timestampColumn("created_at").defaultNow().notNull(),
-    id: uuid("id").defaultRandom().primaryKey(),
-    lastUsedAt: timestampColumn("last_used_at"),
-    name: text("name").notNull(),
-    prefix: text("prefix").notNull(),
-    projectId: uuid("project_id")
-      .notNull()
-      .references(() => projects.id, { onDelete: "cascade" }),
-    revokedAt: timestampColumn("revoked_at"),
-    tokenHash: text("token_hash"),
-    userId: uuid("user_id").references(() => users.id, {
-      onDelete: "cascade",
-    }),
-  },
-  (table) => [uniqueIndex("api_keys_prefix_key").on(table.prefix)]
-);

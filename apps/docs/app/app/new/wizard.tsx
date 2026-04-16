@@ -23,7 +23,7 @@ import { Input } from "@/components/ui/input";
 import { ApiError, apiFetch } from "@/lib/api-client";
 import { platformRootDomain } from "@/lib/env";
 
-type SetupPath = "auto" | "template" | "cli";
+type SetupPath = "template" | "cli";
 
 const SLUG_PATTERN = /^[a-z0-9-]+$/;
 
@@ -46,12 +46,6 @@ const PATH_OPTIONS: readonly {
 }[] = [
   {
     badge: "Recommended",
-    description:
-      "Paste a URL or repo and we'll generate a starter docs site you can edit.",
-    title: "Auto-generate",
-    value: "auto",
-  },
-  {
     description: "Start from the official Blode.md MDX template.",
     title: "Use a template",
     value: "template",
@@ -65,11 +59,10 @@ const PATH_OPTIONS: readonly {
 
 export const NewProjectWizard = ({ accessToken }: NewProjectWizardProps) => {
   const router = useRouter();
-  const [path, setPath] = useState<SetupPath>("auto");
+  const [path, setPath] = useState<SetupPath>("template");
   const [name, setName] = useState("");
   const [slug, setSlug] = useState("");
   const [slugTouched, setSlugTouched] = useState(false);
-  const [sourceUrl, setSourceUrl] = useState("");
   const [formError, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -110,21 +103,15 @@ export const NewProjectWizard = ({ accessToken }: NewProjectWizardProps) => {
       await apiFetch("/projects", {
         accessToken,
         body: {
-          description:
-            path === "auto" && sourceUrl
-              ? `Imported from ${sourceUrl}`
-              : undefined,
           name: name.trim(),
           slug: effectiveSlug,
         },
         method: "POST",
       });
-      let next = `/app/${effectiveSlug}`;
-      if (path === "auto") {
-        next = `/app/${effectiveSlug}?import=${encodeURIComponent(sourceUrl)}`;
-      } else if (path === "template") {
-        next = `/app/${effectiveSlug}?template=starter`;
-      }
+      const next =
+        path === "template"
+          ? `/app/${effectiveSlug}?template=starter`
+          : `/app/${effectiveSlug}`;
       router.push(next);
     } catch (error) {
       const message =
@@ -132,14 +119,14 @@ export const NewProjectWizard = ({ accessToken }: NewProjectWizardProps) => {
       setError(message);
       setIsSubmitting(false);
     }
-  }, [accessToken, effectiveSlug, name, path, router, slugError, sourceUrl]);
+  }, [accessToken, effectiveSlug, name, path, router, slugError]);
 
   return (
     <div className="mx-auto max-w-2xl space-y-8">
       <div>
         <h1 className="text-3xl font-bold tracking-tight">New project</h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Three steps: pick a path, name your project, ship.
+          Pick a starting point, name your project, ship.
         </p>
       </div>
 
@@ -219,24 +206,6 @@ export const NewProjectWizard = ({ accessToken }: NewProjectWizardProps) => {
               </p>
               {slugError && <FieldError>{slugError}</FieldError>}
             </Field>
-            {path === "auto" && (
-              <Field>
-                <FieldLabel htmlFor="source-url">
-                  URL to import (optional)
-                </FieldLabel>
-                <Input
-                  id="source-url"
-                  onChange={(event) => setSourceUrl(event.target.value)}
-                  placeholder="https://github.com/acme/docs or https://docs.acme.com"
-                  type="url"
-                  value={sourceUrl}
-                />
-                <p className="mt-1 text-xs text-muted-foreground">
-                  We&apos;ll queue an AI import. You can also start blank and
-                  import later.
-                </p>
-              </Field>
-            )}
           </FieldGroup>
         </CardContent>
       </Card>

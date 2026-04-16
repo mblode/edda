@@ -1,43 +1,22 @@
 ---
 title: blodemd whoami
-description: Show the currently authenticated user and auth method.
+description: Show the currently authenticated user.
 ---
 
-Print the email and authentication method for the active session.
+Print the email of the active browser session.
 
 ```bash
 blodemd whoami
 ```
 
-The CLI checks for credentials in this order: `BLODEMD_API_KEY` environment variable, a stored API key, then a browser OAuth session. It fetches your account email from the API and displays both the email and the method used. If your session has expired, the CLI prints a warning.
+The CLI reads your stored OAuth session, refreshes it if needed, and displays your email. If your session has expired and can't be refreshed, the CLI prints a warning and asks you to run `blodemd login` again.
 
 This command has no flags.
 
 ## Examples
 
-<CodeGroup>
-```bash title="Check current user"
-blodemd whoami
-```
-
-</CodeGroup>
-
-### Output
-
 ```bash
 $ blodemd whoami
-~ Logged in as you@example.com (browser session)
-i Done
-```
-
-```bash
-$ blodemd whoami
-~ Logged in as you@example.com (API key)
-i Done
-```
-
-```bash
-$ blodemd whoami
-~ Logged in as you@example.com (BLODEMD_API_KEY)
+~ Logged in as you@example.com
 i Done
 ```

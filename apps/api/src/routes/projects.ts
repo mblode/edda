@@ -10,10 +10,10 @@ import {
   authorizeProjectRequest,
   getAuthenticatedUser,
 } from "../lib/project-auth";
-import { createProjectWithDefaultApiKey } from "../lib/project-service";
+import { createProject } from "../lib/project-service";
 import { badRequest, notFound, unauthorized } from "../lib/responses";
 import { validateJson, validateParams } from "../lib/validators";
-import { mapApiKey, mapProject } from "../mappers/records";
+import { mapProject } from "../mappers/records";
 
 const projectIdParamsSchema = z.object({ projectId: z.string().uuid() });
 
@@ -53,9 +53,9 @@ projects.post("/", validateJson(projectCreateSchema), async (c) => {
     return badRequest(c, `Project slug "${body.slug}" is already taken.`);
   }
 
-  let created: Awaited<ReturnType<typeof createProjectWithDefaultApiKey>>;
+  let project: Awaited<ReturnType<typeof createProject>>;
   try {
-    created = await createProjectWithDefaultApiKey({
+    project = await createProject({
       description: body.description,
       name: body.name,
       slug: body.slug,
@@ -69,19 +69,12 @@ projects.post("/", validateJson(projectCreateSchema), async (c) => {
   }
 
   try {
-    await syncProjectTenantEdgeConfig(created.project.id);
+    await syncProjectTenantEdgeConfig(project.id);
   } catch (error: unknown) {
     logWarn("Failed to sync tenant Edge Config after project create", error);
   }
 
-  return c.json(
-    {
-      apiKey: mapApiKey(created.apiKey),
-      project: mapProject(created.project),
-      token: created.token,
-    },
-    201
-  );
+  return c.json(mapProject(project), 201);
 });
 
 // Get a project by ID

@@ -1,36 +1,24 @@
 ---
 title: REST API
-description: Programmatic access to projects, deployments, domains, and API keys.
+description: Programmatic access to projects, deployments, and domains.
 ---
 
 The base URL for all requests is `https://api.blode.md`.
 
 <Callout type="note">
   The CLI handles deployments automatically. Use the REST API for custom
-  integrations, CI pipelines that need fine-grained control, or tooling built on
-  top of blodemd.
+  integrations or tooling built on top of blodemd.
 </Callout>
 
 ## Authentication
 
-blodemd supports two authentication methods:
+Every endpoint uses the Supabase user session token issued by `blodemd login`:
 
-<TypeTable
-  type={{
-    "Authorization: Bearer <token>": {
-      description:
-        "User session token obtained from browser OAuth login. Required for user-scoped endpoints (listing all projects, managing API keys).",
-      type: "User auth",
-    },
-    "x-api-key: <key>": {
-      description:
-        "Project API key for CI/CD. Scoped to a single project — it cannot list other projects or manage API keys.",
-      type: "Project auth",
-    },
-  }}
-/>
+```
+Authorization: Bearer <token>
+```
 
-Endpoints that accept both methods are marked **user / api-key**. Endpoints marked **user only** require a session token.
+The CLI attaches this header automatically.
 
 ## Error format
 
@@ -44,20 +32,20 @@ All errors return JSON with an `error` string and an optional `issues` field for
 
 ## Health
 
-| Method | Path      | Auth | Description                       |
-| ------ | --------- | ---- | --------------------------------- |
-| GET    | `/health` | None | Returns `{ ok: true, timestamp }` |
+| Method | Path      | Description                       |
+| ------ | --------- | --------------------------------- |
+| GET    | `/health` | Returns `{ ok: true, timestamp }` |
 
 ---
 
 ## Projects
 
-| Method | Path                   | Auth           | Description                                  |
-| ------ | ---------------------- | -------------- | -------------------------------------------- |
-| GET    | `/projects/`           | User only      | List all projects for the authenticated user |
-| POST   | `/projects/`           | User only      | Create a project                             |
-| GET    | `/projects/:projectId` | User / api-key | Get a project                                |
-| PATCH  | `/projects/:projectId` | User / api-key | Update a project                             |
+| Method | Path                   | Description                                  |
+| ------ | ---------------------- | -------------------------------------------- |
+| GET    | `/projects/`           | List all projects for the authenticated user |
+| POST   | `/projects/`           | Create a project                             |
+| GET    | `/projects/:projectId` | Get a project                                |
+| PATCH  | `/projects/:projectId` | Update a project                             |
 
 **POST /projects/ — request body**
 
@@ -80,7 +68,7 @@ All errors return JSON with an `error` string and an optional `issues` field for
   }}
 />
 
-Returns `{ project, apiKey, token }`. Save the `apiKey` — it is only returned once.
+Returns the created project.
 
 **PATCH /projects/:projectId — request body**
 
@@ -88,11 +76,6 @@ Returns `{ project, apiKey, token }`. Save the `apiKey` — it is only returned 
   type={{
     name: {
       description: "New display name.",
-      type: "string",
-      default: "undefined",
-    },
-    slug: {
-      description: "New slug.",
       type: "string",
       default: "undefined",
     },
@@ -115,11 +98,11 @@ Returns `{ project, apiKey, token }`. Save the `apiKey` — it is only returned 
 
 Deployments follow a three-step flow: create → upload files → finalize.
 
-| Method | Path                                               | Auth           | Description           |
-| ------ | -------------------------------------------------- | -------------- | --------------------- |
-| POST   | `/projects/slug/:slug/deployments`                 | User / api-key | Create a deployment   |
-| POST   | `/projects/slug/:slug/deployments/:id/files/batch` | User / api-key | Upload files in batch |
-| POST   | `/projects/slug/:slug/deployments/:id/finalize`    | User / api-key | Finalize and promote  |
+| Method | Path                                               | Description           |
+| ------ | -------------------------------------------------- | --------------------- |
+| POST   | `/projects/slug/:slug/deployments`                 | Create a deployment   |
+| POST   | `/projects/slug/:slug/deployments/:id/files/batch` | Upload files in batch |
+| POST   | `/projects/slug/:slug/deployments/:id/finalize`    | Finalize and promote  |
 
 **POST /projects/slug/:slug/deployments — request body**
 
@@ -175,55 +158,17 @@ Deployments follow a three-step flow: create → upload files → finalize.
   }}
 />
 
-### Deployment curl example
-
-<CodeGroup>
-```bash title="1. Create deployment"
-SLUG="my-project"
-API_KEY="your-api-key"
-
-DEPLOY=$(curl -s -X POST "https://api.blode.md/projects/slug/$SLUG/deployments" \
- -H "x-api-key: $API_KEY" \
- -H "Content-Type: application/json" \
- -d '{ "branch": "main", "commitMessage": "docs: update quickstart" }')
-
-DEPLOY_ID=$(echo $DEPLOY | jq -r '.id')
-
-````
-
-```bash title="2. Upload files"
-curl -s -X POST "https://api.blode.md/projects/slug/$SLUG/deployments/$DEPLOY_ID/files/batch" \
-  -H "x-api-key: $API_KEY" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "files": [{
-      "path": "docs.json",
-      "contentBase64": "'$(base64 -i docs.json)'",
-      "contentType": "application/json"
-    }]
-  }'
-````
-
-```bash title="3. Finalize"
-curl -s -X POST "https://api.blode.md/projects/slug/$SLUG/deployments/$DEPLOY_ID/finalize" \
-  -H "x-api-key: $API_KEY" \
-  -H "Content-Type: application/json" \
-  -d '{ "promote": true }'
-```
-
-</CodeGroup>
-
 ---
 
 ## Domains
 
-| Method | Path                                                  | Auth           | Description                  |
-| ------ | ----------------------------------------------------- | -------------- | ---------------------------- |
-| GET    | `/projects/:projectId/domains`                        | User / api-key | List domains                 |
-| POST   | `/projects/:projectId/domains`                        | User / api-key | Add a custom domain          |
-| DELETE | `/projects/:projectId/domains/:domainId`              | User / api-key | Remove a domain              |
-| GET    | `/projects/:projectId/domains/:domainId/verification` | User / api-key | Get DNS verification records |
-| POST   | `/projects/:projectId/domains/:domainId/verify`       | User / api-key | Trigger domain verification  |
+| Method | Path                                                  | Description                  |
+| ------ | ----------------------------------------------------- | ---------------------------- |
+| GET    | `/projects/:projectId/domains`                        | List domains                 |
+| POST   | `/projects/:projectId/domains`                        | Add a custom domain          |
+| DELETE | `/projects/:projectId/domains/:domainId`              | Remove a domain              |
+| GET    | `/projects/:projectId/domains/:domainId/verification` | Get DNS verification records |
+| POST   | `/projects/:projectId/domains/:domainId/verify`       | Trigger domain verification  |
 
 **POST /projects/:projectId/domains — request body**
 
@@ -241,27 +186,3 @@ curl -s -X POST "https://api.blode.md/projects/slug/$SLUG/deployments/$DEPLOY_ID
     },
   }}
 />
-
----
-
-## API Keys
-
-API keys are scoped to a single project. Only user session tokens can create or list keys — a project API key cannot manage other API keys.
-
-| Method | Path                            | Auth      | Description       |
-| ------ | ------------------------------- | --------- | ----------------- |
-| GET    | `/projects/:projectId/api-keys` | User only | List project keys |
-| POST   | `/projects/:projectId/api-keys` | User only | Create a new key  |
-
-**POST /projects/:projectId/api-keys — request body**
-
-<TypeTable
-  type={{
-    name: {
-      description: "A label to identify this key, e.g. `github-actions`.",
-      type: "string",
-    },
-  }}
-/>
-
-Returns `{ apiKey, token }`. The raw key value is only returned once at creation time.

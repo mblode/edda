@@ -3,7 +3,6 @@ import { mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import { CONFIG_DIR, CREDENTIALS_FILE } from "./constants.js";
 import { CliError, EXIT_CODES } from "./errors.js";
 import type {
-  ApiKeyCredentials,
   AuthFileData,
   StoredAuthSession,
   StoredSessionUser,
@@ -79,18 +78,6 @@ const parseStoredAuthSession = (value: unknown): StoredAuthSession | null => {
   };
 };
 
-const parseApiKeyCredentials = (value: unknown): ApiKeyCredentials | null => {
-  if (!isRecord(value)) {
-    return null;
-  }
-
-  if (typeof value.apiKey !== "string") {
-    return null;
-  }
-
-  return { apiKey: value.apiKey, type: "api-key" };
-};
-
 const createInvalidCredentialsError = (detail?: string): CliError =>
   new CliError(
     detail
@@ -116,26 +103,16 @@ const parseAuthFile = (raw: string): AuthFileData => {
   }
 
   const hasSession = Object.hasOwn(parsed, "session");
-  const hasApiKey = Object.hasOwn(parsed, "apiKey");
   const session =
     hasSession && parsed.session !== undefined
       ? parseStoredAuthSession(parsed.session)
-      : undefined;
-  const apiKey =
-    hasApiKey && parsed.apiKey !== undefined
-      ? parseApiKeyCredentials(parsed.apiKey)
       : undefined;
 
   if (hasSession && parsed.session !== undefined && !session) {
     throw createInvalidCredentialsError("stored session is malformed.");
   }
 
-  if (hasApiKey && parsed.apiKey !== undefined && !apiKey) {
-    throw createInvalidCredentialsError("stored API key is malformed.");
-  }
-
   return {
-    apiKey: apiKey ?? undefined,
     session: session ?? undefined,
     version: 1,
   };
@@ -167,11 +144,6 @@ export const readStoredAuthSession =
     return data?.session ?? null;
   };
 
-export const readStoredApiKey = async (): Promise<ApiKeyCredentials | null> => {
-  const data = await readAuthFile();
-  return data?.apiKey ?? null;
-};
-
 const writeAuthFile = async (data: AuthFileData): Promise<void> => {
   await mkdir(CONFIG_DIR, { mode: 0o700, recursive: true });
   await writeFile(CREDENTIALS_FILE, `${JSON.stringify(data, null, 2)}\n`, {
@@ -185,15 +157,6 @@ export const writeStoredAuthSession = async (
 ): Promise<void> => {
   await writeAuthFile({
     session,
-    version: 1,
-  });
-};
-
-export const writeStoredApiKey = async (
-  apiKey: ApiKeyCredentials
-): Promise<void> => {
-  await writeAuthFile({
-    apiKey,
     version: 1,
   });
 };

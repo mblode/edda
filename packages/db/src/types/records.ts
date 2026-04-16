@@ -1,5 +1,4 @@
 import type {
-  apiKeys,
   deployments,
   domains,
   gitConnections,
@@ -11,7 +10,6 @@ type UserRow = typeof users.$inferSelect;
 type ProjectRow = typeof projects.$inferSelect;
 type DomainRow = typeof domains.$inferSelect;
 type DeploymentRow = typeof deployments.$inferSelect;
-type ApiKeyRow = typeof apiKeys.$inferSelect;
 type GitConnectionRow = typeof gitConnections.$inferSelect;
 
 export type UserRecord = Pick<
@@ -58,19 +56,6 @@ export type DeploymentRecord = Pick<
   | "status"
   | "updatedAt"
 >;
-
-export type ApiKeyRecord = Pick<
-  ApiKeyRow,
-  | "createdAt"
-  | "id"
-  | "lastUsedAt"
-  | "name"
-  | "prefix"
-  | "projectId"
-  | "revokedAt"
->;
-
-export type ApiKeyAuthRecord = ApiKeyRecord & Pick<ApiKeyRow, "tokenHash">;
 
 export type GitConnectionRecord = Pick<
   GitConnectionRow,

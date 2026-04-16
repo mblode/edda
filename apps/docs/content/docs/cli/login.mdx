@@ -1,6 +1,6 @@
 ---
 title: blodemd login
-description: Authenticate with Blode.md using browser OAuth or an API key.
+description: Authenticate with Blode.md via GitHub in your browser.
 ---
 
 Authenticate your CLI session so you can deploy documentation with `blodemd push`.
@@ -9,42 +9,16 @@ Authenticate your CLI session so you can deploy documentation with `blodemd push
 blodemd login
 ```
 
-## Authentication modes
+## How it works
 
-### Browser OAuth (default)
+`blodemd login` opens your browser to sign in with GitHub via Supabase OAuth (PKCE). After you authorize, the CLI receives an access token and stores it locally. No API keys, ever.
 
-When you run `blodemd login`, the CLI opens your browser to complete a Supabase OAuth flow using PKCE. After you authorize, the CLI receives an access token and stores it locally.
-
-```bash
-blodemd login
-```
-
-The CLI starts a temporary local server on port 8787 to receive the OAuth callback. If the browser does not open automatically, you can copy the printed URL manually.
-
-### API key
-
-Use the `--token` flag to authenticate with a project-scoped API key instead of browser login. This is the recommended approach for CI/CD pipelines.
-
-```bash
-blodemd login --token
-```
-
-You will be prompted to paste your API key. The key is stored locally and never echoed to the terminal.
-
-<Callout type="info">
-  You can generate API keys from the Blode.md dashboard or when a project is
-  auto-created during `blodemd push`.
-</Callout>
+The CLI starts a temporary local server on port 8787 to receive the OAuth callback. If the browser does not open automatically, copy the printed URL manually.
 
 ## Options
 
 <TypeTable
   type={{
-    "--token": {
-      description: "Paste an API key instead of using browser login.",
-      type: "boolean",
-      default: "false",
-    },
     "--port <port>": {
       description: "Port for the local OAuth callback server.",
       type: "number",
@@ -68,12 +42,8 @@ You will be prompted to paste your API key. The key is stored locally and never 
 ## Examples
 
 <CodeGroup>
-```bash title="Browser OAuth"
+```bash title="Browser sign-in"
 blodemd login
-```
-
-```bash title="API key"
-blodemd login --token
 ```
 
 ```bash title="Custom port and no browser"
@@ -84,6 +54,4 @@ blodemd login --port 9090 --no-open
 
 ## Credential storage
 
-Credentials are stored at `~/.config/blodemd/credentials.json`. OAuth sessions include a refresh token so the CLI can renew your session automatically. Run `blodemd logout` to remove stored credentials.
-
-You can also skip `blodemd login` entirely by setting the `BLODEMD_API_KEY` environment variable.
+Credentials are stored at `~/.config/blodemd/credentials.json`. The OAuth session includes a refresh token so the CLI can renew your session automatically. Run `blodemd logout` to remove stored credentials.

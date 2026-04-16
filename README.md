@@ -26,7 +26,6 @@ Blode.md is a multi-tenant documentation platform — serve versioned MDX docs p
 | `@repo/prebuild`          | Pre-build YAML processing                   |
 | `@repo/previewing`        | Preview data handling                       |
 | `@repo/typescript-config` | Shared `tsconfig.json` configurations       |
-| `@repo/deploy-action`     | Deployment automation helpers               |
 
 ## Requirements
 

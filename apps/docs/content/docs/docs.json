@@ -50,11 +50,7 @@
           },
           {
             "group": "Deployment",
-            "pages": [
-              "deployment/push",
-              "deployment/github-actions",
-              "deployment/environment-variables"
-            ]
+            "pages": ["deployment/push"]
           },
           {
             "group": "Features",

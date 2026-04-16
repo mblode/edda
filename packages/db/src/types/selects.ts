@@ -1,5 +1,4 @@
 import {
-  apiKeys,
   deployments,
   domains,
   gitConnections,
@@ -51,21 +50,6 @@ export const deploymentSelect = {
   promotedAt: deployments.promotedAt,
   status: deployments.status,
   updatedAt: deployments.updatedAt,
-} as const;
-
-export const apiKeySelect = {
-  createdAt: apiKeys.createdAt,
-  id: apiKeys.id,
-  lastUsedAt: apiKeys.lastUsedAt,
-  name: apiKeys.name,
-  prefix: apiKeys.prefix,
-  projectId: apiKeys.projectId,
-  revokedAt: apiKeys.revokedAt,
-} as const;
-
-export const apiKeyAuthSelect = {
-  ...apiKeySelect,
-  tokenHash: apiKeys.tokenHash,
 } as const;
 
 export const gitConnectionSelect = {

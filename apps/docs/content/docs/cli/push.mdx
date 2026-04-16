@@ -9,6 +9,8 @@ Upload your documentation files and publish them to Blode.md in a single command
 blodemd push [dir]
 ```
 
+Authenticate once with `blodemd login` first. The CLI uses your browser GitHub session — no API keys.
+
 ## Directory resolution
 
 If you omit the `dir` argument, the CLI searches for a `docs.json` file in these locations (in order):
@@ -29,7 +31,7 @@ If none contain a `docs.json`, the current directory is used.
     },
     "--project <slug>": {
       description:
-        "Project slug. Falls back to the BLODEMD_PROJECT environment variable, then docs.json `slug`. If `slug` is missing, the CLI temporarily falls back to docs.json `name` for backward compatibility.",
+        "Project slug. Falls back to the BLODEMD_PROJECT environment variable, then docs.json `slug`.",
       type: "string",
     },
     "--api-url <url>": {
@@ -37,20 +39,15 @@ If none contain a `docs.json`, the current directory is used.
       type: "string",
       default: '"https://api.blode.md"',
     },
-    "--api-key <token>": {
-      description:
-        "API key for authentication. Falls back to the BLODEMD_API_KEY environment variable.",
-      type: "string",
-    },
     "--branch <name>": {
       description:
-        "Git branch name attached to the deployment. Auto-detected from git if not provided. Falls back to BLODEMD_BRANCH, then GITHUB_REF_NAME.",
+        "Git branch name attached to the deployment. Auto-detected from git if not provided.",
       type: "string",
       default: '"main"',
     },
     "--message <msg>": {
       description:
-        "Deploy message. Auto-detected from the latest git commit if not provided. Falls back to BLODEMD_COMMIT_MESSAGE.",
+        "Deploy message. Auto-detected from the latest git commit if not provided.",
       type: "string",
     },
   }}
@@ -84,14 +81,7 @@ When you run `blodemd push`, the CLI executes these steps:
 
 ## Auto-create projects
 
-If the project slug does not match an existing project, the CLI prompts you to create one. This requires an OAuth session (from `blodemd login`), not just an API key.
-
-When a project is created, the CLI prints an API key you can use for CI/CD deployments.
-
-<Callout type="warn">
-  API key authentication cannot auto-create projects. You need to run `blodemd
-  login` first, or create the project from the dashboard.
-</Callout>
+If the project slug does not match an existing project, the CLI prompts you to create one using your authenticated GitHub session.
 
 ## Examples
 
@@ -108,13 +98,11 @@ blodemd push ./my-docs
 blodemd push --project my-project --branch staging
 ```
 
-```bash title="CI/CD with environment variables"
-export BLODEMD_API_KEY="your-api-key"
-export BLODEMD_PROJECT="my-project"
-blodemd push docs
-```
-
 </CodeGroup>
+
+## Zero-touch deploys
+
+Prefer not to run the CLI at all? Install the **Blode.md GitHub App** from the project Git tab in the dashboard. Pushes to your configured branch deploy automatically — no CLI, no tokens, no workflows.
 
 ## Skipped files
 

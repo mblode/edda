@@ -17,18 +17,12 @@ export interface StoredAuthSession {
   createdAt: string;
 }
 
-export interface ApiKeyCredentials {
-  type: "api-key";
-  apiKey: string;
-}
-
 export interface AuthFileData {
   version: 1;
   session?: StoredAuthSession;
-  apiKey?: ApiKeyCredentials;
 }
 
-export type AuthSource = "flag" | "environment" | "stored";
+export type AuthSource = "stored";
 
 export interface ResolvedAuthToken {
   token: string;

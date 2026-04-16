@@ -76,11 +76,7 @@ projectGit.post(
   validateJson(GitConnectionBindSchema),
   async (c) => {
     const { projectId } = c.req.valid("param");
-    if (
-      !(await authorizeProjectRequest(c, projectId, {
-        allowProjectApiKey: false,
-      }))
-    ) {
+    if (!(await authorizeProjectRequest(c, projectId))) {
       return unauthorized(c, "Invalid credentials.");
     }
     const body = c.req.valid("json");
@@ -125,11 +121,7 @@ projectGit.delete(
   validateParams(projectIdParamsSchema),
   async (c) => {
     const { projectId } = c.req.valid("param");
-    if (
-      !(await authorizeProjectRequest(c, projectId, {
-        allowProjectApiKey: false,
-      }))
-    ) {
+    if (!(await authorizeProjectRequest(c, projectId))) {
       return unauthorized(c, "Invalid credentials.");
     }
     const existing = await gitConnectionDao.getByProject(projectId);

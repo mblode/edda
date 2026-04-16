@@ -1,7 +1,4 @@
 import type {
-  ApiKey,
-  ApiKeyCreateInput,
-  ApiKeyCreateResponse,
   Deployment,
   Domain,
   DomainCreateInput,
@@ -13,9 +10,6 @@ import type {
   TenantResolution,
 } from "@repo/contracts";
 import {
-  ApiKeyCreateSchema,
-  ApiKeyCreateResponseSchema,
-  ApiKeySchema,
   DeploymentSchema,
   DomainCreateResponseSchema,
   DomainCreateSchema,
@@ -162,21 +156,3 @@ export const listDeployments = async (
     `/projects/${projectId}/deployments`,
     z.array(DeploymentSchema)
   );
-
-export const listApiKeys = async (projectId: string): Promise<ApiKey[]> =>
-  await request(`/projects/${projectId}/api-keys`, z.array(ApiKeySchema));
-
-export const createApiKey = async (
-  projectId: string,
-  input: Omit<ApiKeyCreateInput, "projectId">
-): Promise<ApiKeyCreateResponse> => {
-  const parsed = ApiKeyCreateSchema.omit({ projectId: true }).parse(input);
-  return await request(
-    `/projects/${projectId}/api-keys`,
-    ApiKeyCreateResponseSchema,
-    {
-      body: parsed,
-      method: "POST",
-    }
-  );
-};

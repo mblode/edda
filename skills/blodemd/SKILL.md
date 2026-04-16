@@ -8,7 +8,7 @@ allowed-tools: Bash(npx blodemd *), Bash(blodemd *)
 
 # Blode.md
 
-Scaffold, preview, and deploy MDX documentation sites from the terminal. Write locally, ship with one command. **No API keys to paste** — sign in once with GitHub in your browser.
+Scaffold, preview, and deploy MDX documentation sites from the terminal. Write locally, ship with one command. Sign in once with GitHub in your browser — no API keys, ever.
 
 ## First run from an agent
 
@@ -18,13 +18,15 @@ ALWAYS check auth before any deploy command:
 npx blodemd whoami
 ```
 
-If the output says `Not logged in`, do NOT prompt the user for an API key. Tell them to run **one command in their own terminal**:
+If the output says `Not logged in`, ask the user to run **one command in their own terminal**:
 
 ```bash
 npx blodemd login
 ```
 
-That opens a browser tab → GitHub authorize → done. Credentials are cached and refreshed automatically. Then re-run `npx blodemd whoami` to confirm and continue.
+That opens a browser tab → GitHub authorize → done. Credentials are cached and auto-refreshed. Then re-run `npx blodemd whoami` and continue.
+
+For zero-touch auto-deploy without even the CLI, tell the user to install the Blode.md GitHub App from `/app/<project>/git`. Pushes to the configured branch deploy automatically.
 
 ## Workflow
 
@@ -50,7 +52,7 @@ npx blodemd new [directory] --slug <project-slug> --template <minimal|starter> -
 
 If the user hasn't specified a directory, omit it and let the CLI prompt or default to `docs/`.
 
-For non-interactive environments (CI, agents), always pass `-y` to accept defaults.
+For non-interactive environments, always pass `-y` to accept defaults.
 
 ### Step 2: Validate the config
 
@@ -74,28 +76,17 @@ Starts a local Next.js dev server with hot-reloading. Opens the browser automati
 npx blodemd push [dir] --project <slug>
 ```
 
-Deploys all files in the docs directory to Blode.md. The cached browser session from `blodemd login` is used automatically — no key pasting.
+Deploys all files in the docs directory to Blode.md. The cached browser session from `blodemd login` is used automatically.
 
 ## Authentication
 
-| Method                    | When to use                        | Command              |
-| ------------------------- | ---------------------------------- | -------------------- |
-| Browser sign-in (default) | Humans, agents triggered by humans | `npx blodemd login`  |
-| Check status              | Verify before deploying            | `npx blodemd whoami` |
-| Remove credentials        | Sign out                           | `npx blodemd logout` |
+| Command              | Purpose                            |
+| -------------------- | ---------------------------------- |
+| `npx blodemd login`  | Browser sign-in with GitHub        |
+| `npx blodemd whoami` | Show current authentication status |
+| `npx blodemd logout` | Remove stored credentials          |
 
-The default flow signs in with GitHub via the browser. The token is stored locally and auto-refreshes. **Agents should never prompt for an API key** — instead, ask the user to run `npx blodemd login` themselves.
-
-### CI / GitHub Actions
-
-GitHub Actions and other automated environments are the only places API keys make sense:
-
-- `BLODEMD_API_KEY` — API key for authentication (issue from `/app/<project>/settings`)
-- `BLODEMD_PROJECT` — Project slug (alternative to `--project` flag)
-- `BLODEMD_BRANCH` — Override branch detection
-- `BLODEMD_COMMIT_MESSAGE` — Override commit message detection
-
-Or: install the **Blode.md GitHub App** from `/app/<project>/git` and skip the API key entirely — pushes deploy automatically.
+**Agents should never prompt for an API key** — ask the user to run `npx blodemd login` themselves. There is no API-key path.
 
 ## docs.json
 

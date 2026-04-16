@@ -7,7 +7,6 @@ import {
   intro,
   isCancel,
   log,
-  password,
   select,
   spinner,
   text,
@@ -22,8 +21,8 @@ import {
   BLODE_API_URL_ENV,
   BLODE_BRANCH_ENV,
   BLODE_COMMIT_MESSAGE_ENV,
-  CREDENTIALS_FILE,
   BLODE_PROJECT_ENV,
+  CREDENTIALS_FILE,
   DEFAULT_API_URL,
   DEFAULT_OAUTH_CALLBACK_PATH,
   DEFAULT_OAUTH_CALLBACK_PORT,
@@ -74,7 +73,6 @@ import { loadValidatedSiteConfig } from "./site-config.js";
 import {
   clearStoredCredentials,
   readAuthFile,
-  writeStoredApiKey,
   writeStoredAuthSession,
 } from "./storage.js";
 import {
@@ -491,7 +489,6 @@ interface PushConfig {
 const resolvePushConfig = async (
   config: { name?: string; slug?: string },
   options: {
-    apiKey?: string;
     apiUrl?: string;
     branch?: string;
     message?: string;
@@ -506,7 +503,7 @@ const resolvePushConfig = async (
   const apiUrl =
     options.apiUrl ?? process.env[BLODE_API_URL_ENV] ?? DEFAULT_API_URL;
 
-  const resolved = await resolveAuthToken(options.apiKey);
+  const resolved = await resolveAuthToken();
   const authToken = resolved?.token;
 
   const branch =
@@ -537,9 +534,7 @@ const resolvePushConfig = async (
     throw new Error(`Invalid project slug "${project}". ${projectSlugError}`);
   }
   if (!authToken) {
-    throw new Error(
-      'Missing credentials. Run "blodemd login", pass --api-key, or set BLODEMD_API_KEY.'
-    );
+    throw new Error('Not logged in. Run "blodemd login" to authenticate.');
   }
 
   return {
@@ -574,10 +569,7 @@ const autoCreateProject = async (
     return false;
   }
 
-  const createResult = await requestJson<{
-    project: { id: string; slug: string };
-    token: string;
-  }>(
+  const createResult = await requestJson<{ id: string; slug: string }>(
     new URL("/projects", apiUrl).toString(),
     {
       body: JSON.stringify({ name: projectDisplayName, slug: project }),
@@ -587,8 +579,7 @@ const autoCreateProject = async (
     "Failed to create project"
   );
 
-  log.success(`Project ${chalk.cyan(createResult.project.slug)} created`);
-  log.info(`API key for CI: ${chalk.dim(createResult.token)}`);
+  log.success(`Project ${chalk.cyan(createResult.slug)} created`);
   return true;
 };
 
@@ -729,8 +720,7 @@ program.hook("preAction", () => {
 
 program
   .command("login")
-  .description("Authenticate with Blode.md")
-  .option("--token", "Paste an API key instead of using browser login")
+  .description("Authenticate with Blode.md via GitHub in your browser")
   .option(
     "--port <port>",
     "Loopback callback port",
@@ -742,113 +732,83 @@ program
     String(DEFAULT_OAUTH_TIMEOUT_SECONDS)
   )
   .option("--no-open", "Print URL instead of opening the browser")
-  .action(
-    async (options: {
-      token?: boolean;
-      port: string;
-      timeout: string;
-      open: boolean;
-    }) => {
-      intro(chalk.bold("blodemd login"));
+  .action(async (options: { port: string; timeout: string; open: boolean }) => {
+    intro(chalk.bold("blodemd login"));
 
-      try {
-        if (options.token) {
-          const apiKey = await password({
-            message: "Enter your API key",
-            validate: (value) => {
-              if (!value) {
-                return "API key is required.";
-              }
-            },
-          });
+    try {
+      // OAuth 2.1 authorization code flow with PKCE (GitHub via Supabase)
+      const config = resolveSupabaseConfig();
+      const { authorizeUrl, tokenUrl } = buildOAuthUrls(config);
+      const clientId = OAUTH_CLIENT_ID;
 
-          if (isCancel(apiKey)) {
-            log.warn("Cancelled");
-            return;
-          }
+      const port = parsePort(options.port);
+      const timeoutSeconds = parsePositiveInteger(options.timeout, "Timeout");
+      const redirectUrl = new URL(
+        `http://127.0.0.1:${port}${DEFAULT_OAUTH_CALLBACK_PATH}`
+      );
 
-          await writeStoredApiKey({ apiKey, type: "api-key" });
+      const state = createOAuthState();
+      const codeVerifier = createCodeVerifier();
+      const codeChallenge = createCodeChallenge(codeVerifier);
 
-          const prefix = apiKey.split(".")[0] ?? apiKey.slice(0, 12);
-          log.success(`Authenticated as ${chalk.cyan(prefix)}`);
-          log.info("Done");
-          return;
-        }
+      const authUrl = new URL(authorizeUrl);
+      authUrl.searchParams.set("response_type", "code");
+      authUrl.searchParams.set("client_id", clientId);
+      authUrl.searchParams.set("redirect_uri", redirectUrl.toString());
+      authUrl.searchParams.set("code_challenge", codeChallenge);
+      authUrl.searchParams.set("code_challenge_method", "S256");
+      authUrl.searchParams.set("state", state);
+      authUrl.searchParams.set("scope", "openid email profile");
+      // Pin provider=github so users go straight to GitHub OAuth without a picker
+      authUrl.searchParams.set("provider", "github");
 
-        // OAuth 2.1 authorization code flow with PKCE
-        const config = resolveSupabaseConfig();
-        const { authorizeUrl, tokenUrl } = buildOAuthUrls(config);
-        const clientId = OAUTH_CLIENT_ID;
+      const callbackPromise = waitForOAuthCode({
+        expectedState: state,
+        redirectUrl,
+        timeoutMs: timeoutSeconds * 1000,
+      });
 
-        const port = parsePort(options.port);
-        const timeoutSeconds = parsePositiveInteger(options.timeout, "Timeout");
-        const redirectUrl = new URL(
-          `http://127.0.0.1:${port}${DEFAULT_OAUTH_CALLBACK_PATH}`
+      if (options.open) {
+        log.info("Opening browser for authentication...");
+        log.info(
+          `If the browser doesn't open, visit: ${chalk.cyan(authUrl.toString())}`
         );
-
-        const state = createOAuthState();
-        const codeVerifier = createCodeVerifier();
-        const codeChallenge = createCodeChallenge(codeVerifier);
-
-        const authUrl = new URL(authorizeUrl);
-        authUrl.searchParams.set("response_type", "code");
-        authUrl.searchParams.set("client_id", clientId);
-        authUrl.searchParams.set("redirect_uri", redirectUrl.toString());
-        authUrl.searchParams.set("code_challenge", codeChallenge);
-        authUrl.searchParams.set("code_challenge_method", "S256");
-        authUrl.searchParams.set("state", state);
-        authUrl.searchParams.set("scope", "openid email profile");
-        // Pin provider=github so users go straight to GitHub OAuth without a picker
-        authUrl.searchParams.set("provider", "github");
-
-        const callbackPromise = waitForOAuthCode({
-          expectedState: state,
-          redirectUrl,
-          timeoutMs: timeoutSeconds * 1000,
-        });
-
-        if (options.open) {
-          log.info("Opening browser for authentication...");
-          log.info(
-            `If the browser doesn't open, visit: ${chalk.cyan(authUrl.toString())}`
-          );
-          await open(authUrl.toString());
-        } else {
-          log.info("Open this URL to continue authentication:");
-          log.info(chalk.cyan(authUrl.toString()));
-        }
-
-        const code = await callbackPromise;
-
-        const tokenResponse = await exchangeAuthorizationCode(
-          { clientId, tokenUrl },
-          code,
-          codeVerifier,
-          redirectUrl.toString()
-        );
-
-        const storedSession = tokenResponseToStoredSession(tokenResponse);
-        await writeStoredAuthSession(storedSession);
-
-        const email =
-          storedSession.user?.email ??
-          (await fetchUserEmail(
-            process.env[BLODE_API_URL_ENV] ?? DEFAULT_API_URL,
-            storedSession.accessToken
-          ));
-
-        if (email) {
-          log.success(`Logged in as ${chalk.cyan(email)}`);
-        } else {
-          log.success("Logged in successfully.");
-        }
-
-        log.info("Done");
-      } catch (error: unknown) {
-        reportCommandError("Login failed", error);
+        await open(authUrl.toString());
+      } else {
+        log.info("Open this URL to continue authentication:");
+        log.info(chalk.cyan(authUrl.toString()));
       }
+
+      const code = await callbackPromise;
+
+      const tokenResponse = await exchangeAuthorizationCode(
+        { clientId, tokenUrl },
+        code,
+        codeVerifier,
+        redirectUrl.toString()
+      );
+
+      const storedSession = tokenResponseToStoredSession(tokenResponse);
+      await writeStoredAuthSession(storedSession);
+
+      const email =
+        storedSession.user?.email ??
+        (await fetchUserEmail(
+          process.env[BLODE_API_URL_ENV] ?? DEFAULT_API_URL,
+          storedSession.accessToken
+        ));
+
+      if (email) {
+        log.success(`Logged in as ${chalk.cyan(email)}`);
+      } else {
+        log.success("Logged in successfully.");
+      }
+
+      log.info("Done");
+    } catch (error: unknown) {
+      reportCommandError("Login failed", error);
     }
-  );
+  });
 
 // logout
 
@@ -891,19 +851,6 @@ program
 
       if (!resolved) {
         log.warn('Not logged in. Run "blodemd login" to authenticate.');
-        return;
-      }
-
-      if (resolved.source === "environment") {
-        log.info("Authenticated via BLODEMD_API_KEY environment variable");
-        return;
-      }
-
-      // API keys have no expiry and no user info from JWT
-      if (!resolved.expiresAt && !resolved.user) {
-        const prefix =
-          resolved.token.split(".")[0] ?? resolved.token.slice(0, 12);
-        log.info(`Logged in with API key ${chalk.cyan(prefix)}`);
         return;
       }
 
@@ -1034,14 +981,12 @@ program
   .argument("[dir]", "docs directory")
   .option("--project <slug>", "project slug (env: BLODEMD_PROJECT)")
   .option("--api-url <url>", "API URL (env: BLODEMD_API_URL)")
-  .option("--api-key <token>", "API key (env: BLODEMD_API_KEY)")
   .option("--branch <name>", "git branch (env: BLODEMD_BRANCH)")
   .option("--message <msg>", "deploy message (env: BLODEMD_COMMIT_MESSAGE)")
   .action(
     async (
       dir: string | undefined,
       options: {
-        apiKey?: string;
         apiUrl?: string;
         branch?: string;
         message?: string;

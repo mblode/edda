@@ -19,7 +19,6 @@ export default defineConfig({
     "projects",
     "domains",
     "deployments",
-    "api_keys",
     "git_connections",
   ],
 });

@@ -1,26 +1,11 @@
 /**
  * Seed script for Blode.md.
- * Creates a seed user, projects, and generates an API key for each.
+ * Creates a seed user and sample projects.
  *
  * Usage:
  *   DATABASE_URL=... tsx packages/db/seed.ts
  */
-import { createHash, randomBytes } from "node:crypto";
-
-import { ApiKeyDao, DomainDao, ProjectDao, UserDao } from "./src/index.js";
-
-const API_KEY_PREFIX = "ndk_";
-const API_KEY_PREFIX_LENGTH = 8;
-
-const hashToken = (token: string) =>
-  createHash("sha256").update(token).digest("hex");
-
-const createApiKeyToken = () => {
-  const prefix = `${API_KEY_PREFIX}${randomBytes(API_KEY_PREFIX_LENGTH / 2).toString("hex")}`;
-  const secret = randomBytes(24).toString("hex");
-  const token = `${prefix}.${secret}`;
-  return { prefix, token, tokenHash: hashToken(token) };
-};
+import { DomainDao, ProjectDao, UserDao } from "./src/index.js";
 
 const SEED_USER = {
   authId: "seed-user-00000000-0000-0000-0000-000000000000",
@@ -73,7 +58,6 @@ const CUSTOM_DOMAINS: Record<string, { hostname: string; pathPrefix: string }> =
 
 const userDao = new UserDao();
 const projectDao = new ProjectDao();
-const apiKeyDao = new ApiKeyDao();
 const domainDao = new DomainDao();
 
 console.log("Seeding Blode.md...\n");
@@ -96,15 +80,6 @@ for (const proj of PROJECTS) {
     userId: user.id,
   });
 
-  const { prefix, token, tokenHash } = createApiKeyToken();
-  await apiKeyDao.create({
-    name: "default",
-    prefix,
-    projectId: project.id,
-    tokenHash,
-    userId: user.id,
-  });
-
   const customDomain = CUSTOM_DOMAINS[proj.slug];
   if (customDomain) {
     const existingDomain = await domainDao.getByHostname(customDomain.hostname);
@@ -122,12 +97,9 @@ for (const proj of PROJECTS) {
   }
 
   console.log(`  [ok]   ${proj.slug}`);
-  console.log(`         id:      ${project.id}`);
-  console.log(`         api-key: ${token}`);
-  console.log(`         url:     https://${proj.slug}.blode.md\n`);
+  console.log(`         id:  ${project.id}`);
+  console.log(`         url: https://${proj.slug}.blode.md\n`);
 }
 
-console.log(
-  "Done. Add each api-key as BLODEMD_API_KEY in the repo's GitHub secrets."
-);
+console.log("Done. Users authenticate via GitHub — no API keys needed.");
 process.exit(0);

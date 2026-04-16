@@ -1,9 +1,8 @@
 import type { UserRecord } from "@repo/db";
 import type { Context } from "hono";
 
-import { authenticateApiKey } from "./api-key-auth";
 import { adminApiToken } from "./config";
-import { apiKeyDao, projectDao } from "./db";
+import { projectDao } from "./db";
 import { constantTimeEquals, getHeaderToken } from "./header-auth";
 import { authenticateUser } from "./user-auth";
 
@@ -26,24 +25,15 @@ export const authorizeProjectRequest = async (
   projectId: string,
   options: {
     allowAdmin?: boolean;
-    allowProjectApiKey?: boolean;
     allowUser?: boolean;
   } = {}
 ) => {
   const allowAdmin = options.allowAdmin ?? true;
-  const allowProjectApiKey = options.allowProjectApiKey ?? true;
   const allowUser = options.allowUser ?? true;
   const headers = getHeadersRecord(c);
 
   if (allowAdmin && hasAdminAccess(headers)) {
     return true;
-  }
-
-  if (allowProjectApiKey) {
-    const apiKey = await authenticateApiKey(headers, apiKeyDao);
-    if (apiKey && apiKey.projectId === projectId) {
-      return true;
-    }
   }
 
   if (allowUser) {

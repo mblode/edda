@@ -49,28 +49,8 @@ $ blodemd validate
 i Done
 ```
 
-## Use in CI
-
-Add a validation step to your CI pipeline to catch configuration errors before deployment.
-
-```yaml title=".github/workflows/docs.yml"
-jobs:
-  deploy:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-      - run: npm install -g blodemd
-      - run: blodemd validate docs
-      - run: blodemd push docs
-        env:
-          BLODEMD_API_KEY: ${{ secrets.BLODEMD_API_KEY }}
-```
-
 <Callout type="info">
   Running `blodemd push` also validates `docs.json` as its first step. A
-  standalone validate step is useful when you want to fail fast in CI without
-  needing authentication.
+  standalone validate step is useful when you want to fail fast without needing
+  authentication.
 </Callout>
