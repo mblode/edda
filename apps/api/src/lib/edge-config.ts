@@ -2,9 +2,7 @@ import type { Tenant } from "@repo/contracts";
 import {
   TenantEdgeHostRecordSchema,
   TenantEdgeSlugRecordSchema,
-  getTenantEdgeHostKeys,
   getTenantEdgeHostKey,
-  getTenantEdgeSlugKeys,
   getTenantEdgeSlugKey,
 } from "@repo/contracts";
 
@@ -97,30 +95,23 @@ const dedupeEdgeConfigItems = (items: EdgeConfigItemOperation[]) => {
   return [...map.values()];
 };
 
-const addDeleteOperations = (
-  items: EdgeConfigItemOperation[],
-  keys: string[]
-) => {
-  for (const key of keys) {
-    items.push({
-      key,
-      operation: "delete",
-    });
-  }
+const addDeleteOperation = (items: EdgeConfigItemOperation[], key: string) => {
+  items.push({
+    key,
+    operation: "delete",
+  });
 };
 
-const addUpsertOperations = (
+const addUpsertOperation = (
   items: EdgeConfigItemOperation[],
-  keys: string[],
+  key: string,
   value: unknown
 ) => {
-  for (const key of keys) {
-    items.push({
-      key,
-      operation: "upsert",
-      value,
-    });
-  }
+  items.push({
+    key,
+    operation: "upsert",
+    value,
+  });
 };
 
 export const isTenantEdgeConfigSyncEnabled = () =>
@@ -137,18 +128,18 @@ export const buildTenantEdgeConfigItems = (input: {
 }) => {
   const items: EdgeConfigItemOperation[] = [];
 
-  addUpsertOperations(
+  addUpsertOperation(
     items,
-    getTenantEdgeSlugKeys(input.tenant.slug),
+    getTenantEdgeSlugKey(input.tenant.slug),
     TenantEdgeSlugRecordSchema.parse({
       slug: input.tenant.slug,
       tenant: input.tenant,
       version: 1,
     })
   );
-  addUpsertOperations(
+  addUpsertOperation(
     items,
-    getTenantEdgeHostKeys(`${input.tenant.subdomain}.${rootDomain}`),
+    getTenantEdgeHostKey(`${input.tenant.subdomain}.${rootDomain}`),
     TenantEdgeHostRecordSchema.parse({
       host: `${input.tenant.subdomain}.${rootDomain}`,
       strategy: "subdomain",
@@ -159,13 +150,13 @@ export const buildTenantEdgeConfigItems = (input: {
 
   for (const domain of input.domains) {
     if (domain.status !== validConfiguredDomainStatus) {
-      addDeleteOperations(items, getTenantEdgeHostKeys(domain.hostname));
+      addDeleteOperation(items, getTenantEdgeHostKey(domain.hostname));
       continue;
     }
 
-    addUpsertOperations(
+    addUpsertOperation(
       items,
-      getTenantEdgeHostKeys(domain.hostname),
+      getTenantEdgeHostKey(domain.hostname),
       TenantEdgeHostRecordSchema.parse({
         host: domain.hostname,
         pathPrefix: domain.pathPrefix ?? undefined,
@@ -177,7 +168,7 @@ export const buildTenantEdgeConfigItems = (input: {
   }
 
   for (const host of input.removedHosts ?? []) {
-    addDeleteOperations(items, getTenantEdgeHostKeys(host));
+    addDeleteOperation(items, getTenantEdgeHostKey(host));
   }
 
   return dedupeEdgeConfigItems(items);

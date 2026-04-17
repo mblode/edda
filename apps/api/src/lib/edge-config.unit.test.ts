@@ -17,31 +17,19 @@ const expectItemOperation = (
 
 describe("buildTenantEdgeConfigItems", () => {
   it("uses stable Edge Config-compatible key formats", async () => {
-    const {
-      getLegacyTenantEdgeHostKey,
-      getLegacyTenantEdgeSlugKey,
-      getTenantEdgeHostKey,
-      getTenantEdgeSlugKey,
-    } = await import("@repo/contracts");
+    const { getTenantEdgeHostKey, getTenantEdgeSlugKey } =
+      await import("@repo/contracts");
 
     expect(getTenantEdgeHostKey("docs.example.com")).toBe(
       "th_docs_example_com"
     );
     expect(getTenantEdgeSlugKey("example")).toBe("ts_example");
-    expect(getLegacyTenantEdgeHostKey("docs.example.com")).toBe(
-      "tenant:host:docs.example.com"
-    );
-    expect(getLegacyTenantEdgeSlugKey("example")).toBe("tenant:slug:example");
   });
 
-  it("emits migrated and legacy records plus deletes stale hosts in both keyspaces", async () => {
+  it("emits records and deletes stale hosts using Edge Config-safe keys only", async () => {
     const { buildTenantEdgeConfigItems } = await import("./edge-config");
-    const {
-      getLegacyTenantEdgeHostKey,
-      getLegacyTenantEdgeSlugKey,
-      getTenantEdgeHostKey,
-      getTenantEdgeSlugKey,
-    } = await import("@repo/contracts");
+    const { getTenantEdgeHostKey, getTenantEdgeSlugKey } =
+      await import("@repo/contracts");
 
     const tenant = {
       activeDeploymentId: "11111111-1111-4111-8111-111111111111",
@@ -75,15 +63,9 @@ describe("buildTenantEdgeConfigItems", () => {
     });
 
     expectItemOperation(items, getTenantEdgeSlugKey("example"), "upsert");
-    expectItemOperation(items, getLegacyTenantEdgeSlugKey("example"), "upsert");
     expectItemOperation(
       items,
       getTenantEdgeHostKey("example.blode.md"),
-      "upsert"
-    );
-    expectItemOperation(
-      items,
-      getLegacyTenantEdgeHostKey("example.blode.md"),
       "upsert"
     );
     expectItemOperation(
@@ -93,17 +75,7 @@ describe("buildTenantEdgeConfigItems", () => {
     );
     expectItemOperation(
       items,
-      getLegacyTenantEdgeHostKey("docs.example.com"),
-      "upsert"
-    );
-    expectItemOperation(
-      items,
       getTenantEdgeHostKey("pending.example.com"),
-      "delete"
-    );
-    expectItemOperation(
-      items,
-      getLegacyTenantEdgeHostKey("pending.example.com"),
       "delete"
     );
     expectItemOperation(
@@ -111,10 +83,9 @@ describe("buildTenantEdgeConfigItems", () => {
       getTenantEdgeHostKey("old.example.com"),
       "delete"
     );
-    expectItemOperation(
-      items,
-      getLegacyTenantEdgeHostKey("old.example.com"),
-      "delete"
-    );
+
+    for (const item of items) {
+      expect(item.key).toMatch(/^[A-Za-z0-9_-]+$/);
+    }
   });
 });
