@@ -42,14 +42,14 @@ const CommandDialog = ({
   showCloseButton?: boolean;
 } & Omit<React.ComponentProps<typeof Dialog>, "children">) => (
   <Dialog {...props}>
+    <DialogHeader className="sr-only">
+      <DialogTitle>{title}</DialogTitle>
+      <DialogDescription>{description}</DialogDescription>
+    </DialogHeader>
     <DialogContent
       className={cn("overflow-hidden p-0", className)}
       showCloseButton={showCloseButton}
     >
-      <DialogHeader className="sr-only">
-        <DialogTitle>{title}</DialogTitle>
-        <DialogDescription>{description}</DialogDescription>
-      </DialogHeader>
       <Command className="**:data-[slot=command-input-wrapper]:h-12 [&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group-heading]]:text-muted-foreground [&_[cmdk-group]:not([hidden])_~[cmdk-group]]:pt-0 [&_[cmdk-group]]:px-2 [&_[cmdk-input-wrapper]_svg]:h-5 [&_[cmdk-input-wrapper]_svg]:w-5 [&_[cmdk-input]]:h-12 [&_[cmdk-item]]:px-2 [&_[cmdk-item]]:py-3 [&_[cmdk-item]_svg]:h-5 [&_[cmdk-item]_svg]:w-5">
         {children}
       </Command>
@@ -115,6 +115,17 @@ const CommandGroup = ({
   />
 );
 
+const CommandSeparator = ({
+  className,
+  ...props
+}: React.ComponentProps<typeof CommandPrimitive.Separator>) => (
+  <CommandPrimitive.Separator
+    className={cn("-mx-1 h-px bg-border", className)}
+    data-slot="command-separator"
+    {...props}
+  />
+);
+
 const CommandItem = ({
   className,
   ...props
@@ -129,11 +140,28 @@ const CommandItem = ({
   />
 );
 
+const CommandShortcut = ({
+  className,
+  ...props
+}: React.ComponentProps<"span">) => (
+  <span
+    className={cn(
+      "ml-auto text-muted-foreground text-xs tracking-widest",
+      className
+    )}
+    data-slot="command-shortcut"
+    {...props}
+  />
+);
+
 export {
+  Command,
   CommandDialog,
   CommandInput,
   CommandList,
   CommandEmpty,
   CommandGroup,
   CommandItem,
+  CommandShortcut,
+  CommandSeparator,
 };

@@ -6,6 +6,7 @@ export { DomainDao } from "./daos/domain-dao.js";
 export { GitConnectionDao } from "./daos/git-connection-dao.js";
 export { ProjectDao } from "./daos/project-dao.js";
 export { UserDao } from "./daos/user-dao.js";
+export * from "./mappers/records.js";
 export * from "./mappers/status-mappers.js";
 export * from "./schema.js";
 export * from "./types/records.js";

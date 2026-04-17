@@ -6,4 +6,6 @@ export const rootDomain = readTrimmedEnv("PLATFORM_ROOT_DOMAIN") ?? "blode.md";
 export const autoWwwRedirect = process.env.VERCEL_AUTO_WWW_REDIRECT === "true";
 export const preferCustomDomain = process.env.PREFER_CUSTOM_DOMAIN === "true";
 export const adminApiToken = readTrimmedEnv("ADMIN_API_TOKEN");
+export const supabaseUrl = readTrimmedEnv("SUPABASE_URL");
+export const supabaseJwtSecret = readTrimmedEnv("SUPABASE_JWT_SECRET");
 export const validConfiguredDomainStatus: DomainStatus = "valid_configuration";

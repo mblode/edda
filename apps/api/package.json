@@ -28,9 +28,9 @@
     "@repo/db": "*",
     "@repo/mdx-compiler": "*",
     "@repo/previewing": "^0.0.0",
-    "@supabase/supabase-js": "^2.100.1",
     "@vercel/blob": "^2.3.1",
     "hono": "^4.12.9",
+    "jose": "^6.2.2",
     "zod": "^4.3.6"
   },
   "devDependencies": {

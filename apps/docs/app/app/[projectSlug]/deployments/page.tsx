@@ -1,29 +1,13 @@
-import type { Deployment } from "@repo/contracts";
+import { mapDeployment } from "@repo/db";
 
 import { Card, CardContent } from "@/components/ui/card";
-import { ApiError, apiFetch } from "@/lib/api-client";
+import { deploymentDao } from "@/lib/db";
 
 import { requireProjectContext } from "../_lib";
 
 interface DeploymentsPageProps {
   params: Promise<{ projectSlug: string }>;
 }
-
-const fetchDeployments = async (
-  projectId: string,
-  accessToken: string
-): Promise<Deployment[]> => {
-  try {
-    return await apiFetch<Deployment[]>(`/projects/${projectId}/deployments`, {
-      accessToken,
-    });
-  } catch (error) {
-    if (error instanceof ApiError) {
-      return [];
-    }
-    throw error;
-  }
-};
 
 const STATUS_STYLES: Record<string, string> = {
   building:
@@ -38,8 +22,9 @@ export default async function ProjectDeploymentsPage({
   params,
 }: DeploymentsPageProps) {
   const { projectSlug } = await params;
-  const { accessToken, project } = await requireProjectContext(projectSlug);
-  const deployments = await fetchDeployments(project.id, accessToken);
+  const { project } = await requireProjectContext(projectSlug);
+  const records = await deploymentDao.listByProject(project.id);
+  const deployments = records.map(mapDeployment);
 
   if (deployments.length === 0) {
     return (

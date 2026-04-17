@@ -307,15 +307,20 @@ export const GithubInstallCallback = ({
               <GithubIcon className="size-4 shrink-0 text-muted-foreground" />
               <span className="truncate font-medium">{ownerLogin || "…"}</span>
             </div>
-            <Input
-              aria-label="Search repositories"
-              className="flex-1"
-              leftControl={<SearchIcon className="size-4" />}
-              onChange={(event) => setSearch(event.target.value)}
-              placeholder="Search…"
-              type="search"
-              value={search}
-            />
+            <div className="relative flex-1">
+              <SearchIcon
+                aria-hidden="true"
+                className="-translate-y-1/2 pointer-events-none absolute top-1/2 left-3 size-4 text-muted-foreground"
+              />
+              <Input
+                aria-label="Search repositories"
+                className="pl-9"
+                onChange={(event) => setSearch(event.target.value)}
+                placeholder="Search…"
+                type="search"
+                value={search}
+              />
+            </div>
           </div>
 
           {formError && <FieldError>{formError}</FieldError>}

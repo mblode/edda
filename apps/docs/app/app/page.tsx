@@ -1,26 +1,12 @@
-import type { Project } from "@repo/contracts";
+import { mapProject } from "@repo/db";
 import Link from "next/link";
 import { Suspense } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ApiError, apiFetch } from "@/lib/api-client";
-import { getDashboardSession } from "@/lib/dashboard-session";
+import { projectDao } from "@/lib/db";
 import { platformRootDomain } from "@/lib/env";
-
-const fetchProjects = async (accessToken: string): Promise<Project[]> => {
-  try {
-    return await apiFetch<Project[]>("/projects", {
-      accessToken,
-      cache: "no-store",
-    });
-  } catch (error) {
-    if (error instanceof ApiError && error.status === 401) {
-      return [];
-    }
-    throw error;
-  }
-};
+import { resolveCurrentUser } from "@/lib/project-authz";
 
 const ProjectsGridSkeleton = () => (
   <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -33,9 +19,17 @@ const ProjectsGridSkeleton = () => (
   </div>
 );
 
+const loadProjects = async () => {
+  const current = await resolveCurrentUser();
+  if (!current) {
+    return [];
+  }
+  const records = await projectDao.listByUser(current.user.id);
+  return records.map(mapProject);
+};
+
 const ProjectsList = async () => {
-  const session = await getDashboardSession();
-  const projects = session ? await fetchProjects(session.accessToken) : [];
+  const projects = await loadProjects();
 
   if (projects.length === 0) {
     return (

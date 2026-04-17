@@ -1,26 +1,13 @@
-import type { Deployment, GitConnection, Project } from "@repo/contracts";
+import type { Project } from "@repo/contracts";
+import { mapDeployment, mapGitConnection } from "@repo/db";
 import { Suspense } from "react";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CopyButton } from "@/components/ui/copy-button";
-import { ApiError, apiFetch } from "@/lib/api-client";
+import { deploymentDao, gitConnectionDao } from "@/lib/db";
 import { platformRootDomain } from "@/lib/env";
 
 import { requireProjectContext } from "./_lib";
-
-const safeFetch = async <T,>(
-  path: string,
-  accessToken: string
-): Promise<T | null> => {
-  try {
-    return await apiFetch<T>(path, { accessToken });
-  } catch (error) {
-    if (error instanceof ApiError) {
-      return null;
-    }
-    throw error;
-  }
-};
 
 interface OverviewPageProps {
   params: Promise<{ projectSlug: string }>;
@@ -37,18 +24,9 @@ const CardSkeleton = ({ className }: { className?: string }) => (
   </Card>
 );
 
-const LatestDeploymentCard = async ({
-  accessToken,
-  projectId,
-}: {
-  accessToken: string;
-  projectId: string;
-}) => {
-  const deployments = await safeFetch<Deployment[]>(
-    `/projects/${projectId}/deployments`,
-    accessToken
-  );
-  const latest = deployments?.[0];
+const LatestDeploymentCard = async ({ projectId }: { projectId: string }) => {
+  const record = await deploymentDao.getLatestByProject(projectId);
+  const latest = record ? mapDeployment(record) : null;
 
   return (
     <Card className="lg:col-span-2">
@@ -81,17 +59,9 @@ const LatestDeploymentCard = async ({
   );
 };
 
-const GitConnectionCard = async ({
-  accessToken,
-  projectId,
-}: {
-  accessToken: string;
-  projectId: string;
-}) => {
-  const gitConnection = await safeFetch<GitConnection | null>(
-    `/projects/${projectId}/git`,
-    accessToken
-  );
+const GitConnectionCard = async ({ projectId }: { projectId: string }) => {
+  const record = await gitConnectionDao.getByProject(projectId);
+  const gitConnection = record ? mapGitConnection(record) : null;
 
   return (
     <Card>
@@ -172,15 +142,12 @@ export default async function ProjectOverviewPage({
   params,
 }: OverviewPageProps) {
   const { projectSlug } = await params;
-  const { accessToken, project } = await requireProjectContext(projectSlug);
+  const { project } = await requireProjectContext(projectSlug);
 
   return (
     <div className="grid gap-6 lg:grid-cols-3">
       <Suspense fallback={<CardSkeleton className="lg:col-span-2" />}>
-        <LatestDeploymentCard
-          accessToken={accessToken}
-          projectId={project.id}
-        />
+        <LatestDeploymentCard projectId={project.id} />
       </Suspense>
 
       <SiteUrlCard project={project} />
@@ -188,7 +155,7 @@ export default async function ProjectOverviewPage({
       <QuickStartCard project={project} />
 
       <Suspense fallback={<CardSkeleton />}>
-        <GitConnectionCard accessToken={accessToken} projectId={project.id} />
+        <GitConnectionCard projectId={project.id} />
       </Suspense>
     </div>
   );

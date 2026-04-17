@@ -40,6 +40,18 @@ export class DeploymentDao {
       .orderBy(desc(deployments.createdAt));
   }
 
+  async getLatestByProject(
+    projectId: string
+  ): Promise<DeploymentRecord | null> {
+    const [record] = await db
+      .select(deploymentSelect)
+      .from(deployments)
+      .where(eq(deployments.projectId, projectId))
+      .orderBy(desc(deployments.createdAt))
+      .limit(1);
+    return record ?? null;
+  }
+
   async getById(id: string): Promise<DeploymentRecord | null> {
     const [record] = await db
       .select(deploymentSelect)

@@ -297,6 +297,7 @@ const DocPage = async ({
   return (
     <>
       <script
+        // oxlint-disable-next-line no-danger -- JSON-LD for SEO
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         type="application/ld+json"
       />

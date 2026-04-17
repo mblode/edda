@@ -12,6 +12,18 @@ const Sheet = ({
   <SheetPrimitive.Root data-slot="sheet" {...props} />
 );
 
+const SheetTrigger = ({
+  ...props
+}: React.ComponentProps<typeof SheetPrimitive.Trigger>) => (
+  <SheetPrimitive.Trigger data-slot="sheet-trigger" {...props} />
+);
+
+const SheetClose = ({
+  ...props
+}: React.ComponentProps<typeof SheetPrimitive.Close>) => (
+  <SheetPrimitive.Close data-slot="sheet-close" {...props} />
+);
+
 const SheetPortal = ({
   ...props
 }: React.ComponentProps<typeof SheetPrimitive.Portal>) => (
@@ -79,6 +91,14 @@ const SheetHeader = ({ className, ...props }: React.ComponentProps<"div">) => (
   />
 );
 
+const SheetFooter = ({ className, ...props }: React.ComponentProps<"div">) => (
+  <div
+    data-slot="sheet-footer"
+    className={cn("mt-auto flex flex-col gap-2 p-4", className)}
+    {...props}
+  />
+);
+
 const SheetTitle = ({
   className,
   ...props
@@ -101,4 +121,13 @@ const SheetDescription = ({
   />
 );
 
-export { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription };
+export {
+  Sheet,
+  SheetTrigger,
+  SheetClose,
+  SheetContent,
+  SheetHeader,
+  SheetFooter,
+  SheetTitle,
+  SheetDescription,
+};

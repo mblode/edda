@@ -224,7 +224,7 @@ export const DomainsManager = ({
                         onClick={() => handleRemove(domain)}
                         size="sm"
                         type="button"
-                        variant="destructiveSecondary"
+                        variant="outline"
                       >
                         Remove
                       </Button>

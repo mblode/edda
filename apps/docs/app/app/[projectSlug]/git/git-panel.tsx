@@ -104,7 +104,7 @@ export const GitConnectionPanel = ({
                 onClick={handleDisconnect}
                 size="sm"
                 type="button"
-                variant="destructiveSecondary"
+                variant="outline"
               >
                 Disconnect
               </Button>

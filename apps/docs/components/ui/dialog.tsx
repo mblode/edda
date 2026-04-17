@@ -4,6 +4,7 @@ import { XIcon } from "blode-icons-react";
 import { Dialog as DialogPrimitive } from "radix-ui";
 import * as React from "react";
 
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 const Dialog = ({
@@ -12,10 +13,22 @@ const Dialog = ({
   <DialogPrimitive.Root data-slot="dialog" {...props} />
 );
 
+const DialogTrigger = ({
+  ...props
+}: React.ComponentProps<typeof DialogPrimitive.Trigger>) => (
+  <DialogPrimitive.Trigger data-slot="dialog-trigger" {...props} />
+);
+
 const DialogPortal = ({
   ...props
 }: React.ComponentProps<typeof DialogPrimitive.Portal>) => (
   <DialogPrimitive.Portal data-slot="dialog-portal" {...props} />
+);
+
+const DialogClose = ({
+  ...props
+}: React.ComponentProps<typeof DialogPrimitive.Close>) => (
+  <DialogPrimitive.Close data-slot="dialog-close" {...props} />
 );
 
 const DialogOverlay = ({
@@ -72,6 +85,31 @@ const DialogHeader = ({ className, ...props }: React.ComponentProps<"div">) => (
   />
 );
 
+const DialogFooter = ({
+  className,
+  showCloseButton = false,
+  children,
+  ...props
+}: React.ComponentProps<"div"> & {
+  showCloseButton?: boolean;
+}) => (
+  <div
+    data-slot="dialog-footer"
+    className={cn(
+      "flex flex-col-reverse gap-2 sm:flex-row sm:justify-end",
+      className
+    )}
+    {...props}
+  >
+    {children}
+    {showCloseButton && (
+      <DialogPrimitive.Close asChild>
+        <Button variant="outline">Close</Button>
+      </DialogPrimitive.Close>
+    )}
+  </div>
+);
+
 const DialogTitle = ({
   className,
   ...props
@@ -94,4 +132,15 @@ const DialogDescription = ({
   />
 );
 
-export { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle };
+export {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogOverlay,
+  DialogPortal,
+  DialogTitle,
+  DialogTrigger,
+};

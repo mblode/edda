@@ -1,6 +1,6 @@
-import type { Domain } from "@repo/contracts";
+import { mapDomain } from "@repo/db";
 
-import { ApiError, apiFetch } from "@/lib/api-client";
+import { domainDao } from "@/lib/db";
 import { platformRootDomain } from "@/lib/env";
 
 import { requireProjectContext } from "../_lib";
@@ -10,26 +10,11 @@ interface DomainsPageProps {
   params: Promise<{ projectSlug: string }>;
 }
 
-const fetchDomains = async (
-  projectId: string,
-  accessToken: string
-): Promise<Domain[]> => {
-  try {
-    return await apiFetch<Domain[]>(`/projects/${projectId}/domains`, {
-      accessToken,
-    });
-  } catch (error) {
-    if (error instanceof ApiError) {
-      return [];
-    }
-    throw error;
-  }
-};
-
 export default async function ProjectDomainsPage({ params }: DomainsPageProps) {
   const { projectSlug } = await params;
   const { accessToken, project } = await requireProjectContext(projectSlug);
-  const domains = await fetchDomains(project.id, accessToken);
+  const records = await domainDao.listByProject(project.id);
+  const domains = records.map(mapDomain);
 
   return (
     <DomainsManager

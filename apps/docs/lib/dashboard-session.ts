@@ -1,36 +1,134 @@
+import { errors as joseErrors, jwtVerify } from "jose";
 import { cookies } from "next/headers";
 import { cache } from "react";
 
-import { createSupabaseServerClient } from "@/lib/supabase";
-
 export interface DashboardSession {
   accessToken: string;
+  authId: string;
   userEmail: string;
   userName: string;
 }
 
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
+const supabaseJwtSecret = process.env.SUPABASE_JWT_SECRET ?? "";
+
+let cachedSecret: Uint8Array | null = null;
+const getSecret = (): Uint8Array | null => {
+  if (!supabaseJwtSecret) {
+    return null;
+  }
+  if (!cachedSecret) {
+    cachedSecret = new TextEncoder().encode(supabaseJwtSecret);
+  }
+  return cachedSecret;
+};
+
+const getIssuer = (): string | undefined =>
+  supabaseUrl ? `${supabaseUrl.replace(/\/$/, "")}/auth/v1` : undefined;
+
+// Supabase's auth-helpers cookie name is derived from the project ref. We
+// match the default pattern the browser client writes: `sb-<ref>-auth-token`.
+const getProjectRef = (): string | null => {
+  if (!supabaseUrl) {
+    return null;
+  }
+  const match = supabaseUrl.match(/https?:\/\/([^.]+)\./);
+  return match?.[1] ?? null;
+};
+
+interface StoredSupabaseSession {
+  access_token?: unknown;
+  user?: {
+    email?: unknown;
+    user_metadata?: { full_name?: unknown; name?: unknown };
+  };
+}
+
+const parseCookieValue = (value: string): StoredSupabaseSession | null => {
+  // Supabase SSR stores either a JSON string or an array; both are URL-encoded.
+  try {
+    const decoded = value.startsWith("base64-")
+      ? Buffer.from(value.slice(7), "base64").toString("utf8")
+      : decodeURIComponent(value);
+    const parsed = JSON.parse(decoded);
+    if (Array.isArray(parsed)) {
+      const [sessionBlob] = parsed;
+      return typeof sessionBlob === "object"
+        ? (sessionBlob as StoredSupabaseSession)
+        : null;
+    }
+    return parsed as StoredSupabaseSession;
+  } catch {
+    return null;
+  }
+};
+
+const readChunkedCookie = async (
+  baseName: string
+): Promise<StoredSupabaseSession | null> => {
+  const store = await cookies();
+  const direct = store.get(baseName)?.value;
+  if (direct) {
+    return parseCookieValue(direct);
+  }
+
+  // Supabase splits large cookies into baseName.0, baseName.1, ...
+  const chunks: string[] = [];
+  for (let i = 0; i < 10; i += 1) {
+    const chunk = store.get(`${baseName}.${i}`)?.value;
+    if (!chunk) {
+      break;
+    }
+    chunks.push(chunk);
+  }
+  if (chunks.length === 0) {
+    return null;
+  }
+  return parseCookieValue(chunks.join(""));
+};
+
+const asString = (value: unknown): string | null =>
+  typeof value === "string" ? value : null;
+
 export const getDashboardSession = cache(
   async (): Promise<DashboardSession | null> => {
-    const cookieStore = await cookies();
-    const supabase = createSupabaseServerClient(cookieStore);
-    const {
-      data: { session },
-    } = await supabase.auth.getSession();
-    if (!session) {
+    const secret = getSecret();
+    const ref = getProjectRef();
+    if (!secret || !ref) {
       return null;
     }
 
-    const userEmail =
-      session.user.email ?? session.user.user_metadata?.email ?? "";
-    const userName =
-      (session.user.user_metadata?.full_name as string | undefined) ??
-      (session.user.user_metadata?.name as string | undefined) ??
-      userEmail;
+    const stored = await readChunkedCookie(`sb-${ref}-auth-token`);
+    const accessToken = asString(stored?.access_token);
+    if (!accessToken) {
+      return null;
+    }
 
-    return {
-      accessToken: session.access_token,
-      userEmail,
-      userName,
-    };
+    let authId: string;
+    try {
+      const { payload } = await jwtVerify(accessToken, secret, {
+        algorithms: ["HS256"],
+        audience: "authenticated",
+        clockTolerance: "5s",
+        issuer: getIssuer(),
+      });
+      const sub = asString(payload.sub);
+      if (!sub) {
+        return null;
+      }
+      authId = sub;
+    } catch (error) {
+      if (!(error instanceof joseErrors.JOSEError)) {
+        throw error;
+      }
+      return null;
+    }
+
+    const userEmail = asString(stored?.user?.email) ?? "";
+    const metadata = stored?.user?.user_metadata;
+    const userName =
+      asString(metadata?.full_name) ?? asString(metadata?.name) ?? userEmail;
+
+    return { accessToken, authId, userEmail, userName };
   }
 );

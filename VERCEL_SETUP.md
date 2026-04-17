@@ -34,6 +34,23 @@ If you need to relink either project in Vercel:
 3. Set **Root Directory** to `apps/api`.
 4. Keep the project build settings in sync with [apps/api/vercel.json](/Users/mblode/Code/mblode/blodemd/apps/api/vercel.json).
 
+## Required Environment Variables
+
+Both Vercel projects require the same Supabase + Postgres credentials:
+
+- `DATABASE_URL` — Postgres connection string. Required on both `blodemd-docs`
+  and `blodemd-api` (the docs server components query Postgres directly for
+  dashboard reads as of April 2026).
+- `SUPABASE_URL` — Supabase project URL.
+- `SUPABASE_JWT_SECRET` — HS256 secret from Supabase dashboard → Settings →
+  API → JWT Secret. Used by `apps/api` to verify bearer tokens and by
+  `apps/docs` to verify the SSR session cookie locally (no round trip to
+  Supabase on every request).
+- `SUPABASE_SERVICE_ROLE_KEY` — only needed if you re-introduce server-side
+  Supabase admin calls. Not used by the dashboard hot path.
+- `NEXT_PUBLIC_SUPABASE_URL` / `NEXT_PUBLIC_SUPABASE_ANON_KEY` — browser client
+  for sign-in flows on `blodemd-docs`.
+
 ## Verification Checklist
 
 - `vercel project ls` shows `blodemd-docs` and `blodemd-api`.

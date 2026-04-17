@@ -319,11 +319,6 @@ export const Search = ({ basePath }: { basePath: string }) => {
     [closeSearch]
   );
 
-  const handleOpenAutoFocus = useCallback((event: Event) => {
-    event.preventDefault();
-    inputRef.current?.focus();
-  }, []);
-
   const warmSearch = useCallback(async () => {
     try {
       await loadSearchItems();
@@ -447,7 +442,6 @@ export const Search = ({ basePath }: { basePath: string }) => {
         <DialogContent
           className="max-w-2xl gap-0 overflow-hidden p-0"
           onKeyDown={handleDialogKeyDown}
-          onOpenAutoFocus={handleOpenAutoFocus}
           showCloseButton={false}
         >
           <DialogTitle className="sr-only">Search documentation</DialogTitle>

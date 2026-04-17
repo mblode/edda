@@ -2,6 +2,7 @@
 
 // oxlint-disable eslint-plugin-react-perf/jsx-no-new-function-as-prop -- deferred useCallback refactor
 import type { Project } from "@repo/contracts";
+import { LinkIcon } from "blode-icons-react";
 import { useRouter } from "next/navigation";
 import { useCallback, useState } from "react";
 
@@ -9,18 +10,41 @@ import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
-  CardDescription,
+  CardFooter,
   CardHeader,
-  CardTitle,
 } from "@/components/ui/card";
 import {
   Field,
+  FieldDescription,
   FieldError,
   FieldGroup,
   FieldLabel,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { ApiError, apiFetch } from "@/lib/api-client";
+
+const DETAILS_ANCHOR = "project-details";
+
+const SectionTitle = ({
+  anchor,
+  children,
+}: {
+  anchor: string;
+  children: React.ReactNode;
+}) => (
+  <h4 className="inline-flex items-center gap-3 font-semibold text-xl leading-8 tracking-[-0.02em]">
+    <a
+      className="group inline-flex items-center gap-2 text-inherit no-underline"
+      href={`#${anchor}`}
+    >
+      <span>{children}</span>
+      <LinkIcon
+        aria-hidden="true"
+        className="size-4 text-muted-foreground opacity-0 transition-opacity group-focus-visible:opacity-100 group-hover:opacity-100"
+      />
+    </a>
+  </h4>
+);
 
 interface ProjectSettingsFormProps {
   accessToken: string;
@@ -65,22 +89,19 @@ export const ProjectSettingsForm = ({
   }, [accessToken, deploymentName, description, name, project.id, router]);
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Project details</CardTitle>
-        <CardDescription>
+    <Card id={DETAILS_ANCHOR}>
+      <CardHeader className="gap-2 px-6 pt-2">
+        <SectionTitle anchor={DETAILS_ANCHOR}>Project Details</SectionTitle>
+        <p className="text-muted-foreground text-sm">
           Slug ({project.slug}) is permanent and used in your subdomain.
-        </CardDescription>
+        </p>
       </CardHeader>
-      <CardContent>
-        <FieldGroup>
-          {detailsError && <FieldError>{detailsError}</FieldError>}
-          {detailsSaved && (
-            <p className="text-sm text-muted-foreground">Saved.</p>
-          )}
+      <CardContent className="px-6">
+        <FieldGroup className="gap-4">
           <Field>
             <FieldLabel htmlFor="name">Project name</FieldLabel>
             <Input
+              className="w-[300px] max-w-full"
               id="name"
               onChange={(event) => setName(event.target.value)}
               value={name}
@@ -89,34 +110,42 @@ export const ProjectSettingsForm = ({
           <Field>
             <FieldLabel htmlFor="deployment-name">Deployment name</FieldLabel>
             <Input
+              className="w-[300px] max-w-full"
               id="deployment-name"
               onChange={(event) => setDeploymentName(event.target.value)}
               value={deploymentName}
             />
-            <p className="mt-1 text-xs text-muted-foreground">
+            <FieldDescription>
               Shown in the project topbar of deployed docs.
-            </p>
+            </FieldDescription>
           </Field>
           <Field>
             <FieldLabel htmlFor="description">Description</FieldLabel>
             <Input
+              className="w-[300px] max-w-full"
               id="description"
               onChange={(event) => setDescription(event.target.value)}
               placeholder="Optional"
               value={description}
             />
           </Field>
-          <div>
-            <Button
-              disabled={savingDetails || !name.trim() || !deploymentName.trim()}
-              onClick={handleSaveDetails}
-              type="button"
-            >
-              {savingDetails ? "Saving..." : "Save changes"}
-            </Button>
-          </div>
         </FieldGroup>
       </CardContent>
+      <CardFooter className="justify-between px-6">
+        <div className="min-h-5 text-sm">
+          {detailsError && <FieldError>{detailsError}</FieldError>}
+          {!detailsError && detailsSaved && (
+            <span className="text-muted-foreground">Saved.</span>
+          )}
+        </div>
+        <Button
+          disabled={savingDetails || !name.trim() || !deploymentName.trim()}
+          onClick={handleSaveDetails}
+          type="button"
+        >
+          {savingDetails ? "Saving..." : "Save"}
+        </Button>
+      </CardFooter>
     </Card>
   );
 };
