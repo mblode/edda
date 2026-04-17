@@ -49,8 +49,9 @@ export const revalidateProject = async (projectSlug: string) => {
   });
 
   // Retry once on transient failures so a single flake doesn't leave ISR HTML
-  // stale for up to an hour.
-  let lastError: Error = new Error("Revalidation failed: unknown");
+  // stale for up to an hour. 4xx responses (bad secret, dead alias) won't get
+  // better by retrying — fail fast so operators see the real error sooner.
+  let lastError: Error | null = null;
   for (let attempt = 0; attempt < 2; attempt += 1) {
     try {
       const response = await fetch(url, {
@@ -62,10 +63,13 @@ export const revalidateProject = async (projectSlug: string) => {
         return;
       }
       lastError = new Error(`Revalidation failed: ${response.status}`);
+      if (response.status >= 400 && response.status < 500) {
+        break;
+      }
     } catch (error) {
       lastError = error instanceof Error ? error : new Error(String(error));
     }
   }
 
-  throw lastError;
+  throw lastError ?? new Error("Revalidation failed: unknown");
 };

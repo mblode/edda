@@ -102,7 +102,7 @@ const runDeployment = async (input: RunInput): Promise<string | null> => {
       await syncProjectTenantEdgeConfig(project.id);
     } catch (error) {
       logError(
-        "Webhook: tenant Edge Config sync failed — docs may serve stale manifest URL.",
+        "Tenant Edge Config sync failed after webhook deployment — docs may serve stale manifest URL until the next successful publish.",
         error
       );
     }
@@ -110,7 +110,7 @@ const runDeployment = async (input: RunInput): Promise<string | null> => {
       await revalidateProject(project.slug);
     } catch (error) {
       logError(
-        "Webhook: docs revalidation failed — ISR HTML will be stale until 1h TTL.",
+        "Docs revalidation failed after webhook deployment — ISR HTML will serve stale content until the 1h TTL expires.",
         error
       );
     }
