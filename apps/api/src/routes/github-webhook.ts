@@ -101,12 +101,18 @@ const runDeployment = async (input: RunInput): Promise<string | null> => {
     try {
       await syncProjectTenantEdgeConfig(project.id);
     } catch (error) {
-      logWarn("Webhook: edge config sync failed", error);
+      logError(
+        "Webhook: tenant Edge Config sync failed — docs may serve stale manifest URL.",
+        error
+      );
     }
     try {
       await revalidateProject(project.slug);
     } catch (error) {
-      logWarn("Webhook: revalidate failed", error);
+      logError(
+        "Webhook: docs revalidation failed — ISR HTML will be stale until 1h TTL.",
+        error
+      );
     }
     try {
       await prewarmProject(project.id);

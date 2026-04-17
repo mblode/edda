@@ -96,8 +96,9 @@ vi.mock("./lib/prewarm", () => ({
   prewarmProject: vi.fn(() => Promise.resolve()),
 }));
 
+const revalidateProjectMock = vi.fn(() => Promise.resolve());
 vi.mock("./lib/revalidate", () => ({
-  revalidateProject: vi.fn(() => Promise.resolve()),
+  revalidateProject: revalidateProjectMock,
 }));
 
 process.env.DATABASE_URL =
@@ -128,6 +129,8 @@ beforeEach(() => {
   getByProjectId.mockClear();
   getBySlugUnique.mockClear();
   update.mockClear();
+  revalidateProjectMock.mockClear();
+  revalidateProjectMock.mockImplementation(() => Promise.resolve());
 });
 
 describe("deployments API", () => {
@@ -161,6 +164,39 @@ describe("deployments API", () => {
     await expect(response.json()).resolves.toEqual({
       error: "Unable to finalize deployment.",
     });
+  });
+
+  it("still returns 200 but logs an error when docs revalidation fails", async () => {
+    // Regression guard for the blodemd-test incident (Apr 2026): a stale
+    // DOCS_REVALIDATE_URL caused revalidateProject to throw, which was
+    // swallowed as logWarn — deploys looked green while docs served empty
+    // state for up to 1h. The failure must now log at error level so it
+    // surfaces in alerting, but the finalize HTTP response still succeeds
+    // so the CLI push UX isn't broken.
+    const consoleError = vi
+      .spyOn(console, "error")
+      .mockImplementation(() => {});
+    revalidateProjectMock.mockImplementation(() =>
+      Promise.reject(new Error("Revalidation failed: 404"))
+    );
+
+    const response = await request(
+      "/projects/slug/example/deployments/649a2cb8-52ea-492d-8d76-d6787f1e49b6/finalize",
+      {
+        body: JSON.stringify({}),
+        headers: { "content-type": "application/json" },
+        method: "POST",
+      }
+    );
+
+    expect(response.status).toBe(200);
+    expect(revalidateProjectMock).toHaveBeenCalledWith("example");
+    expect(consoleError).toHaveBeenCalledWith(
+      expect.stringContaining("Docs revalidation failed"),
+      expect.any(Error)
+    );
+
+    consoleError.mockRestore();
   });
 
   it("keeps publish validation failures as 400", async () => {

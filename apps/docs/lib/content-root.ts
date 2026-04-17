@@ -19,9 +19,21 @@ const getTenantDocsPathCandidates = (slug: string): string[] =>
     path.join(process.cwd(), "apps/docs/content", slug),
   ].filter(Boolean) as string[];
 
+// On Vercel `process.cwd()` is already `/var/task/apps/docs`, so
+// `path.join(cwd, "apps/docs/content", slug)` doubles up the segment and
+// produces the infamous `/var/task/apps/docs/apps/docs/content/...` string
+// rendered in the "no docs deployment" empty-state. Strip the prefix when
+// it's already present so the displayed path is sane.
+const getDefaultLocalPath = (slug: string): string => {
+  const cwd = process.cwd();
+  const relative = cwd.endsWith(`${path.sep}apps${path.sep}docs`)
+    ? path.join("content", slug)
+    : path.join("apps", "docs", "content", slug);
+  return path.join(cwd, relative);
+};
+
 export const getTenantDocsPath = (slug: string): string => {
   const candidates = getTenantDocsPathCandidates(slug);
-  const defaultLocalPath = path.join(process.cwd(), "apps/docs/content", slug);
 
   for (const candidate of candidates) {
     if (fs.existsSync(path.join(candidate, DOCS_CONFIG_FILE))) {
@@ -29,5 +41,5 @@ export const getTenantDocsPath = (slug: string): string => {
     }
   }
 
-  return defaultLocalPath;
+  return getDefaultLocalPath(slug);
 };

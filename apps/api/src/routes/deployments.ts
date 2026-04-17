@@ -268,8 +268,8 @@ deployments.post(
         try {
           await syncProjectTenantEdgeConfig(project.id);
         } catch (error) {
-          logWarn(
-            "Failed to sync tenant Edge Config after deployment finalize",
+          logError(
+            "Tenant Edge Config sync failed after deployment finalize — docs may serve stale manifest URL until the next successful publish.",
             error
           );
         }
@@ -277,7 +277,10 @@ deployments.post(
         try {
           await revalidateProject(project.slug);
         } catch (error) {
-          logWarn("Failed to revalidate docs project", error);
+          logError(
+            "Docs revalidation failed after deployment finalize — ISR HTML will serve stale content until the 1h TTL expires.",
+            error
+          );
         }
 
         try {

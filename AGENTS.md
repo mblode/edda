@@ -53,3 +53,9 @@ Copy `.env.example` to `.env.local` before running the API. Required variables i
 - Formatting and linting via Ultracite (Oxlint + Oxfmt) — run `npm run fix` before committing.
 - Conventional commits preferred: `feat(scope): ...`, `fix(scope): ...` where scope matches the app/package name.
 - No PR template — include a short summary, testing notes, and screenshots for UI changes.
+
+## Available Context
+
+Additional context is available in the files below. Consult the relevant file when working in a related area — see each description for scope.
+
+- `.claude/knowledge/incident-troubleshooting.md` — Incident debugging and recovery. Known failure modes, debugging approaches, runbooks, recovery steps.
