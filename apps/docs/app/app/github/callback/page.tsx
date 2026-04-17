@@ -1,12 +1,9 @@
-import { cookies } from "next/headers";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
-import { createSupabaseServerClient } from "@/lib/supabase";
+import { getDashboardSession } from "@/lib/dashboard-session";
 
 import { GithubInstallCallback } from "./callback-client";
-
-export const dynamic = "force-dynamic";
 
 interface CallbackPageProps {
   searchParams: Promise<{
@@ -19,11 +16,7 @@ interface CallbackPageProps {
 export default async function GithubCallbackPage({
   searchParams,
 }: CallbackPageProps) {
-  const cookieStore = await cookies();
-  const supabase = createSupabaseServerClient(cookieStore);
-  const {
-    data: { session },
-  } = await supabase.auth.getSession();
+  const session = await getDashboardSession();
   if (!session) {
     redirect("/oauth/consent?redirect_to=/app");
   }
@@ -52,7 +45,7 @@ export default async function GithubCallbackPage({
 
   return (
     <GithubInstallCallback
-      accessToken={session.access_token}
+      accessToken={session.accessToken}
       installationId={installationId}
       state={state}
     />

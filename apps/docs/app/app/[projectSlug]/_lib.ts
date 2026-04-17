@@ -1,43 +1,39 @@
 import type { Project } from "@repo/contracts";
-import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import { cache } from "react";
 
 import { ApiError, apiFetch } from "@/lib/api-client";
-import { createSupabaseServerClient } from "@/lib/supabase";
+import { getDashboardSession } from "@/lib/dashboard-session";
 
 export interface ProjectContext {
   accessToken: string;
   project: Project;
 }
 
-export const requireProjectContext = async (
-  projectSlug: string
-): Promise<ProjectContext> => {
-  const cookieStore = await cookies();
-  const supabase = createSupabaseServerClient(cookieStore);
-  const {
-    data: { session },
-  } = await supabase.auth.getSession();
-  if (!session) {
-    redirect(`/oauth/consent?redirect_to=/app/${projectSlug}`);
-  }
-
-  let projects: Project[] = [];
-  try {
-    projects = await apiFetch<Project[]>("/projects", {
-      accessToken: session.access_token,
-    });
-  } catch (error) {
-    if (error instanceof ApiError && error.status === 401) {
-      redirect("/oauth/consent?redirect_to=/app");
+export const requireProjectContext = cache(
+  async (projectSlug: string): Promise<ProjectContext> => {
+    const session = await getDashboardSession();
+    if (!session) {
+      redirect(`/oauth/consent?redirect_to=/app/${projectSlug}`);
     }
-    throw error;
-  }
 
-  const project = projects.find((candidate) => candidate.slug === projectSlug);
-  if (!project) {
-    redirect("/app");
-  }
+    let project: Project | null = null;
+    try {
+      project = await apiFetch<Project>(`/projects/by-slug/${projectSlug}`, {
+        accessToken: session.accessToken,
+      });
+    } catch (error) {
+      if (error instanceof ApiError) {
+        if (error.status === 401) {
+          redirect(`/oauth/consent?redirect_to=/app/${projectSlug}`);
+        }
+        if (error.status === 404) {
+          redirect("/app");
+        }
+      }
+      throw error;
+    }
 
-  return { accessToken: session.access_token, project };
-};
+    return { accessToken: session.accessToken, project };
+  }
+);

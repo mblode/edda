@@ -5,8 +5,6 @@ import { ApiError, apiFetch } from "@/lib/api-client";
 
 import { requireProjectContext } from "../_lib";
 
-export const dynamic = "force-dynamic";
-
 interface DeploymentsPageProps {
   params: Promise<{ projectSlug: string }>;
 }

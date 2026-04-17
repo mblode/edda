@@ -6,8 +6,6 @@ import { platformRootDomain } from "@/lib/env";
 import { requireProjectContext } from "../_lib";
 import { DomainsManager } from "./domains-manager";
 
-export const dynamic = "force-dynamic";
-
 interface DomainsPageProps {
   params: Promise<{ projectSlug: string }>;
 }

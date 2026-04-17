@@ -1,5 +1,6 @@
 {
   "buildCommand": "npx turbo run build --filter=docs...",
   "framework": "nextjs",
-  "outputDirectory": "apps/docs/.next"
+  "outputDirectory": "apps/docs/.next",
+  "regions": ["iad1"]
 }

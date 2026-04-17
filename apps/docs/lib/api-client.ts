@@ -47,7 +47,6 @@ export const apiFetch = async <T = unknown>(
   const response = await fetch(buildUrl(path), {
     ...rest,
     body: serializedBody,
-    cache: rest.cache ?? "no-store",
     headers: finalHeaders,
   });
 

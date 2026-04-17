@@ -1,35 +1,50 @@
-import { cookies } from "next/headers";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import type { ReactNode } from "react";
 
 import { ThemeToggle } from "@/components/ui/theme-toggle";
-import { createSupabaseServerClient } from "@/lib/supabase";
+import { getDashboardSession } from "@/lib/dashboard-session";
+import { docsApiBase } from "@/lib/env";
 
 import { SignOutButton } from "./_components/sign-out-button";
 
-export const dynamic = "force-dynamic";
+const getApiOrigin = (): string | null => {
+  try {
+    return new URL(docsApiBase).origin;
+  } catch {
+    return null;
+  }
+};
+
+const getSupabaseOrigin = (): string | null => {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  if (!url) {
+    return null;
+  }
+  try {
+    return new URL(url).origin;
+  } catch {
+    return null;
+  }
+};
 
 export default async function AppLayout({ children }: { children: ReactNode }) {
-  const cookieStore = await cookies();
-  const supabase = createSupabaseServerClient(cookieStore);
-  const {
-    data: { session },
-  } = await supabase.auth.getSession();
-
+  const session = await getDashboardSession();
   if (!session) {
     redirect("/oauth/consent?redirect_to=/app");
   }
 
-  const userEmail =
-    session.user.email ?? session.user.user_metadata?.email ?? "";
-  const userName =
-    (session.user.user_metadata?.full_name as string | undefined) ??
-    (session.user.user_metadata?.name as string | undefined) ??
-    userEmail;
+  const apiOrigin = getApiOrigin();
+  const supabaseOrigin = getSupabaseOrigin();
 
   return (
     <div className="flex min-h-screen flex-col bg-background text-foreground">
+      {apiOrigin && (
+        <link crossOrigin="anonymous" href={apiOrigin} rel="preconnect" />
+      )}
+      {supabaseOrigin && (
+        <link crossOrigin="anonymous" href={supabaseOrigin} rel="preconnect" />
+      )}
       <header className="border-b border-border bg-background/80 backdrop-blur sticky top-0 z-10">
         <div className="container flex items-center justify-between gap-4 px-4 py-3">
           <div className="flex items-center gap-6">
@@ -50,7 +65,7 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
           </div>
           <div className="flex items-center gap-2">
             <span className="hidden text-sm text-muted-foreground sm:inline">
-              {userName}
+              {session.userName}
             </span>
             <SignOutButton />
             <ThemeToggle />

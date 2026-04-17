@@ -132,6 +132,7 @@ export interface InstallationRepoSummary {
   fullName: string;
   defaultBranch: string;
   private: boolean;
+  pushedAt: string | null;
 }
 
 export const listInstallationRepos = async (
@@ -147,6 +148,7 @@ export const listInstallationRepos = async (
     defaultBranch: repo.default_branch,
     fullName: repo.full_name,
     private: repo.private,
+    pushedAt: repo.pushed_at ?? null,
   }));
 };
 

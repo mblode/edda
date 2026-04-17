@@ -3,6 +3,7 @@
 // oxlint-disable eslint-plugin-react-perf/jsx-no-new-function-as-prop -- deferred useCallback refactor
 // oxlint-disable eslint/no-alert -- inline confirm acceptable for destructive ops in v1
 import type { Domain, DomainVerification, Project } from "@repo/contracts";
+import { useRouter } from "next/navigation";
 import { useCallback, useState } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -38,6 +39,7 @@ export const DomainsManager = ({
   project,
   rootDomain,
 }: DomainsManagerProps) => {
+  const router = useRouter();
   const [domains, setDomains] = useState<Domain[]>(initialDomains);
   const [hostname, setHostname] = useState("");
   const [pathPrefix, setPathPrefix] = useState("/docs");
@@ -72,6 +74,7 @@ export const DomainsManager = ({
         }));
       }
       setHostname("");
+      router.refresh();
     } catch (error) {
       const message =
         error instanceof ApiError ? error.message : "Unable to add domain.";
@@ -79,7 +82,7 @@ export const DomainsManager = ({
     } finally {
       setIsAdding(false);
     }
-  }, [accessToken, hostname, pathPrefix, project.id]);
+  }, [accessToken, hostname, pathPrefix, project.id, router]);
 
   const handleVerify = useCallback(
     async (domain: Domain) => {
@@ -122,6 +125,7 @@ export const DomainsManager = ({
         setDomains((prev) =>
           prev.filter((existing) => existing.id !== domain.id)
         );
+        router.refresh();
       } catch (error) {
         const message =
           error instanceof ApiError
@@ -130,7 +134,7 @@ export const DomainsManager = ({
         setError(message);
       }
     },
-    [accessToken, project.id]
+    [accessToken, project.id, router]
   );
 
   return (

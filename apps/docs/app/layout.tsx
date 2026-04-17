@@ -1,10 +1,9 @@
-import { GoogleAnalytics } from "@next/third-parties/google";
-import { SpeedInsights } from "@vercel/speed-insights/next";
 import { GeistMono } from "geist/font/mono";
 import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
 
 import { Providers } from "@/components/providers";
+import { ThirdParties } from "@/components/third-parties";
 
 import "./globals.css";
 
@@ -45,8 +44,7 @@ export default function RootLayout({
       </head>
       <body className="relative flex w-full flex-col justify-center overflow-x-hidden scroll-smooth bg-background font-sans antialiased [--header-height:calc(var(--spacing)*16)]">
         <Providers>{children}</Providers>
-        <SpeedInsights />
-        <GoogleAnalytics gaId="G-WE1RCNSC4E" />
+        <ThirdParties />
       </body>
     </html>
   );

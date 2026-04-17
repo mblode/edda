@@ -5,8 +5,6 @@ import { platformRootDomain } from "@/lib/env";
 
 import { requireProjectContext } from "./_lib";
 
-export const dynamic = "force-dynamic";
-
 interface ProjectLayoutProps {
   children: ReactNode;
   params: Promise<{ projectSlug: string }>;

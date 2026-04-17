@@ -5,8 +5,6 @@ import { ApiError, apiFetch } from "@/lib/api-client";
 import { requireProjectContext } from "../_lib";
 import { GitConnectionPanel } from "./git-panel";
 
-export const dynamic = "force-dynamic";
-
 interface GitPageProps {
   params: Promise<{ projectSlug: string }>;
 }

@@ -1,8 +1,6 @@
 import { requireProjectContext } from "../_lib";
 import { ProjectSettingsForm } from "./settings-form";
 
-export const dynamic = "force-dynamic";
-
 interface SettingsPageProps {
   params: Promise<{ projectSlug: string }>;
 }

@@ -16,6 +16,12 @@ import { validateJson, validateParams } from "../lib/validators";
 import { mapProject } from "../mappers/records";
 
 const projectIdParamsSchema = z.object({ projectId: z.string().uuid() });
+const projectSlugParamsSchema = z.object({
+  slug: z
+    .string()
+    .min(1)
+    .regex(/^[a-z0-9-]+$/),
+});
 
 const projectCreateSchema = z.object({
   description: z.string().optional(),
@@ -76,6 +82,24 @@ projects.post("/", validateJson(projectCreateSchema), async (c) => {
 
   return c.json(mapProject(project), 201);
 });
+
+// Get a project by slug (for the authenticated owner)
+projects.get(
+  "/by-slug/:slug",
+  validateParams(projectSlugParamsSchema),
+  async (c) => {
+    const user = await getAuthenticatedUser(c);
+    if (!user) {
+      return unauthorized(c, "Authentication required.");
+    }
+    const { slug } = c.req.valid("param");
+    const record = await projectDao.getBySlugUnique(slug);
+    if (!record || record.userId !== user.id) {
+      return notFound(c);
+    }
+    return c.json(mapProject(record), 200);
+  }
+);
 
 // Get a project by ID
 projects.get(

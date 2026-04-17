@@ -2,6 +2,7 @@
 
 // oxlint-disable eslint-plugin-react-perf/jsx-no-new-function-as-prop -- deferred useCallback refactor
 import type { Project } from "@repo/contracts";
+import { useRouter } from "next/navigation";
 import { useCallback, useState } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -30,6 +31,7 @@ export const ProjectSettingsForm = ({
   accessToken,
   project,
 }: ProjectSettingsFormProps) => {
+  const router = useRouter();
   const [name, setName] = useState(project.name);
   const [deploymentName, setDeploymentName] = useState(project.deploymentName);
   const [description, setDescription] = useState(project.description ?? "");
@@ -52,6 +54,7 @@ export const ProjectSettingsForm = ({
         method: "PATCH",
       });
       setDetailsSaved(true);
+      router.refresh();
     } catch (error) {
       const message =
         error instanceof ApiError ? error.message : "Failed to save changes.";
@@ -59,7 +62,7 @@ export const ProjectSettingsForm = ({
     } finally {
       setSavingDetails(false);
     }
-  }, [accessToken, deploymentName, description, name, project.id]);
+  }, [accessToken, deploymentName, description, name, project.id, router]);
 
   return (
     <Card>
