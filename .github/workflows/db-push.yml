@@ -13,22 +13,6 @@ jobs:
           node-version: 20
           cache: npm
       - run: npm ci
-      - name: Diagnose DATABASE_URL
-        env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
-        run: |
-          node -e "
-            const u = process.env.DATABASE_URL ?? '';
-            console.log('length:', u.length);
-            console.log('startsWith postgresql://', u.startsWith('postgresql://'));
-            console.log('startsWith postgres://', u.startsWith('postgres://'));
-            try {
-              const p = new URL(u);
-              console.log('parsed host:', p.hostname, 'port:', p.port, 'db:', p.pathname);
-            } catch (e) {
-              console.log('parse failed:', e.message);
-            }
-          "
       - run: npm --workspace @repo/db run db:push:ci
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
