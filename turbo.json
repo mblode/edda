@@ -5,7 +5,42 @@
     "build": {
       "dependsOn": ["^build"],
       "inputs": ["$TURBO_DEFAULT$", ".env*"],
-      "outputs": [".next/**", "!.next/cache/**", "dist/**"]
+      "outputs": [".next/**", "!.next/cache/**", "dist/**"],
+      "env": [
+        "DATABASE_URL",
+        "SUPABASE_URL",
+        "SUPABASE_ANON_KEY",
+        "SUPABASE_SERVICE_ROLE_KEY",
+        "SUPABASE_JWT_SECRET",
+        "NEXT_PUBLIC_SUPABASE_URL",
+        "NEXT_PUBLIC_SUPABASE_ANON_KEY",
+        "NEXT_PUBLIC_API_URL",
+        "PLATFORM_ROOT_DOMAIN",
+        "PLATFORM_ASSET_PREFIX",
+        "PREFER_CUSTOM_DOMAIN",
+        "REDIRECT_PRIMARY_DOMAIN",
+        "REVALIDATE_SECRET",
+        "EDGE_CONFIG",
+        "VERCEL_TOKEN",
+        "VERCEL_PROJECT_ID",
+        "VERCEL_TEAM_ID",
+        "VERCEL_TEAM_SLUG",
+        "VERCEL_EDGE_CONFIG_ID",
+        "VERCEL_AUTO_WWW_REDIRECT",
+        "ADMIN_API_TOKEN",
+        "BLOB_READ_WRITE_TOKEN",
+        "DOCS_APP_URL",
+        "CORS_ALLOWED_ORIGINS",
+        "GITHUB_APP_SLUG",
+        "GITHUB_APP_ID",
+        "GITHUB_APP_CLIENT_ID",
+        "GITHUB_APP_CLIENT_SECRET",
+        "GITHUB_APP_PRIVATE_KEY",
+        "GITHUB_APP_WEBHOOK_SECRET",
+        "GITHUB_APP_INSTALL_STATE_SECRET",
+        "SUPABASE_AUTH_GITHUB_CLIENT_ID",
+        "SUPABASE_AUTH_GITHUB_SECRET"
+      ]
     },
     "lint": {
       "dependsOn": ["^lint"]
