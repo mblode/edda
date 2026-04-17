@@ -10,8 +10,11 @@ const readTrimmedEnv = (name: string) => {
   return trimmed;
 };
 
+// Must reference process.env.NEXT_PUBLIC_API_URL as a literal so Next.js
+// inlines it into the client bundle. Dynamic access via readTrimmedEnv is
+// not replaced at build time and would always be undefined on the client.
 export const docsApiBase =
-  readTrimmedEnv("NEXT_PUBLIC_API_URL") ?? "http://localhost:4000";
+  process.env.NEXT_PUBLIC_API_URL?.trim() || "http://localhost:4000";
 
 export const platformAssetPrefix =
   readTrimmedEnv("PLATFORM_ASSET_PREFIX") ?? "";
