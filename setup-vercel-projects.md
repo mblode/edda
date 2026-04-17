@@ -32,7 +32,7 @@ Use this when recreating the live Vercel setup from scratch.
 
 ### `blodemd-docs`
 
-- `DOCS_API_URL`
+- `NEXT_PUBLIC_API_URL`
 - `DATABASE_URL`
 - `PLATFORM_ROOT_DOMAIN`
 - Supabase variables required by the docs app
