@@ -30,8 +30,6 @@ import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { siteConfig } from "@/lib/config";
 import { createSupabaseServerClient } from "@/lib/supabase";
 
-const DEMO_MAILTO = "mailto:hello@blode.md?subject=blode.md%20demo";
-
 const landingTheme = {
   "--primary": "#EFEE77",
   "--primary-foreground": "#000000",
@@ -53,7 +51,8 @@ const features = [
   },
   {
     Icon: CodeIcon,
-    description: "30+ MDX components: callouts, tabs, code groups, API refs.",
+    description:
+      "Beautiful docs out of the box with 30+ MDX components. No design work needed.",
     title: "Rich components",
   },
   {
@@ -174,7 +173,7 @@ export default async function HomePage() {
             </a>
           </Button>
           <Button asChild size="sm" variant="ghost">
-            <a href={DEMO_MAILTO}>Request a demo</a>
+            <Link href="/docs">Docs</Link>
           </Button>
           <Separator className="mx-1 h-5" orientation="vertical" />
           <Button asChild size="sm" variant="ghost">
@@ -194,11 +193,12 @@ export default async function HomePage() {
               Built for humans and AI
             </Badge>
             <h1 className="h-display max-w-4xl text-balance text-5xl font-bold md:text-7xl lg:text-8xl">
-              The documentation platform built on git
+              Docs should ship like code
             </h1>
             <p className="measure mt-6 text-balance text-lg text-muted-foreground md:text-xl">
-              Write in Markdown. Review in pull requests. Ship on every push.
-              One project, one domain, one price.
+              blode.md keeps your docs in git. Versioned, reviewed in pull
+              requests, and deployed on every push. One project, one domain,
+              one price.
             </p>
             <div className="mt-10 flex flex-wrap items-center gap-3">
               <Button asChild size="lg">
@@ -208,7 +208,7 @@ export default async function HomePage() {
                 </Link>
               </Button>
               <Button asChild size="lg" variant="outline">
-                <a href={DEMO_MAILTO}>Request a demo</a>
+                <Link href="/docs">Read the docs</Link>
               </Button>
             </div>
           </div>
@@ -328,8 +328,8 @@ export default async function HomePage() {
                 Everything a modern docs site needs
               </h2>
               <p className="measure mt-4 text-muted-foreground">
-                Components, infrastructure, and workflow are already handled.
-                You focus on the writing.
+                We handle the components, infrastructure, and workflow. You
+                focus on the writing.
               </p>
             </div>
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
@@ -435,10 +435,10 @@ export default async function HomePage() {
               Get started
             </Badge>
             <h2 className="h-display max-w-3xl text-balance text-3xl font-bold md:text-4xl">
-              Make your docs a product, not a chore
+              Ship docs as fast as you ship code
             </h2>
             <p className="measure mt-4 text-muted-foreground">
-              Sign in with GitHub and pick a template. Your first site is live
+              Sign in with GitHub, pick a template, and ship your first site
               in under a minute.
             </p>
             <div className="mt-10 flex flex-wrap items-center gap-3">
@@ -449,7 +449,7 @@ export default async function HomePage() {
                 </Link>
               </Button>
               <Button asChild size="lg" variant="outline">
-                <a href={DEMO_MAILTO}>Request a demo</a>
+                <Link href="/docs">Read the docs</Link>
               </Button>
             </div>
           </div>
