@@ -8,6 +8,8 @@ import {
   SparklesIcon,
   WorldIcon,
 } from "blode-icons-react";
+import LockIcon from "blode-icons-react/icons/lock";
+import RocketIcon from "blode-icons-react/icons/rocket";
 import { cookies } from "next/headers";
 import Link from "next/link";
 import type { CSSProperties } from "react";
@@ -28,6 +30,8 @@ import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { siteConfig } from "@/lib/config";
 import { createSupabaseServerClient } from "@/lib/supabase";
 
+const DEMO_MAILTO = "mailto:hello@blode.md?subject=blode.md%20demo";
+
 const landingTheme = {
   "--primary": "#EFEE77",
   "--primary-foreground": "#000000",
@@ -39,36 +43,54 @@ const landingTheme = {
 const features = [
   {
     Icon: GithubIcon,
-    description: "Install once. Every push to your branch deploys in seconds.",
-    title: "GitHub auto-deploy",
+    description: "Every push to main ships a new version. No CI to maintain.",
+    title: "Git-native deploys",
   },
   {
     Icon: WorldIcon,
-    description:
-      "Point a domain, get SSL. Or proxy docs at yourdomain.com/docs.",
+    description: "Bring your domain. SSL handled. Proxy at yourdomain.com/docs.",
     title: "Custom domains",
   },
   {
     Icon: CodeIcon,
-    description:
-      "30+ components out of the box — callouts, tabs, code groups, API refs.",
-    title: "MDX components",
+    description: "30+ MDX components: callouts, tabs, code groups, API refs.",
+    title: "Rich components",
   },
   {
     Icon: MagnifyingGlassIcon,
-    description: "Full-text search across every page. No plugin, no config.",
-    title: "Search",
+    description: "Instant full-text search across every page. Zero setup.",
+    title: "Built-in search",
   },
   {
     Icon: LayersTwoIcon,
-    description:
-      "Docs, blogs, changelogs, and courses — one project, one domain.",
-    title: "Content types",
+    description: "Docs, blogs, changelogs, and courses in one project.",
+    title: "One workspace",
   },
   {
     Icon: BookIcon,
-    description: "Point at an OpenAPI spec, ship an interactive API reference.",
+    description: "Point at an OpenAPI spec, ship an interactive reference.",
     title: "API reference",
+  },
+];
+
+const pillars = [
+  {
+    Icon: RocketIcon,
+    description:
+      "Sub-second page loads on the edge. Incremental builds that finish before CI does.",
+    title: "Built for speed",
+  },
+  {
+    Icon: LockIcon,
+    description:
+      "SSO-ready, SSL by default, and a hardened preview environment for every pull request.",
+    title: "Secure by default",
+  },
+  {
+    Icon: SparklesIcon,
+    description:
+      "AI-ready output with llms.txt, clean semantic HTML, and structured data your users and LLMs can parse.",
+    title: "Made for humans and AI",
   },
 ];
 
@@ -139,9 +161,6 @@ export default async function HomePage() {
           <span className="text-base font-semibold tracking-tight">
             blode.md
           </span>
-          <Badge className="font-mono" variant="outline">
-            v{siteConfig.version}
-          </Badge>
         </div>
         <nav aria-label="Main" className="flex items-center gap-1">
           <Button asChild size="sm" variant="ghost">
@@ -153,6 +172,9 @@ export default async function HomePage() {
               <GithubIcon data-icon="inline-start" />
               GitHub
             </a>
+          </Button>
+          <Button asChild size="sm" variant="ghost">
+            <a href={DEMO_MAILTO}>Request a demo</a>
           </Button>
           <Separator className="mx-1 h-5" orientation="vertical" />
           <Button asChild size="sm" variant="ghost">
@@ -169,25 +191,24 @@ export default async function HomePage() {
           <div className="container">
             <Badge className="mb-8 gap-1.5" variant="secondary">
               <SparklesIcon />
-              Docs, in your git workflow
+              Built for humans and AI
             </Badge>
             <h1 className="h-display max-w-4xl text-balance text-5xl font-bold md:text-7xl lg:text-8xl">
-              Docs belong where your code lives
+              The documentation platform built on git
             </h1>
             <p className="measure mt-6 text-balance text-lg text-muted-foreground md:text-xl">
-              Great docs shouldn&apos;t need a second CMS, a second workflow, or
-              a second team. blode.md keeps them next to your code — versioned
-              in git, reviewed in pull requests, and shipped on every push.
+              Write in Markdown. Review in pull requests. Ship on every push.
+              One project, one domain, one price.
             </p>
             <div className="mt-10 flex flex-wrap items-center gap-3">
               <Button asChild size="lg">
                 <Link href={dashboardHref}>
-                  {isSignedIn ? "Open dashboard" : "Start from GitHub"}
+                  {isSignedIn ? "Open dashboard" : "Start now"}
                   <ArrowRightIcon data-icon="inline-end" />
                 </Link>
               </Button>
               <Button asChild size="lg" variant="outline">
-                <a href="#how-it-works">See how it works</a>
+                <a href={DEMO_MAILTO}>Request a demo</a>
               </Button>
             </div>
           </div>
@@ -200,17 +221,16 @@ export default async function HomePage() {
           <div className="container">
             <div className="grid gap-12 md:grid-cols-[1fr_1.4fr] md:items-start">
               <div className="min-w-0">
-                <Badge className="mb-4 font-mono" variant="outline">
+                <Badge className="mb-4" variant="outline">
                   How it works
                 </Badge>
                 <h2 className="h-display text-balance text-3xl font-bold md:text-4xl">
-                  Git in, docs out
+                  From git to live docs
                 </h2>
                 <p className="measure mt-4 text-muted-foreground">
-                  Point us at a repo — from the browser or the terminal — and
-                  we handle the MDX build, the search index, the domain, and
-                  every deploy after that. No dashboard to babysit. No pipeline
-                  to own.
+                  Point us at a repo from the browser or the terminal. We
+                  handle the MDX build, search, domain, and every deploy after
+                  that.
                 </p>
               </div>
               <Tabs className="min-w-0" defaultValue="github">
@@ -244,8 +264,8 @@ export default async function HomePage() {
                       <li className="flex gap-3">
                         <span className="text-muted-foreground">3.</span>
                         <span>
-                          Push to <span className="text-foreground">main</span>{" "}
-                          — deployed to{" "}
+                          Push to <span className="text-foreground">main</span>.
+                          Deployed to{" "}
                           <span className="text-foreground">acme.blode.md</span>
                         </span>
                       </li>
@@ -301,16 +321,15 @@ export default async function HomePage() {
         <section className="border-t border-border py-24 md:py-32">
           <div className="container">
             <div className="mb-12 max-w-2xl">
-              <Badge className="mb-4 font-mono" variant="outline">
-                What you get
+              <Badge className="mb-4" variant="outline">
+                Features
               </Badge>
               <h2 className="h-display text-balance text-3xl font-bold md:text-4xl">
-                Every piece of a modern docs site, included
+                Everything a modern docs site needs
               </h2>
               <p className="measure mt-4 text-muted-foreground">
-                One MDX project, one domain, one price. The components,
-                infrastructure, and workflow are already taken care of — so
-                you can spend your time on the writing.
+                Components, infrastructure, and workflow are already handled.
+                You focus on the writing.
               </p>
             </div>
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
@@ -331,18 +350,48 @@ export default async function HomePage() {
 
         <section className="border-t border-border py-24 md:py-32">
           <div className="container">
+            <div className="mb-12 max-w-2xl">
+              <Badge className="mb-4" variant="outline">
+                Built for teams
+              </Badge>
+              <h2 className="h-display text-balance text-3xl font-bold md:text-4xl">
+                Enterprise-grade by default
+              </h2>
+              <p className="measure mt-4 text-muted-foreground">
+                Fast, secure, and ready for your production traffic from day
+                one.
+              </p>
+            </div>
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              {pillars.map(({ Icon, title, description }) => (
+                <Card className="justify-start p-2" key={title}>
+                  <CardHeader>
+                    <div className="mb-3 inline-flex size-9 items-center justify-center rounded-lg bg-muted text-foreground">
+                      <Icon />
+                    </div>
+                    <CardTitle>{title}</CardTitle>
+                    <CardDescription>{description}</CardDescription>
+                  </CardHeader>
+                </Card>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section className="border-t border-border py-24 md:py-32">
+          <div className="container">
             <div className="grid gap-12 md:grid-cols-[1fr_1.4fr] md:items-start">
               <div className="min-w-0">
-                <Badge className="mb-4 font-mono" variant="outline">
+                <Badge className="mb-4" variant="outline">
                   On your domain
                 </Badge>
                 <h2 className="h-display text-balance text-3xl font-bold md:text-4xl">
-                  Keep docs under the domain your users already trust
+                  Docs on your own domain
                 </h2>
                 <p className="measure mt-4 text-muted-foreground">
                   Proxy /docs through your marketing site so blode.md never
-                  looks like a detour. Ready-made configs for Vercel,
-                  Cloudflare, Nginx, and Caddy — paste in, ship it.
+                  feels like a detour. Ready-made configs for Vercel,
+                  Cloudflare, Nginx, and Caddy.
                 </p>
                 <div className="mt-6">
                   <Button asChild variant="outline">
@@ -382,33 +431,25 @@ export default async function HomePage() {
 
         <section className="border-t border-border py-24 md:py-32">
           <div className="container" id="get-started">
-            <Badge className="mb-4 font-mono" variant="outline">
-              Ship today
+            <Badge className="mb-4" variant="outline">
+              Get started
             </Badge>
             <h2 className="h-display max-w-3xl text-balance text-3xl font-bold md:text-4xl">
-              Make the next commit a deploy
+              Make your docs a product, not a chore
             </h2>
             <p className="measure mt-4 text-muted-foreground">
-              Sign in with GitHub, pick a repo, pick a template. Your first
-              site is live in under a minute — and every push from then on
-              ships itself.
+              Sign in with GitHub and pick a template. Your first site is live
+              in under a minute.
             </p>
             <div className="mt-10 flex flex-wrap items-center gap-3">
               <Button asChild size="lg">
                 <Link href={dashboardHref}>
-                  {isSignedIn ? "Open dashboard" : "Deploy a site"}
+                  {isSignedIn ? "Open dashboard" : "Start now"}
                   <ArrowRightIcon data-icon="inline-end" />
                 </Link>
               </Button>
               <Button asChild size="lg" variant="outline">
-                <a
-                  href={siteConfig.links.github}
-                  rel="noopener noreferrer"
-                  target="_blank"
-                >
-                  <GithubIcon data-icon="inline-start" />
-                  Star on GitHub
-                </a>
+                <a href={DEMO_MAILTO}>Request a demo</a>
               </Button>
             </div>
           </div>

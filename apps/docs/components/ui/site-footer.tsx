@@ -25,9 +25,7 @@ export const SiteFooter = () => (
       </a>
     </div>
     <div className="flex items-center gap-2">
-      <Badge className="font-mono" variant="outline">
-        v{siteConfig.version}
-      </Badge>
+      <Badge variant="outline">v{siteConfig.version}</Badge>
       <a
         className="text-muted-foreground transition-colors hover:text-foreground"
         href={siteConfig.links.github}
