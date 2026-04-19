@@ -63,15 +63,13 @@ export default function PrivacyPage() {
                 Your data
               </h2>
               <p>
-                You can delete your account and data at any time. If you need
-                help, open an issue on{" "}
+                You can delete your account and data at any time. Need help?
+                Email{" "}
                 <a
                   className="underline underline-offset-4"
-                  href={siteConfig.links.github}
-                  rel="noopener noreferrer"
-                  target="_blank"
+                  href={`mailto:${siteConfig.links.email}`}
                 >
-                  GitHub
+                  {siteConfig.links.email}
                 </a>
                 .
               </p>
@@ -82,14 +80,12 @@ export default function PrivacyPage() {
                 Contact
               </h2>
               <p>
-                Questions about this policy? File an issue on the{" "}
+                Questions about this policy? Email{" "}
                 <a
                   className="underline underline-offset-4"
-                  href={siteConfig.links.github}
-                  rel="noopener noreferrer"
-                  target="_blank"
+                  href={`mailto:${siteConfig.links.email}`}
                 >
-                  GitHub repo
+                  {siteConfig.links.email}
                 </a>
                 .
               </p>

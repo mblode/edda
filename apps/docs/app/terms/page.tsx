@@ -91,14 +91,12 @@ export default function TermsPage() {
                 Contact
               </h2>
               <p>
-                Questions? File an issue on the{" "}
+                Questions? Email{" "}
                 <a
                   className="underline underline-offset-4"
-                  href={siteConfig.links.github}
-                  rel="noopener noreferrer"
-                  target="_blank"
+                  href={`mailto:${siteConfig.links.email}`}
                 >
-                  GitHub repo
+                  {siteConfig.links.email}
                 </a>
                 .
               </p>

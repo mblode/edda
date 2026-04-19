@@ -60,7 +60,7 @@ export default function AboutPage() {
 
       <section className="border-border border-t py-24 md:py-32">
         <div className="container">
-          <div className="grid gap-12 md:grid-cols-2">
+          <div className="grid gap-12 md:grid-cols-3">
             <div>
               <h3 className="h-display font-bold text-xl">Who built it</h3>
               <p className="mt-3 text-muted-foreground">
@@ -87,6 +87,19 @@ export default function AboutPage() {
                   target="_blank"
                 >
                   GitHub
+                </a>
+                .
+              </p>
+            </div>
+            <div>
+              <h3 className="h-display font-bold text-xl">Get in touch</h3>
+              <p className="mt-3 text-muted-foreground">
+                Email{" "}
+                <a
+                  className="underline underline-offset-4"
+                  href={`mailto:${siteConfig.links.email}`}
+                >
+                  {siteConfig.links.email}
                 </a>
                 .
               </p>

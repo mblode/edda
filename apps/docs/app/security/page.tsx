@@ -75,16 +75,14 @@ export default function SecurityPage() {
               Found a problem?
             </h2>
             <p className="mt-4 text-muted-foreground">
-              Open a private security advisory on the{" "}
+              Email{" "}
               <a
                 className="underline underline-offset-4"
-                href={`${siteConfig.links.github}/security/advisories/new`}
-                rel="noopener noreferrer"
-                target="_blank"
+                href={`mailto:${siteConfig.links.email}`}
               >
-                GitHub repo
-              </a>
-              . Include steps to reproduce and we will take it from there.
+                {siteConfig.links.email}
+              </a>{" "}
+              with steps to reproduce. We will take it from there.
             </p>
           </div>
         </div>
