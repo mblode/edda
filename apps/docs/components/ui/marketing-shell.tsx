@@ -21,7 +21,7 @@ export const MarketingShell = async ({ children }: MarketingShellProps) => {
 
   return (
     <div
-      className="min-h-screen overflow-x-clip bg-background text-foreground"
+      className="min-h-screen bg-background text-foreground"
       style={landingTheme}
     >
       <a
