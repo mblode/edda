@@ -449,6 +449,11 @@ export const buildTenantRobotsTxt = (
   const basePath = getCanonicalDocBasePath(tenant, context);
   return `User-agent: *
 Allow: /
+
+# Content Signals — declare AI content usage preferences
+# https://contentsignals.org
+Content-Signal: search=yes, ai-input=yes, ai-train=no
+
 Sitemap: ${origin}${toDocHref("sitemap.xml", basePath)}
 
 # LLM-friendly content

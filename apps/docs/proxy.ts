@@ -103,6 +103,35 @@ const hasSupabaseAuthCookie = (request: NextRequest) => {
   return false;
 };
 
+const AGENT_DISCOVERY_LINKS = [
+  '</.well-known/api-catalog>; rel="api-catalog"',
+  '</.well-known/agent-skills/index.json>; rel="agent-skills"',
+  '</.well-known/mcp/server-card.json>; rel="mcp-server-card"',
+  '</.well-known/oauth-protected-resource>; rel="oauth-protected-resource"',
+  '</.well-known/oauth-authorization-server>; rel="oauth-authorization-server"',
+  '</docs>; rel="service-doc"',
+  '</docs/api/overview>; rel="service-desc"',
+];
+
+const buildRootLinkHeader = () =>
+  [
+    '</sitemap.xml>; rel="sitemap"; type="application/xml"',
+    '</llms.txt>; rel="llms-txt"',
+    '</llms-full.txt>; rel="llms-full-txt"',
+    ...AGENT_DISCOVERY_LINKS,
+  ].join(", ");
+
+const buildTenantLinkHeader = (basePath: string) => {
+  const llmsBasePath = basePath ? `/${basePath}` : "";
+  return [
+    `<${llmsBasePath}/sitemap.xml>; rel="sitemap"; type="application/xml"`,
+    `<${llmsBasePath}/llms.txt>; rel="llms-txt"`,
+    `<${llmsBasePath}/llms-full.txt>; rel="llms-full-txt"`,
+    `<${llmsBasePath}/.well-known/skills/index.json>; rel="agent-skills"`,
+    ...AGENT_DISCOVERY_LINKS,
+  ].join(", ");
+};
+
 const maybeRedirectUnauthenticatedApp = (
   request: NextRequest
 ): NextResponse | null => {
@@ -146,14 +175,20 @@ export const proxy = async (request: NextRequest) => {
     !isRootRuntimeHost(host) && isTenantUtilityPath(pathname);
 
   if (isReservedPath(pathname) && !allowTenantUtilityRewrite) {
-    return NextResponse.next();
+    const passthrough = NextResponse.next();
+    if (isRootRuntimeHost(host)) {
+      passthrough.headers.set("Link", buildRootLinkHeader());
+    }
+    return passthrough;
   }
 
   const resolution = await resolveTenant(host, markdownSourcePath ?? pathname);
 
   if (!resolution) {
     if (isRootRuntimeHost(host)) {
-      return NextResponse.next();
+      const passthrough = NextResponse.next();
+      passthrough.headers.set("Link", buildRootLinkHeader());
+      return passthrough;
     }
 
     return new NextResponse("Not Found", { status: 404 });
@@ -302,12 +337,10 @@ export const proxy = async (request: NextRequest) => {
   // Multi-tenant: same path may serve different content per Host or Accept header
   response.headers.set("Vary", "Host, accept");
 
-  // Advertise the llms.txt index and skills to AI agents via standard HTTP headers
+  // Advertise agent-discovery resources (sitemap, llms.txt, skills, api-catalog, etc.)
+  // to AI agents via standard Link headers (RFC 8288).
+  response.headers.set("Link", buildTenantLinkHeader(resolution.basePath));
   const llmsBasePath = resolution.basePath ? `/${resolution.basePath}` : "";
-  response.headers.set(
-    "Link",
-    `<${llmsBasePath}/llms.txt>; rel="llms-txt", <${llmsBasePath}/llms-full.txt>; rel="llms-full-txt", <${llmsBasePath}/.well-known/skills/index.json>; rel="skills"`
-  );
   response.headers.set("X-Llms-Txt", `${llmsBasePath}/llms.txt`);
 
   return response;
