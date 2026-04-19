@@ -1,33 +1,34 @@
 import { NextResponse } from "next/server";
 
-import { platformConfig } from "@/lib/platform-config";
+import { MARKETING_ORIGIN, marketingUrl } from "@/lib/marketing-site";
 
 export const dynamic = "force-static";
 export const preferredRegion = "home";
 export const revalidate = 3600;
 
-export const GET = () => {
-  const origin = `https://${platformConfig.rootDomain}`;
+const metadata = {
+  authorization_endpoint: marketingUrl("/oauth/consent"),
+  code_challenge_methods_supported: ["S256"],
+  grant_types_supported: ["authorization_code", "refresh_token"],
+  issuer: MARKETING_ORIGIN,
+  jwks_uri: marketingUrl("/.well-known/jwks.json"),
+  response_types_supported: ["code"],
+  scopes_supported: ["openid", "profile", "email", "offline_access"],
+  subject_types_supported: ["public"],
+  token_endpoint: marketingUrl("/oauth/token"),
+  token_endpoint_auth_methods_supported: [
+    "client_secret_basic",
+    "client_secret_post",
+  ],
+};
 
-  const metadata = {
-    authorization_endpoint: `${origin}/oauth/consent`,
-    code_challenge_methods_supported: ["S256"],
-    grant_types_supported: ["authorization_code", "refresh_token"],
-    issuer: origin,
-    response_modes_supported: ["query"],
-    response_types_supported: ["code"],
-    scopes_supported: ["openid", "profile", "email"],
-    service_documentation: `${origin}/docs/api/overview`,
-    token_endpoint: `${origin}/oauth/callback`,
-    token_endpoint_auth_methods_supported: ["none"],
-  };
-
-  return NextResponse.json(metadata, {
+export const GET = () =>
+  new NextResponse(JSON.stringify(metadata, null, 2), {
     headers: {
       "CDN-Cache-Control":
         "public, s-maxage=3600, stale-while-revalidate=86400",
+      "Content-Type": "application/json; charset=utf-8",
       "Vercel-CDN-Cache-Control":
         "public, s-maxage=3600, stale-while-revalidate=86400",
     },
   });
-};
