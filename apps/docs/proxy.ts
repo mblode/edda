@@ -152,7 +152,7 @@ export const proxy = async (request: NextRequest) => {
   const resolution = await resolveTenant(host, markdownSourcePath ?? pathname);
 
   if (!resolution) {
-    if (pathname === "/" && isRootRuntimeHost(host)) {
+    if (isRootRuntimeHost(host)) {
       return NextResponse.next();
     }
 

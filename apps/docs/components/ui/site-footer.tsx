@@ -10,7 +10,7 @@ export const SiteFooter = () => (
     <div className="grid grid-cols-2 gap-8 md:grid-cols-4">
       {siteConfig.footerNav.map((group) => (
         <div className="flex flex-col gap-3" key={group.label}>
-          <h3 className="font-mono text-foreground text-xs uppercase tracking-wider">
+          <h3 className="text-foreground text-xs font-semibold uppercase tracking-wider">
             {group.label}
           </h3>
           <ul className="flex flex-col gap-2">

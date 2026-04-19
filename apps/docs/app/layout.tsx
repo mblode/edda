@@ -42,7 +42,7 @@ export default function RootLayout({
       <head>
         <link rel="preconnect" href="https://public.blob.vercel-storage.com" />
       </head>
-      <body className="relative flex w-full flex-col justify-center overflow-x-hidden scroll-smooth bg-background font-sans antialiased [--header-height:calc(var(--spacing)*16)]">
+      <body className="relative flex w-full flex-col justify-center overflow-x-clip scroll-smooth bg-background font-sans antialiased [--header-height:calc(var(--spacing)*16)]">
         <Providers>{children}</Providers>
         <ThirdParties />
       </body>

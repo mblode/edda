@@ -5,12 +5,10 @@ import {
   GithubIcon,
   LayersTwoIcon,
   MagnifyingGlassIcon,
-  SparklesIcon,
   WorldIcon,
 } from "blode-icons-react";
 import Link from "next/link";
 
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -101,11 +99,7 @@ export default async function HomePage() {
     <MarketingShell>
       <section className="pb-24 pt-20 md:pb-32 md:pt-28 lg:pt-36">
         <div className="container">
-          <Badge className="mb-8 gap-1.5" variant="secondary">
-            <SparklesIcon />
-            Built for humans and AI
-          </Badge>
-          <h1 className="h-display max-w-4xl text-balance text-5xl font-bold md:text-7xl lg:text-8xl">
+          <h1 className="h-display max-w-4xl text-balance text-4xl font-bold sm:text-5xl md:text-6xl lg:text-7xl">
             Docs your users love. And their AI understands.
           </h1>
           <p className="measure mt-6 text-balance text-lg text-muted-foreground md:text-xl">
@@ -133,9 +127,9 @@ export default async function HomePage() {
         <div className="container">
           <div className="grid gap-12 md:grid-cols-[1fr_1.4fr] md:items-start">
             <div className="min-w-0">
-              <Badge className="mb-4 font-mono" variant="outline">
+              <p className="mb-4 text-sm font-medium text-muted-foreground">
                 How it works
-              </Badge>
+              </p>
               <h2 className="h-display text-balance text-3xl font-bold md:text-4xl">
                 Git in, docs out
               </h2>
@@ -158,13 +152,13 @@ export default async function HomePage() {
               </TabsList>
 
               <TabsContent className="mt-6 min-w-0" value="github">
-                <div className="overflow-hidden rounded-xl bg-surface p-6 font-mono text-sm md:p-8">
+                <div className="overflow-hidden rounded-xl bg-surface p-6 text-sm md:p-8">
                   <ol className="space-y-4">
                     <li className="flex gap-3">
                       <span className="text-muted-foreground">1.</span>
-                      <span>
+                      <span className="min-w-0 break-words">
                         Install the GitHub app at{" "}
-                        <span className="text-foreground">
+                        <span className="font-mono text-foreground">
                           github.com/apps/blodemd
                         </span>
                       </span>
@@ -175,10 +169,13 @@ export default async function HomePage() {
                     </li>
                     <li className="flex gap-3">
                       <span className="text-muted-foreground">3.</span>
-                      <span>
-                        Push to <span className="text-foreground">main</span>,
+                      <span className="min-w-0 break-words">
+                        Push to{" "}
+                        <span className="font-mono text-foreground">main</span>,
                         deployed to{" "}
-                        <span className="text-foreground">acme.blode.md</span>
+                        <span className="font-mono text-foreground">
+                          acme.blode.md
+                        </span>
                       </span>
                     </li>
                   </ol>
@@ -189,16 +186,25 @@ export default async function HomePage() {
                 <div className="relative overflow-hidden rounded-xl bg-surface p-6 font-mono text-sm md:p-8">
                   <CopyButton
                     className="absolute right-3 top-3 text-muted-foreground"
-                    content={`blodemd login\nblodemd new docs\nblodemd push docs`}
+                    content={`npm i -g blodemd\nblodemd login\nblodemd new docs\nblodemd push docs`}
                     size="sm"
                     variant="ghost"
                   />
                   <div className="space-y-6">
                     <div>
                       <p className="text-muted-foreground">
+                        # install the CLI
+                      </p>
+                      <p className="break-all">
+                        <span className="text-muted-foreground">$</span> npm i
+                        -g blodemd
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-muted-foreground">
                         # browser sign-in with GitHub
                       </p>
-                      <p>
+                      <p className="break-all">
                         <span className="text-muted-foreground">$</span> blodemd
                         login
                       </p>
@@ -207,14 +213,14 @@ export default async function HomePage() {
                       <p className="text-muted-foreground">
                         # scaffold from your project root
                       </p>
-                      <p>
+                      <p className="break-all">
                         <span className="text-muted-foreground">$</span> blodemd
                         new docs
                       </p>
                     </div>
                     <div>
                       <p className="text-muted-foreground"># ship it</p>
-                      <p>
+                      <p className="break-all">
                         <span className="text-muted-foreground">$</span> blodemd
                         push docs
                       </p>
@@ -233,9 +239,9 @@ export default async function HomePage() {
       <section className="border-t border-border py-24 md:py-32">
         <div className="container">
           <div className="mb-12 max-w-2xl">
-            <Badge className="mb-4 font-mono" variant="outline">
+            <p className="mb-4 text-sm font-medium text-muted-foreground">
               What you get
-            </Badge>
+            </p>
             <h2 className="h-display text-balance text-3xl font-bold md:text-4xl">
               Every piece of a modern docs site, included
             </h2>
@@ -265,9 +271,9 @@ export default async function HomePage() {
         <div className="container">
           <div className="grid gap-12 md:grid-cols-[1fr_1.4fr] md:items-start">
             <div className="min-w-0">
-              <Badge className="mb-4 font-mono" variant="outline">
+              <p className="mb-4 text-sm font-medium text-muted-foreground">
                 On your domain
-              </Badge>
+              </p>
               <h2 className="h-display text-balance text-3xl font-bold md:text-4xl">
                 Keep docs under the domain your users already trust
               </h2>
@@ -314,9 +320,9 @@ export default async function HomePage() {
 
       <section className="border-t border-border py-24 md:py-32">
         <div className="container" id="get-started">
-          <Badge className="mb-4 font-mono" variant="outline">
+          <p className="mb-4 text-sm font-medium text-muted-foreground">
             Ship today
-          </Badge>
+          </p>
           <h2 className="h-display max-w-3xl text-balance text-3xl font-bold md:text-4xl">
             Make the next commit a deploy
           </h2>
