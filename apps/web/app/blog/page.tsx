@@ -4,6 +4,7 @@ import Link from "next/link";
 
 import { Badge } from "@/components/ui/badge";
 import { MarketingShell } from "@/components/ui/marketing-shell";
+import { RelativeTime } from "@/components/ui/relative-time";
 
 export const metadata: Metadata = {
   description: "Notes and posts from the team behind Blode.md.",
@@ -15,7 +16,6 @@ const posts = [
     date: "2026-04-20",
     excerpt:
       "Why we built a docs platform that publishes from GitHub in three commands.",
-    formattedDate: "April 20, 2026",
     slug: "intro-to-blode-md",
     title: "Hello, Blode.md",
   },
@@ -47,12 +47,10 @@ export default function BlogPage() {
                   className="group flex flex-col gap-3 py-8 transition-colors first:pt-0"
                   href={`/blog/${post.slug}`}
                 >
-                  <time
+                  <RelativeTime
                     className="text-muted-foreground text-sm"
-                    dateTime={post.date}
-                  >
-                    {post.formattedDate}
-                  </time>
+                    date={post.date}
+                  />
                   <h2 className="h-display font-bold text-2xl transition-colors group-hover:text-primary md:text-3xl">
                     {post.title}
                   </h2>

@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { CopyButton } from "@/components/ui/copy-button";
 import { MarketingShell } from "@/components/ui/marketing-shell";
+import { RelativeTime } from "@/components/ui/relative-time";
 import { siteConfig } from "@/lib/config";
 
 export const metadata: Metadata = {
@@ -26,13 +27,13 @@ export default function IntroPostPage() {
         <section className="pt-20 pb-12 md:pt-28 md:pb-16">
           <div className="container">
             <Link
-              className="mb-8 inline-flex items-center gap-2 text-muted-foreground text-sm transition-colors hover:text-foreground"
+              className="mb-10 inline-flex items-center gap-2 text-muted-foreground text-sm transition-colors hover:text-foreground"
               href="/blog"
             >
               <ArrowLeftIcon />
               All posts
             </Link>
-            <Badge className="mb-4 font-mono" variant="outline">
+            <Badge className="mb-6 font-mono" variant="outline">
               Intro
             </Badge>
             <h1 className="h-display max-w-3xl text-balance font-bold text-4xl md:text-6xl">
@@ -42,9 +43,10 @@ export default function IntroPostPage() {
               Most docs tools want you to leave your editor. Blode.md
               doesn&apos;t.
             </p>
-            <p className="mt-6 text-muted-foreground text-sm">
-              <time dateTime="2026-04-20">April 20, 2026</time> · The Blode.md
-              team
+            <p className="mt-6 flex flex-wrap items-center gap-x-2 text-muted-foreground text-sm">
+              <RelativeTime date="2026-04-20" />
+              <span aria-hidden="true">·</span>
+              <span>Matthew Blode</span>
             </p>
           </div>
         </section>
