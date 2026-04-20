@@ -40,7 +40,7 @@ const nextConfig = {
   },
   rewrites() {
     if (!shouldProxy) {
-      return { beforeFiles: [] };
+      return { beforeFiles: [], fallback: [] };
     }
     return {
       beforeFiles: [
@@ -59,6 +59,16 @@ const nextConfig = {
         {
           destination: `${docsAppUrl}/llms-full.txt`,
           source: "/llms-full.txt",
+        },
+      ],
+      // When apps/web can't serve a /_next/* asset (because the request is for
+      // an apps/docs-built chunk), fall through to apps/docs. apps/web's own
+      // assets still resolve normally via Next.js's built-in static handler
+      // before this fallback fires.
+      fallback: [
+        {
+          destination: `${docsAppUrl}/_next/:path*`,
+          source: "/_next/:path*",
         },
       ],
     };
