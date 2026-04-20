@@ -22,7 +22,6 @@ import { HeroMedia } from "@/components/ui/hero-media";
 import { MarketingShell } from "@/components/ui/marketing-shell";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { TextEffect } from "@/components/ui/text-effect";
-import { WebMcpTools } from "@/components/web-mcp";
 
 const features = [
   {
@@ -96,7 +95,6 @@ async rewrites() {
 export default function HomePage() {
   return (
     <MarketingShell>
-      <WebMcpTools />
       <section className="pb-16 pt-20 md:pb-24 md:pt-28 lg:pt-36">
         <div className="container">
           <TextEffect

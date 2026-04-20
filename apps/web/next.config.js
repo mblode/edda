@@ -31,6 +31,9 @@ const nextConfig = {
       },
     ],
   },
+  outputFileTracingIncludes: {
+    "/markdown/*": ["./app/markdown/content/**/*.md"],
+  },
   reactCompiler: true,
   rewrites() {
     return {

@@ -6,6 +6,8 @@
 
 import { useEffect } from "react";
 
+import { siteConfig } from "@/lib/config";
+
 interface JSONSchemaObject {
   type: string;
   properties?: Record<string, unknown>;
@@ -97,6 +99,65 @@ const buildTools = (): WebMCPTool[] => [
       type: "object",
     },
     name: "blodemd_open_dashboard",
+  },
+  {
+    description: "Navigate to the Blode.md pricing page.",
+    execute: async () => {
+      if (typeof window !== "undefined") {
+        window.location.assign("/pricing");
+      }
+      return { ok: true };
+    },
+    inputSchema: {
+      additionalProperties: false,
+      properties: {},
+      type: "object",
+    },
+    name: "navigate_to_pricing",
+  },
+  {
+    description: "Open the Blode.md documentation.",
+    execute: async () => {
+      if (typeof window !== "undefined") {
+        window.location.assign("/docs");
+      }
+      return { ok: true };
+    },
+    inputSchema: {
+      additionalProperties: false,
+      properties: {},
+      type: "object",
+    },
+    name: "open_docs",
+  },
+  {
+    description:
+      "Return the support contact email for Blode.md as a mailto URL.",
+    execute: async () => ({
+      email: siteConfig.links.email,
+      mailto: `mailto:${siteConfig.links.email}`,
+    }),
+    inputSchema: {
+      additionalProperties: false,
+      properties: {},
+      type: "object",
+    },
+    name: "contact_support",
+  },
+  {
+    description: "Open the Blode.md source repository on GitHub in a new tab.",
+    execute: async () => {
+      if (typeof window !== "undefined") {
+        window.open(siteConfig.links.github, "_blank", "noopener,noreferrer");
+      }
+      return { url: siteConfig.links.github };
+    },
+    inputSchema: {
+      additionalProperties: false,
+      properties: {},
+      type: "object",
+    },
+    name: "open_github",
   },
 ];
 
