@@ -87,63 +87,55 @@ const faqs = [
 ];
 
 const PlanCard = ({ plan }: { plan: Plan }) => (
-  <div
-    className={
-      plan.recommended
-        ? "rounded-[calc(var(--radius)+0.375rem)] border border-border/70 bg-foreground/5 p-0.5"
-        : undefined
-    }
-  >
-    <Card className="h-full justify-start gap-6 py-6">
-      <CardHeader className="gap-3">
-        <div className="flex items-center gap-2">
-          <p className="font-medium text-muted-foreground text-sm">
-            {plan.eyebrow}
-          </p>
-          {plan.recommended ? (
-            <Badge className="font-mono text-xs" variant="secondary">
-              Recommended
-            </Badge>
-          ) : null}
-        </div>
-        <CardTitle className="text-3xl md:text-4xl">{plan.title}</CardTitle>
-        <p className="text-muted-foreground text-sm">{plan.note}</p>
-        <CardDescription className="mt-2 text-base">
-          {plan.description}
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <ul className="flex flex-col gap-2.5 text-sm">
-          {plan.features.map((feature) => (
-            <li className="flex items-start gap-2.5" key={feature}>
-              <CheckIcon
-                aria-hidden="true"
-                className="mt-0.5 size-4 shrink-0 text-foreground/70"
-              />
-              <span>{feature}</span>
-            </li>
-          ))}
-        </ul>
-      </CardContent>
-      <CardContent className="mt-auto pt-2">
-        {plan.cta.external ? (
-          <Button asChild variant={plan.recommended ? "default" : "outline"}>
-            <a href={plan.cta.href} rel="noopener noreferrer" target="_blank">
-              {plan.cta.label}
-              <ArrowRightIcon data-icon="inline-end" />
-            </a>
-          </Button>
-        ) : (
-          <Button asChild variant={plan.recommended ? "default" : "outline"}>
-            <Link href={plan.cta.href}>
-              {plan.cta.label}
-              <ArrowRightIcon data-icon="inline-end" />
-            </Link>
-          </Button>
-        )}
-      </CardContent>
-    </Card>
-  </div>
+  <Card className="h-full justify-start gap-6 py-6">
+    <CardHeader className="gap-3">
+      <div className="flex items-center gap-2">
+        <p className="font-medium text-muted-foreground text-sm">
+          {plan.eyebrow}
+        </p>
+        {plan.recommended ? (
+          <Badge className="font-mono text-xs" variant="secondary">
+            Recommended
+          </Badge>
+        ) : null}
+      </div>
+      <CardTitle className="text-3xl md:text-4xl">{plan.title}</CardTitle>
+      <p className="text-muted-foreground text-sm">{plan.note}</p>
+      <CardDescription className="mt-2 text-base">
+        {plan.description}
+      </CardDescription>
+    </CardHeader>
+    <CardContent>
+      <ul className="flex flex-col gap-2.5 text-sm">
+        {plan.features.map((feature) => (
+          <li className="flex items-start gap-2.5" key={feature}>
+            <CheckIcon
+              aria-hidden="true"
+              className="mt-0.5 size-4 shrink-0 text-foreground/70"
+            />
+            <span>{feature}</span>
+          </li>
+        ))}
+      </ul>
+    </CardContent>
+    <CardContent className="mt-auto pt-2">
+      {plan.cta.external ? (
+        <Button asChild variant={plan.recommended ? "default" : "outline"}>
+          <a href={plan.cta.href} rel="noopener noreferrer" target="_blank">
+            {plan.cta.label}
+            <ArrowRightIcon data-icon="inline-end" />
+          </a>
+        </Button>
+      ) : (
+        <Button asChild variant={plan.recommended ? "default" : "outline"}>
+          <Link href={plan.cta.href}>
+            {plan.cta.label}
+            <ArrowRightIcon data-icon="inline-end" />
+          </Link>
+        </Button>
+      )}
+    </CardContent>
+  </Card>
 );
 
 export default function PricingPage() {
@@ -211,14 +203,12 @@ export default function PricingPage() {
             site is live in under a minute.
           </p>
           <div className="mt-10 flex flex-wrap items-center gap-3">
-            <div className="rounded-[calc(var(--radius)+0.375rem)] border border-border/70 bg-foreground/5 p-0.5">
-              <Button asChild size="lg">
-                <Link href="/oauth/consent">
-                  Start shipping
-                  <ArrowRightIcon data-icon="inline-end" />
-                </Link>
-              </Button>
-            </div>
+            <Button asChild size="lg">
+              <Link href="/oauth/consent">
+                Start shipping
+                <ArrowRightIcon data-icon="inline-end" />
+              </Link>
+            </Button>
             <Button asChild size="lg" variant="ghost">
               <a
                 href={siteConfig.links.github}
