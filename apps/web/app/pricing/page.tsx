@@ -1,4 +1,4 @@
-import { ArrowRightIcon } from "blode-icons-react";
+import { ArrowRightIcon, CheckIcon } from "blode-icons-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 
@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Card,
+  CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
@@ -15,18 +16,36 @@ import { siteConfig } from "@/lib/config";
 
 export const metadata: Metadata = {
   description:
-    "Blode.md is free and open source under MIT. Use the hosted version, self-host on your own infra, or fork it.",
+    "Blode.md ships as an MIT-licensed CLI and renderer. Use the hosted version for zero setup, or self-host on any Postgres and any Node host.",
   title: "Pricing | Blode.md",
 };
 
-const plans = [
+interface Plan {
+  cta: { external?: boolean; href: string; label: string };
+  description: string;
+  eyebrow: string;
+  features: string[];
+  note: string;
+  recommended?: boolean;
+  title: string;
+}
+
+const plans: Plan[] = [
   {
     cta: { href: "/oauth/consent", label: "Start shipping" },
     description:
-      "Sign in with GitHub. Push docs from any repo. Custom domains, search, API reference, and MDX components are all included.",
+      "Sign in with GitHub and push. Your first docs site is live in about a minute.",
     eyebrow: "Hosted",
-    note: "We run the infra. You write the docs.",
-    title: "Free",
+    features: [
+      "GitHub auto-deploy",
+      "Custom domains with SSL",
+      "Full-text search",
+      "MDX components + API reference",
+      "Unlimited team seats",
+    ],
+    note: "$0 · Unlimited projects, pages, and seats",
+    recommended: true,
+    title: "Hosted by us",
   },
   {
     cta: {
@@ -35,10 +54,17 @@ const plans = [
       label: "View on GitHub",
     },
     description:
-      "Clone the repo, point it at your Postgres, deploy anywhere Node runs. Same renderer, same CLI.",
+      "Clone the repo, point it at a Postgres, and run the same CLI we do.",
     eyebrow: "Self-host",
-    note: "MIT licensed. Fork it, ship it.",
-    title: "Free",
+    features: [
+      "Full source on GitHub",
+      "Same renderer as hosted",
+      "Bring your own Postgres",
+      "Deploy to Vercel, Fly, Railway, or bare metal",
+      "No license keys, no telemetry",
+    ],
+    note: "MIT licensed · Deploy anywhere Node runs",
+    title: "Hosted by you",
   },
 ];
 
@@ -60,6 +86,66 @@ const faqs = [
   },
 ];
 
+const PlanCard = ({ plan }: { plan: Plan }) => (
+  <div
+    className={
+      plan.recommended
+        ? "rounded-[calc(var(--radius)+0.375rem)] border border-border/70 bg-foreground/5 p-0.5"
+        : undefined
+    }
+  >
+    <Card className="h-full justify-start gap-6 py-6">
+      <CardHeader className="gap-3">
+        <div className="flex items-center gap-2">
+          <p className="font-medium text-muted-foreground text-sm">
+            {plan.eyebrow}
+          </p>
+          {plan.recommended ? (
+            <Badge className="font-mono text-xs" variant="secondary">
+              Recommended
+            </Badge>
+          ) : null}
+        </div>
+        <CardTitle className="text-3xl md:text-4xl">{plan.title}</CardTitle>
+        <p className="text-muted-foreground text-sm">{plan.note}</p>
+        <CardDescription className="mt-2 text-base">
+          {plan.description}
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <ul className="flex flex-col gap-2.5 text-sm">
+          {plan.features.map((feature) => (
+            <li className="flex items-start gap-2.5" key={feature}>
+              <CheckIcon
+                aria-hidden="true"
+                className="mt-0.5 size-4 shrink-0 text-foreground/70"
+              />
+              <span>{feature}</span>
+            </li>
+          ))}
+        </ul>
+      </CardContent>
+      <CardContent className="mt-auto pt-2">
+        {plan.cta.external ? (
+          <Button asChild variant={plan.recommended ? "default" : "outline"}>
+            <a href={plan.cta.href} rel="noopener noreferrer" target="_blank">
+              {plan.cta.label}
+              <ArrowRightIcon data-icon="inline-end" />
+            </a>
+          </Button>
+        ) : (
+          <Button asChild variant={plan.recommended ? "default" : "outline"}>
+            <Link href={plan.cta.href}>
+              {plan.cta.label}
+              <ArrowRightIcon data-icon="inline-end" />
+            </Link>
+          </Button>
+        )}
+      </CardContent>
+    </Card>
+  </div>
+);
+
 export default function PricingPage() {
   return (
     <MarketingShell>
@@ -69,56 +155,21 @@ export default function PricingPage() {
             Pricing
           </Badge>
           <h1 className="h-display max-w-3xl text-balance font-bold text-4xl md:text-6xl">
-            Free. Forever.
+            Open source. Zero seats.
           </h1>
           <p className="measure mt-6 text-balance text-lg text-muted-foreground md:text-xl">
-            Blode.md is open source under MIT. Use the hosted version, self-host
-            on your own infra, or fork it. No seats, no page limits, no upsell.
+            Blode.md ships as an MIT-licensed CLI and renderer. Use the hosted
+            version for zero setup, or self-host on any Postgres and any Node
+            host. Same binary either way.
           </p>
         </div>
       </section>
 
-      <section className="border-border border-t py-24 md:py-32">
+      <section className="border-border border-t py-16 md:py-20">
         <div className="container">
-          <div className="grid gap-6 md:grid-cols-2">
+          <div className="grid items-stretch gap-6 md:grid-cols-2">
             {plans.map((plan) => (
-              <Card className="justify-start p-2" key={plan.eyebrow}>
-                <CardHeader>
-                  <p className="mb-2 font-medium text-muted-foreground text-sm">
-                    {plan.eyebrow}
-                  </p>
-                  <CardTitle className="text-3xl md:text-4xl">
-                    {plan.title}
-                  </CardTitle>
-                  <p className="mt-1 text-muted-foreground text-sm">
-                    {plan.note}
-                  </p>
-                  <CardDescription className="mt-4 text-base">
-                    {plan.description}
-                  </CardDescription>
-                  <div className="mt-6">
-                    {plan.cta.external ? (
-                      <Button asChild>
-                        <a
-                          href={plan.cta.href}
-                          rel="noopener noreferrer"
-                          target="_blank"
-                        >
-                          {plan.cta.label}
-                          <ArrowRightIcon data-icon="inline-end" />
-                        </a>
-                      </Button>
-                    ) : (
-                      <Button asChild>
-                        <Link href={plan.cta.href}>
-                          {plan.cta.label}
-                          <ArrowRightIcon data-icon="inline-end" />
-                        </Link>
-                      </Button>
-                    )}
-                  </div>
-                </CardHeader>
-              </Card>
+              <PlanCard key={plan.eyebrow} plan={plan} />
             ))}
           </div>
         </div>

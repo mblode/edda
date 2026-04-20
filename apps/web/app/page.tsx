@@ -133,14 +133,12 @@ export default function HomePage() {
               },
             }}
           >
-            <div className="rounded-[calc(var(--radius)+0.375rem)] border border-border/70 bg-foreground/5 p-0.5">
-              <Button asChild size="lg">
-                <Link href="/oauth/consent">
-                  Get started
-                  <ArrowRightIcon data-icon="inline-end" />
-                </Link>
-              </Button>
-            </div>
+            <Button asChild size="lg">
+              <Link href="/oauth/consent">
+                Get started
+                <ArrowRightIcon data-icon="inline-end" />
+              </Link>
+            </Button>
             <Button asChild size="lg" variant="ghost">
               <Link href="/docs">Read the docs</Link>
             </Button>
@@ -373,14 +371,12 @@ export default function HomePage() {
             is live in under a minute, and every push from then on ships itself.
           </p>
           <div className="mt-10 flex flex-wrap items-center gap-3">
-            <div className="rounded-[calc(var(--radius)+0.375rem)] border border-border/70 bg-foreground/5 p-0.5">
-              <Button asChild size="lg">
-                <Link href="/oauth/consent">
-                  Get started
-                  <ArrowRightIcon data-icon="inline-end" />
-                </Link>
-              </Button>
-            </div>
+            <Button asChild size="lg">
+              <Link href="/oauth/consent">
+                Get started
+                <ArrowRightIcon data-icon="inline-end" />
+              </Link>
+            </Button>
             <Button asChild size="lg" variant="ghost">
               <Link href="/docs">Read the docs</Link>
             </Button>
