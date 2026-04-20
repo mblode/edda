@@ -40,13 +40,13 @@ export const SiteFooter = () => {
 
   return (
     <footer className="container @container px-4 pt-20 pb-10 text-muted-foreground text-sm">
-      <div className="grid grid-cols-2 gap-8 @lg:grid-cols-4">
-        <div className="col-span-2 flex flex-col gap-4 @lg:col-span-1">
+      <div className="flex flex-col gap-12">
+        <div className="flex flex-col gap-4">
           <Link
             className="font-semibold text-base text-foreground tracking-tight transition-opacity hover:opacity-80"
             href="/"
           >
-            blode.md
+            Blode.md
           </Link>
           <p className="max-w-xs text-sm">
             Docs your users love. And their AI understands. Ship Markdown from
@@ -62,22 +62,24 @@ export const SiteFooter = () => {
             <GithubIcon />
           </a>
         </div>
-        {linkGroups.map((group) => (
-          <div className="flex flex-col gap-3" key={group.label}>
-            <h3 className="font-semibold text-foreground text-xs uppercase tracking-wider">
-              {group.label}
-            </h3>
-            <ul className="flex flex-col gap-2">
-              {group.links.map((link) => (
-                <li key={link.label}>{renderLink(link)}</li>
-              ))}
-            </ul>
-          </div>
-        ))}
+        <div className="grid grid-cols-1 gap-8 @md:grid-cols-3">
+          {linkGroups.map((group) => (
+            <div className="flex flex-col gap-3" key={group.label}>
+              <h3 className="font-semibold text-foreground text-xs uppercase tracking-wider">
+                {group.label}
+              </h3>
+              <ul className="flex flex-col gap-2">
+                {group.links.map((link) => (
+                  <li key={link.label}>{renderLink(link)}</li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
       </div>
       <div className="mt-12 flex flex-col gap-4 border-border/60 border-t pt-8 @md:flex-row @md:items-center @md:justify-between">
         <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
-          <span>© {year} blode.md</span>
+          <span>© {year} Blode.md</span>
           <span className="hidden text-muted-foreground/60 @md:inline">·</span>
           <a
             className="flex items-center gap-2 rounded-full py-1 transition-colors hover:text-foreground"

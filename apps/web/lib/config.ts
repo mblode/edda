@@ -23,11 +23,6 @@ export const siteConfig = {
       links: [
         { href: "/about", label: "About" },
         { href: "/blog", label: "Blog" },
-        {
-          external: true,
-          href: "https://github.com/mblode/blodemd",
-          label: "GitHub",
-        },
       ],
     },
     {
