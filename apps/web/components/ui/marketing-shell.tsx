@@ -27,7 +27,7 @@ export const MarketingShell = ({ children }: MarketingShellProps) => (
       Skip to content
     </a>
     <MarketingHeader />
-    <main className="scroll-mt-24 pt-20" id="main">
+    <main className="scroll-mt-24" id="main">
       {children}
     </main>
     <SiteFooter />

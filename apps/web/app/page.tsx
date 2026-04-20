@@ -95,21 +95,43 @@ async rewrites() {
 export default function HomePage() {
   return (
     <MarketingShell>
-      <section className="pb-16 pt-20 md:pb-24 md:pt-28 lg:pt-36">
-        <div className="container">
+      <section className="pb-16 pt-28 md:pb-24 md:pt-36 lg:pt-44">
+        <div className="container flex flex-col items-center text-center">
+          <AnimatedGroup
+            className="mb-8 inline-flex items-center gap-2 rounded-full border border-border/80 bg-background/60 px-3 py-1 text-muted-foreground text-xs backdrop-blur-sm"
+            variants={{
+              container: {
+                hidden: {},
+                visible: { transition: { delayChildren: 0.1 } },
+              },
+            }}
+          >
+            <span className="inline-block size-1.5 rounded-full bg-foreground/60" />
+            <span>Docs that ship with every commit</span>
+          </AnimatedGroup>
           <TextEffect
             as="h1"
-            className="h-display max-w-4xl text-balance text-4xl font-bold sm:text-5xl md:text-6xl lg:text-7xl"
+            className="h-display mx-auto max-w-5xl text-balance text-5xl font-semibold sm:text-6xl md:text-7xl lg:text-[88px]"
             per="word"
             preset="fade-in-blur"
             speedSegment={0.3}
           >
-            Docs your users love. And their AI understands.
+            Docs your users love.
           </TextEffect>
           <TextEffect
             as="p"
-            className="measure mt-6 text-balance text-lg text-muted-foreground md:text-xl"
-            delay={0.5}
+            className="h-display mx-auto mt-2 max-w-5xl text-balance text-5xl font-semibold text-muted-foreground sm:text-6xl md:text-7xl lg:text-[88px]"
+            delay={0.3}
+            per="word"
+            preset="fade-in-blur"
+            speedSegment={0.3}
+          >
+            And <span className="text-foreground">their AI</span> understands.
+          </TextEffect>
+          <TextEffect
+            as="p"
+            className="mx-auto mt-8 max-w-xl text-balance text-base text-muted-foreground md:text-lg"
+            delay={0.7}
             per="word"
             preset="fade-in-blur"
             speedSegment={0.2}
@@ -118,38 +140,43 @@ export default function HomePage() {
             and built so the LLMs your users ask can actually read them.
           </TextEffect>
           <AnimatedGroup
-            className="mt-10 flex flex-wrap items-center gap-3"
+            className="mt-10 flex flex-wrap items-center justify-center gap-3"
             variants={{
               container: {
                 hidden: {},
                 visible: {
                   transition: {
-                    delayChildren: 0.9,
+                    delayChildren: 1,
                     staggerChildren: 0.08,
                   },
                 },
               },
             }}
           >
-            <Button asChild size="lg">
+            <Button asChild className="h-11 rounded-full px-6" size="lg">
               <Link href="/oauth/consent">
-                Get started
+                Get started — it's free
                 <ArrowRightIcon data-icon="inline-end" />
               </Link>
             </Button>
-            <Button asChild size="lg" variant="ghost">
+            <Button
+              asChild
+              className="h-11 rounded-full px-6"
+              size="lg"
+              variant="ghost"
+            >
               <Link href="/docs">Read the docs</Link>
             </Button>
           </AnimatedGroup>
         </div>
         <AnimatedGroup
-          className="mt-16 md:mt-20"
+          className="mt-20 md:mt-24"
           variants={{
             container: {
               hidden: {},
               visible: {
                 transition: {
-                  delayChildren: 1.1,
+                  delayChildren: 1.2,
                   staggerChildren: 0.05,
                 },
               },
@@ -356,26 +383,37 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="border-t border-border py-24 md:py-32">
-        <div className="container" id="get-started">
-          <p className="mb-4 text-sm font-medium text-muted-foreground">
+      <section className="border-t border-border py-28 md:py-40">
+        <div
+          className="container flex flex-col items-center text-center"
+          id="get-started"
+        >
+          <p className="mb-6 inline-flex items-center gap-2 rounded-full border border-border/80 bg-background/60 px-3 py-1 text-muted-foreground text-xs">
+            <span className="inline-block size-1.5 rounded-full bg-foreground/60" />
             Ship today
           </p>
-          <h2 className="h-display max-w-3xl text-balance text-3xl font-bold md:text-4xl">
-            Make the next commit a deploy
+          <h2 className="h-display mx-auto max-w-4xl text-balance text-5xl font-semibold md:text-6xl lg:text-7xl">
+            Make the next commit{" "}
+            <span className="text-muted-foreground">a deploy.</span>
           </h2>
-          <p className="measure mt-4 text-muted-foreground">
+          <p className="mx-auto mt-6 max-w-xl text-balance text-muted-foreground md:text-lg">
             Sign in with GitHub, pick a repo, pick a template. Your first site
-            is live in under a minute, and every push from then on ships itself.
+            is live in under a minute, and every push from then on ships
+            itself.
           </p>
-          <div className="mt-10 flex flex-wrap items-center gap-3">
-            <Button asChild size="lg">
+          <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
+            <Button asChild className="h-11 rounded-full px-6" size="lg">
               <Link href="/oauth/consent">
-                Get started
+                Get started — it's free
                 <ArrowRightIcon data-icon="inline-end" />
               </Link>
             </Button>
-            <Button asChild size="lg" variant="ghost">
+            <Button
+              asChild
+              className="h-11 rounded-full px-6"
+              size="lg"
+              variant="ghost"
+            >
               <Link href="/docs">Read the docs</Link>
             </Button>
           </div>
