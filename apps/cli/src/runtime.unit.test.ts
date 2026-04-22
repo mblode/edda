@@ -30,20 +30,21 @@ afterEach(async () => {
 
 describe("isSupportedNodeVersion", () => {
   it("accepts supported versions in the configured range", () => {
-    expect(isSupportedNodeVersion("20.17.0")).toBe(true);
-    expect(isSupportedNodeVersion("22.19.1")).toBe(true);
+    expect(isSupportedNodeVersion("24.0.0")).toBe(true);
     expect(isSupportedNodeVersion("24.4.0")).toBe(true);
+    expect(isSupportedNodeVersion("24.15.0")).toBe(true);
   });
 
   it("rejects versions outside the configured range", () => {
-    expect(isSupportedNodeVersion("20.16.9")).toBe(false);
+    expect(isSupportedNodeVersion("22.19.1")).toBe(false);
+    expect(isSupportedNodeVersion("25.0.0")).toBe(false);
     expect(isSupportedNodeVersion("not-a-version")).toBe(false);
   });
 });
 
 describe("assertSupportedNodeVersion", () => {
   it("throws a CLI error with guidance for unsupported versions", () => {
-    expect(() => assertSupportedNodeVersion("20.16.9")).toThrowError(CliError);
+    expect(() => assertSupportedNodeVersion("22.19.1")).toThrowError(CliError);
   });
 });
 

@@ -325,7 +325,7 @@ const materializeStandaloneRuntime = async (
             "react-dom": "^19.2.0",
           },
           devDependencies: {
-            "@types/node": "^22.19.15",
+            "@types/node": "^24.12.2",
             "@types/react": "19.2.14",
             "@types/react-dom": "19.2.3",
             typescript: "6.0.2",

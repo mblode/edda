@@ -37,10 +37,7 @@ export const SiteFooter = () => (
             className="flex items-center text-foreground transition-opacity hover:opacity-70"
             href="/"
           >
-            <FileTextIcon className="mr-1.5 size-4" />
-            <span className="font-semibold text-sm leading-none tracking-tight">
-              Blode.md
-            </span>
+            <FileTextIcon className="size-6" />
           </Link>
         </div>
 

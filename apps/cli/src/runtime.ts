@@ -4,9 +4,9 @@ import { fileURLToPath } from "node:url";
 
 import { CliError, EXIT_CODES } from "./errors.js";
 
-const MIN_SUPPORTED_NODE_VERSION = [20, 17, 0] as const;
+const SUPPORTED_NODE_MAJOR = 24;
 
-const SUPPORTED_NODE_RANGE = ">=20.17.0";
+const SUPPORTED_NODE_RANGE = "24.x";
 
 const parseVersion = (input: string): [number, number, number] | null => {
   const match = /^v?(\d+)\.(\d+)\.(\d+)/.exec(input.trim());
@@ -36,18 +36,9 @@ export const isSupportedNodeVersion = (version: string): boolean => {
     return false;
   }
 
-  const [major, minor, patch] = parsed;
-  const [minMajor, minMinor, minPatch] = MIN_SUPPORTED_NODE_VERSION;
+  const [major] = parsed;
 
-  if (major !== minMajor) {
-    return major > minMajor;
-  }
-
-  if (minor !== minMinor) {
-    return minor > minMinor;
-  }
-
-  return patch >= minPatch;
+  return major === SUPPORTED_NODE_MAJOR;
 };
 
 export const assertSupportedNodeVersion = (

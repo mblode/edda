@@ -1,0 +1,6 @@
+{
+  "buildCommand": "npx turbo run build --filter=web...",
+  "framework": "nextjs",
+  "outputDirectory": ".next",
+  "regions": ["sin1"]
+}

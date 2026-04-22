@@ -1,5 +1,8 @@
 const rawDocsAppUrl = (process.env.DOCS_APP_URL ?? "").trim();
+const rawDashboardAppUrl = (process.env.DASHBOARD_APP_URL ?? "").trim();
 const docsAppUrl = rawDocsAppUrl || "http://127.0.0.1:3001";
+const dashboardAppUrl =
+  rawDashboardAppUrl || rawDocsAppUrl || "http://127.0.0.1:3002";
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -40,9 +43,15 @@ const nextConfig = {
       beforeFiles: [
         { destination: `${docsAppUrl}/docs`, source: "/docs" },
         { destination: `${docsAppUrl}/docs/:path*`, source: "/docs/:path*" },
-        { destination: `${docsAppUrl}/app`, source: "/app" },
-        { destination: `${docsAppUrl}/app/:path*`, source: "/app/:path*" },
-        { destination: `${docsAppUrl}/oauth/:path*`, source: "/oauth/:path*" },
+        { destination: `${dashboardAppUrl}/app`, source: "/app" },
+        {
+          destination: `${dashboardAppUrl}/app/:path*`,
+          source: "/app/:path*",
+        },
+        {
+          destination: `${dashboardAppUrl}/oauth/:path*`,
+          source: "/oauth/:path*",
+        },
         { destination: `${docsAppUrl}/api/:path*`, source: "/api/:path*" },
         { destination: `${docsAppUrl}/sites/:path*`, source: "/sites/:path*" },
         {
@@ -54,19 +63,27 @@ const nextConfig = {
           destination: `${docsAppUrl}/llms-full.txt`,
           source: "/llms-full.txt",
         },
-        // Cross-project /_next/* assets: when the browser requests a Next.js
-        // chunk with a Referer from /docs, /app, or /oauth (all proxied to
-        // apps/docs), forward the asset request to apps/docs so the right
-        // build serves it. Direct requests to apps/web's own /_next/* (from
-        // the marketing pages) have no /docs Referer and fall through to
-        // Next.js's built-in static handler.
+        // Cross-project /_next/* assets: when the browser requests a chunk
+        // with a Referer from a proxied surface, forward it to the matching
+        // backing app so the correct build serves it.
         {
           destination: `${docsAppUrl}/_next/:path*`,
           has: [
             {
               key: "referer",
               type: "header",
-              value: `.*\\/(docs|app|oauth)(?:\\/.*)?$`,
+              value: ".*\\/docs(?:\\/.*)?$",
+            },
+          ],
+          source: "/_next/:path*",
+        },
+        {
+          destination: `${dashboardAppUrl}/_next/:path*`,
+          has: [
+            {
+              key: "referer",
+              type: "header",
+              value: ".*\\/(app|oauth)(?:\\/.*)?$",
             },
           ],
           source: "/_next/:path*",

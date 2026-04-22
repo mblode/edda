@@ -28,13 +28,14 @@ describe("tenancy helpers", () => {
     expect(getRequestHost(headerStore)).toBe("docs.example.com");
   });
 
-  it("treats internal and root static paths as reserved without blocking docs api routes", () => {
+  it("treats internal and root static paths as reserved without blocking tenant paths", () => {
     expect(isReservedPath("/_internal/proxy")).toBe(true);
     expect(isReservedPath("/docs.json")).toBe(true);
     expect(isReservedPath("/robots.txt")).toBe(true);
     expect(isReservedPath("/logos/example-mark-dark.svg")).toBe(true);
-    expect(isReservedPath("/oauth/consent")).toBe(true);
     expect(isReservedPath("/api/overview")).toBe(true);
+    expect(isReservedPath("/oauth/consent")).toBe(false);
+    expect(isReservedPath("/app")).toBe(false);
     expect(isReservedPath("/example/sitemap.xml")).toBe(false);
   });
 

@@ -27,7 +27,7 @@
     "test:integration": "vitest run --project integration",
     "pretest:smoke": "npm run build:packages",
     "test:smoke": "vitest run --project smoke",
-    "pretest:e2e": "turbo build --filter=docs",
+    "pretest:e2e": "turbo build --filter=web --filter=docs --filter=dashboard",
     "test:e2e": "playwright test",
     "db:start": "npx supabase start",
     "db:stop": "npx supabase stop",
@@ -47,7 +47,7 @@
     "vitest": "^4.1.2"
   },
   "engines": {
-    "node": ">=18"
+    "node": "24.x"
   },
-  "packageManager": "npm@10.9.3"
+  "packageManager": "npm@11.12.1"
 }

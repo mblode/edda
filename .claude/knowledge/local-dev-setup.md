@@ -2,7 +2,7 @@
 
 ## Node version
 
-- `.nvmrc` pins `20.17.0`, but vitest 4 (via `std-env`) requires **Node 22+** to load `vitest.config.ts`. Tests fail with `ERR_REQUIRE_ESM` on Node 20. Use `nvm use 22` (any 22.x works) before running `npm run test:unit` or any vitest command.
+- `.nvmrc` pins `24.15.0`. Use `nvm use` before running `npm run test:unit` or any vitest command so local development, CI, and deploy automation all use the same Node 24 runtime.
 
 ## Package tests
 

@@ -13,7 +13,7 @@ Ship Markdown docs from GitHub in minutes. Versioned, searchable, and built so t
 
 ### GitHub
 
-1. Install the GitHub app at `github.com/apps/blodemd`
+1. Sign in with GitHub
 2. Pick a repo and a docs folder
 3. Push to `main`, deployed to `acme.blode.md`
 

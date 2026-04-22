@@ -23,7 +23,7 @@ Or run without installing:
 npx blodemd
 ```
 
-Requires Node.js 20.17+.
+Requires Node.js 24.x.
 
 ## Quick Start
 

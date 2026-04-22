@@ -2,15 +2,17 @@
 
 Ship beautiful docs from your terminal. Write MDX locally, deploy with one command.
 
-Blode.md is a multi-tenant documentation platform — serve versioned MDX docs per tenant from a shared Next.js frontend backed by a Hono API.
+Blode.md is a multi-app documentation platform — marketing in `apps/web`, tenant docs in `apps/docs`, dashboard/auth in `apps/dashboard`, and a Hono API behind them.
 
 ## Apps
 
-| App         | Description                                                                  | Port |
-| ----------- | ---------------------------------------------------------------------------- | ---- |
-| `apps/docs` | Next.js documentation frontend with dynamic tenant routing and MDX rendering | 3001 |
-| `apps/api`  | Hono REST API for multi-tenant data, content, and Vercel Blob storage        | 4000 |
-| `apps/cli`  | CLI tool for deploying docs content via the API                              | —    |
+| App              | Description                                                                         | Port     |
+| ---------------- | ----------------------------------------------------------------------------------- | -------- |
+| `apps/web`       | Next.js marketing frontend and rewrite entrypoint for `/docs`, `/app`, and `/oauth` | portless |
+| `apps/docs`      | Next.js docs frontend with dynamic tenant routing and MDX rendering                 | 3001     |
+| `apps/dashboard` | Next.js dashboard and auth frontend for `/app` and `/oauth`                         | 3002     |
+| `apps/api`       | Hono REST API for multi-tenant data, content, and Vercel Blob storage               | 4000     |
+| `apps/cli`       | CLI tool for deploying docs content via the API                                     | —        |
 
 ## Packages
 
@@ -37,7 +39,7 @@ Blode.md is a multi-tenant documentation platform — serve versioned MDX docs p
 ```sh
 npm install
 cp .env.example .env.local   # fill in DATABASE_URL, BLOB_READ_WRITE_TOKEN, etc.
-npm run dev                  # docs → http://localhost:3001  api → http://localhost:4000
+npm run dev                  # web → portless blodemd.localhost, docs → :3001, dashboard → :3002, api → :4000
 ```
 
 ## Development
@@ -47,7 +49,9 @@ npm run dev                  # docs → http://localhost:3001  api → http://lo
 npm run dev
 
 # Single app
+npx turbo run dev --filter=web
 npx turbo run dev --filter=docs
+npx turbo run dev --filter=dashboard
 npx turbo run dev --filter=api
 
 # Build all

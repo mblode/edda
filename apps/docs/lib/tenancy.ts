@@ -16,12 +16,10 @@ const DEFAULT_RESERVED_PATHS = [
   "/_next",
   "/.well-known",
   "/api",
-  "/app",
   "/docs.json",
   "/favicon.ico",
   "/llms.txt",
   "/logos",
-  "/oauth",
   "/robots.txt",
   "/sitemap.xml",
 ];

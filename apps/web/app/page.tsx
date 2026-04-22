@@ -99,18 +99,6 @@ export default function HomePage() {
     <MarketingShell>
       <section className="pb-16 pt-[calc(var(--header-height)+4rem)] md:pb-24 md:pt-[calc(var(--header-height)+7rem)] lg:pt-[calc(var(--header-height)+9rem)]">
         <div className="container flex flex-col items-center text-center">
-          <AnimatedGroup
-            className="mb-8 inline-flex items-center gap-2 rounded-full border border-border/80 bg-background/60 px-3 py-1 text-muted-foreground text-xs backdrop-blur-sm"
-            variants={{
-              container: {
-                hidden: {},
-                visible: { transition: { delayChildren: 0.1 } },
-              },
-            }}
-          >
-            <span className="inline-block size-1.5 rounded-full bg-foreground/60" />
-            <span>Docs are AI infrastructure now</span>
-          </AnimatedGroup>
           <h1 className="sr-only">The knowledge layer your AI runs on.</h1>
           <TextEffect
             aria-hidden="true"
@@ -120,19 +108,9 @@ export default function HomePage() {
             preset="fade-in-blur"
             speedSegment={0.3}
           >
-            The knowledge layer
+            The knowledge layer your AI runs on.
           </TextEffect>
-          <TextEffect
-            aria-hidden="true"
-            as="div"
-            className="h-display mx-auto mt-2 max-w-5xl text-balance text-5xl font-semibold text-muted-foreground sm:text-6xl md:text-7xl lg:text-[88px]"
-            delay={0.3}
-            per="word"
-            preset="fade-in-blur"
-            speedSegment={0.3}
-          >
-            your AI runs on.
-          </TextEffect>
+
           <TextEffect
             as="p"
             className="mx-auto mt-8 max-w-xl text-balance text-base text-muted-foreground md:text-lg"
@@ -144,6 +122,7 @@ export default function HomePage() {
             AI agents learn your product from your docs. Blode.md keeps them in
             your repo, versioned with the code, readable by people and machines.
           </TextEffect>
+
           <AnimatedGroup
             className="mt-10 flex flex-wrap items-center justify-center gap-3"
             variants={{
@@ -158,14 +137,15 @@ export default function HomePage() {
               },
             }}
           >
-            <Button asChild className="h-11 rounded-full px-6" size="lg">
+            <Button asChild className="rounded-full" size="lg">
               <Link href="/oauth/consent">Get started free</Link>
             </Button>
+
             <Button
               asChild
-              className="h-11 rounded-full px-6"
+              className="rounded-full"
               size="lg"
-              variant="ghost"
+              variant="secondary"
             >
               <Link href="/docs">Read the docs</Link>
             </Button>
@@ -189,17 +169,14 @@ export default function HomePage() {
         </AnimatedGroup>
       </section>
 
-      <section className="border-t border-border">
+      <section>
         <TextReveal>
           A folder of Markdown becomes the knowledge layer your users read and
           their agents run on. On your domain. Rebuilt on every commit.
         </TextReveal>
       </section>
 
-      <section
-        className="border-t border-border py-24 md:py-32"
-        id="how-it-works"
-      >
+      <section className="py-24 md:py-32" id="how-it-works">
         <div className="container">
           <div className="grid gap-12 md:grid-cols-[1fr_1.4fr] md:items-start">
             <div className="min-w-0">
@@ -233,10 +210,7 @@ export default function HomePage() {
                     <li className="flex gap-3">
                       <span className="text-muted-foreground">1.</span>
                       <span className="min-w-0 break-words">
-                        Install the GitHub app at{" "}
-                        <span className="font-mono text-foreground">
-                          github.com/apps/blodemd
-                        </span>
+                        Sign in with GitHub
                       </span>
                     </li>
                     <li className="flex gap-3">
@@ -397,29 +371,25 @@ export default function HomePage() {
           className="container flex flex-col items-center text-center"
           id="get-started"
         >
-          <p className="mb-6 inline-flex items-center gap-2 rounded-full border border-border/80 bg-background/60 px-3 py-1 text-muted-foreground text-xs">
-            <span className="inline-block size-1.5 rounded-full bg-foreground/60" />
-            Ship today
-          </p>
           <h2 className="h-display mx-auto max-w-4xl text-balance text-5xl font-semibold md:text-6xl lg:text-7xl">
-            Ship the knowledge layer{" "}
-            <span className="text-muted-foreground">your AI needs.</span>
+            Ship the knowledge layer your AI needs.
           </h2>
           <p className="mx-auto mt-6 max-w-xl text-balance text-muted-foreground md:text-lg">
             Sign in with GitHub, pick a repo, point us at your docs folder. Live
             in under a minute. Every push ships itself from there.
           </p>
           <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
-            <Button asChild className="h-11 rounded-full px-6" size="lg">
-              <Link href="/oauth/consent">Ship your docs</Link>
+            <Button asChild className="rounded-full" size="lg">
+              <Link href="/oauth/consent">Get started free</Link>
             </Button>
+
             <Button
               asChild
-              className="h-11 rounded-full px-6"
+              className="rounded-full"
               size="lg"
-              variant="ghost"
+              variant="secondary"
             >
-              <Link href="/pricing">See pricing</Link>
+              <Link href="/docs">Read the docs</Link>
             </Button>
           </div>
         </div>

@@ -91,42 +91,6 @@ const getRedirectPathname = (
   return toMarkdownDocHref(relativeSlug, targetBasePath);
 };
 
-const SUPABASE_AUTH_COOKIE_PREFIX = "sb-";
-const SUPABASE_AUTH_COOKIE_SUFFIX = "-auth-token";
-
-const hasSupabaseAuthCookie = (request: NextRequest) => {
-  for (const cookie of request.cookies.getAll()) {
-    if (
-      cookie.name.startsWith(SUPABASE_AUTH_COOKIE_PREFIX) &&
-      cookie.name.includes(SUPABASE_AUTH_COOKIE_SUFFIX) &&
-      cookie.value.length > 0
-    ) {
-      return true;
-    }
-  }
-  return false;
-};
-
-const maybeRedirectUnauthenticatedApp = (
-  request: NextRequest
-): NextResponse | null => {
-  const { pathname } = request.nextUrl;
-  const isAppPath = pathname === "/app" || pathname.startsWith("/app/");
-  if (!isAppPath) {
-    return null;
-  }
-  const isGithubCallback =
-    pathname === "/app/github/callback" ||
-    pathname.startsWith("/app/github/callback/");
-  if (isGithubCallback || hasSupabaseAuthCookie(request)) {
-    return null;
-  }
-  const consentUrl = request.nextUrl.clone();
-  consentUrl.pathname = "/oauth/consent";
-  consentUrl.search = `?redirect_to=${encodeURIComponent(pathname + request.nextUrl.search)}`;
-  return NextResponse.redirect(consentUrl, 307);
-};
-
 // oxlint-disable-next-line eslint/complexity
 export const proxy = async (request: NextRequest) => {
   const { pathname } = request.nextUrl;
@@ -134,11 +98,6 @@ export const proxy = async (request: NextRequest) => {
 
   if (pathname.startsWith("/sites")) {
     return new NextResponse("Not Found", { status: 404 });
-  }
-
-  const edgeRedirect = maybeRedirectUnauthenticatedApp(request);
-  if (edgeRedirect) {
-    return edgeRedirect;
   }
 
   const host = getRequestHost(request.headers);
