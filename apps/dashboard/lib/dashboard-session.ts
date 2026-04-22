@@ -7,7 +7,7 @@ import {
 import { cookies } from "next/headers";
 import { cache } from "react";
 
-export interface DashboardSession {
+interface DashboardSession {
   accessToken: string;
   authId: string;
   userEmail: string;

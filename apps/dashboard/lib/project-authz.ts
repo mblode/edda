@@ -4,7 +4,7 @@ import { cache } from "react";
 import { getDashboardSession } from "./dashboard-session";
 import { projectDao, userDao } from "./db";
 
-export interface AuthorizedProjectContext {
+interface AuthorizedProjectContext {
   accessToken: string;
   project: ProjectRecord;
   user: UserRecord;

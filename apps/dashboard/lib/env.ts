@@ -16,8 +16,5 @@ const readTrimmedEnv = (name: string) => {
 export const docsApiBase =
   process.env.NEXT_PUBLIC_API_URL?.trim() || "http://localhost:4000";
 
-export const platformAssetPrefix =
-  readTrimmedEnv("PLATFORM_ASSET_PREFIX") ?? "";
-
 export const platformRootDomain =
   readTrimmedEnv("PLATFORM_ROOT_DOMAIN") ?? "blode.md";

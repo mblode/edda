@@ -13,22 +13,10 @@ const Dialog = ({
   <DialogPrimitive.Root data-slot="dialog" {...props} />
 );
 
-const DialogTrigger = ({
-  ...props
-}: React.ComponentProps<typeof DialogPrimitive.Trigger>) => (
-  <DialogPrimitive.Trigger data-slot="dialog-trigger" {...props} />
-);
-
 const DialogPortal = ({
   ...props
 }: React.ComponentProps<typeof DialogPrimitive.Portal>) => (
   <DialogPrimitive.Portal data-slot="dialog-portal" {...props} />
-);
-
-const DialogClose = ({
-  ...props
-}: React.ComponentProps<typeof DialogPrimitive.Close>) => (
-  <DialogPrimitive.Close data-slot="dialog-close" {...props} />
 );
 
 const DialogOverlay = ({
@@ -134,13 +122,9 @@ const DialogDescription = ({
 
 export {
   Dialog,
-  DialogClose,
   DialogContent,
   DialogDescription,
   DialogFooter,
   DialogHeader,
-  DialogOverlay,
-  DialogPortal,
   DialogTitle,
-  DialogTrigger,
 };

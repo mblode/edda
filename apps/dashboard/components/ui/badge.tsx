@@ -57,5 +57,4 @@ const Badge = ({
     },
   });
 
-export { Badge, badgeVariants };
-export type { BadgeProps };
+export { Badge };

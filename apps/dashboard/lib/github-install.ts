@@ -2,12 +2,6 @@ import { apiFetch } from "@/lib/api-client";
 
 export const GITHUB_INSTALL_STATE_KEY = "blodemd:install-state";
 
-export interface PendingGithubInstall {
-  projectId: string;
-  projectSlug: string;
-  state: string;
-}
-
 export const startGithubInstall = async ({
   accessToken,
   projectId,

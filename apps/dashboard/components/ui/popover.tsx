@@ -10,8 +10,6 @@ type PopoverInteractOutsideEvent = Event & {
 };
 
 interface PopoverContextType {
-  anchor: HTMLElement | null;
-  setAnchor: (anchor: HTMLElement | null) => void;
   setOnInteractOutside: (
     handler?: (event: PopoverInteractOutsideEvent) => void
   ) => void;
@@ -23,22 +21,10 @@ const PopoverContext = React.createContext<PopoverContextType | undefined>(
 
 const usePopoverContext = () => React.useContext(PopoverContext);
 
-const setRef = <T,>(ref: React.Ref<T> | undefined, value: T) => {
-  if (typeof ref === "function") {
-    ref(value);
-    return;
-  }
-
-  if (ref && "current" in ref) {
-    ref.current = value;
-  }
-};
-
 const Popover = ({
   onOpenChange,
   ...props
 }: React.ComponentProps<typeof PopoverPrimitive.Root>) => {
-  const [anchor, setAnchor] = React.useState<HTMLElement | null>(null);
   const onInteractOutsideRef = React.useRef<
     ((event: PopoverInteractOutsideEvent) => void) | null
   >(null);
@@ -68,13 +54,11 @@ const Popover = ({
 
   const contextValue = React.useMemo<PopoverContextType>(
     () => ({
-      anchor,
-      setAnchor,
       setOnInteractOutside: (handler) => {
         onInteractOutsideRef.current = handler ?? null;
       },
     }),
-    [anchor]
+    []
   );
 
   return (
@@ -163,7 +147,6 @@ const PopoverContent = ({
       <PopoverPrimitive.Positioner
         align={align}
         alignOffset={alignOffset}
-        anchor={popoverContext?.anchor}
         className="isolate z-50"
         side={side}
         sideOffset={sideOffset}
@@ -185,83 +168,4 @@ const PopoverContent = ({
   );
 };
 
-const PopoverAnchor = ({
-  asChild = false,
-  children,
-  ref,
-  ...props
-}: React.ComponentProps<"div"> & {
-  asChild?: boolean;
-}) => {
-  const popoverContext = usePopoverContext();
-
-  const handleRef = React.useCallback(
-    (node: HTMLElement | null) => {
-      popoverContext?.setAnchor(node);
-      setRef(ref as React.Ref<HTMLElement> | undefined, node);
-    },
-    [popoverContext, ref]
-  );
-
-  if (asChild && React.isValidElement(children)) {
-    const child = children as React.ReactElement<{
-      ref?: React.Ref<HTMLElement>;
-      [key: string]: unknown;
-    }>;
-
-    // oxlint-disable-next-line eslint-plugin-react/no-clone-element -- asChild escape hatch
-    return React.cloneElement(child, {
-      ...props,
-      ref: (node: HTMLElement | null) => {
-        setRef(child.props.ref, node);
-        handleRef(node);
-      },
-    });
-  }
-
-  return (
-    <div data-slot="popover-anchor" ref={handleRef} {...props}>
-      {children}
-    </div>
-  );
-};
-
-const PopoverHeader = ({
-  className,
-  ...props
-}: React.ComponentProps<"div">) => (
-  <div
-    className={cn("flex flex-col gap-1 text-sm", className)}
-    data-slot="popover-header"
-    {...props}
-  />
-);
-
-const PopoverTitle = ({ className, ...props }: React.ComponentProps<"h2">) => (
-  <div
-    className={cn("font-medium", className)}
-    data-slot="popover-title"
-    {...props}
-  />
-);
-
-const PopoverDescription = ({
-  className,
-  ...props
-}: React.ComponentProps<"p">) => (
-  <p
-    className={cn("text-muted-foreground", className)}
-    data-slot="popover-description"
-    {...props}
-  />
-);
-
-export {
-  Popover,
-  PopoverTrigger,
-  PopoverContent,
-  PopoverAnchor,
-  PopoverHeader,
-  PopoverTitle,
-  PopoverDescription,
-};
+export { Popover, PopoverTrigger, PopoverContent };

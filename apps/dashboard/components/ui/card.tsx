@@ -51,17 +51,6 @@ const CardDescription = ({
   />
 );
 
-const CardAction = ({ className, ...props }: React.ComponentProps<"div">) => (
-  <div
-    className={cn(
-      "col-start-2 row-span-2 row-start-1 self-start justify-self-end",
-      className
-    )}
-    data-slot="card-action"
-    {...props}
-  />
-);
-
 const CardContent = ({ className, ...props }: React.ComponentProps<"div">) => (
   <div
     className={cn("px-4 group-data-[size=sm]/card:px-3", className)}
@@ -86,7 +75,6 @@ export {
   CardHeader,
   CardFooter,
   CardTitle,
-  CardAction,
   CardDescription,
   CardContent,
 };

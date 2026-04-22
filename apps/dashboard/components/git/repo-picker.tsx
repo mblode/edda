@@ -49,13 +49,13 @@ import { GITHUB_INSTALL_STATE_KEY } from "@/lib/github-install";
 import { timeAgo } from "@/lib/time-ago";
 import { cn } from "@/lib/utils";
 
-export interface RepoPickerInstallation {
+interface RepoPickerInstallation {
   id: number;
   accountLogin: string;
   accountType: string;
 }
 
-export interface RepoPickerProps {
+interface RepoPickerProps {
   accessToken: string;
   installations: RepoPickerInstallation[];
   onAddAccount: () => void;
