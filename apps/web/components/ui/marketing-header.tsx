@@ -74,6 +74,7 @@ export const MarketingHeader = () => {
           {navLinks.map((link) =>
             link.external ? (
               <a
+                aria-label={`${link.label} (opens in new tab)`}
                 className="rounded-full px-3 py-1.5 text-muted-foreground text-sm transition-colors hover:bg-muted hover:text-foreground"
                 href={link.href}
                 key={link.href}
@@ -122,10 +123,19 @@ export const MarketingHeader = () => {
                 <SheetTitle className="text-base">Menu</SheetTitle>
               </SheetHeader>
               <div className="flex flex-col gap-1 px-4">
+                <SheetClose asChild>
+                  <Link
+                    className="mb-2 inline-flex h-10 items-center justify-center rounded-full bg-foreground px-4 font-medium text-background text-sm transition-opacity hover:opacity-90"
+                    href="/oauth/consent"
+                  >
+                    Sign up
+                  </Link>
+                </SheetClose>
                 {navLinks.map((link) => (
                   <SheetClose asChild key={link.href}>
                     {link.external ? (
                       <a
+                        aria-label={`${link.label} (opens in new tab)`}
                         className="rounded-md px-2 py-2 text-lg font-medium transition-colors hover:bg-muted"
                         href={link.href}
                         rel="noopener noreferrer"

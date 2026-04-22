@@ -14,7 +14,7 @@ const renderLink = ({
 }) =>
   external ? (
     <a
-      className="flex h-7 items-center text-[13px] text-muted-foreground leading-[19.5px] tracking-[-0.13px] transition-colors hover:text-foreground"
+      className="footer-link"
       href={href}
       rel="noopener noreferrer"
       target="_blank"
@@ -22,10 +22,7 @@ const renderLink = ({
       {label}
     </a>
   ) : (
-    <Link
-      className="flex h-7 items-center text-[13px] text-muted-foreground leading-[19.5px] tracking-[-0.13px] transition-colors hover:text-foreground"
-      href={href}
-    >
+    <Link className="footer-link" href={href}>
       {label}
     </Link>
   );
@@ -49,7 +46,7 @@ export const SiteFooter = () => (
 
         {siteConfig.footerNav.map((group) => (
           <div className="lg:px-8" key={group.label}>
-            <h3 className="mb-6 font-medium text-[13px] text-foreground leading-[19.5px] tracking-[-0.13px]">
+            <h3 className="mb-6 font-medium text-foreground text-xs leading-5 tracking-tight">
               {group.label}
             </h3>
             <ul className="flex flex-col">

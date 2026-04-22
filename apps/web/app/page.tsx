@@ -97,7 +97,7 @@ async rewrites() {
 export default function HomePage() {
   return (
     <MarketingShell>
-      <section className="pb-16 pt-28 md:pb-24 md:pt-36 lg:pt-44">
+      <section className="pb-16 pt-[calc(var(--header-height)+4rem)] md:pb-24 md:pt-[calc(var(--header-height)+7rem)] lg:pt-[calc(var(--header-height)+9rem)]">
         <div className="container flex flex-col items-center text-center">
           <AnimatedGroup
             className="mb-8 inline-flex items-center gap-2 rounded-full border border-border/80 bg-background/60 px-3 py-1 text-muted-foreground text-xs backdrop-blur-sm"
@@ -111,8 +111,10 @@ export default function HomePage() {
             <span className="inline-block size-1.5 rounded-full bg-foreground/60" />
             <span>Docs are AI infrastructure now</span>
           </AnimatedGroup>
+          <h1 className="sr-only">The knowledge layer your AI runs on.</h1>
           <TextEffect
-            as="h1"
+            aria-hidden="true"
+            as="div"
             className="h-display mx-auto max-w-5xl text-balance text-5xl font-semibold sm:text-6xl md:text-7xl lg:text-[88px]"
             per="word"
             preset="fade-in-blur"
@@ -121,7 +123,8 @@ export default function HomePage() {
             The knowledge layer
           </TextEffect>
           <TextEffect
-            as="p"
+            aria-hidden="true"
+            as="div"
             className="h-display mx-auto mt-2 max-w-5xl text-balance text-5xl font-semibold text-muted-foreground sm:text-6xl md:text-7xl lg:text-[88px]"
             delay={0.3}
             per="word"
@@ -203,7 +206,7 @@ export default function HomePage() {
               <p className="mb-4 text-sm font-medium text-muted-foreground">
                 How it works
               </p>
-              <h2 className="h-display text-balance text-3xl font-bold md:text-4xl">
+              <h2 className="h-title text-balance text-3xl font-semibold md:text-4xl">
                 Knowledge that ships with the code
               </h2>
               <p className="measure mt-4 text-muted-foreground">
@@ -256,7 +259,7 @@ export default function HomePage() {
               </TabsContent>
 
               <TabsContent className="mt-6 min-w-0" value="cli">
-                <div className="relative overflow-hidden rounded-xl bg-surface p-6 font-mono text-sm md:p-8">
+                <div className="relative overflow-hidden rounded-xl bg-surface px-6 pb-6 pt-14 font-mono text-sm md:p-8 md:pt-8">
                   <CopyButton
                     className="absolute right-3 top-3 text-muted-foreground"
                     content={`npm i -g blodemd\nblodemd login\nblodemd new docs\nblodemd push docs`}
@@ -266,7 +269,7 @@ export default function HomePage() {
                   <div className="space-y-6">
                     <div>
                       <p className="text-muted-foreground"># install the CLI</p>
-                      <p className="break-all">
+                      <p className="break-words">
                         <span className="text-muted-foreground">$</span> npm i
                         -g blodemd
                       </p>
@@ -275,7 +278,7 @@ export default function HomePage() {
                       <p className="text-muted-foreground">
                         # browser sign-in with GitHub
                       </p>
-                      <p className="break-all">
+                      <p className="break-words">
                         <span className="text-muted-foreground">$</span> blodemd
                         login
                       </p>
@@ -284,14 +287,14 @@ export default function HomePage() {
                       <p className="text-muted-foreground">
                         # scaffold from your project root
                       </p>
-                      <p className="break-all">
+                      <p className="break-words">
                         <span className="text-muted-foreground">$</span> blodemd
                         new docs
                       </p>
                     </div>
                     <div>
                       <p className="text-muted-foreground"># ship it</p>
-                      <p className="break-all">
+                      <p className="break-words">
                         <span className="text-muted-foreground">$</span> blodemd
                         push docs
                       </p>
@@ -313,7 +316,7 @@ export default function HomePage() {
             <p className="mb-4 text-sm font-medium text-muted-foreground">
               What you get
             </p>
-            <h2 className="h-display text-balance text-3xl font-bold md:text-4xl">
+            <h2 className="h-title text-balance text-3xl font-semibold md:text-4xl">
               Everything the knowledge layer needs
             </h2>
             <p className="measure mt-4 text-muted-foreground">
@@ -344,7 +347,7 @@ export default function HomePage() {
               <p className="mb-4 text-sm font-medium text-muted-foreground">
                 On your domain
               </p>
-              <h2 className="h-display text-balance text-3xl font-bold md:text-4xl">
+              <h2 className="h-title text-balance text-3xl font-semibold md:text-4xl">
                 Keep docs under the domain your users already trust
               </h2>
               <p className="measure mt-4 text-muted-foreground">
@@ -373,12 +376,12 @@ export default function HomePage() {
                 <TabsContent className="mt-6 min-w-0" key={key} value={key}>
                   <div className="relative min-w-0">
                     <CopyButton
-                      className="absolute right-3 top-3 text-muted-foreground"
+                      className="absolute right-3 top-3 z-10 text-muted-foreground"
                       content={snippet}
                       size="sm"
                       variant="ghost"
                     />
-                    <pre className="overflow-x-auto rounded-xl bg-surface p-6 font-mono text-sm md:p-8">
+                    <pre className="overflow-x-auto rounded-xl bg-surface px-6 pb-6 pt-14 font-mono text-sm md:p-8 md:pt-8">
                       {snippet}
                     </pre>
                   </div>
@@ -408,7 +411,7 @@ export default function HomePage() {
           </p>
           <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
             <Button asChild className="h-11 rounded-full px-6" size="lg">
-              <Link href="/oauth/consent">Get started free</Link>
+              <Link href="/oauth/consent">Ship your docs</Link>
             </Button>
             <Button
               asChild
@@ -416,7 +419,7 @@ export default function HomePage() {
               size="lg"
               variant="ghost"
             >
-              <Link href="/docs">Read the docs</Link>
+              <Link href="/pricing">See pricing</Link>
             </Button>
           </div>
         </div>

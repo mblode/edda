@@ -294,8 +294,17 @@
   letter-spacing: -0.02em;
 }
 
+@utility h-title {
+  line-height: 1.05;
+  letter-spacing: -0.01em;
+}
+
 @utility measure {
   max-width: 65ch;
+}
+
+@utility footer-link {
+  @apply flex h-7 items-center text-muted-foreground text-xs leading-5 tracking-tight transition-colors hover:text-foreground;
 }
 
 @utility no-scrollbar {
