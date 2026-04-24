@@ -32,6 +32,7 @@ let currentDeployment = {
 };
 
 const getByProjectId = vi.fn(() => Promise.resolve(currentDeployment));
+const getById = vi.fn(() => Promise.resolve(currentProject));
 const getBySlugUnique = vi.fn(() => Promise.resolve(currentProject));
 const update = vi.fn((_id: string, input: Record<string, unknown>) =>
   Promise.resolve({
@@ -40,6 +41,8 @@ const update = vi.fn((_id: string, input: Record<string, unknown>) =>
     updatedAt: new Date("2024-01-02T00:00:00.000Z"),
   })
 );
+const syncProjectTenantEdgeConfigMock = vi.fn(() => Promise.resolve());
+const prewarmProjectMock = vi.fn(() => Promise.resolve());
 
 let finalizeImplementation: () => Promise<{
   fileCount: number;
@@ -72,6 +75,7 @@ vi.mock("./lib/db", async () => {
     },
     projectDao: {
       ...actual.projectDao,
+      getById,
       getBySlugUnique,
     },
   };
@@ -89,11 +93,11 @@ vi.mock("./lib/publish", async () => {
 });
 
 vi.mock("./lib/edge-config", () => ({
-  syncProjectTenantEdgeConfig: vi.fn(() => Promise.resolve()),
+  syncProjectTenantEdgeConfig: syncProjectTenantEdgeConfigMock,
 }));
 
 vi.mock("./lib/prewarm", () => ({
-  prewarmProject: vi.fn(() => Promise.resolve()),
+  prewarmProject: prewarmProjectMock,
 }));
 
 const revalidateProjectMock = vi.fn(() => Promise.resolve());
@@ -127,8 +131,11 @@ beforeEach(() => {
       manifestUrl: "https://example.com/manifest.json",
     });
   getByProjectId.mockClear();
+  getById.mockClear();
   getBySlugUnique.mockClear();
   update.mockClear();
+  syncProjectTenantEdgeConfigMock.mockClear();
+  prewarmProjectMock.mockClear();
   revalidateProjectMock.mockClear();
   revalidateProjectMock.mockImplementation(() => Promise.resolve());
 });
@@ -144,6 +151,47 @@ describe("deployments API", () => {
     await expect(response.json()).resolves.toEqual({
       error: "Only finalized successful deployments can be promoted.",
     });
+  });
+
+  it("refreshes docs when promoting an existing deployment", async () => {
+    currentDeployment = {
+      ...currentDeployment,
+      manifestUrl: "https://example.com/manifest.json",
+      status: "successful",
+    };
+
+    const response = await request(
+      "/projects/7c3afcb6-c6e3-4a0a-948a-d8274210c829/deployments/649a2cb8-52ea-492d-8d76-d6787f1e49b6",
+      { method: "PATCH" }
+    );
+
+    expect(response.status).toBe(200);
+    expect(syncProjectTenantEdgeConfigMock).toHaveBeenCalledWith(
+      currentProject.id
+    );
+    expect(revalidateProjectMock).toHaveBeenCalledWith(currentProject.slug);
+    expect(prewarmProjectMock).toHaveBeenCalledWith(currentProject.id);
+  });
+
+  it("rejects re-finalizing a terminal deployment", async () => {
+    currentDeployment = {
+      ...currentDeployment,
+      manifestUrl: "https://example.com/manifest.json",
+      promotedAt: new Date("2024-01-02T00:00:00.000Z"),
+      status: "successful",
+    };
+
+    const response = await request(
+      "/projects/slug/example/deployments/649a2cb8-52ea-492d-8d76-d6787f1e49b6/finalize",
+      {
+        body: JSON.stringify({ promote: false }),
+        headers: { "content-type": "application/json" },
+        method: "POST",
+      }
+    );
+
+    expect(response.status).toBe(400);
+    expect(update).not.toHaveBeenCalled();
   });
 
   it("maps finalize server failures to 502", async () => {

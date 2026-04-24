@@ -37,6 +37,9 @@ describe("tenancy helpers", () => {
     expect(isReservedPath("/oauth/consent")).toBe(true);
     expect(isReservedPath("/app")).toBe(true);
     expect(isReservedPath("/example/sitemap.xml")).toBe(false);
+    expect(isReservedPath("/apiary")).toBe(false);
+    expect(isReservedPath("/application")).toBe(false);
+    expect(isReservedPath("/oauth-guide")).toBe(false);
   });
 
   it("treats root-level static assets as reserved", () => {

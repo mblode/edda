@@ -52,6 +52,10 @@ Notes from the team building blode.md.
 
 Latest updates to the blode.md platform.
 `,
+  "/pricing": `# Pricing
+
+Blode.md is currently free for hosted projects and MIT licensed for self-hosting.
+`,
   "/privacy": `# Privacy Policy
 
 How blode.md collects, uses, and protects your information.

@@ -4,6 +4,7 @@ export const CANONICAL_PATHS = [
   "/",
   "/about",
   "/blog",
+  "/changelog",
   "/pricing",
   "/privacy",
   "/security",

@@ -26,4 +26,25 @@ describe("renderMdx", () => {
     expect(html).toContain("src/config.ts");
     expect(html).toContain("data-rehype-pretty-code-figure");
   });
+
+  it("resolves root-relative MDX links through the tenant base path", async () => {
+    const rendered = await renderMdx(
+      "[Frontmatter](/content/frontmatter)",
+      "/docs"
+    );
+    const html = renderToStaticMarkup(rendered.content);
+
+    expect(html).toContain('href="/docs/content/frontmatter"');
+  });
+
+  it("resolves dot-relative MDX links from the source page directory", async () => {
+    const rendered = await renderMdx(
+      "[Next](./next)",
+      "/docs",
+      "guides/intro.mdx"
+    );
+    const html = renderToStaticMarkup(rendered.content);
+
+    expect(html).toContain('href="/docs/guides/next"');
+  });
 });

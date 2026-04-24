@@ -458,7 +458,7 @@ Sitemap: ${origin}${toDocHref("sitemap.xml", basePath)}
 # Append .md to any page URL for raw markdown
 
 # Agent Skills
-# ${origin}/.well-known/skills/index.json - Discover installable agent skills`;
+# ${origin}${toDocHref(".well-known/skills/index.json", basePath)} - Discover installable agent skills`;
 };
 
 const getNavGroupSegments = (
@@ -515,7 +515,7 @@ export const buildTenantLlmsTxt = async (
     "",
     `Sitemap: ${origin}${toDocHref("sitemap.xml", basePath)}`,
     `Full content: ${origin}${toDocHref("llms-full.txt", basePath)}`,
-    `Skills: ${origin}/.well-known/skills/index.json`,
+    `Skills: ${origin}${toDocHref(".well-known/skills/index.json", basePath)}`,
     ...segmentLines,
     "",
     "## Docs",
@@ -686,7 +686,8 @@ export const listTenantLlmsSegments = async (
 
 export const getPageJson = async (
   tenant: Tenant,
-  slug: string
+  slug: string,
+  context: TenantRequestContext = {}
 ): Promise<Record<string, unknown> | null> => {
   const data = await loadTenantUrlData(tenant);
   const contentEntry = data.contentIndex.bySlug.get(slug);
@@ -694,9 +695,10 @@ export const getPageJson = async (
     return null;
   }
 
-  const basePath = tenant.pathPrefix ? `/${tenant.pathPrefix}` : "";
-  const url = `https://${tenant.primaryDomain}${toDocHref(slug, basePath)}`;
-  const markdownUrl = `https://${tenant.primaryDomain}${toMarkdownDocHref(slug, basePath)}`;
+  const origin = getCanonicalOrigin(tenant, context);
+  const basePath = getCanonicalDocBasePath(tenant, context);
+  const url = `${origin}${toDocHref(slug, basePath)}`;
+  const markdownUrl = `${origin}${toMarkdownDocHref(slug, basePath)}`;
 
   const result: Record<string, unknown> = {
     "@context": "https://schema.org",

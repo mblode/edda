@@ -69,6 +69,16 @@ const ROOT_TENANT_UTILITY_PATHS = new Set([
   "/robots.txt",
   "/sitemap.xml",
 ]);
+const WELL_KNOWN_SKILLS_SEGMENT = "/.well-known/skills/";
+const LLMS_SEGMENT_SEGMENT = "/llms/";
+
+export const isTenantUtilityPath = (pathname: string) =>
+  ROOT_TENANT_UTILITY_PATHS.has(pathname) ||
+  pathname.startsWith(WELL_KNOWN_SKILLS_SEGMENT) ||
+  (pathname.startsWith(LLMS_SEGMENT_SEGMENT) && pathname.endsWith(".txt"));
+
+const isPathMatch = (pathname: string, prefix: string) =>
+  pathname === prefix || pathname.startsWith(`${prefix}/`);
 
 const slugifyPath = (value: string) => {
   const trimmed = value
@@ -134,7 +144,7 @@ export const isReservedPath = (pathname: string) => {
   if (isRootStaticAsset(pathname)) {
     return true;
   }
-  return DEFAULT_RESERVED_PATHS.some((prefix) => pathname.startsWith(prefix));
+  return DEFAULT_RESERVED_PATHS.some((prefix) => isPathMatch(pathname, prefix));
 };
 
 const resolveSubdomainBasePath = (pathname: string): string => {
@@ -157,7 +167,7 @@ const buildTenantPathResolution = (
   pathname: string,
   basePath: string
 ) => {
-  if (ROOT_TENANT_UTILITY_PATHS.has(pathname)) {
+  if (isTenantUtilityPath(pathname)) {
     return {
       basePath,
       host,

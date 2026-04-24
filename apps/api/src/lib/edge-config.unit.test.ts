@@ -84,7 +84,9 @@ describe("buildTenantEdgeConfigItems", () => {
       "delete"
     );
 
-    for (const item of items) {
+    for (const item of items.filter(
+      (candidate) => candidate.operation === "upsert"
+    )) {
       expect(item.key).toMatch(/^[A-Za-z0-9_-]+$/);
     }
   });

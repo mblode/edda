@@ -1,7 +1,11 @@
+import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 
 import { computeETag, handleIfNoneMatch } from "@/lib/etag";
-import { getPageJson } from "@/lib/tenant-static";
+import {
+  getPageJson,
+  getTenantRequestContextFromHeaders,
+} from "@/lib/tenant-static";
 import { getTenantBySlug } from "@/lib/tenants";
 
 export const dynamic = "force-dynamic";
@@ -19,7 +23,11 @@ export const GET = async (
   }
 
   const slugKey = slug.join("/") || "index";
-  const data = await getPageJson(tenant, slugKey);
+  const requestContext = getTenantRequestContextFromHeaders(
+    tenant,
+    await headers()
+  );
+  const data = await getPageJson(tenant, slugKey, requestContext);
   if (!data) {
     return new NextResponse("Not found", { status: 404 });
   }

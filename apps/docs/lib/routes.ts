@@ -57,7 +57,19 @@ export const getMarkdownExportSlug = (pathname: string, basePath = "") => {
 export const isExternalHref = (href: string) =>
   ABSOLUTE_URL_REGEX.test(href) || href.startsWith("//");
 
-export const resolveHref = (href: string, basePath = "") => {
+const isDotRelativeHref = (href: string) =>
+  href.startsWith("./") || href.startsWith("../");
+
+const resolveDotRelativePath = (pathPart: string, currentPath: string) => {
+  const cleanCurrentPath = normalizePath(currentPath);
+  const currentDirectory = cleanCurrentPath.includes("/")
+    ? cleanCurrentPath.slice(0, cleanCurrentPath.lastIndexOf("/") + 1)
+    : "";
+  const resolved = new URL(pathPart, `https://docs.local/${currentDirectory}`);
+  return normalizePath(resolved.pathname) || "index";
+};
+
+export const resolveHref = (href: string, basePath = "", currentPath = "") => {
   if (
     !href ||
     href.startsWith("#") ||
@@ -70,10 +82,14 @@ export const resolveHref = (href: string, basePath = "") => {
   const suffixIndex = href.search(/[?#]/);
   const pathPart = suffixIndex === -1 ? href : href.slice(0, suffixIndex);
   const suffix = suffixIndex === -1 ? "" : href.slice(suffixIndex);
+  const resolvedPath =
+    currentPath && isDotRelativeHref(pathPart)
+      ? resolveDotRelativePath(pathPart, currentPath)
+      : pathPart;
   const normalizedBase = basePath
     ? withLeadingSlash(basePath).replaceAll(/\/+$/g, "")
     : "";
-  const normalizedPath = withLeadingSlash(pathPart || "/");
+  const normalizedPath = withLeadingSlash(resolvedPath || "/");
 
   if (
     normalizedBase &&
@@ -83,5 +99,5 @@ export const resolveHref = (href: string, basePath = "") => {
     return `${normalizedPath}${suffix}`;
   }
 
-  return `${toDocHref(pathPart || "index", basePath)}${suffix}`;
+  return `${toDocHref(resolvedPath || "index", basePath)}${suffix}`;
 };

@@ -20,6 +20,7 @@ export default async function OAuthConsentPage({
     <ConsentForm
       authorizationId={getSearchParam(resolvedSearchParams, "authorization_id")}
       errorMessage={getSearchParam(resolvedSearchParams, "error")}
+      redirectTo={getSearchParam(resolvedSearchParams, "redirect_to")}
     />
   );
 }

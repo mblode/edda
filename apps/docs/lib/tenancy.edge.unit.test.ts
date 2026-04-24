@@ -79,6 +79,28 @@ describe("resolveTenantFromEdgeConfig", () => {
     });
   });
 
+  it("resolves llms segment routes for path-prefixed custom domains", async () => {
+    edgeConfigMocks.getTenantEdgeHostRecord.mockResolvedValue({
+      host: "docs.example.com",
+      pathPrefix: "/docs",
+      strategy: "custom-domain",
+      tenant,
+      version: 1,
+    });
+
+    const resolution = await resolveTenantFromEdgeConfig(
+      "docs.example.com",
+      "/llms/api.txt"
+    );
+
+    expect(resolution).toMatchObject({
+      basePath: "/docs",
+      host: "docs.example.com",
+      rewrittenPath: "/sites/example/llms/api.txt",
+      strategy: "custom-domain",
+    });
+  });
+
   it("resolves a subdomain via the tenant slug record", async () => {
     edgeConfigMocks.getTenantEdgeHostRecord.mockResolvedValue(null);
     edgeConfigMocks.getTenantEdgeSlugRecord.mockResolvedValue({

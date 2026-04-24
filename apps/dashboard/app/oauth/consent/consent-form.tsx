@@ -14,12 +14,25 @@ import {
 import { FieldError, FieldGroup } from "@/components/ui/field";
 import { createSupabaseClient } from "@/lib/supabase";
 
-import { approveOrRedirect, formatAuthorizationError } from "../client-utils";
+import {
+  approveOrRedirect,
+  formatAuthorizationError,
+  redirectIfAlreadyAuthorized,
+} from "../client-utils";
 
 interface ConsentFormProps {
   authorizationId: string | null;
   errorMessage: string | null;
+  redirectTo: string | null;
 }
+
+const DEFAULT_REDIRECT = "/app";
+
+const getSafeDashboardPath = (value: string | null) =>
+  value &&
+  (value === DEFAULT_REDIRECT || value.startsWith(`${DEFAULT_REDIRECT}/`))
+    ? value
+    : DEFAULT_REDIRECT;
 
 const GitHubMark = () => (
   <svg
@@ -39,6 +52,7 @@ const GitHubMark = () => (
 export const ConsentForm = ({
   authorizationId,
   errorMessage,
+  redirectTo,
 }: ConsentFormProps) => {
   const [session, setSession] = useState<{
     checked: boolean;
@@ -63,13 +77,14 @@ export const ConsentForm = ({
       } = await supabase.auth.getSession();
 
       if (currentSession?.user?.email && authorizationId) {
-        const errorText = await approveOrRedirect(authorizationId);
+        const errorText = await redirectIfAlreadyAuthorized(authorizationId);
         if (errorText) {
           setSession({ checked: true, email: currentSession.user.email });
           setAutoApproveError(errorText);
           return;
         }
 
+        setSession({ checked: true, email: currentSession.user.email });
         return;
       }
 
@@ -103,7 +118,10 @@ export const ConsentForm = ({
     if (authorizationId) {
       redirect.searchParams.set("authorization_id", authorizationId);
     } else {
-      redirect.searchParams.set("redirect_to", "/app");
+      redirect.searchParams.set(
+        "redirect_to",
+        getSafeDashboardPath(redirectTo)
+      );
     }
     const { error } = await supabase.auth.signInWithOAuth({
       options: {
@@ -116,7 +134,7 @@ export const ConsentForm = ({
       setSignInError(error.message);
       setIsSigningIn(false);
     }
-  }, [authorizationId]);
+  }, [authorizationId, redirectTo]);
 
   const isAuthenticated = session.checked && session.email !== null;
   const displayError = autoApproveError;
@@ -164,7 +182,9 @@ export const ConsentForm = ({
                 </Button>
               ) : (
                 <Button asChild className="w-full">
-                  <Link href="/app">Go to dashboard</Link>
+                  <Link href={getSafeDashboardPath(redirectTo)}>
+                    Go to dashboard
+                  </Link>
                 </Button>
               )}
               <button

@@ -107,7 +107,11 @@ const ProjectDetailsCard = ({
             <Input
               className="w-[300px] max-w-full"
               id="name"
-              onChange={(event) => setName(event.target.value)}
+              onChange={(event) => {
+                setDetailsError(null);
+                setDetailsSaved(false);
+                setName(event.target.value);
+              }}
               value={name}
             />
           </Field>
@@ -116,7 +120,11 @@ const ProjectDetailsCard = ({
             <Input
               className="w-[300px] max-w-full"
               id="deployment-name"
-              onChange={(event) => setDeploymentName(event.target.value)}
+              onChange={(event) => {
+                setDetailsError(null);
+                setDeploymentName(event.target.value);
+                setDetailsSaved(false);
+              }}
               value={deploymentName}
             />
             <FieldDescription>
@@ -128,7 +136,11 @@ const ProjectDetailsCard = ({
             <Input
               className="w-[300px] max-w-full"
               id="description"
-              onChange={(event) => setDescription(event.target.value)}
+              onChange={(event) => {
+                setDetailsError(null);
+                setDescription(event.target.value);
+                setDetailsSaved(false);
+              }}
               placeholder="Optional"
               value={description}
             />
@@ -253,7 +265,11 @@ const AnalyticsCard = ({ accessToken, project }: ProjectSettingsFormProps) => {
             <Input
               className="w-[300px] max-w-full"
               id="ga4"
-              onChange={(event) => setGa4Id(event.target.value)}
+              onChange={(event) => {
+                setErrorMessage(null);
+                setGa4Id(event.target.value);
+                setSaved(false);
+              }}
               placeholder="G-XXXXXXXXXX"
               value={ga4Id}
             />
@@ -266,7 +282,11 @@ const AnalyticsCard = ({ accessToken, project }: ProjectSettingsFormProps) => {
             <Input
               className="w-[300px] max-w-full"
               id="posthog-key"
-              onChange={(event) => setPosthogKey(event.target.value)}
+              onChange={(event) => {
+                setErrorMessage(null);
+                setPosthogKey(event.target.value);
+                setSaved(false);
+              }}
               placeholder="phc_..."
               value={posthogKey}
             />
@@ -279,7 +299,11 @@ const AnalyticsCard = ({ accessToken, project }: ProjectSettingsFormProps) => {
             <Input
               className="w-[300px] max-w-full"
               id="posthog-host"
-              onChange={(event) => setPosthogHost(event.target.value)}
+              onChange={(event) => {
+                setErrorMessage(null);
+                setPosthogHost(event.target.value);
+                setSaved(false);
+              }}
               placeholder="https://us.i.posthog.com"
               value={posthogHost}
             />

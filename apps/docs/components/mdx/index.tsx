@@ -2,6 +2,8 @@ import type { MDXComponents } from "mdx/types";
 import Link from "next/link";
 import type { ComponentProps } from "react";
 
+import { isExternalHref, resolveHref } from "@/lib/routes";
+
 import { Accordion, AccordionGroup } from "./accordion";
 import { AgentInstructions } from "./agent-instructions";
 import { Badge } from "./badge";
@@ -42,30 +44,36 @@ const Tree = Object.assign(
   }
 );
 
-const MdxLink = ({
-  href,
-  children,
-  ...props
-}: React.AnchorHTMLAttributes<HTMLAnchorElement>) => {
-  if (!href) {
-    return <a {...props}>{children}</a>;
-  }
-  const isExternal = href.startsWith("http");
-  if (isExternal) {
+const createMdxLink = (basePath: string, currentPath: string) => {
+  const MdxLink = ({
+    href,
+    children,
+    ...props
+  }: React.AnchorHTMLAttributes<HTMLAnchorElement>) => {
+    if (!href) {
+      return <a {...props}>{children}</a>;
+    }
+    if (isExternalHref(href)) {
+      return (
+        <a {...props} href={href} rel="noopener noreferrer" target="_blank">
+          {children}
+        </a>
+      );
+    }
     return (
-      <a {...props} href={href} rel="noopener noreferrer" target="_blank">
+      <Link href={resolveHref(href, basePath, currentPath)} {...props}>
         {children}
-      </a>
+      </Link>
     );
-  }
-  return (
-    <Link href={href} {...props}>
-      {children}
-    </Link>
-  );
+  };
+  MdxLink.displayName = "MdxLink";
+  return MdxLink;
 };
 
-export const mdxComponents: MDXComponents = {
+export const createMdxComponents = (
+  basePath = "",
+  currentPath = ""
+): MDXComponents => ({
   Accordion,
   AccordionGroup,
   AgentInstructions,
@@ -106,6 +114,8 @@ export const mdxComponents: MDXComponents = {
   View,
   ViewGroup,
   Warning,
-  a: MdxLink,
+  a: createMdxLink(basePath, currentPath),
   pre: CodeBlock,
-};
+});
+
+export const mdxComponents: MDXComponents = createMdxComponents();

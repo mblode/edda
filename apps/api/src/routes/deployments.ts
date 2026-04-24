@@ -44,6 +44,38 @@ const canPromoteDeployment = (deployment: {
   status: string;
 }) => Boolean(deployment.manifestUrl) && deployment.status === "successful";
 
+const canFinalizeDeployment = (deployment: { status: string }) =>
+  deployment.status === "building" || deployment.status === "queued";
+
+const refreshPromotedProject = async (
+  project: { id: string; slug: string },
+  reason: "finalize" | "promotion"
+) => {
+  try {
+    await syncProjectTenantEdgeConfig(project.id);
+  } catch (error) {
+    logError(
+      `Tenant Edge Config sync failed after deployment ${reason} — docs may serve stale manifest URL until the next successful publish.`,
+      error
+    );
+  }
+
+  try {
+    await revalidateProject(project.slug);
+  } catch (error) {
+    logError(
+      `Docs revalidation failed after deployment ${reason} — ISR HTML will serve stale content until the 1h TTL expires.`,
+      error
+    );
+  }
+
+  try {
+    await prewarmProject(project.id);
+  } catch (error) {
+    logWarn("Failed to prewarm docs project", error);
+  }
+};
+
 export const deployments = new Hono();
 
 deployments.get(
@@ -80,18 +112,15 @@ deployments.patch(
         "Only finalized successful deployments can be promoted."
       );
     }
+    const project = await projectDao.getById(projectId);
+    if (!project) {
+      return notFound(c);
+    }
     const record = await deploymentDao.update(deployment.id, {
       promotedAt: new Date(),
       status: "successful",
     });
-    try {
-      await syncProjectTenantEdgeConfig(projectId);
-    } catch (error) {
-      logWarn(
-        "Failed to sync tenant Edge Config after deployment promote",
-        error
-      );
-    }
+    await refreshPromotedProject(project, "promotion");
     return c.json(mapDeployment(record), 200);
   }
 );
@@ -250,6 +279,12 @@ deployments.post(
     if (!deployment) {
       return notFound(c);
     }
+    if (!canFinalizeDeployment(deployment)) {
+      return badRequest(
+        c,
+        "Only queued or building deployments can be finalized."
+      );
+    }
 
     try {
       const manifest = await finalizeDeploymentManifest({
@@ -265,29 +300,7 @@ deployments.post(
       });
 
       if (shouldPromote) {
-        try {
-          await syncProjectTenantEdgeConfig(project.id);
-        } catch (error) {
-          logError(
-            "Tenant Edge Config sync failed after deployment finalize — docs may serve stale manifest URL until the next successful publish.",
-            error
-          );
-        }
-
-        try {
-          await revalidateProject(project.slug);
-        } catch (error) {
-          logError(
-            "Docs revalidation failed after deployment finalize — ISR HTML will serve stale content until the 1h TTL expires.",
-            error
-          );
-        }
-
-        try {
-          await prewarmProject(project.id);
-        } catch (error) {
-          logWarn("Failed to prewarm docs project", error);
-        }
+        await refreshPromotedProject(project, "finalize");
       }
 
       return c.json(mapDeployment(updated), 200);

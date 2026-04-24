@@ -44,29 +44,29 @@ export class GitConnectionDao {
   }
 
   async upsert(input: GitConnectionUpsertInput): Promise<GitConnectionRecord> {
-    const existing = await this.getByProject(input.projectId);
-    if (existing) {
-      return await this.update(existing.id, {
-        accountLogin: input.accountLogin,
-        branch: input.branch ?? existing.branch,
-        docsPath: input.docsPath ?? existing.docsPath,
-        installationId: input.installationId,
-        repository: input.repository,
-      });
-    }
-
     const [record] = await db
       .insert(gitConnections)
       .values({
         accountLogin: input.accountLogin,
-        branch: input.branch,
-        docsPath: input.docsPath,
+        branch: input.branch ?? "main",
+        docsPath: input.docsPath ?? "docs",
         installationId: input.installationId,
         projectId: input.projectId,
         repository: input.repository,
       })
+      .onConflictDoUpdate({
+        set: {
+          accountLogin: input.accountLogin,
+          branch: input.branch ?? "main",
+          docsPath: input.docsPath ?? "docs",
+          installationId: input.installationId,
+          repository: input.repository,
+          updatedAt: new Date(),
+        },
+        target: gitConnections.projectId,
+      })
       .returning(gitConnectionSelect);
-    return assertRecord(record, "Failed to create git connection.");
+    return assertRecord(record, "Failed to upsert git connection.");
   }
 
   async update(

@@ -2,7 +2,7 @@ import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
 import {
   buildTenantLlmsFullTxt,
@@ -33,7 +33,7 @@ const createTempUtilityRoot = async (
 
 const tenant = {
   customDomains: ["docs.example.com"],
-  docsPath: path.resolve(process.cwd(), "apps/docs/content/example"),
+  docsPath: "",
   id: "tenant-id",
   name: "Example",
   primaryDomain: "docs.example.com",
@@ -41,6 +41,46 @@ const tenant = {
   status: "active" as const,
   subdomain: "example",
 };
+
+let openApiTenant = tenant;
+
+beforeEach(async () => {
+  const docsPath = await createTempUtilityRoot({
+    "docs.json": JSON.stringify(
+      {
+        $schema: "https://blode.md/docs.json",
+        api: {
+          openapi: {
+            directory: "api",
+            source: "openapi.yaml",
+          },
+        },
+        name: "Example Docs",
+        navigation: {
+          groups: [{ group: "API", pages: ["api/get-projects"] }],
+        },
+      },
+      null,
+      2
+    ),
+    "openapi.yaml": `openapi: 3.0.0
+info:
+  title: Example API
+  version: 1.0.0
+paths:
+  /projects:
+    get:
+      summary: List projects
+      responses:
+        "200":
+          description: OK
+`,
+  });
+  openApiTenant = {
+    ...tenant,
+    docsPath,
+  };
+});
 
 afterEach(async () => {
   await Promise.all(
@@ -52,15 +92,15 @@ afterEach(async () => {
 
 describe("tenant static LLM helpers", () => {
   it("includes visible OpenAPI pages in llms outputs", async () => {
-    const content = await buildTenantLlmsTxt(tenant);
+    const content = await buildTenantLlmsTxt(openApiTenant);
 
     expect(content).toContain(
-      "[List projects](https://docs.example.com/api/get-projects)"
+      "[List projects](https://docs.example.com/api/get-projects.md)"
     );
   });
 
   it("renders OpenAPI pages as markdown text", async () => {
-    const content = await getLlmPageText(tenant, "api/get-projects");
+    const content = await getLlmPageText(openApiTenant, "api/get-projects");
 
     expect(content).toContain("# List projects");
     expect(content).toContain("Method: GET");
@@ -68,7 +108,7 @@ describe("tenant static LLM helpers", () => {
   });
 
   it("includes OpenAPI bodies in llms-full output", async () => {
-    const content = await buildTenantLlmsFullTxt(tenant);
+    const content = await buildTenantLlmsFullTxt(openApiTenant);
 
     expect(content).toContain(
       "# List projects (https://docs.example.com/api/get-projects)"
@@ -83,13 +123,13 @@ describe("tenant static LLM helpers", () => {
       strategy: "path" as const,
     };
 
-    const llms = await buildTenantLlmsTxt(tenant, context);
-    const robots = buildTenantRobotsTxt(tenant, context);
-    const sitemap = await buildTenantSitemapXml(tenant, context);
+    const llms = await buildTenantLlmsTxt(openApiTenant, context);
+    const robots = buildTenantRobotsTxt(openApiTenant, context);
+    const sitemap = await buildTenantSitemapXml(openApiTenant, context);
 
     expect(llms).toContain("Sitemap: https://blode.md/example/sitemap.xml");
     expect(llms).toContain(
-      "[List projects](https://blode.md/example/api/get-projects)"
+      "[List projects](https://blode.md/example/api/get-projects.md)"
     );
     expect(robots).toContain("Sitemap: https://blode.md/example/sitemap.xml");
     expect(robots).toContain(
@@ -105,6 +145,7 @@ describe("tenant static LLM helpers", () => {
     const prefixedTenant = {
       ...tenant,
       customDomains: ["donebear.com"],
+      docsPath: openApiTenant.docsPath,
       pathPrefix: "/docs",
       primaryDomain: "donebear.com",
     };
@@ -120,7 +161,7 @@ describe("tenant static LLM helpers", () => {
 
     expect(llms).toContain("Sitemap: https://donebear.com/docs/sitemap.xml");
     expect(llms).toContain(
-      "[List projects](https://donebear.com/docs/api/get-projects)"
+      "[List projects](https://donebear.com/docs/api/get-projects.md)"
     );
     expect(robots).toContain("Sitemap: https://donebear.com/docs/sitemap.xml");
     expect(robots).toContain(

@@ -14,7 +14,8 @@
     "dev-server",
     "docs",
     "packages",
-    "scripts/prepare-package.mjs"
+    "scripts/prepare-package.mjs",
+    "scripts/repo-packages.mjs"
   ],
   "type": "module",
   "main": "./dist/index.mjs",
@@ -34,7 +35,7 @@
     "lint:fix": "oxlint --fix .",
     "format": "oxfmt --write .",
     "format:check": "oxfmt .",
-    "test:unit": "vitest run --root ../.. --config vitest.unit.config.ts apps/cli/src"
+    "test:unit": "sh -c 'cd ../.. && vitest run --config vitest.config.ts --project unit apps/cli/src'"
   },
   "dependencies": {
     "@base-ui/react": "^1.3.0",

@@ -49,11 +49,13 @@ const getTenantRequestContext = async (
 };
 
 const DocContent = async ({
+  basePath,
   rawContent,
   slugKey,
   tenantSlug,
   toc,
 }: {
+  basePath: string;
   rawContent?: string;
   slugKey: string;
   tenantSlug: string;
@@ -62,6 +64,7 @@ const DocContent = async ({
   const rendered = await getDocPageContent(
     tenantSlug,
     slugKey,
+    basePath,
     rawContent,
     toc
   );
@@ -353,6 +356,7 @@ const DocPage = async ({
     content = (
       <Suspense fallback={<DocContentFallback />}>
         <DocContent
+          basePath={basePath}
           rawContent={rawContent}
           slugKey={slugKey}
           tenantSlug={tenantSlug}
@@ -363,11 +367,9 @@ const DocPage = async ({
   }
 
   const canonicalOrigin = getCanonicalOrigin(shell.tenant, requestContext);
-  const canonicalUrl =
-    `${canonicalOrigin}${basePath}${slugKey ? `/${slugKey}` : "/"}`.replaceAll(
-      /\/+/g,
-      "/"
-    );
+  const canonicalPath =
+    `${basePath}${slugKey ? `/${slugKey}` : "/"}`.replaceAll(/\/+/g, "/");
+  const canonicalUrl = `${canonicalOrigin}${canonicalPath}`;
   const jsonLd: Record<string, unknown> = {
     "@context": "https://schema.org",
     "@type": "WebPage",

@@ -16,10 +16,12 @@ import {
 } from "../lib/github";
 import { logError } from "../lib/logger";
 import {
+  authorizeAdminRequest,
   authorizeProjectRequest,
   getAuthenticatedUser,
 } from "../lib/project-auth";
 import {
+  badGateway,
   badRequest,
   internalServerError,
   noContent,
@@ -31,8 +33,32 @@ import { mapGitConnection } from "../mappers/records";
 
 const projectIdParamsSchema = z.object({ projectId: z.string().uuid() });
 const installationParamsSchema = z.object({
-  installationId: z.string().regex(/^\d+$/).transform(Number),
+  installationId: z
+    .string()
+    .regex(/^\d+$/)
+    .transform(Number)
+    .refine(Number.isSafeInteger),
 });
+
+const getAuthorizedInstallation = async (
+  c: Parameters<typeof getAuthenticatedUser>[0],
+  installationId: number
+) => {
+  const user = await getAuthenticatedUser(c);
+  if (!user) {
+    return { installation: null, status: "unauthenticated" as const, user };
+  }
+
+  const installation = await githubInstallationDao.getByUserAndInstallationId(
+    user.id,
+    installationId
+  );
+  return {
+    installation,
+    status: installation ? ("authorized" as const) : ("not-found" as const),
+    user,
+  };
+};
 
 // Project-scoped GitHub connection routes; mount under /projects.
 export const projectGit = new Hono();
@@ -79,10 +105,28 @@ projectGit.post(
   validateJson(GitConnectionBindSchema),
   async (c) => {
     const { projectId } = c.req.valid("param");
-    if (!(await authorizeProjectRequest(c, projectId))) {
+    const isAdmin = authorizeAdminRequest(c);
+    if (
+      !(
+        isAdmin ||
+        (await authorizeProjectRequest(c, projectId, { allowAdmin: false }))
+      )
+    ) {
       return unauthorized(c, "Invalid credentials.");
     }
     const body = c.req.valid("json");
+    if (!isAdmin) {
+      const { status } = await getAuthorizedInstallation(
+        c,
+        body.installationId
+      );
+      if (status === "unauthenticated") {
+        return unauthorized(c, "Authentication required.");
+      }
+      if (status !== "authorized") {
+        return notFound(c);
+      }
+    }
 
     const account = await getInstallationAccount(body.installationId).catch(
       (error: unknown) => {
@@ -144,8 +188,12 @@ githubInstall.get(
   validateParams(installationParamsSchema),
   async (c) => {
     const { installationId } = c.req.valid("param");
-    if (!(await getAuthenticatedUser(c))) {
+    const { status } = await getAuthorizedInstallation(c, installationId);
+    if (status === "unauthenticated") {
       return unauthorized(c, "Authentication required.");
+    }
+    if (status !== "authorized") {
+      return notFound(c);
     }
     if (!isGithubAppConfigured()) {
       return badRequest(c, "GitHub App is not configured on this server.");
@@ -168,8 +216,12 @@ githubInstall.get(
   validateParams(installationParamsSchema),
   async (c) => {
     const { installationId } = c.req.valid("param");
-    if (!(await getAuthenticatedUser(c))) {
+    const { status } = await getAuthorizedInstallation(c, installationId);
+    if (status === "unauthenticated") {
       return unauthorized(c, "Authentication required.");
+    }
+    if (status !== "authorized") {
+      return notFound(c);
     }
     if (!isGithubAppConfigured()) {
       return badRequest(c, "GitHub App is not configured on this server.");
@@ -256,24 +308,26 @@ githubInstall.post(
     if (!installations) {
       return badRequest(c, "Could not read user installations from GitHub.");
     }
-    await githubInstallationDao
-      .replaceForUser(
+    try {
+      await githubInstallationDao.replaceForUser(
         user.id,
         installations.map((installation) => ({
           accountLogin: installation.accountLogin,
           accountType: installation.accountType,
           installationId: installation.id,
         }))
-      )
-      .catch((error: unknown) => {
-        logError("Failed to persist user installations", error);
-      });
+      );
+    } catch (error) {
+      logError("Failed to persist user installations", error);
+      return badGateway(c, "Could not persist GitHub installations.");
+    }
     return c.json({ installations }, 200);
   }
 );
 
 githubInstall.get("/state/:state", async (c) => {
-  if (!(await getAuthenticatedUser(c))) {
+  const user = await getAuthenticatedUser(c);
+  if (!user) {
     return unauthorized(c, "Authentication required.");
   }
   const state = c.req.param("state");
@@ -282,8 +336,8 @@ githubInstall.get("/state/:state", async (c) => {
     return badRequest(c, "Install state is invalid or expired.");
   }
   const project = await projectDao.getById(verified.projectId);
-  if (!project) {
-    return badRequest(c, "Project not found.");
+  if (!project || project.userId !== user.id) {
+    return notFound(c);
   }
   return c.json({ projectId: project.id, projectSlug: project.slug }, 200);
 });

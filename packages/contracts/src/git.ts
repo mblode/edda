@@ -12,7 +12,7 @@ export const GitConnectionSchema = z.object({
   createdAt: IsoDateSchema,
   docsPath: z.string().min(1),
   id: IdSchema,
-  installationId: z.number().int().positive(),
+  installationId: z.number().int().positive().safe(),
   projectId: IdSchema,
   provider: GitProviderSchema,
   repository: z.string().min(1),
@@ -23,7 +23,7 @@ export type GitConnection = z.infer<typeof GitConnectionSchema>;
 export const GitConnectionBindSchema = z.object({
   branch: z.string().min(1).default("main"),
   docsPath: z.string().min(1).default("docs"),
-  installationId: z.number().int().positive(),
+  installationId: z.number().int().positive().safe(),
   repository: z.string().regex(/^[\w.-]+\/[\w.-]+$/, {
     message: "Repository must be in the format owner/repo.",
   }),

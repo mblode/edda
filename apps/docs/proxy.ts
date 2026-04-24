@@ -10,6 +10,7 @@ import {
 } from "./lib/routes";
 import {
   getRequestHost,
+  isTenantUtilityPath,
   isReservedPath,
   isRootRuntimeHost,
   resolveTenant,
@@ -24,12 +25,6 @@ export const config = {
   matcher: ["/((?!_next/static|_next/image|favicon.ico).*)"],
 };
 
-const TENANT_UTILITY_SUFFIXES = [
-  "/llms-full.txt",
-  "/llms.txt",
-  "/robots.txt",
-  "/sitemap.xml",
-] as const;
 const TENANT_UTILITY_REWRITE_PATHS = {
   "/llms-full.txt": "/llms-full.txt",
   "/llms.txt": "/llms.txt",
@@ -39,11 +34,6 @@ const TENANT_UTILITY_REWRITE_PATHS = {
 
 const WELL_KNOWN_SKILLS_SEGMENT = "/.well-known/skills/";
 const LLMS_SEGMENT_SEGMENT = "/llms/";
-
-const isTenantUtilityPath = (pathname: string) =>
-  TENANT_UTILITY_SUFFIXES.some((suffix) => pathname.endsWith(suffix)) ||
-  pathname.includes(WELL_KNOWN_SKILLS_SEGMENT) ||
-  (pathname.includes(LLMS_SEGMENT_SEGMENT) && pathname.endsWith(".txt"));
 
 const getTenantUtilityRewritePath = (
   pathname: string,
@@ -73,6 +63,9 @@ const getTenantUtilityRewritePath = (
 
   return `/sites/${tenantSlug}${utilityPath}`;
 };
+
+const isApiPath = (pathname: string) =>
+  pathname === "/api" || pathname.startsWith("/api/");
 
 const getRedirectPathname = (
   pathname: string,
@@ -127,8 +120,13 @@ export const proxy = async (request: NextRequest) => {
 
   const allowTenantUtilityRewrite =
     !isRootRuntimeHost(host) && isTenantUtilityPath(pathname);
+  const allowTenantApiPage = !isRootRuntimeHost(host) && isApiPath(pathname);
 
-  if (isReservedPath(pathname) && !allowTenantUtilityRewrite) {
+  if (
+    isReservedPath(pathname) &&
+    !allowTenantUtilityRewrite &&
+    !allowTenantApiPage
+  ) {
     return NextResponse.next();
   }
 
@@ -292,7 +290,7 @@ export const proxy = async (request: NextRequest) => {
   response.headers.set("Vary", "Host, accept");
 
   // Advertise the llms.txt index and skills to AI agents via standard HTTP headers
-  const llmsBasePath = resolution.basePath ? `/${resolution.basePath}` : "";
+  const llmsBasePath = resolution.basePath || "";
   response.headers.set(
     "Link",
     `<${llmsBasePath}/llms.txt>; rel="llms-txt", <${llmsBasePath}/llms-full.txt>; rel="llms-full-txt", <${llmsBasePath}/.well-known/skills/index.json>; rel="skills"`

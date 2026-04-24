@@ -4,20 +4,16 @@ test("landing page renders primary CTA", async ({ page }) => {
   await page.goto("/");
 
   await expect(
-    page.getByRole("heading", {
-      name: "Documentation should ship as fast as code.",
-    })
+    page.getByText("The knowledge layer your AI runs on.").first()
   ).toBeVisible();
 
   await expect(
-    page.getByRole("link", { name: "Get started" }).first()
-  ).toHaveAttribute("href", "#get-started");
+    page.getByRole("link", { name: "Get started free" }).first()
+  ).toHaveAttribute("href", "/oauth/consent");
   await expect(
     page.getByRole("link", { name: "Read the docs" })
-  ).toHaveAttribute("href", "https://docs.blode.md");
+  ).toHaveAttribute("href", "/docs");
   await expect(
-    page.getByRole("heading", {
-      name: "Ship your first doc in under a minute.",
-    })
+    page.getByRole("heading", { name: "Knowledge that ships with the code" })
   ).toBeVisible();
 });

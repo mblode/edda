@@ -8,14 +8,39 @@ const DEFAULT_REDIRECT = "/app";
 
 const fallbackEmail = (authId: string) => `${authId}@users.blode.invalid`;
 
+const getSafeRedirectPath = (value: string | null, origin: string) => {
+  if (!value) {
+    return DEFAULT_REDIRECT;
+  }
+
+  try {
+    const target = new URL(value, origin);
+    const isDashboardPath =
+      target.pathname === DEFAULT_REDIRECT ||
+      target.pathname.startsWith(`${DEFAULT_REDIRECT}/`);
+    if (target.origin !== origin || !isDashboardPath) {
+      return DEFAULT_REDIRECT;
+    }
+
+    return `${target.pathname}${target.search}${target.hash}`;
+  } catch {
+    return DEFAULT_REDIRECT;
+  }
+};
+
 export const GET = async (request: Request) => {
   const url = new URL(request.url);
   const code = url.searchParams.get("code");
-  const redirectTo = url.searchParams.get("redirect_to") ?? DEFAULT_REDIRECT;
+  const redirectTo = getSafeRedirectPath(
+    url.searchParams.get("redirect_to"),
+    url.origin
+  );
   const authorizationId = url.searchParams.get("authorization_id");
 
   if (!code) {
-    return NextResponse.redirect(new URL("/oauth/consent", url.origin));
+    const consent = new URL("/oauth/consent", url.origin);
+    consent.searchParams.set("redirect_to", redirectTo);
+    return NextResponse.redirect(consent);
   }
 
   const cookieStore = await cookies();
@@ -25,6 +50,7 @@ export const GET = async (request: Request) => {
   if (error) {
     const failed = new URL("/oauth/consent", url.origin);
     failed.searchParams.set("error", error.message);
+    failed.searchParams.set("redirect_to", redirectTo);
     return NextResponse.redirect(failed);
   }
 
@@ -52,8 +78,5 @@ export const GET = async (request: Request) => {
     return NextResponse.redirect(consent);
   }
 
-  const safeRedirect = redirectTo.startsWith("/")
-    ? redirectTo
-    : DEFAULT_REDIRECT;
-  return NextResponse.redirect(new URL(safeRedirect, url.origin));
+  return NextResponse.redirect(new URL(redirectTo, url.origin));
 };

@@ -17,7 +17,6 @@ export const ProjectSchema = z.object({
 export type Project = z.infer<typeof ProjectSchema>;
 
 export const ProjectCreateSchema = z.object({
-  deploymentName: z.string().min(1),
   description: z.string().optional(),
   name: z.string().min(1),
   slug: SlugSchema,

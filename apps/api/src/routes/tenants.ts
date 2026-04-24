@@ -31,6 +31,8 @@ const ROOT_TENANT_UTILITY_PATHS = new Set([
   "/robots.txt",
   "/sitemap.xml",
 ]);
+const WELL_KNOWN_SKILLS_SEGMENT = "/.well-known/skills/";
+const LLMS_SEGMENT_SEGMENT = "/llms/";
 const LOCAL_SUBDOMAIN_SUFFIXES = ["localhost", "127.0.0.1"];
 const RESERVED_PLATFORM_SUBDOMAINS = new Set([
   "www",
@@ -58,6 +60,11 @@ const resolveSubdomainBasePath = (pathname: string): string => {
   return "";
 };
 
+const isTenantUtilityPath = (pathname: string) =>
+  ROOT_TENANT_UTILITY_PATHS.has(pathname) ||
+  pathname.startsWith(WELL_KNOWN_SKILLS_SEGMENT) ||
+  (pathname.startsWith(LLMS_SEGMENT_SEGMENT) && pathname.endsWith(".txt"));
+
 const buildTenantPathResolution = (
   tenant: NonNullable<Awaited<ReturnType<typeof buildTenant>>>,
   strategy: "preview" | "subdomain" | "custom-domain",
@@ -65,7 +72,7 @@ const buildTenantPathResolution = (
   pathname: string,
   basePath: string
 ) => {
-  if (ROOT_TENANT_UTILITY_PATHS.has(pathname)) {
+  if (isTenantUtilityPath(pathname)) {
     return buildTenantResolution(
       tenant,
       strategy,

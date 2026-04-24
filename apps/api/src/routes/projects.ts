@@ -1,4 +1,8 @@
-import { ProjectUpdateSchema } from "@repo/contracts";
+import {
+  ProjectCreateSchema,
+  ProjectUpdateSchema,
+  SlugSchema,
+} from "@repo/contracts";
 import { Hono } from "hono";
 import { z } from "zod";
 
@@ -17,19 +21,7 @@ import { mapProject } from "../mappers/records";
 
 const projectIdParamsSchema = z.object({ projectId: z.string().uuid() });
 const projectSlugParamsSchema = z.object({
-  slug: z
-    .string()
-    .min(1)
-    .regex(/^[a-z0-9-]+$/),
-});
-
-const projectCreateSchema = z.object({
-  description: z.string().optional(),
-  name: z.string().min(1),
-  slug: z
-    .string()
-    .min(1)
-    .regex(/^[a-z0-9-]+$/),
+  slug: SlugSchema,
 });
 
 export const projects = new Hono();
@@ -46,7 +38,7 @@ projects.get("/", async (c) => {
 });
 
 // Create a new project
-projects.post("/", validateJson(projectCreateSchema), async (c) => {
+projects.post("/", validateJson(ProjectCreateSchema), async (c) => {
   const user = await getAuthenticatedUser(c);
   if (!user) {
     return unauthorized(c, "Authentication required.");

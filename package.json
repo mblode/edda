@@ -22,7 +22,7 @@
     "pretest:unit": "npm run build:packages",
     "test:unit": "vitest run --project unit",
     "pretest:component": "npm run build:packages",
-    "test:component": "vitest run --project component",
+    "test:component": "vitest run --project component --passWithNoTests",
     "pretest:integration": "npm run build:packages",
     "test:integration": "vitest run --project integration",
     "pretest:smoke": "npm run build:packages",

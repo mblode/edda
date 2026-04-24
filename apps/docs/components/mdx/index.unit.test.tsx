@@ -11,6 +11,12 @@ describe("mdxComponents", () => {
   });
 
   it("rebuilds Tree dotted subcomponents in the server MDX registry", async () => {
+    vi.doMock("next/image", () => ({
+      default: () => null,
+    }));
+    vi.doMock("next/link", () => ({
+      default: ({ children }: { children?: ReactNode }) => children,
+    }));
     vi.doMock("./tree", () => ({
       Tree: MockTree,
       TreeFile: MockTreeFile,

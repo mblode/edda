@@ -42,7 +42,7 @@ export type PublishDeploymentCreateInput = z.infer<
 >;
 
 export const PublishDeploymentFileSchema = z.object({
-  contentBase64: z.string().min(1),
+  contentBase64: z.string().base64(),
   contentType: z.string().min(1).optional(),
   path: z.string().min(1),
 });

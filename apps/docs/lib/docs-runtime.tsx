@@ -324,6 +324,7 @@ export const getTenantSearchItems = cache(async (tenantSlug: string) => {
 
 const getRenderedPageData = async ({
   artifacts,
+  basePath,
   currentPath,
   relativePath,
   rawContent: preloadedRawContent,
@@ -331,13 +332,14 @@ const getRenderedPageData = async ({
   useToc,
 }: {
   artifacts: TenantArtifacts;
+  basePath?: string;
   currentPath: string;
   relativePath: string;
   rawContent?: string;
   toc?: TocItem[];
   useToc: boolean;
 }) => {
-  const cacheKey = `${getTenantArtifactsCacheKey(artifacts.tenant)}:${currentPath}`;
+  const cacheKey = `${getTenantArtifactsCacheKey(artifacts.tenant)}:${basePath ?? ""}:${currentPath}`;
 
   return await renderedPageCache.getOrCreate(cacheKey, async () => {
     const compiled =
@@ -348,8 +350,12 @@ const getRenderedPageData = async ({
         ? undefined
         : await loadContentSource(artifacts.contentSource, relativePath));
     const rendered = compiled
-      ? await renderFromCompiled(compiled.compiledSource)
-      : await renderMdx(rawContent ?? "");
+      ? await renderFromCompiled(
+          compiled.compiledSource,
+          basePath,
+          relativePath
+        )
+      : await renderMdx(rawContent ?? "", basePath, relativePath);
 
     return {
       content: rendered.content,
@@ -562,6 +568,7 @@ export const getDocPageContent = cache(
   async (
     tenantSlug: string,
     slugKey: string,
+    basePath = "",
     rawContent?: string,
     toc?: TocItem[]
   ) => {
@@ -585,6 +592,7 @@ export const getDocPageContent = cache(
 
     return await getRenderedPageData({
       artifacts,
+      basePath,
       currentPath,
       rawContent,
       relativePath: entry.relativePath,

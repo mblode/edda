@@ -2,6 +2,7 @@ import type { Tenant } from "@repo/contracts";
 import {
   TenantEdgeHostRecordSchema,
   TenantEdgeSlugRecordSchema,
+  getTenantEdgeHostKeys,
   getTenantEdgeHostKey,
   getTenantEdgeSlugKey,
 } from "@repo/contracts";
@@ -150,7 +151,9 @@ export const buildTenantEdgeConfigItems = (input: {
 
   for (const domain of input.domains) {
     if (domain.status !== validConfiguredDomainStatus) {
-      addDeleteOperation(items, getTenantEdgeHostKey(domain.hostname));
+      for (const key of getTenantEdgeHostKeys(domain.hostname)) {
+        addDeleteOperation(items, key);
+      }
       continue;
     }
 
@@ -168,7 +171,9 @@ export const buildTenantEdgeConfigItems = (input: {
   }
 
   for (const host of input.removedHosts ?? []) {
-    addDeleteOperation(items, getTenantEdgeHostKey(host));
+    for (const key of getTenantEdgeHostKeys(host)) {
+      addDeleteOperation(items, key);
+    }
   }
 
   return dedupeEdgeConfigItems(items);

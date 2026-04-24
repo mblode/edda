@@ -248,21 +248,38 @@ const syncTenantEdgeConfigAfterDomainChange = async (
 ) => {
   try {
     await syncProjectTenantEdgeConfig(projectId, options);
+    return true;
   } catch (error) {
     logWarn(`Failed to sync tenant Edge Config after domain ${reason}`, error);
+    return false;
   }
 };
 
-const markDomainVerified = async (
-  domainId: string,
-  projectId: string,
+const syncDomainVerificationStatus = async (
+  domain: PersistedDomain,
+  verified: boolean,
   syncReason: "verification fetch" | "verify"
 ) => {
-  await domainDao.update(domainId, {
-    status: toDomainStatus(true),
-    verifiedAt: new Date(),
-  });
-  await syncTenantEdgeConfigAfterDomainChange(projectId, syncReason);
+  const nextStatus = toDomainStatus(verified);
+  const shouldUpdate = verified
+    ? domain.status !== nextStatus || !domain.verifiedAt
+    : domain.status === validConfiguredDomainStatus || domain.verifiedAt;
+
+  if (shouldUpdate) {
+    await domainDao.update(domain.id, {
+      status: nextStatus,
+      verifiedAt: verified ? new Date() : null,
+    });
+  }
+
+  if (!verified || shouldUpdate) {
+    return await syncTenantEdgeConfigAfterDomainChange(
+      domain.projectId,
+      syncReason
+    );
+  }
+
+  return true;
 };
 
 const restoreDeletedDomain = async (domain: PersistedDomain) => {
@@ -398,8 +415,13 @@ domains.get(
     try {
       const domainResponse = await getProjectDomain(domain.hostname);
       const verification = getVercelVerification(domainResponse);
-      if (verification.verified && !domain.verifiedAt) {
-        await markDomainVerified(domain.id, projectId, "verification fetch");
+      const synced = await syncDomainVerificationStatus(
+        domain,
+        verification.verified,
+        "verification fetch"
+      );
+      if (!synced) {
+        return badGateway(c, "Unable to update domain routing");
       }
       return c.json(verification, 200);
     } catch (error) {
@@ -432,8 +454,13 @@ domains.post(
     try {
       const domainResponse = await verifyProjectDomain(domain.hostname);
       const verification = getVercelVerification(domainResponse);
-      if (verification.verified) {
-        await markDomainVerified(domain.id, projectId, "verify");
+      const synced = await syncDomainVerificationStatus(
+        domain,
+        verification.verified,
+        "verify"
+      );
+      if (!synced) {
+        return badGateway(c, "Unable to update domain routing");
       }
       return c.json(verification, 200);
     } catch (error) {
@@ -463,12 +490,20 @@ domains.delete(
       return badGateway(c, "Unable to remove domain");
     }
 
-    await syncTenantEdgeConfigAfterDomainChange(projectId, "delete", {
-      removedHosts: [
-        domain.hostname,
-        ...(redirectHostname ? [redirectHostname] : []),
-      ],
-    });
+    const synced = await syncTenantEdgeConfigAfterDomainChange(
+      projectId,
+      "delete",
+      {
+        removedHosts: [
+          domain.hostname,
+          ...(redirectHostname ? [redirectHostname] : []),
+        ],
+      }
+    );
+    if (!synced) {
+      await restoreDeletedDomain(deletedDomain);
+      return badGateway(c, "Unable to update domain routing");
+    }
 
     return noContent();
   }

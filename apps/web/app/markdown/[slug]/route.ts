@@ -10,6 +10,7 @@ const SLUGS = [
   "home",
   "about",
   "blog",
+  "changelog",
   "pricing",
   "privacy",
   "security",

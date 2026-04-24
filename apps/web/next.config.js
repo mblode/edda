@@ -84,7 +84,7 @@ const nextConfig = {
             {
               key: "referer",
               type: "header",
-              value: ".*\\/docs(?:\\/.*)?$",
+              value: ".*\\/docs(?:\\/.*)?(?:[?#].*)?$",
             },
           ],
           source: "/_next/:path*",
@@ -95,7 +95,7 @@ const nextConfig = {
             {
               key: "referer",
               type: "header",
-              value: ".*\\/(app|oauth)(?:\\/.*)?$",
+              value: ".*\\/(app|oauth)(?:\\/.*)?(?:[?#].*)?$",
             },
           ],
           source: "/_next/:path*",

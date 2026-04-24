@@ -6,7 +6,8 @@ export type Id = z.infer<typeof IdSchema>;
 export const SlugSchema = z
   .string()
   .min(1)
-  .regex(/^[a-z0-9-]+$/);
+  .max(63)
+  .regex(/^(?!-)[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/);
 export type Slug = z.infer<typeof SlugSchema>;
 
 export const EmailSchema = z.string().email();

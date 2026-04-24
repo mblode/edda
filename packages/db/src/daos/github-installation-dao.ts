@@ -15,6 +15,23 @@ export interface GithubInstallationInput {
 const sqlExcluded = (column: string) => sql.raw(`excluded.${column}`);
 
 export class GithubInstallationDao {
+  async getByUserAndInstallationId(
+    userId: string,
+    installationId: number
+  ): Promise<GithubInstallationRecord | null> {
+    const [record] = await db
+      .select(githubInstallationSelect)
+      .from(githubInstallations)
+      .where(
+        and(
+          eq(githubInstallations.userId, userId),
+          eq(githubInstallations.installationId, installationId)
+        )
+      )
+      .limit(1);
+    return record ?? null;
+  }
+
   async listByUserId(userId: string): Promise<GithubInstallationRecord[]> {
     return await db
       .select(githubInstallationSelect)

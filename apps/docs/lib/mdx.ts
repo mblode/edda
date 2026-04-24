@@ -8,7 +8,7 @@ import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import rehypeSlug from "rehype-slug";
 import remarkGfm from "remark-gfm";
 
-import { mdxComponents } from "@/components/mdx";
+import { createMdxComponents } from "@/components/mdx";
 
 import { getHighlighter, SHIKI_THEME_PAIR } from "./shiki";
 
@@ -25,17 +25,22 @@ const stripFrontmatter = (source: string) => ({
  * `outputFormat: 'function-body'`. This is the fast path — no parsing,
  * no plugin execution, no Shiki. Sub-millisecond execution.
  */
-export const renderFromCompiled = async (compiledSource: string) => {
+export const renderFromCompiled = async (
+  compiledSource: string,
+  basePath = "",
+  currentPath = ""
+) => {
+  const components = createMdxComponents(basePath, currentPath);
   const mdxModule = await run(compiledSource, {
     ...jsxRuntime,
     baseUrl: import.meta.url,
   });
   const Content = mdxModule.default as ComponentType<{
-    components?: typeof mdxComponents;
+    components?: ReturnType<typeof createMdxComponents>;
   }>;
 
   return {
-    content: createElement(Content, { components: mdxComponents }),
+    content: createElement(Content, { components }),
     frontmatter: {} as Record<string, unknown>,
   };
 };
@@ -44,17 +49,23 @@ export const renderFromCompiled = async (compiledSource: string) => {
  * Full MDX compilation + rendering. Used as fallback for local development
  * (FsContentSource) and any content that wasn't pre-compiled at deploy time.
  */
-export const renderMdx = async (source: string) => {
+export const renderMdx = async (
+  source: string,
+  basePath = "",
+  currentPath = ""
+) => {
   const { body, frontmatter } = stripFrontmatter(source);
+  const components = createMdxComponents(basePath, currentPath);
   const highlighter = await getHighlighter();
   const shikiTransformer = rehypeShikiFromHighlighter(highlighter, {
     defaultColor: false,
+    fallbackLanguage: "text",
     themes: SHIKI_THEME_PAIR,
   });
   const shikiPlugin = () => shikiTransformer;
 
   const result = await compileMDX({
-    components: mdxComponents,
+    components,
     options: {
       blockDangerousJS: false,
       blockJS: false,

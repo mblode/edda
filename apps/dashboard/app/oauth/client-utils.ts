@@ -2,14 +2,30 @@
 
 import { createSupabaseClient } from "@/lib/supabase";
 
-export const approveOrRedirect = async (authorizationId: string) => {
+export const redirectIfAlreadyAuthorized = async (authorizationId: string) => {
   const supabase = createSupabaseClient();
 
-  const { data: details } =
+  const { data: details, error } =
     await supabase.auth.oauth.getAuthorizationDetails(authorizationId);
   if (details && "redirect_url" in details) {
     window.location.assign(details.redirect_url);
     return null;
+  }
+
+  return error?.message ?? null;
+};
+
+export const approveOrRedirect = async (authorizationId: string) => {
+  const supabase = createSupabaseClient();
+
+  const { data: details, error: detailsError } =
+    await supabase.auth.oauth.getAuthorizationDetails(authorizationId);
+  if (details && "redirect_url" in details) {
+    window.location.assign(details.redirect_url);
+    return null;
+  }
+  if (detailsError) {
+    return detailsError.message;
   }
 
   const { error } =

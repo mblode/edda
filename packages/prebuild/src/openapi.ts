@@ -80,6 +80,20 @@ export const openApiSlug = (
   return normalizePath(path.join(directory, slug));
 };
 
+const HTTP_METHODS = new Set([
+  "delete",
+  "get",
+  "head",
+  "options",
+  "patch",
+  "post",
+  "put",
+  "trace",
+]);
+
+const isOperationObject = (value: unknown): value is OpenApiOperationSpec =>
+  typeof value === "object" && value !== null && !Array.isArray(value);
+
 export const extractOpenApiOperations = (
   spec: OpenApiSpec,
   directory?: string
@@ -89,6 +103,13 @@ export const extractOpenApiOperations = (
 
   for (const [routePath, methods] of Object.entries(paths)) {
     for (const [method, operation] of Object.entries(methods)) {
+      if (
+        !(
+          HTTP_METHODS.has(method.toLowerCase()) && isOperationObject(operation)
+        )
+      ) {
+        continue;
+      }
       const upper = method.toUpperCase();
       const id = operation.operationId ?? openApiIdentifier(upper, routePath);
 

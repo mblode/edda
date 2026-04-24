@@ -26,6 +26,7 @@ export const compileContent = async (source: string): Promise<CompiledMdx> => {
   const highlighter = await getHighlighter();
   const shikiTransformer = rehypeShikiFromHighlighter(highlighter, {
     defaultColor: false,
+    fallbackLanguage: "text",
     themes: SHIKI_THEME_PAIR,
   });
   const shikiPlugin = () => shikiTransformer;

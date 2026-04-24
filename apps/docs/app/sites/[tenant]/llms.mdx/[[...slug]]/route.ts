@@ -1,10 +1,16 @@
+import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 
 import { computeETag, handleIfNoneMatch } from "@/lib/etag";
-import { getLlmPageText } from "@/lib/tenant-static";
+import {
+  getCanonicalDocBasePath,
+  getCanonicalOrigin,
+  getLlmPageText,
+  getTenantRequestContextFromHeaders,
+} from "@/lib/tenant-static";
 import { getTenantBySlug } from "@/lib/tenants";
 
-export const dynamic = "force-static";
+export const dynamic = "force-dynamic";
 export const preferredRegion = "home";
 export const revalidate = 3600;
 
@@ -24,8 +30,11 @@ export const GET = async (
     return new NextResponse("Not found", { status: 404 });
   }
 
-  const basePath = tenant.pathPrefix ? `/${tenant.pathPrefix}` : "";
-  const llmsTxtUrl = `https://${tenant.primaryDomain}${basePath}/llms.txt`;
+  const requestContext = getTenantRequestContextFromHeaders(
+    tenant,
+    await headers()
+  );
+  const llmsTxtUrl = `${getCanonicalOrigin(tenant, requestContext)}${getCanonicalDocBasePath(tenant, requestContext)}/llms.txt`;
   const blockquote =
     `> ## Documentation Index\n` +
     `> Fetch the complete documentation index at: ${llmsTxtUrl}\n` +

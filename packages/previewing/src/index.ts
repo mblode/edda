@@ -813,6 +813,7 @@ interface SerializedUtilityIndex {
   description?: string;
   name: string;
   pages: UtilityPage[];
+  slug?: string;
   version: 1;
 }
 
@@ -829,6 +830,7 @@ export const extractToc = (source: string): TocItem[] => {
   const withoutCode = source.replaceAll(/```[\s\S]*?```/g, "");
   const lines = withoutCode.split(NEWLINE_REGEX);
   const toc: TocItem[] = [];
+  const seen = new Map<string, number>();
 
   for (const line of lines) {
     const match = HEADING_REGEX.exec(line.trim());
@@ -841,8 +843,12 @@ export const extractToc = (source: string): TocItem[] => {
       continue;
     }
 
+    const baseId = slugify(heading.trim());
+    const count = seen.get(baseId) ?? 0;
+    seen.set(baseId, count + 1);
+
     toc.push({
-      id: slugify(heading.trim()),
+      id: count === 0 ? baseId : `${baseId}-${count}`,
       level: hashes.length,
       title: heading.trim(),
     });
@@ -1510,6 +1516,7 @@ export const loadPrebuiltUtilityIndex = async (
       description: data.description,
       name: data.name,
       pages: data.pages,
+      slug: data.slug,
     };
   } catch {
     return null;

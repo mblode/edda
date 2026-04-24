@@ -1,3 +1,4 @@
+import type { Deployment } from "@repo/contracts";
 import { mapDeployment } from "@repo/db";
 import { Suspense } from "react";
 
@@ -12,12 +13,12 @@ interface DeploymentsPageProps {
 
 const DEPLOYMENTS_PAGE_SIZE = 50;
 
-const STATUS_STYLES: Record<string, string> = {
-  building:
+const STATUS_STYLES: Record<Deployment["status"], string> = {
+  Building:
     "bg-yellow-100 text-yellow-900 dark:bg-yellow-900/30 dark:text-yellow-100",
-  failed: "bg-red-100 text-red-900 dark:bg-red-900/30 dark:text-red-100",
-  queued: "bg-muted text-muted-foreground",
-  successful:
+  Failed: "bg-red-100 text-red-900 dark:bg-red-900/30 dark:text-red-100",
+  Queued: "bg-muted text-muted-foreground",
+  Successful:
     "bg-green-100 text-green-900 dark:bg-green-900/30 dark:text-green-100",
 };
 

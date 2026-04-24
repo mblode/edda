@@ -25,7 +25,8 @@ import { platformRootDomain } from "@/lib/env";
 
 type SetupPath = "template" | "cli";
 
-const SLUG_PATTERN = /^[a-z0-9-]+$/;
+const SLUG_PATTERN = /^(?!-)[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/;
+const MAX_SLUG_LENGTH = 63;
 
 const slugify = (value: string): string =>
   value
@@ -76,6 +77,9 @@ export const NewProjectWizard = ({ accessToken }: NewProjectWizardProps) => {
   const slugError = useMemo(() => {
     if (!effectiveSlug) {
       return null;
+    }
+    if (effectiveSlug.length > MAX_SLUG_LENGTH) {
+      return "Use 63 characters or fewer.";
     }
     if (!SLUG_PATTERN.test(effectiveSlug)) {
       return "Use lowercase letters, numbers, and hyphens only.";
@@ -215,7 +219,9 @@ export const NewProjectWizard = ({ accessToken }: NewProjectWizardProps) => {
           <Link href="/app">Cancel</Link>
         </Button>
         <Button
-          disabled={isSubmitting || Boolean(slugError) || !name.trim()}
+          disabled={
+            isSubmitting || Boolean(slugError) || !name.trim() || !effectiveSlug
+          }
           onClick={handleSubmit}
           type="button"
         >

@@ -7,6 +7,7 @@ export const MARKETING_CANONICAL_PATHS = [
   "/about",
   "/blog",
   "/changelog",
+  "/pricing",
   "/privacy",
   "/security",
   "/terms",
