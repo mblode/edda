@@ -48,7 +48,9 @@ if (!existsSync(migrationsFolder)) {
 }
 
 const sql = postgres(databaseUrl, { max: 1, prepare: false });
-const db = drizzle(sql);
+// drizzle(sql) treats `sql` as a connection string; wrap as `{ client }` to
+// reuse the existing postgres-js connection.
+const db = drizzle({ client: sql });
 
 const hashMigration = (folder) => {
   const sqlPath = join(migrationsFolder, folder, "migration.sql");
