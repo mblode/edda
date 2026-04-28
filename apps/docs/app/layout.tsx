@@ -41,6 +41,19 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <head>
+        <link
+          rel="alternate"
+          type="text/plain"
+          title="llms.txt"
+          href="/llms.txt"
+        />
+        <link
+          rel="alternate"
+          type="text/plain"
+          title="llms-full.txt"
+          href="/llms-full.txt"
+        />
+        <link rel="describedby" href="/llms.txt" />
         <link rel="preconnect" href="https://public.blob.vercel-storage.com" />
       </head>
       <body className="relative flex w-full flex-col justify-center scroll-smooth bg-background font-sans antialiased [--header-height:calc(var(--spacing)*16)]">

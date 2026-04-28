@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useLayoutEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 
 let savedScrollTop = 0;
 
@@ -13,7 +13,7 @@ export const SidebarScrollArea = ({
 }) => {
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     const el = scrollRef.current;
     if (!el) {
       return;
@@ -21,12 +21,17 @@ export const SidebarScrollArea = ({
 
     if (savedScrollTop > 0) {
       el.scrollTop = savedScrollTop;
-    } else {
+      return;
+    }
+
+    // Defer to allow SidebarActiveHighlight to mark the active link first.
+    const id = requestAnimationFrame(() => {
       const active = el.querySelector<HTMLElement>("[data-active]");
       if (active) {
         active.scrollIntoView({ behavior: "instant", block: "center" });
       }
-    }
+    });
+    return () => cancelAnimationFrame(id);
   });
 
   useEffect(() => {

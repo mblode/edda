@@ -303,6 +303,19 @@ const resolveLlmPages = (
 const FRONTMATTER_REGEX = /^---\s*\n[\s\S]*?\n---\s*\n?/;
 const LEADING_H1_REGEX = /^#\s+([^\r\n]+)(?:\r?\n(?:\r?\n)?)?/;
 
+const PLACEHOLDER_URL_PATTERN =
+  "https?://(?:[a-z0-9-]+\\.)*example\\.(?:com|org|net)\\b[^\\s)\\]\"'<>]*|https?://discord\\.gg/example\\b[^\\s)\\]\"'<>]*";
+const PLACEHOLDER_URL_RE = new RegExp(PLACEHOLDER_URL_PATTERN, "gi");
+const PLACEHOLDER_MARKDOWN_LINK_RE = new RegExp(
+  `\\[([^\\]]+)\\]\\((?:${PLACEHOLDER_URL_PATTERN})\\)`,
+  "gi"
+);
+
+export const sanitizePlaceholderUrls = (text: string): string =>
+  text
+    .replace(PLACEHOLDER_MARKDOWN_LINK_RE, "$1")
+    .replace(PLACEHOLDER_URL_RE, (match) => `\`${match}\``);
+
 const stripFrontmatter = (source: string) =>
   source.replace(FRONTMATTER_REGEX, "").trim();
 
@@ -378,7 +391,7 @@ const buildRuntimeUtilityIndex = async (
   };
 };
 
-const loadTenantUtilityIndex = async (tenant: Tenant) =>
+export const loadTenantUtilityIndex = async (tenant: Tenant) =>
   await tenantUtilityIndexCache.getOrCreate(
     getTenantStaticCacheKey(tenant),
     async () => {
@@ -546,7 +559,11 @@ export const buildTenantLlmsFullTxt = async (
   const basePath = getCanonicalDocBasePath(tenant, context);
   const parts = data.pages.map((page) => {
     const url = `${origin}${toDocHref(page.slug, basePath)}`;
-    return formatMarkdownPageSection(page.title, url, page.content);
+    return formatMarkdownPageSection(
+      page.title,
+      url,
+      sanitizePlaceholderUrls(page.content)
+    );
   });
 
   return parts.join("\n\n");

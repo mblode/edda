@@ -100,6 +100,7 @@ export const DocShell = ({
   markdownHref,
   rawContent,
   tabs,
+  tenantSlug,
   mode,
   deprecated,
   hideFooterPagination,
@@ -120,6 +121,7 @@ export const DocShell = ({
   markdownHref?: string;
   rawContent?: string;
   tabs?: NavTab[] | null;
+  tenantSlug?: string;
   mode?: PageMode;
   deprecated?: boolean;
   hideFooterPagination?: boolean;
@@ -306,10 +308,11 @@ export const DocShell = ({
             }
           >
             <DocSidebar
+              activeTabIndex={activeTabIndex ?? 0}
               anchors={anchors}
               basePath={basePath}
-              currentPath={currentPath}
-              entries={nav}
+              nav={nav}
+              tenantSlug={tenantSlug}
             />
             {innerContent}
           </div>

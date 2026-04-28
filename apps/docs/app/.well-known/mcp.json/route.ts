@@ -1,37 +1,23 @@
 import { NextResponse } from "next/server";
 
-import { siteConfig } from "@/lib/config";
-import { marketingUrl } from "@/lib/marketing-site";
-
 export const dynamic = "force-static";
 export const preferredRegion = "home";
 export const revalidate = 3600;
 
-const serverCard = {
+const body = {
   $schema:
     "https://raw.githubusercontent.com/modelcontextprotocol/modelcontextprotocol/main/schema/server-card.schema.json",
-  capabilities: {
-    prompts: { listChanged: false },
-    resources: { listChanged: true, subscribe: false },
-    tools: { listChanged: true },
-  },
-  documentation: marketingUrl("/docs/api/overview"),
-  serverInfo: {
-    description:
-      "Blode.md MCP server exposes docs content, site search, and deploy tooling to AI agents.",
-    name: "blodemd",
-    title: "Blode.md",
-    vendor: "Blode.md",
-    version: siteConfig.version,
-  },
+  name: "blodemd",
+  serverCard: "/.well-known/mcp/server-card.json",
   transport: {
     type: "streamable-http",
     url: "/mcp",
   },
+  version: "1",
 };
 
 export const GET = () =>
-  new NextResponse(JSON.stringify(serverCard, null, 2), {
+  new NextResponse(JSON.stringify(body, null, 2), {
     headers: {
       "CDN-Cache-Control":
         "public, s-maxage=3600, stale-while-revalidate=86400",

@@ -370,6 +370,9 @@ const DocPage = async ({
   const canonicalPath =
     `${basePath}${slugKey ? `/${slugKey}` : "/"}`.replaceAll(/\/+/g, "/");
   const canonicalUrl = `${canonicalOrigin}${canonicalPath}`;
+  const markdownHrefAbsolute = markdownHref
+    ? `${canonicalOrigin}${markdownHref}`
+    : undefined;
   const jsonLd: Record<string, unknown> = {
     "@context": "https://schema.org",
     "@type": "WebPage",
@@ -392,6 +395,13 @@ const DocPage = async ({
 
   return (
     <>
+      {markdownHrefAbsolute ? (
+        <link
+          href={markdownHrefAbsolute}
+          rel="alternate"
+          type="text/markdown"
+        />
+      ) : null}
       <script
         // oxlint-disable-next-line no-danger -- JSON-LD for SEO
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
@@ -407,15 +417,16 @@ const DocPage = async ({
         currentPath={shell.currentPath}
         deprecated={shell.deprecated}
         hideFooterPagination={shell.hideFooterPagination}
+        markdownHref={markdownHref}
         mode={shell.mode}
         nav={shell.nav}
         nextPage={shell.nextPage}
         pageDescription={shell.pageDescription}
         pageTitle={shell.pageTitle}
         prevPage={shell.prevPage}
-        markdownHref={markdownHref}
         rawContent={rawContent}
         tabs={shell.tabs}
+        tenantSlug={tenantSlug}
         toc={toc}
       />
     </>

@@ -6,6 +6,7 @@ import {
   ChevronDownSmallIcon,
   ClaudeaiIcon,
   CopySimpleIcon,
+  FileTextIcon,
   OpenaiIcon,
 } from "blode-icons-react";
 import type React from "react";
@@ -295,6 +296,23 @@ export const CopyPageMenu = ({
       </div>
 
       <PopoverContent align="end" className="w-[280px] rounded-xl p-1">
+        {contentUrl ? (
+          <MenuItem href={contentUrl} onSelect={closeMenu}>
+            <MenuIcon>
+              <FileTextIcon aria-hidden="true" className="size-[18px]" />
+            </MenuIcon>
+            <div className="flex-1">
+              <div className="font-medium">
+                View as markdown
+                <ExternalArrow />
+              </div>
+              <div className="text-xs text-muted-foreground">
+                Open the raw .md source in a new tab
+              </div>
+            </div>
+          </MenuItem>
+        ) : null}
+
         <MenuItem onSelect={handleCopy}>
           <MenuIcon>
             <CopyIcon aria-hidden="true" className="size-[18px]" />

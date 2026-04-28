@@ -282,6 +282,36 @@ const getTenantArtifacts = async (tenantSlug: string) => {
   });
 };
 
+export interface TenantSidebarData {
+  anchors: { label: string; href: string }[];
+  entries: NavEntry[];
+}
+
+export const getTenantSidebarData = cache(
+  async (
+    tenantSlug: string,
+    activeTabIndex: number
+  ): Promise<TenantSidebarData | null> => {
+    const artifacts = await getTenantArtifacts(tenantSlug);
+    if (
+      !artifacts ||
+      isConfigErrorResult(artifacts) ||
+      isUnpublishedTenantResult(artifacts)
+    ) {
+      return null;
+    }
+
+    const tabEntries = artifacts.tabs
+      ? getVisibleNavigation(artifacts.tabs[activeTabIndex]?.entries ?? [])
+      : null;
+
+    return {
+      anchors: artifacts.anchors,
+      entries: tabEntries ?? artifacts.visibleNav,
+    };
+  }
+);
+
 export const getTenantSearchItems = cache(async (tenantSlug: string) => {
   const artifacts = await getTenantArtifacts(tenantSlug);
   if (

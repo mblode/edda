@@ -10,6 +10,7 @@ import {
   buildTenantRobotsTxt,
   buildTenantSitemapXml,
   getLlmPageText,
+  sanitizePlaceholderUrls,
 } from "./tenant-static";
 
 const tempRoots: string[] = [];
@@ -235,5 +236,69 @@ describe("tenant static LLM helpers", () => {
     await expect(getLlmPageText(runtimeTenant, "guide")).resolves.toBe(
       "# Guide\n\nShip it."
     );
+  });
+});
+
+describe("sanitizePlaceholderUrls", () => {
+  it("strips markdown link wrapping for placeholder URLs", () => {
+    const input = "See [Changelog](https://example.com/changelog) for details.";
+    const output = sanitizePlaceholderUrls(input);
+    expect(output).toBe("See Changelog for details.");
+    expect(output).not.toContain("](https://example.com");
+  });
+
+  it("wraps bare placeholder URLs in backticks", () => {
+    const input = "Call https://api.example.com/users to fetch users.";
+    const output = sanitizePlaceholderUrls(input);
+    expect(output).toBe("Call `https://api.example.com/users` to fetch users.");
+  });
+
+  it("handles discord.gg/example placeholder URLs", () => {
+    const linkInput = "Join [our community](https://discord.gg/example) today.";
+    const bareInput = "Visit https://discord.gg/example for help.";
+
+    expect(sanitizePlaceholderUrls(linkInput)).toBe(
+      "Join our community today."
+    );
+    expect(sanitizePlaceholderUrls(bareInput)).toBe(
+      "Visit `https://discord.gg/example` for help."
+    );
+  });
+
+  it("leaves non-placeholder URLs untouched", () => {
+    const input = "See [Docs](https://blode.md/docs) and https://blode.md/llm.";
+    expect(sanitizePlaceholderUrls(input)).toBe(input);
+  });
+});
+
+describe("buildTenantLlmsFullTxt placeholder sanitization", () => {
+  it("removes placeholder URLs from concatenated MDX output", async () => {
+    const docsPath = await createTempUtilityRoot({
+      "docs.json": JSON.stringify(
+        {
+          $schema: "https://blode.md/docs.json",
+          name: "Example Docs",
+          navigation: {
+            groups: [{ group: "Docs", pages: ["placeholders"] }],
+          },
+        },
+        null,
+        2
+      ),
+      "placeholders.mdx":
+        "---\ntitle: Placeholders\n---\n\nSee [Changelog](https://example.com/changelog) and call https://api.example.com/users for data.\n",
+    });
+    const runtimeTenant = {
+      ...tenant,
+      customDomains: [],
+      docsPath,
+      primaryDomain: "example.blode.md",
+    };
+
+    const output = await buildTenantLlmsFullTxt(runtimeTenant);
+
+    expect(output).not.toContain("](https://example.com/changelog)");
+    expect(output).toContain("See Changelog and call");
+    expect(output).toContain("`https://api.example.com/users`");
   });
 });

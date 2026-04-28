@@ -21,6 +21,7 @@ const DEFAULT_RESERVED_PATHS = [
   "/favicon.ico",
   "/llms.txt",
   "/logos",
+  "/mcp",
   "/oauth",
   "/robots.txt",
   "/sitemap.xml",

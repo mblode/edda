@@ -1,9 +1,10 @@
-import { normalizePath } from "@repo/common";
 import { ArrowUpRightIcon } from "blode-icons-react";
 import Image from "next/image";
 import Link from "next/link";
 
+import { SidebarActiveHighlight } from "@/components/docs/sidebar-active-highlight";
 import { DocIcon } from "@/components/icons/doc-icon";
+import { getTenantSidebarData } from "@/lib/docs-runtime";
 import { getNavPageHref, getNavPageTitle } from "@/lib/navigation";
 import type { NavEntry, NavPage } from "@/lib/navigation";
 import { isExternalHref, toDocHref } from "@/lib/routes";
@@ -39,11 +40,9 @@ const NavIcon = ({ icon }: { icon: string }) => {
 const NavPageLink = ({
   item,
   basePath,
-  isActive,
 }: {
   item: NavPage;
   basePath: string;
-  isActive: boolean;
 }) => {
   const displayTitle = getNavPageTitle(item);
   const href = getNavPageHref(item, basePath);
@@ -74,16 +73,11 @@ const NavPageLink = ({
     </>
   );
 
-  const className = cn(
-    MENU_BUTTON_CLASS,
-    isActive && "border-accent bg-accent text-foreground"
-  );
-
   if (isExternal) {
     return (
       <a
-        className={className}
-        data-active={isActive || undefined}
+        className={MENU_BUTTON_CLASS}
+        data-sidebar-link=""
         href={href}
         rel="noopener noreferrer"
         target="_blank"
@@ -94,7 +88,12 @@ const NavPageLink = ({
   }
 
   return (
-    <Link className={className} data-active={isActive || undefined} href={href}>
+    <Link
+      className={MENU_BUTTON_CLASS}
+      data-path={item.path}
+      data-sidebar-link=""
+      href={href}
+    >
       {linkContent}
     </Link>
   );
@@ -124,91 +123,133 @@ const Section = ({
   </section>
 );
 
-export const DocSidebar = ({
-  entries,
-  currentPath,
+const renderSidebarTree = ({
   anchors,
   basePath,
+  entries,
 }: {
-  entries: NavEntry[];
-  currentPath: string;
-  anchors?: { label: string; href: string }[];
+  anchors: { label: string; href: string }[];
   basePath: string;
-}) => {
-  const activePath = normalizePath(currentPath);
-  const isActive = (path: string) => normalizePath(path) === activePath;
-
-  return (
-    <aside
-      className="sticky top-[calc(var(--header-height)+0.6rem)] z-30 hidden h-[calc(100svh-10rem)] w-[calc(var(--spacing)*56)] shrink-0 flex-col overscroll-none bg-transparent lg:flex"
-      aria-label="Documentation navigation"
-    >
-      <div className="h-9" />
-      <div className="absolute top-8 z-10 h-8 w-full shrink-0 bg-gradient-to-b from-background via-background/80 to-background/50 blur-xs" />
-      <div className="absolute top-12 right-2 bottom-0 hidden h-full w-px bg-gradient-to-b from-transparent via-border to-transparent lg:flex" />
-      <SidebarScrollArea className="no-scrollbar mx-auto flex min-h-0 w-full flex-1 flex-col gap-2 overflow-y-auto overflow-x-hidden px-2">
-        {anchors?.length ? (
-          <Section paddedTop title="Pinned">
-            <ul className="space-y-1">
-              {anchors.map((anchor) => (
-                <li key={anchor.href}>
-                  <a
-                    className={cn(MENU_BUTTON_CLASS, "text-foreground")}
-                    href={
-                      anchor.href.startsWith("http")
-                        ? anchor.href
-                        : toDocHref(anchor.href, basePath)
-                    }
-                  >
-                    {anchor.label}
-                  </a>
-                </li>
-              ))}
+  entries: NavEntry[];
+}) => (
+  <>
+    {anchors.length ? (
+      <Section paddedTop title="Pinned">
+        <ul className="space-y-1">
+          {anchors.map((anchor) => (
+            <li key={anchor.href}>
+              <a
+                className={cn(MENU_BUTTON_CLASS, "text-foreground")}
+                href={
+                  anchor.href.startsWith("http")
+                    ? anchor.href
+                    : toDocHref(anchor.href, basePath)
+                }
+              >
+                {anchor.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </Section>
+    ) : null}
+    {entries.map((entry, index) => {
+      if (entry.type === "page") {
+        return (
+          <Section key={entry.path} paddedTop={index === 0 && !anchors.length}>
+            <ul>
+              <li>
+                <NavPageLink basePath={basePath} item={entry} />
+              </li>
             </ul>
           </Section>
-        ) : null}
-        {entries.map((entry, index) => {
-          if (entry.type === "page") {
-            return (
-              <Section
-                key={entry.path}
-                paddedTop={index === 0 && !anchors?.length}
-              >
-                <ul>
-                  <li>
-                    <NavPageLink
-                      basePath={basePath}
-                      isActive={isActive(entry.path)}
-                      item={entry}
-                    />
-                  </li>
-                </ul>
-              </Section>
-            );
-          }
+        );
+      }
 
-          return (
-            <Section
-              key={entry.title}
-              paddedTop={index === 0 && !anchors?.length}
-              title={entry.title}
-            >
-              <ul className="space-y-0.5">
-                {entry.items.map((item) => (
-                  <li key={item.path}>
-                    <NavPageLink
-                      basePath={basePath}
-                      isActive={isActive(item.path)}
-                      item={item}
-                    />
-                  </li>
-                ))}
-              </ul>
-            </Section>
-          );
-        })}
-        <div className="sticky -bottom-1 z-10 h-16 shrink-0 bg-gradient-to-t from-background via-background/80 to-background/50 blur-xs" />
-      </SidebarScrollArea>
-    </aside>
-  );
+      return (
+        <Section
+          key={entry.title}
+          paddedTop={index === 0 && !anchors.length}
+          title={entry.title}
+        >
+          <ul className="space-y-0.5">
+            {entry.items.map((item) => (
+              <li key={item.path}>
+                <NavPageLink basePath={basePath} item={item} />
+              </li>
+            ))}
+          </ul>
+        </Section>
+      );
+    })}
+  </>
+);
+
+const CachedSidebarTree = async ({
+  activeTabIndex,
+  anchors,
+  basePath,
+  entries,
+  tenantSlug,
+}: {
+  activeTabIndex: number;
+  anchors?: { label: string; href: string }[];
+  basePath: string;
+  entries?: NavEntry[];
+  tenantSlug?: string;
+}) => {
+  if (tenantSlug) {
+    const data = await getTenantSidebarData(tenantSlug, activeTabIndex);
+    if (data) {
+      return renderSidebarTree({
+        anchors: data.anchors,
+        basePath,
+        entries: data.entries,
+      });
+    }
+  }
+
+  if (!entries || entries.length === 0) {
+    return null;
+  }
+
+  return renderSidebarTree({
+    anchors: anchors ?? [],
+    basePath,
+    entries,
+  });
 };
+
+export const DocSidebar = ({
+  activeTabIndex,
+  anchors,
+  basePath,
+  nav,
+  tenantSlug,
+}: {
+  activeTabIndex: number;
+  anchors?: { label: string; href: string }[];
+  basePath: string;
+  nav?: NavEntry[];
+  tenantSlug?: string;
+}) => (
+  <aside
+    aria-label="Documentation navigation"
+    className="sticky top-[calc(var(--header-height)+0.6rem)] z-30 hidden h-[calc(100svh-10rem)] w-[calc(var(--spacing)*56)] shrink-0 flex-col overscroll-none bg-transparent lg:flex"
+  >
+    <div className="h-9" />
+    <div className="absolute top-8 z-10 h-8 w-full shrink-0 bg-gradient-to-b from-background via-background/80 to-background/50 blur-xs" />
+    <div className="absolute top-12 right-2 bottom-0 hidden h-full w-px bg-gradient-to-b from-transparent via-border to-transparent lg:flex" />
+    <SidebarScrollArea className="no-scrollbar mx-auto flex min-h-0 w-full flex-1 flex-col gap-2 overflow-y-auto overflow-x-hidden px-2">
+      <CachedSidebarTree
+        activeTabIndex={activeTabIndex}
+        anchors={anchors}
+        basePath={basePath}
+        entries={nav}
+        tenantSlug={tenantSlug}
+      />
+      <div className="sticky -bottom-1 z-10 h-16 shrink-0 bg-gradient-to-t from-background via-background/80 to-background/50 blur-xs" />
+    </SidebarScrollArea>
+    <SidebarActiveHighlight basePath={basePath} />
+  </aside>
+);
