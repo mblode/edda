@@ -1,8 +1,10 @@
 import postgres from "postgres";
 
+// `||` (not `??`) so an explicitly-empty value falls through — Vercel's env
+// system can hand back `""` for Encrypted vars in some pulls.
 const databaseUrl =
-  process.env.DIRECT_URL ??
-  process.env.POSTGRES_URL_NON_POOLING ??
+  process.env.DIRECT_URL ||
+  process.env.POSTGRES_URL_NON_POOLING ||
   process.env.DATABASE_URL;
 
 if (!databaseUrl) {

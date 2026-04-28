@@ -23,9 +23,13 @@ import { drizzle } from "drizzle-orm/postgres-js";
 import { migrate } from "drizzle-orm/postgres-js/migrator";
 import postgres from "postgres";
 
+// Use `||` rather than `??` so that an explicitly-empty DIRECT_URL (which is
+// what `vercel env pull` returns for some Encrypted vars) falls through to the
+// next candidate instead of silently being used and defaulting postgres-js to
+// 127.0.0.1:5432.
 const databaseUrl =
-  process.env.DIRECT_URL ??
-  process.env.POSTGRES_URL_NON_POOLING ??
+  process.env.DIRECT_URL ||
+  process.env.POSTGRES_URL_NON_POOLING ||
   process.env.DATABASE_URL;
 
 if (!databaseUrl) {

@@ -4,9 +4,12 @@ import { defineConfig } from "drizzle-kit";
 // pgbouncer on :6543) hang drizzle-kit because each pg_catalog introspection
 // query round-trips through the pooler and prepared statements break in
 // transaction mode.
+//
+// `||` (not `??`) so an explicitly-empty value falls through — Vercel's env
+// system can hand back `""` for Encrypted vars in some pulls.
 const databaseUrl =
-  process.env.DIRECT_URL ??
-  process.env.POSTGRES_URL_NON_POOLING ??
+  process.env.DIRECT_URL ||
+  process.env.POSTGRES_URL_NON_POOLING ||
   process.env.DATABASE_URL;
 
 if (!databaseUrl) {
