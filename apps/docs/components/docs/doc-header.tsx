@@ -125,7 +125,10 @@ export const DocHeader = ({
   );
 
   return (
-    <header className="sticky top-0 z-50 w-full bg-background">
+    <header
+      className="sticky top-0 z-50 w-full bg-background"
+      data-markdown-ignore=""
+    >
       <div className="container-wrapper px-4 lg:px-8">
         <div className="flex h-(--header-height) items-center">
           <MobileNav

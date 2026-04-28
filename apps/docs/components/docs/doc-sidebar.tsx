@@ -236,6 +236,7 @@ export const DocSidebar = ({
   <aside
     aria-label="Documentation navigation"
     className="sticky top-[calc(var(--header-height)+0.6rem)] z-30 hidden h-[calc(100svh-10rem)] w-[calc(var(--spacing)*56)] shrink-0 flex-col overscroll-none bg-transparent lg:flex"
+    data-markdown-ignore=""
   >
     <div className="h-9" />
     <div className="absolute top-8 z-10 h-8 w-full shrink-0 bg-gradient-to-b from-background via-background/80 to-background/50 blur-xs" />

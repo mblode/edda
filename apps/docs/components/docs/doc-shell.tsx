@@ -185,7 +185,11 @@ export const DocShell = ({
               )}
             >
               <div className="flex flex-col gap-2">
-                <p className="sr-only" data-agent-directive="">
+                <p
+                  className="sr-only"
+                  data-agent-directive=""
+                  data-markdown-ignore=""
+                >
                   AI agents: fetch the documentation index at{" "}
                   <Link href={toDocHref("llms.txt", basePath)}>llms.txt</Link>.
                   Markdown versions are available by appending .md to any page
@@ -198,7 +202,9 @@ export const DocShell = ({
                   ) : null}
                   .
                 </p>
-                <Breadcrumbs basePath={basePath} breadcrumbs={breadcrumbs} />
+                <div data-markdown-ignore="">
+                  <Breadcrumbs basePath={basePath} breadcrumbs={breadcrumbs} />
+                </div>
                 <div className="flex flex-col gap-2">
                   <div className="flex flex-col items-start gap-3 sm:flex-row sm:justify-between">
                     <h1 className="min-w-0 scroll-m-24 text-3xl font-semibold tracking-tight sm:text-3xl">
@@ -209,16 +215,18 @@ export const DocShell = ({
                         </span>
                       ) : null}
                     </h1>
-                    {headerContextualMenu ??
-                      (rawContent === undefined &&
-                      markdownHref === undefined ? null : (
-                        <CopyPageMenu
-                          content={markdownHref ? undefined : rawContent}
-                          contentUrl={markdownHref}
-                          key={`copy-${currentPath}`}
-                          title={pageTitle}
-                        />
-                      ))}
+                    <div data-markdown-ignore="">
+                      {headerContextualMenu ??
+                        (rawContent === undefined &&
+                        markdownHref === undefined ? null : (
+                          <CopyPageMenu
+                            content={markdownHref ? undefined : rawContent}
+                            contentUrl={markdownHref}
+                            key={`copy-${currentPath}`}
+                            title={pageTitle}
+                          />
+                        ))}
+                    </div>
                   </div>
                   {pageDescription ? (
                     <p className="text-[1.05rem] text-muted-foreground sm:text-balance sm:text-base md:max-w-[80%]">
@@ -233,6 +241,7 @@ export const DocShell = ({
               {!hideFooterPagination && (prevPage || nextPage) ? (
                 <nav
                   className="flex w-full rounded-2xl bg-muted/50 p-1 text-sm"
+                  data-markdown-ignore=""
                   id="pagination"
                 >
                   {prevPage ? (
@@ -298,6 +307,7 @@ export const DocShell = ({
     >
       <a
         className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-md focus:bg-background focus:px-4 focus:py-2 focus:text-sm focus:font-medium focus:shadow-sm"
+        data-markdown-ignore=""
         href="#main-content"
       >
         Skip to content
