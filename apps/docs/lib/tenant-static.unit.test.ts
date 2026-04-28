@@ -4,6 +4,7 @@ import path from "node:path";
 
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
+import { LLMS_FULL_CHAR_LIMIT } from "./llms-full";
 import {
   absolutiseInternalLinks,
   buildTenantLlmsFullTxt,
@@ -237,6 +238,49 @@ describe("tenant static LLM helpers", () => {
     await expect(getLlmPageText(runtimeTenant, "guide")).resolves.toBe(
       "# Guide\n\nShip it."
     );
+  });
+
+  it("caps large llms-full output and points agents to the page index", async () => {
+    const pages = Array.from({ length: 10 }, (_, index) => `page-${index + 1}`);
+    const docsPath = await createTempUtilityRoot({
+      "docs.json": JSON.stringify(
+        {
+          $schema: "https://blode.md/docs.json",
+          name: "Example Docs",
+          navigation: {
+            groups: [{ group: "Docs", pages }],
+          },
+        },
+        null,
+        2
+      ),
+      ...Object.fromEntries(
+        pages.map((slug, index) => [
+          `${slug}.mdx`,
+          [
+            "---",
+            `title: Page ${index + 1}`,
+            "---",
+            "",
+            `# Page ${index + 1}`,
+            "",
+            "Long corpus paragraph for agent fetchability.\n\n".repeat(300),
+          ].join("\n"),
+        ])
+      ),
+    });
+    const runtimeTenant = {
+      ...tenant,
+      customDomains: [],
+      docsPath,
+      primaryDomain: "example.blode.md",
+    };
+
+    const output = await buildTenantLlmsFullTxt(runtimeTenant);
+
+    expect(output.length).toBeLessThanOrEqual(LLMS_FULL_CHAR_LIMIT);
+    expect(output).toContain("Content truncated");
+    expect(output).toContain("https://example.blode.md/llms.txt");
   });
 });
 

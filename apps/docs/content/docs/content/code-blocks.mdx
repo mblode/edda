@@ -9,25 +9,25 @@ Fenced code blocks are automatically syntax-highlighted using Shiki with dual th
 
 Use triple backticks with a language identifier:
 
-````mdx
-```javascript
+```text
+&#96;&#96;&#96;javascript
 const greeting = "Hello, world!";
 console.log(greeting);
+&#96;&#96;&#96;
 ```
-````
 
 ## Titles
 
 Add a filename or label with the `title` attribute:
 
-````mdx
-```typescript title="src/config.ts"
+```text
+&#96;&#96;&#96;typescript title="src/config.ts"
 export const config = {
   name: "my-project",
   version: "1.0.0",
 };
+&#96;&#96;&#96;
 ```
-````
 
 ## Supported languages
 
@@ -37,22 +37,22 @@ Shiki supports over 300 languages, including: `javascript`, `typescript`, `pytho
 
 Use the `CodeGroup` component to show multiple related code blocks with tabbed navigation:
 
-````mdx
+```text
 <CodeGroup>
-```bash title="npm"
+&#96;&#96;&#96;bash title="npm"
 npm install blodemd
-```
+&#96;&#96;&#96;
 
-```bash title="pnpm"
+&#96;&#96;&#96;bash title="pnpm"
 pnpm add blodemd
-```
+&#96;&#96;&#96;
 
-```bash title="yarn"
+&#96;&#96;&#96;bash title="yarn"
 yarn add blodemd
-```
+&#96;&#96;&#96;
 
 </CodeGroup>
-````
+```
 
 Tabs are automatically labeled from the `title` attribute. If no title is set, the language name is used.
 

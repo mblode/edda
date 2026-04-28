@@ -1,10 +1,8 @@
 import type { Deployment, Project } from "@repo/contracts";
 import { mapDeployment } from "@repo/db";
 import {
-  ArrowUpRightIcon,
   BranchIcon,
   GitCommitVerticalIcon,
-  MoreHorizontalIcon,
 } from "blode-icons-react";
 import { Suspense } from "react";
 
@@ -89,7 +87,6 @@ const getRowActions = (
     {
       external: true,
       href: liveUrl,
-      icon: ArrowUpRightIcon,
       label: deployment.previewUrl ? "Visit preview" : "Visit production",
     },
   ];
@@ -97,7 +94,6 @@ const getRowActions = (
     items.push({
       external: true,
       href: deployment.manifestUrl,
-      icon: ArrowUpRightIcon,
       label: "View manifest",
     });
   }
@@ -191,7 +187,6 @@ const DeploymentRow = ({
 
       <ActionMenu
         items={getRowActions(deployment, project)}
-        triggerIcon={MoreHorizontalIcon}
         triggerLabel={`Actions for deployment ${shortId(deployment.id)}`}
       />
     </li>

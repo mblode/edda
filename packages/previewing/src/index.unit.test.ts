@@ -20,6 +20,7 @@ import {
   PREBUILT_UTILITY_SITEMAP_PATH,
   UTILITY_DOCS_ROOT_TOKEN,
   serializeUtilityIndex,
+  toAgentMarkdown,
 } from "./index";
 
 const tempRoots: string[] = [];
@@ -375,5 +376,45 @@ describe("buildUtilityIndex", () => {
     await expect(loadPrebuiltUtilityIndex(source)).resolves.toEqual(
       utilityIndex
     );
+  });
+});
+
+describe("toAgentMarkdown", () => {
+  it("keeps MDX card bodies from the shipped docs index", async () => {
+    const source = await fs.readFile(
+      path.resolve(process.cwd(), "apps/docs/content/docs/index.mdx"),
+      "utf8"
+    );
+    const output = toAgentMarkdown(source);
+
+    expect(output).toContain("### [30+ MDX components](/components/callout)");
+    expect(output).toContain("Callouts, tabs, steps, code groups");
+    expect(output).toContain("Push from your terminal or automate");
+    expect(output).toContain("Every project gets a `*.blode.md` subdomain");
+    expect(output).toContain("Drop in an OpenAPI spec");
+    expect(output).toContain("Full-text search with Cmd+K");
+    expect(output).toContain("Auto-generated sitemaps, robots.txt");
+  });
+
+  it("preserves inline code spans that mention MDX component tags", () => {
+    const output = toAgentMarkdown(
+      "Wrap fenced code blocks inside `<CodeGroup>` and switch with `<Tabs>`."
+    );
+
+    expect(output).toContain("`<CodeGroup>`");
+    expect(output).toContain("`<Tabs>`");
+  });
+
+  it("renders accordion titles and bodies", () => {
+    const output = toAgentMarkdown(`
+<AccordionGroup>
+  <Accordion title="Deployment limits">
+    Fetch individual markdown pages for uncapped content.
+  </Accordion>
+</AccordionGroup>
+`);
+
+    expect(output).toContain("### Deployment limits");
+    expect(output).toContain("Fetch individual markdown pages");
   });
 });

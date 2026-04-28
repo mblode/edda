@@ -915,6 +915,26 @@ const restoreFencedCodeBlocks = (source: string, blocks: string[]) => {
   return restored;
 };
 
+const INLINE_CODE_REGEX = /(?<![\\`])`([^`\n]+)`(?!`)/g;
+
+const protectInlineCode = (source: string) => {
+  const spans: string[] = [];
+  const text = source.replace(INLINE_CODE_REGEX, (match) => {
+    const placeholder = `@@BLODEMD_INLINE_CODE_${spans.length}@@`;
+    spans.push(match);
+    return placeholder;
+  });
+  return { spans, text };
+};
+
+const restoreInlineCode = (source: string, spans: string[]) => {
+  let restored = source;
+  for (const [index, span] of spans.entries()) {
+    restored = restored.replace(`@@BLODEMD_INLINE_CODE_${index}@@`, span);
+  }
+  return restored;
+};
+
 const compactMarkdown = (source: string) =>
   source
     .replaceAll(/[ \t]+\n/g, "\n")
@@ -999,7 +1019,7 @@ const transformMdxComponents = (source: string) => {
   output = output.replaceAll("</Tree.Folder>", "");
   output = output.replaceAll(/<\/?Tree[^>]*>/g, "");
   output = output.replaceAll(
-    /<Frame\s*([^>]*)>([\s\S]*?)<\/Frame>/g,
+    /<Frame(?=[\s>])\s*([^>]*)>([\s\S]*?)<\/Frame>/g,
     (_match, attributes: string, children: string) => {
       const caption = getStringProp(attributes, "caption");
       const hint = getStringProp(attributes, "hint");
@@ -1011,7 +1031,7 @@ const transformMdxComponents = (source: string) => {
     }
   );
   output = output.replaceAll(
-    /<Callout\s*([^>]*)>([\s\S]*?)<\/Callout>/g,
+    /<Callout(?=[\s>])\s*([^>]*)>([\s\S]*?)<\/Callout>/g,
     (_match, attributes: string, children: string) => {
       const type = (getStringProp(attributes, "type") ?? "note").toUpperCase();
       return `> [!${type}]\n${children
@@ -1019,6 +1039,31 @@ const transformMdxComponents = (source: string) => {
         .split(NEWLINE_REGEX)
         .map((line) => `> ${line}`)
         .join("\n")}`;
+    }
+  );
+  for (const [tag, type] of [
+    ["Note", "NOTE"],
+    ["Warning", "WARNING"],
+    ["Info", "INFO"],
+    ["Tip", "TIP"],
+    ["Check", "CHECK"],
+    ["Danger", "DANGER"],
+  ] as const) {
+    output = output.replaceAll(
+      new RegExp(`<${tag}(?=[\\s>])\\s*[^>]*>([\\s\\S]*?)</${tag}>`, "g"),
+      (_match, children: string) =>
+        `> [!${type}]\n${children
+          .trim()
+          .split(NEWLINE_REGEX)
+          .map((line) => `> ${line}`)
+          .join("\n")}`
+    );
+  }
+  output = output.replaceAll(
+    /<Accordion(?=[\s>])\s*([^>]*)>([\s\S]*?)<\/Accordion>/g,
+    (_match, attributes: string, children: string) => {
+      const title = getStringProp(attributes, "title") ?? "Details";
+      return `### ${title}\n\n${children.trim()}`;
     }
   );
   output = output.replaceAll(
@@ -1039,14 +1084,14 @@ const transformMdxComponents = (source: string) => {
     }
   );
   output = output.replaceAll(
-    /<Expandable\s*([^>]*)>([\s\S]*?)<\/Expandable>/g,
+    /<Expandable(?=[\s>])\s*([^>]*)>([\s\S]*?)<\/Expandable>/g,
     (_match, attributes: string, children: string) => {
       const title = getStringProp(attributes, "title") ?? "Details";
       return `### ${title}\n\n${children.trim()}`;
     }
   );
   output = output.replaceAll(
-    /<Card\s*([^>]*)>([\s\S]*?)<\/Card>/g,
+    /<Card(?=[\s>])\s*([^>]*)>([\s\S]*?)<\/Card>/g,
     (_match, attributes: string, children: string) => {
       const title = getStringProp(attributes, "title");
       const href = getStringProp(attributes, "href");
@@ -1059,7 +1104,7 @@ const transformMdxComponents = (source: string) => {
     }
   );
   output = output.replaceAll(
-    /<\/?(?:Columns|Column|CodeGroup|Tabs|Steps|AccordionGroup|Accordion|CardGroup)[^>]*>/g,
+    /<\/?(?:Columns|Column|CodeGroup|Tabs|Steps|AccordionGroup|CardGroup)[^>]*>/g,
     ""
   );
 
@@ -1067,10 +1112,11 @@ const transformMdxComponents = (source: string) => {
 };
 
 export const toAgentMarkdown = (source: string): string => {
-  const { blocks, text } = protectFencedCodeBlocks(source);
-  return compactMarkdown(
-    restoreFencedCodeBlocks(transformMdxComponents(text), blocks)
-  );
+  const { blocks, text: codeProtected } = protectFencedCodeBlocks(source);
+  const { spans, text: inlineProtected } = protectInlineCode(codeProtected);
+  const transformed = transformMdxComponents(inlineProtected);
+  const inlineRestored = restoreInlineCode(transformed, spans);
+  return compactMarkdown(restoreFencedCodeBlocks(inlineRestored, blocks));
 };
 
 export const prepareLlmsFullContent = (

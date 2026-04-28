@@ -29,6 +29,7 @@ import {
   getDocsCollectionWithNavigation,
   getDocsNavigation,
 } from "@/lib/docs-collection";
+import { capLlmsFullContent } from "@/lib/llms-full";
 import {
   buildNavigation,
   enrichNavWithMetadata,
@@ -560,6 +561,7 @@ export const buildTenantLlmsFullTxt = async (
 ) => {
   const origin = getCanonicalOrigin(tenant, context);
   const basePath = getCanonicalDocBasePath(tenant, context);
+  const indexUrl = `${origin}${toDocHref("llms.txt", basePath)}`;
 
   const prebuilt = await loadTenantUtilityTemplate(
     tenant,
@@ -567,7 +569,10 @@ export const buildTenantLlmsFullTxt = async (
   );
   if (prebuilt) {
     const rendered = renderUtilityTemplate(prebuilt, tenant, context);
-    return prepareLlmsFullContent(rendered, origin, basePath);
+    return capLlmsFullContent(
+      prepareLlmsFullContent(rendered, origin, basePath),
+      indexUrl
+    );
   }
 
   const data = await loadTenantUtilityIndex(tenant);
@@ -582,7 +587,7 @@ export const buildTenantLlmsFullTxt = async (
     );
   });
 
-  return parts.join("\n\n");
+  return capLlmsFullContent(parts.join("\n\n"), indexUrl);
 };
 
 export const getLlmPageText = async (

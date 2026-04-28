@@ -9,22 +9,22 @@ Use the `CodeGroup` component to show multiple related code blocks in a single t
 
 Wrap two or more fenced code blocks inside `<CodeGroup>`. Each tab is labeled from the `title` attribute on the code block:
 
-````mdx
+```text
 <CodeGroup>
-```bash title="npm"
+&#96;&#96;&#96;bash title="npm"
 npm install blodemd
-```
+&#96;&#96;&#96;
 
-```bash title="pnpm"
+&#96;&#96;&#96;bash title="pnpm"
 pnpm add blodemd
-```
+&#96;&#96;&#96;
 
-```bash title="yarn"
+&#96;&#96;&#96;bash title="yarn"
 yarn add blodemd
-```
+&#96;&#96;&#96;
 
 </CodeGroup>
-````
+```
 
 <CodeGroup>
 ```bash title="npm"
@@ -45,16 +45,16 @@ yarn add blodemd
 
 Show the same API call in different programming languages:
 
-````mdx
+```text
 <CodeGroup>
-```javascript title="Node.js"
+&#96;&#96;&#96;javascript title="Node.js"
 const res = await fetch("https://api.blode.md/v1/projects", {
   headers: { Authorization: `Bearer ${API_KEY}` },
 });
 const data = await res.json();
-```
+&#96;&#96;&#96;
 
-```python title="Python"
+&#96;&#96;&#96;python title="Python"
 import requests
 
 res = requests.get(
@@ -62,15 +62,15 @@ res = requests.get(
     headers={"Authorization": f"Bearer {API_KEY}"},
 )
 data = res.json()
-```
+&#96;&#96;&#96;
 
-```bash title="cURL"
+&#96;&#96;&#96;bash title="cURL"
 curl -H "Authorization: Bearer $API_KEY" \
   https://api.blode.md/v1/projects
-```
+&#96;&#96;&#96;
 
 </CodeGroup>
-````
+```
 
 <CodeGroup>
 ```javascript title="Node.js"
@@ -101,7 +101,7 @@ curl -H "Authorization: Bearer $API_KEY" \
 
 Tabs are labeled in this order of priority:
 
-1. The `title` attribute on the code fence (e.g., ` ```bash title="npm" `)
+1. The `title` attribute on the code fence, such as &#96;&#96;&#96;bash title="npm"
 2. The language identifier (e.g., `javascript`, `python`)
 3. A generic fallback like "Tab 1"
 
