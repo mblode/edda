@@ -1,9 +1,14 @@
 import postgres from "postgres";
 
-const databaseUrl = process.env.DATABASE_URL;
+const databaseUrl =
+  process.env.DIRECT_URL ??
+  process.env.POSTGRES_URL_NON_POOLING ??
+  process.env.DATABASE_URL;
 
 if (!databaseUrl) {
-  throw new Error("DATABASE_URL is required.");
+  throw new Error(
+    "DIRECT_URL, POSTGRES_URL_NON_POOLING, or DATABASE_URL is required."
+  );
 }
 
 const sql = postgres(databaseUrl, { prepare: false });

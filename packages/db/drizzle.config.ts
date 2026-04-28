@@ -1,9 +1,18 @@
 import { defineConfig } from "drizzle-kit";
 
-const databaseUrl = process.env.DATABASE_URL;
+// Prefer the direct Postgres connection for migrations. Pooled URLs (Supabase
+// pgbouncer on :6543) hang drizzle-kit because each pg_catalog introspection
+// query round-trips through the pooler and prepared statements break in
+// transaction mode.
+const databaseUrl =
+  process.env.DIRECT_URL ??
+  process.env.POSTGRES_URL_NON_POOLING ??
+  process.env.DATABASE_URL;
 
 if (!databaseUrl) {
-  throw new Error("DATABASE_URL is required to run drizzle-kit commands.");
+  throw new Error(
+    "DIRECT_URL, POSTGRES_URL_NON_POOLING, or DATABASE_URL is required to run drizzle-kit commands."
+  );
 }
 
 export default defineConfig({
