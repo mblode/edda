@@ -171,8 +171,9 @@ export default function HomePage() {
 
       <section>
         <TextReveal>
-          A folder of Markdown becomes the knowledge layer your users read and
-          their agents run on. On your domain. Rebuilt on every commit.
+          A folder of MDX in your repo becomes fast docs on your domain.
+          Reviewed like code, rebuilt on every commit, read by people and agents
+          alike.
         </TextReveal>
       </section>
 
@@ -184,7 +185,7 @@ export default function HomePage() {
                 How it works
               </p>
               <h2 className="h-title text-balance text-3xl font-semibold md:text-4xl">
-                Knowledge that ships with the code
+                Docs that ship with the code
               </h2>
               <p className="measure mt-4 text-muted-foreground">
                 Docs that drift from the code start telling agents the wrong
@@ -291,11 +292,12 @@ export default function HomePage() {
               What you get
             </p>
             <h2 className="h-title text-balance text-3xl font-semibold md:text-4xl">
-              Everything the knowledge layer needs
+              One MDX project, one domain, one price
             </h2>
             <p className="measure mt-4 text-muted-foreground">
-              One MDX project, one domain, one price. Components, hosting, and
-              the workflow to keep people and agents on the same page.
+              Components, hosting, search, and an API reference, all from the
+              same repo. Everything to keep people and agents reading the same
+              docs.
             </p>
           </div>
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
