@@ -54,6 +54,27 @@ export const SiteFooter = () => (
           </div>
         ))}
       </div>
+
+      <div className="mt-14 border-border/60 border-t pt-8 lg:px-8">
+        <a
+          className="inline-flex items-center gap-2 text-muted-foreground text-xs leading-5 tracking-tight transition-colors hover:text-foreground"
+          href="https://matthewblode.com"
+          rel="author noopener noreferrer"
+          target="_blank"
+        >
+          <span>Crafted by</span>
+          {/* oxlint-disable-next-line no-img-element -- external avatar, intentionally not next/image */}
+          <img
+            alt="Matthew Blode"
+            className="rounded-full"
+            height={20}
+            loading="lazy"
+            src="https://matthewblode.com/avatar-sm.png"
+            width={20}
+          />
+          <span>Matthew Blode</span>
+        </a>
+      </div>
     </div>
   </footer>
 );

@@ -97,3 +97,7 @@ Scaffold and deploy docs with natural language:
 ## License
 
 [MIT](LICENSE)
+
+---
+
+Crafted by [<img src="https://matthewblode.com/avatar-sm.png" width="20" align="top" />](https://matthewblode.com) [Matthew Blode](https://matthewblode.com)
