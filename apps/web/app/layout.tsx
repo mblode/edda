@@ -17,10 +17,18 @@ const glide = localFont({
 export const metadata: Metadata = {
   description:
     "Documentation should ship as fast as code. Blode.md is a terminal-native docs platform. Write MDX, push from your CLI, deploy on every merge.",
+  metadataBase: new URL("https://blode.md"),
+  openGraph: {
+    siteName: "Blode.md",
+    type: "website",
+  },
   other: {
     "apple-mobile-web-app-title": "Blode.md",
   },
-  title: "Blode.md",
+  title: "Blode.md — Terminal-native docs platform",
+  twitter: {
+    card: "summary_large_image",
+  },
 };
 
 export const viewport: Viewport = {

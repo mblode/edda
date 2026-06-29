@@ -33,6 +33,7 @@ Content-Signal: ${CONTENT_SIGNAL}
 ${aiCrawlerBlock}
 
 Sitemap: ${marketingUrl("/sitemap.xml")}
+Sitemap: ${marketingUrl("/docs/sitemap.xml")}
 `;
 
 export const GET = () =>

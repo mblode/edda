@@ -5,7 +5,8 @@ import { MarketingShell } from "@/components/ui/marketing-shell";
 import { RelativeTime } from "@/components/ui/relative-time";
 
 export const metadata: Metadata = {
-  description: "Latest updates to the Blode.md platform.",
+  description:
+    "Every release, fix, and improvement to the Blode.md docs platform — see what shipped, when, and why across the CLI, renderer, and hosting.",
   title: "Changelog | Blode.md",
 };
 

@@ -6,7 +6,7 @@ import { siteConfig } from "@/lib/config";
 
 export const metadata: Metadata = {
   description:
-    "Privacy policy for Blode.md. What we collect, what we do with it, and how to get in touch.",
+    "Privacy policy for Blode.md — what data we collect, how we use it, the third parties we rely on, and how to reach us about your information.",
   title: "Privacy | Blode.md",
 };
 

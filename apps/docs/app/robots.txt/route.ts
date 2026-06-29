@@ -11,6 +11,7 @@ Allow: /
 Content-Signal: ai-train=no, search=yes, ai-input=yes
 
 Sitemap: ${marketingUrl("/sitemap.xml")}
+Sitemap: ${marketingUrl("/docs/sitemap.xml")}
 `;
 
 export const GET = () =>

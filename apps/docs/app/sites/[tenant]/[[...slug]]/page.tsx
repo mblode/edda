@@ -103,14 +103,21 @@ export const generateMetadata = async ({
   }
 
   const canonicalBasePath = getCanonicalDocBasePath(tenant, requestContext);
-  const canonicalPath = slugKey ? `/${slugKey}` : "/";
-  const fullCanonical = `${canonicalBasePath}${canonicalPath}`.replaceAll(
-    /\/+/g,
-    "/"
-  );
+  const canonicalPath = slugKey ? `/${slugKey}` : "";
+  // Collapse duplicate slashes and drop any trailing slash so the canonical
+  // points at the final URL (the platform 308-redirects `/docs/` -> `/docs`).
+  const fullCanonical =
+    `${canonicalBasePath}${canonicalPath}`
+      .replaceAll(/\/+/g, "/")
+      .replace(/\/$/, "") || "/";
   const canonicalOrigin = getCanonicalOrigin(tenant, requestContext);
-  const ogImage = config?.metadata?.ogImage;
+  const canonicalUrl = `${canonicalOrigin}${fullCanonical}`;
   const favicon = config?.favicon;
+  // Always emit a complete Open Graph + Twitter card. Fall back to the docs
+  // app's default OG image when the tenant hasn't configured a custom one.
+  const ogImage =
+    config?.metadata?.ogImage ?? `${canonicalOrigin}/opengraph-image.png`;
+  const ogDescription = pageDescription ?? config?.description;
   const noindex = pageNoindex || (hidden && config.seo?.indexing !== "all");
   const markdownUrl =
     (kind === "page" || kind === "openapi") && currentPath
@@ -119,25 +126,27 @@ export const generateMetadata = async ({
 
   return {
     alternates: {
-      canonical: `${canonicalOrigin}${fullCanonical}`,
+      canonical: canonicalUrl,
       ...(markdownUrl ? { types: { "text/markdown": markdownUrl } } : {}),
     },
-    description: pageDescription ?? config?.description,
+    description: ogDescription,
     icons: favicon ? { icon: favicon } : undefined,
-    openGraph: ogImage
-      ? {
-          images: [ogImage],
-          url: `${canonicalOrigin}${fullCanonical}`,
-        }
-      : undefined,
+    openGraph: {
+      description: ogDescription,
+      images: [ogImage],
+      siteName: baseTitle,
+      title,
+      type: "website",
+      url: canonicalUrl,
+    },
     robots: noindex ? { index: false } : undefined,
     title,
-    twitter: ogImage
-      ? {
-          card: "summary_large_image",
-          images: [ogImage],
-        }
-      : undefined,
+    twitter: {
+      card: "summary_large_image",
+      description: ogDescription,
+      images: [ogImage],
+      title,
+    },
   };
 };
 
@@ -353,7 +362,9 @@ const DocPage = async ({
 
   const canonicalOrigin = getCanonicalOrigin(shell.tenant, requestContext);
   const canonicalPath =
-    `${basePath}${slugKey ? `/${slugKey}` : "/"}`.replaceAll(/\/+/g, "/");
+    `${basePath}${slugKey ? `/${slugKey}` : ""}`
+      .replaceAll(/\/+/g, "/")
+      .replace(/\/$/, "") || "/";
   const canonicalUrl = `${canonicalOrigin}${canonicalPath}`;
   const markdownHrefAbsolute = markdownHref
     ? `${canonicalOrigin}${markdownHref}`
