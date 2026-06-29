@@ -425,6 +425,103 @@ const computePrevNext = (
   };
 };
 
+const META_DESCRIPTION_MIN = 120;
+const META_DESCRIPTION_MAX = 160;
+const META_FRONTMATTER_RE = /^---\s*\n[\s\S]*?\n---\s*\n?/;
+
+/**
+ * Reduce raw MDX/Markdown to a single line of readable prose so it can seed a
+ * meta description when a page has no (or a too-short) frontmatter description.
+ */
+const markdownToPlainText = (markdown: string): string =>
+  markdown
+    .replace(META_FRONTMATTER_RE, "")
+    .replaceAll(/```[\s\S]*?```/g, " ")
+    .replaceAll(/~~~[\s\S]*?~~~/g, " ")
+    .replaceAll(/`[^`]*`/g, " ")
+    .replaceAll(/!\[[^\]]*\]\([^)]*\)/g, " ")
+    .replaceAll(/\[([^\]]+)\]\([^)]*\)/g, "$1")
+    .replaceAll(/<[^>]+>/g, " ")
+    .replaceAll(/^\s{0,3}#{1,6}\s+/gm, "")
+    .replaceAll(/^\s{0,3}>\s?/gm, "")
+    .replaceAll(/^\s{0,3}(?:[-*+]|\d+\.)\s+/gm, "")
+    .replaceAll(/[*_~]+/g, "")
+    .replaceAll("|", " ")
+    .replaceAll(/\s+/g, " ")
+    .trim();
+
+const normalizeMetaText = (value?: string) =>
+  value ? value.replaceAll(/\s+/g, " ").trim() : "";
+
+const truncateMetaDescription = (text: string, max: number): string => {
+  if (text.length <= max) {
+    return text;
+  }
+  const slice = text.slice(0, max - 1);
+  const lastSpace = slice.lastIndexOf(" ");
+  const trimmed = (lastSpace > max * 0.6 ? slice.slice(0, lastSpace) : slice)
+    .replace(/[\s.,;:–—-]+$/, "")
+    .trim();
+  return `${trimmed}…`;
+};
+
+/**
+ * Build a 120-160 character meta description from (in order of preference) the
+ * frontmatter description, the page body, and a site-level fallback. Keeps the
+ * visible page subtitle untouched while giving crawlers a complete description.
+ */
+const deriveMetaDescription = ({
+  description,
+  rawText,
+  fallback,
+}: {
+  description?: string;
+  rawText?: string;
+  fallback?: string;
+}): string | undefined => {
+  const frontmatter = normalizeMetaText(description);
+  if (frontmatter.length >= META_DESCRIPTION_MIN) {
+    return truncateMetaDescription(frontmatter, META_DESCRIPTION_MAX);
+  }
+
+  let combined = frontmatter;
+  const excerpt = rawText ? markdownToPlainText(rawText) : "";
+  if (excerpt) {
+    if (
+      !frontmatter ||
+      excerpt.toLowerCase().startsWith(frontmatter.toLowerCase())
+    ) {
+      combined = excerpt;
+    } else if (combined.length < META_DESCRIPTION_MIN) {
+      combined = `${frontmatter} ${excerpt}`;
+    }
+  }
+
+  const fallbackText = normalizeMetaText(fallback);
+  if (
+    fallbackText &&
+    normalizeMetaText(combined).length < META_DESCRIPTION_MIN
+  ) {
+    combined = combined ? `${combined} ${fallbackText}` : fallbackText;
+  }
+
+  combined = normalizeMetaText(combined);
+  return combined
+    ? truncateMetaDescription(combined, META_DESCRIPTION_MAX)
+    : undefined;
+};
+
+const buildMetaDescriptionFallback = (
+  config: { name?: string; description?: string } | undefined,
+  title: string | undefined
+): string => {
+  const name = config?.name ?? "Docs";
+  const lead = title
+    ? `${title} — ${name} documentation.`
+    : `${name} documentation.`;
+  return config?.description ? `${lead} ${config.description}` : lead;
+};
+
 /**
  * Returns shell data (config, nav, title, breadcrumbs) from cached artifacts
  * without compiling MDX. Used by the page component to render the shell
@@ -470,6 +567,13 @@ export const getDocShellData = cache(
         hidden: isHidden,
         hideFooterPagination: false,
         kind: "openapi" as const,
+        metaDescription: deriveMetaDescription({
+          description: openApiEntry.operation.description,
+          fallback: buildMetaDescriptionFallback(
+            artifacts.config,
+            openApiEntry.operation.summary ?? openApiEntry.identifier
+          ),
+        }),
         mode: undefined as PageMode | undefined,
         nav: activeTabNav ?? artifacts.visibleNav,
         nextPage: computePrevNext(effectiveFlatNav, currentPath).nextPage,
@@ -517,6 +621,10 @@ export const getDocShellData = cache(
         hidden: false,
         hideFooterPagination: false,
         kind: "index" as const,
+        metaDescription: deriveMetaDescription({
+          description: entry.description,
+          fallback: buildMetaDescriptionFallback(artifacts.config, entry.title),
+        }),
         mode: undefined as PageMode | undefined,
         nav: showDocsNav ? (activeTabNav ?? artifacts.visibleNav) : [],
         nextPage: computePrevNext(effectiveFlatNav, currentPath).nextPage,
@@ -549,9 +657,12 @@ export const getDocShellData = cache(
       ? contextualOptionsRequirePageContent(artifacts.config.contextual.options)
       : false;
 
+    // Load the body when we need a TOC, contextual content, or a body excerpt
+    // to flesh out a short/missing frontmatter description for SEO.
+    const needsExcerpt = (entry.description ?? "").trim().length < 120;
     let rawContent: string | undefined;
     let toc: ReturnType<typeof extractToc> = prebuiltToc ?? [];
-    if ((!prebuiltToc && useToc) || needsRawContent) {
+    if ((!prebuiltToc && useToc) || needsRawContent || needsExcerpt) {
       try {
         rawContent = await loadContentSource(
           artifacts.contentSource,
@@ -575,6 +686,11 @@ export const getDocShellData = cache(
       hidden: isHiddenByNav || entry.hidden === true,
       hideFooterPagination: pageMeta?.hideFooterPagination ?? false,
       kind: "page" as const,
+      metaDescription: deriveMetaDescription({
+        description: entry.description,
+        fallback: buildMetaDescriptionFallback(artifacts.config, entry.title),
+        rawText: rawContent,
+      }),
       mode: pageMeta?.mode,
       nav: showDocsNav ? (activeTabNav ?? artifacts.visibleNav) : [],
       nextPage,

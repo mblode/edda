@@ -85,6 +85,7 @@ export const generateMetadata = async ({
     currentPath,
     hidden,
     kind,
+    metaDescription,
     noindex: pageNoindex,
     pageTitle,
     pageDescription,
@@ -117,7 +118,8 @@ export const generateMetadata = async ({
   // app's default OG image when the tenant hasn't configured a custom one.
   const ogImage =
     config?.metadata?.ogImage ?? `${canonicalOrigin}/opengraph-image.png`;
-  const ogDescription = pageDescription ?? config?.description;
+  const ogDescription =
+    metaDescription ?? pageDescription ?? config?.description;
   const noindex = pageNoindex || (hidden && config.seo?.indexing !== "all");
   const markdownUrl =
     (kind === "page" || kind === "openapi") && currentPath
@@ -378,8 +380,9 @@ const DocPage = async ({
     jsonLd.headline = shell.pageTitle;
     jsonLd.name = shell.pageTitle;
   }
-  if (shell.pageDescription) {
-    jsonLd.description = shell.pageDescription;
+  const jsonLdDescription = shell.metaDescription ?? shell.pageDescription;
+  if (jsonLdDescription) {
+    jsonLd.description = jsonLdDescription;
   }
   if (markdownHref) {
     jsonLd.encoding = {
