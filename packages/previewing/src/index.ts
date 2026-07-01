@@ -1231,16 +1231,16 @@ const shouldIncludeSearchEntry = (
   return true;
 };
 
-const stripFrontmatter = (source: string) =>
+export const stripFrontmatter = (source: string) =>
   parseFrontmatter(source).body.trim();
 
-const getDocsCollection = (config: SiteConfig) =>
+export const getDocsCollection = (config: SiteConfig) =>
   config.collections.find((collection) => collection.type === "docs");
 
-const getDocsNavigation = (config: SiteConfig) =>
+export const getDocsNavigation = (config: SiteConfig) =>
   getDocsCollection(config)?.navigation ?? config.navigation;
 
-const getDocsCollectionWithNavigation = (
+export const getDocsCollectionWithNavigation = (
   config: SiteConfig
 ): SiteConfig["collections"][number] | undefined => {
   const docsCollection = getDocsCollection(config);
