@@ -4,7 +4,6 @@ import type { PageMode, SiteConfig } from "@repo/models";
 import {
   buildContentIndex,
   buildPageMetadataMap,
-  loadContentSource,
   loadSiteConfig,
 } from "@repo/previewing";
 import type {
@@ -293,10 +292,7 @@ const buildRenderedPageData = async ({
   relativePath: string;
   useToc: boolean;
 }): Promise<RenderedPageData> => {
-  const rawContent = await loadContentSource(
-    artifacts.contentSource,
-    relativePath
-  );
+  const rawContent = await artifacts.contentSource.readFile(relativePath);
   const { content, frontmatter } = await renderMdx(rawContent);
 
   return {
@@ -497,10 +493,7 @@ export const getDocShellData = async (slugKey: string) => {
   let toc: ReturnType<typeof extractToc> = [];
 
   try {
-    rawContent = await loadContentSource(
-      artifacts.contentSource,
-      entry.relativePath
-    );
+    rawContent = await artifacts.contentSource.readFile(entry.relativePath);
 
     if (useToc) {
       toc = extractToc(rawContent);

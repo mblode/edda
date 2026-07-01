@@ -7,7 +7,6 @@ import {
   buildPageMetadataMap,
   formatOpenApiPageContent,
   getPrebuiltUtilityLlmPagePath,
-  loadContentSource,
   loadPrebuiltContentIndex,
   loadPrebuiltUtilityIndex,
   loadSiteConfig,
@@ -383,10 +382,7 @@ const buildRuntimeUtilityIndex = async (
         };
       }
 
-      const raw = await loadContentSource(
-        data.contentSource,
-        page.relativePath
-      );
+      const raw = await data.contentSource.readFile(page.relativePath);
       return {
         content: toAgentMarkdown(stripFrontmatter(raw)),
         description: page.description,

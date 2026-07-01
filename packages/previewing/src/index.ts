@@ -157,7 +157,6 @@ export const buildPageMetadataMap = (
     const meta: PageMetadata = {
       title: entry.title,
     };
-    const hasFields = true;
     if (typeof fm.sidebarTitle === "string") {
       meta.sidebarTitle = fm.sidebarTitle;
     }
@@ -194,9 +193,7 @@ export const buildPageMetadataMap = (
     if (Array.isArray(fm.keywords)) {
       meta.keywords = fm.keywords as string[];
     }
-    if (hasFields) {
-      map.set(entry.slug, meta);
-    }
+    map.set(entry.slug, meta);
   }
   return map;
 };
@@ -520,11 +517,6 @@ export const loadSiteConfig = async (
     ok: false,
   };
 };
-
-export const loadContentSource = async (
-  source: ContentSource,
-  relativePath: string
-) => await source.readFile(relativePath);
 
 const listContentFiles = async (source: ContentSource, directory: string) => {
   const files = await source.listFiles(directory);
@@ -1132,11 +1124,14 @@ export const prepareLlmsFullContent = (
     basePath
   );
 
+// Matches ``` and ~~~ fenced blocks, requiring the same fence to close them.
+const TOC_FENCE_REGEX = /(`{3,}|~{3,})[\s\S]*?\1/g;
+
 export const extractToc = (source: string): TocItem[] => {
-  const withoutCode = source.replaceAll(/```[\s\S]*?```/g, "");
+  const withoutCode = source.replaceAll(TOC_FENCE_REGEX, "");
   const lines = withoutCode.split(NEWLINE_REGEX);
   const toc: TocItem[] = [];
-  const seen = new Map<string, number>();
+  const emitted = new Set<string>();
 
   for (const line of lines) {
     const match = HEADING_REGEX.exec(line.trim());
@@ -1150,11 +1145,18 @@ export const extractToc = (source: string): TocItem[] => {
     }
 
     const baseId = slugify(heading.trim());
-    const count = seen.get(baseId) ?? 0;
-    seen.set(baseId, count + 1);
+    // Increment until the id is unique among the ids we have already emitted,
+    // so a suffixed id never collides with an explicit "foo-1" heading.
+    let id = baseId;
+    let count = 1;
+    while (emitted.has(id)) {
+      id = `${baseId}-${count}`;
+      count += 1;
+    }
+    emitted.add(id);
 
     toc.push({
-      id: count === 0 ? baseId : `${baseId}-${count}`,
+      id,
       level: hashes.length,
       title: heading.trim(),
     });
@@ -1621,22 +1623,27 @@ export const buildUtilityIndex = async (
   const pageMetadataMap = buildPageMetadataMap(index);
   const pages = new Map<string, UtilityPage>();
 
-  for (const entry of index.entries) {
-    if (entry.kind !== "entry") {
-      continue;
+  const contentPages = await Promise.all(
+    index.entries.map(async (entry) => {
+      if (entry.kind !== "entry") {
+        return null;
+      }
+      if (!shouldIncludeSearchEntry(entry, pageMetadataMap, config)) {
+        return null;
+      }
+      const rawContent = await source.readFile(entry.relativePath);
+      return {
+        content: stripFrontmatter(rawContent),
+        description: entry.description,
+        slug: entry.slug,
+        title: entry.title,
+      } satisfies UtilityPage;
+    })
+  );
+  for (const page of contentPages) {
+    if (page) {
+      pages.set(page.slug, page);
     }
-
-    if (!shouldIncludeSearchEntry(entry, pageMetadataMap, config)) {
-      continue;
-    }
-
-    const rawContent = await source.readFile(entry.relativePath);
-    pages.set(entry.slug, {
-      content: stripFrontmatter(rawContent),
-      description: entry.description,
-      slug: entry.slug,
-      title: entry.title,
-    });
   }
 
   for (const page of await buildUtilityOpenApiPages(
@@ -1846,13 +1853,20 @@ export const buildTocIndex = async (
 ): Promise<Map<string, TocItem[]>> => {
   const itemsBySlug = new Map<string, TocItem[]>();
 
-  for (const entry of index.entries) {
-    if (entry.kind !== "entry") {
-      continue;
-    }
+  const results = await Promise.all(
+    index.entries.map(async (entry) => {
+      if (entry.kind !== "entry") {
+        return null;
+      }
+      const rawContent = await source.readFile(entry.relativePath);
+      return { slug: entry.slug, toc: extractToc(rawContent) };
+    })
+  );
 
-    const rawContent = await source.readFile(entry.relativePath);
-    itemsBySlug.set(entry.slug, extractToc(rawContent));
+  for (const result of results) {
+    if (result) {
+      itemsBySlug.set(result.slug, result.toc);
+    }
   }
 
   return itemsBySlug;
