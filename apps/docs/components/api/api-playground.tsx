@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/button";
 import { Field, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import type { OpenApiEntry } from "@/lib/openapi";
-import { TENANT_HEADERS } from "@/lib/tenant-headers";
 
 interface OperationParameter {
   description?: string;
@@ -321,15 +320,13 @@ export const ApiPlayground = ({
         headers: requestHeaders,
         method,
         url,
+        ...(tenantSlug ? { tenantSlug } : {}),
       };
 
       const requestUrl = useProxy ? proxyPath : url;
       const requestMethod = useProxy ? "POST" : method;
       const requestHeadersToSend = useProxy
-        ? {
-            "Content-Type": "application/json",
-            ...(tenantSlug ? { [TENANT_HEADERS.SLUG]: tenantSlug } : {}),
-          }
+        ? { "Content-Type": "application/json" }
         : requestHeaders;
 
       let requestBody: string | undefined;

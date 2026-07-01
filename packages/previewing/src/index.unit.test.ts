@@ -10,6 +10,7 @@ import {
   buildContentIndex,
   buildUtilityIndex,
   createFsSource,
+  extractToc,
   getPrebuiltUtilityLlmPagePath,
   LEGACY_PROJECT_NAME_FALLBACK_WARNING,
   loadPrebuiltUtilityIndex,
@@ -405,6 +406,20 @@ describe("toAgentMarkdown", () => {
     expect(output).toContain("`<Tabs>`");
   });
 
+  it("preserves regex replacement patterns inside code", () => {
+    const source = [
+      "```js",
+      "str.replace(/(\\w+)/, '$1-$&-$`-$$');",
+      "```",
+      "",
+      "Inline `sed 's/a/$&/g'` too.",
+    ].join("\n");
+    const output = toAgentMarkdown(source);
+
+    expect(output).toContain("str.replace(/(\\w+)/, '$1-$&-$`-$$');");
+    expect(output).toContain("`sed 's/a/$&/g'`");
+  });
+
   it("renders accordion titles and bodies", () => {
     const output = toAgentMarkdown(`
 <AccordionGroup>
@@ -416,5 +431,28 @@ describe("toAgentMarkdown", () => {
 
     expect(output).toContain("### Deployment limits");
     expect(output).toContain("Fetch individual markdown pages");
+  });
+});
+
+describe("extractToc", () => {
+  it("ignores headings inside tilde-fenced code blocks", () => {
+    const toc = extractToc(
+      ["## Real Heading", "", "~~~bash", "## not a heading", "~~~"].join("\n")
+    );
+
+    expect(toc.map((item) => item.title)).toEqual(["Real Heading"]);
+  });
+
+  it("makes duplicate ids unique without colliding with explicit suffixes", () => {
+    const toc = extractToc(
+      ["## Setup", "## Setup 1", "## Setup", "## Setup"].join("\n")
+    );
+
+    expect(toc.map((item) => item.id)).toEqual([
+      "setup",
+      "setup-1",
+      "setup-2",
+      "setup-3",
+    ]);
   });
 });

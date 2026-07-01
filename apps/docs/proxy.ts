@@ -91,13 +91,22 @@ export const proxy = async (request: NextRequest) => {
   const { pathname } = request.nextUrl;
   const markdownSourcePath = getMarkdownExportSourcePath(pathname);
 
+  // Strip any tenant headers a client tried to forge before they can reach a
+  // route handler. Legitimate values are re-set below during the rewrite.
+  const incomingHeaders = new Headers(request.headers);
+  for (const header of Object.values(TENANT_HEADERS)) {
+    incomingHeaders.delete(header);
+  }
+  const passThrough = () =>
+    NextResponse.next({ request: { headers: incomingHeaders } });
+
   if (pathname.startsWith("/sites")) {
     return new NextResponse("Not Found", { status: 404 });
   }
 
   const host = getRequestHost(request.headers);
   if (!host) {
-    return NextResponse.next();
+    return passThrough();
   }
 
   if (isRootRuntimeHost(host)) {
@@ -129,14 +138,14 @@ export const proxy = async (request: NextRequest) => {
     !allowTenantUtilityRewrite &&
     !allowTenantApiPage
   ) {
-    return NextResponse.next();
+    return passThrough();
   }
 
   const resolution = await resolveTenant(host, markdownSourcePath ?? pathname);
 
   if (!resolution) {
     if (isRootRuntimeHost(host)) {
-      return NextResponse.next();
+      return passThrough();
     }
 
     return new NextResponse("Not Found", { status: 404 });
@@ -180,7 +189,7 @@ export const proxy = async (request: NextRequest) => {
     return NextResponse.redirect(redirectUrl, 308);
   }
 
-  const requestHeaders = new Headers(request.headers);
+  const requestHeaders = incomingHeaders;
   requestHeaders.set(TENANT_HEADERS.ID, resolution.tenant.id);
   requestHeaders.set(TENANT_HEADERS.SLUG, resolution.tenant.slug);
   requestHeaders.set(TENANT_HEADERS.DOMAIN, resolution.host);

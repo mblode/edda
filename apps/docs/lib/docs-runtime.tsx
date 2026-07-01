@@ -5,7 +5,6 @@ import {
   buildPageMetadataMap,
   buildSearchIndex,
   buildUtilityIndex,
-  loadContentSource,
   loadPrebuiltContentIndex,
   loadPrebuiltSearchIndex,
   loadPrebuiltTocIndex,
@@ -378,7 +377,7 @@ const getRenderedPageData = async ({
       preloadedRawContent ??
       (compiled
         ? undefined
-        : await loadContentSource(artifacts.contentSource, relativePath));
+        : await artifacts.contentSource.readFile(relativePath));
     const rendered = compiled
       ? await renderFromCompiled(
           compiled.compiledSource,
@@ -664,10 +663,7 @@ export const getDocShellData = cache(
     let toc: ReturnType<typeof extractToc> = prebuiltToc ?? [];
     if ((!prebuiltToc && useToc) || needsRawContent || needsExcerpt) {
       try {
-        rawContent = await loadContentSource(
-          artifacts.contentSource,
-          entry.relativePath
-        );
+        rawContent = await artifacts.contentSource.readFile(entry.relativePath);
         if (!prebuiltToc && useToc) {
           toc = extractToc(rawContent);
         }

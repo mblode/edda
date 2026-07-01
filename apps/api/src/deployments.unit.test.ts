@@ -169,7 +169,10 @@ describe("deployments API", () => {
     expect(syncProjectTenantEdgeConfigMock).toHaveBeenCalledWith(
       currentProject.id
     );
-    expect(revalidateProjectMock).toHaveBeenCalledWith(currentProject.slug);
+    expect(revalidateProjectMock).toHaveBeenCalledWith(
+      currentProject.slug,
+      currentProject.id
+    );
     expect(prewarmProjectMock).toHaveBeenCalledWith(currentProject.id);
   });
 
@@ -238,7 +241,10 @@ describe("deployments API", () => {
     );
 
     expect(response.status).toBe(200);
-    expect(revalidateProjectMock).toHaveBeenCalledWith("example");
+    expect(revalidateProjectMock).toHaveBeenCalledWith(
+      "example",
+      currentProject.id
+    );
     expect(consoleError).toHaveBeenCalledWith(
       expect.stringContaining("Docs revalidation failed"),
       expect.any(Error)

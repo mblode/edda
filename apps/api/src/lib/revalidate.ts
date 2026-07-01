@@ -34,7 +34,10 @@ const preflightDocsUrl = () => {
   return preflightPromise;
 };
 
-export const revalidateProject = async (projectSlug: string) => {
+export const revalidateProject = async (
+  projectSlug: string,
+  tenantId?: string
+) => {
   if (!(docsAppUrl && revalidateSecret)) {
     return;
   }
@@ -46,6 +49,9 @@ export const revalidateProject = async (projectSlug: string) => {
     paths: [`/sites/${projectSlug}`],
     secret: revalidateSecret,
     tags: [`project:${projectSlug}`, "tenants"],
+    // Scope in-memory cache clearing to this tenant so publishing one project
+    // doesn't evict every other tenant's runtime caches.
+    tenantId,
   });
 
   // Retry once on transient failures so a single flake doesn't leave ISR HTML

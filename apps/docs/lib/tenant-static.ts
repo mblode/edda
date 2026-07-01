@@ -3,11 +3,13 @@ import type { TenantResolution } from "@repo/contracts";
 import type { Tenant } from "@repo/models";
 import type { UtilityIndex } from "@repo/previewing";
 import {
+  absolutiseInternalLinks,
   buildContentIndex,
   buildPageMetadataMap,
+  formatMarkdownPage,
+  formatMarkdownPageSection,
   formatOpenApiPageContent,
   getPrebuiltUtilityLlmPagePath,
-  loadContentSource,
   loadPrebuiltContentIndex,
   loadPrebuiltUtilityIndex,
   loadSiteConfig,
@@ -16,6 +18,8 @@ import {
   PREBUILT_UTILITY_LLMS_SEGMENT_PREFIX,
   PREBUILT_UTILITY_SITEMAP_PATH,
   prepareLlmsFullContent,
+  sanitizePlaceholderUrls,
+  stripFrontmatter,
   toAgentMarkdown,
   UTILITY_DOCS_ROOT_TOKEN,
 } from "@repo/previewing";
@@ -43,6 +47,10 @@ import { toDocHref, toMarkdownDocHref } from "@/lib/routes";
 import { createTimedPromiseCache } from "@/lib/server-cache";
 import { getRequestProtocol } from "@/lib/tenancy";
 import type { TenantRequestContext } from "@/lib/tenant-utility-context";
+
+// Re-exported so tenant-static.unit.test.ts continues to guard the shared
+// implementation now living in @repo/previewing.
+export { absolutiseInternalLinks, sanitizePlaceholderUrls };
 
 const TENANT_STATIC_CACHE_TTL_MS = 30 * 60 * 1000;
 
@@ -274,100 +282,6 @@ const resolveLlmPages = (
     })
     .filter((page) => page !== null);
 
-const FRONTMATTER_REGEX = /^---\s*\n[\s\S]*?\n---\s*\n?/;
-const LEADING_H1_REGEX = /^#\s+([^\r\n]+)(?:\r?\n(?:\r?\n)?)?/;
-
-const PLACEHOLDER_URL_PATTERN = [
-  "https?://(?:[a-z0-9-]+\\.)*example\\.(?:com|org|net)\\b[^\\s)\\]\"'<>]*",
-  "https?://discord\\.gg/example\\b[^\\s)\\]\"'<>]*",
-  "https?://(?:[a-z0-9-]+\\.)+(?:test|invalid)(?:[/?#:][^\\s)\\]\"'<>]*)?",
-  "https?://localhost(?::\\d+)?[^\\s)\\]\"'<>]*",
-  "https?://(?:[a-z0-9-]+\\.)*your[-_]?domain\\.[a-z]+\\b[^\\s)\\]\"'<>]*",
-  "https?://acme\\.blode\\.md\\b[^\\s)\\]\"'<>]*",
-  "https?://github\\.com/example/[^\\s)\\]\"'<>]*",
-  "https?://(?:us|eu)\\.i\\.posthog\\.com\\b[^\\s)\\]\"'<>]*",
-].join("|");
-const PLACEHOLDER_URL_RE = new RegExp(PLACEHOLDER_URL_PATTERN, "gi");
-const PLACEHOLDER_MARKDOWN_LINK_RE = new RegExp(
-  `\\[([^\\]]+)\\]\\((?:${PLACEHOLDER_URL_PATTERN})\\)`,
-  "gi"
-);
-
-const defangUrl = (value: string) => value.replace(/^https?:\/\//i, "");
-
-export const sanitizePlaceholderUrls = (text: string): string =>
-  text
-    .replace(PLACEHOLDER_MARKDOWN_LINK_RE, "$1")
-    .replace(PLACEHOLDER_URL_RE, (match) => `\`${defangUrl(match)}\``);
-
-const INTERNAL_MARKDOWN_LINK_RE = /(!?\[[^\]]+\])\((\/[^)\s]*)\)/g;
-
-export const absolutiseInternalLinks = (
-  source: string,
-  origin: string,
-  basePath: string
-): string => {
-  const normalizedBase = basePath
-    ? `/${basePath}`.replaceAll(/\/+/g, "/").replace(/\/$/, "")
-    : "";
-  return source.replace(INTERNAL_MARKDOWN_LINK_RE, (_match, label, path) => {
-    const alreadyPrefixed =
-      normalizedBase &&
-      (path === normalizedBase || path.startsWith(`${normalizedBase}/`));
-    const absolutePath = alreadyPrefixed
-      ? path
-      : `${normalizedBase}${path}`.replaceAll(/\/+/g, "/");
-    return `${label}(${origin}${absolutePath})`;
-  });
-};
-
-const stripFrontmatter = (source: string) =>
-  source.replace(FRONTMATTER_REGEX, "").trim();
-
-const stripMatchingLeadingH1 = (source: string, title: string) => {
-  const trimmed = source.trimStart();
-  const match = LEADING_H1_REGEX.exec(trimmed);
-  if (!match) {
-    return trimmed.trim();
-  }
-
-  const [headingLine = "", headingTitle = ""] = match;
-  if (slugify(headingTitle) !== slugify(title)) {
-    return trimmed.trim();
-  }
-
-  return trimmed.slice(headingLine.length).trim();
-};
-
-const formatMarkdownPage = (
-  title: string,
-  source: string,
-  description?: string
-) => {
-  const content = stripMatchingLeadingH1(source, title);
-  const descriptionBlock = description ? `\n\n${description}` : "";
-  if (!content) {
-    return `# ${title}${descriptionBlock}`;
-  }
-
-  return `# ${title}${descriptionBlock}\n\n${content}`;
-};
-
-const formatMarkdownPageSection = (
-  title: string,
-  url: string,
-  source: string,
-  description?: string
-) => {
-  const content = stripMatchingLeadingH1(source, title);
-  const descriptionBlock = description ? `\n\n${description}` : "";
-  if (!content) {
-    return `# ${title} (${url})${descriptionBlock}`;
-  }
-
-  return `# ${title} (${url})${descriptionBlock}\n\n${content}`;
-};
-
 const buildRuntimeUtilityIndex = async (
   tenant: Tenant
 ): Promise<UtilityIndex> => {
@@ -383,10 +297,7 @@ const buildRuntimeUtilityIndex = async (
         };
       }
 
-      const raw = await loadContentSource(
-        data.contentSource,
-        page.relativePath
-      );
+      const raw = await data.contentSource.readFile(page.relativePath);
       return {
         content: toAgentMarkdown(stripFrontmatter(raw)),
         description: page.description,

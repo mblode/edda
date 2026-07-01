@@ -6,7 +6,7 @@ import {
 } from "blode-icons-react";
 import { cva } from "class-variance-authority";
 import type { VariantProps } from "class-variance-authority";
-import { useCallback } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import type { MouseEvent } from "react";
 
 import { Button as ButtonPrimitive } from "@/components/animate-ui/primitives/buttons/button";
@@ -68,6 +68,16 @@ const CopyButton = ({
     onChange: onCopiedChange,
     value: copied,
   });
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(
+    () => () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    },
+    []
+  );
 
   const handleCopy = useCallback(
     async (e: MouseEvent<HTMLButtonElement>) => {
@@ -80,7 +90,10 @@ const CopyButton = ({
           await navigator.clipboard.writeText(content);
           setIsCopied(true);
           onCopiedChange?.(true, content);
-          setTimeout(() => {
+          if (timeoutRef.current) {
+            clearTimeout(timeoutRef.current);
+          }
+          timeoutRef.current = setTimeout(() => {
             setIsCopied(false);
             onCopiedChange?.(false);
           }, delay);

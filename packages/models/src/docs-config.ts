@@ -4,7 +4,9 @@ const UrlOrPathSchema = z.string().min(1);
 const SlugSchema = z
   .string()
   .min(1)
-  .regex(/^[a-z0-9-]+$/);
+  // Lowercase alphanumeric segments joined by single hyphens: no leading,
+  // trailing, or consecutive hyphens, and never a bare "-".
+  .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/);
 
 export const DocsColorsSchema = z
   .object({
