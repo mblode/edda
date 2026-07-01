@@ -9,6 +9,7 @@ import {
   reportCommandError,
 } from "../command-utils.js";
 import {
+  BLODE_API_KEY_ENV,
   BLODE_API_URL_ENV,
   BLODE_BRANCH_ENV,
   BLODE_COMMIT_MESSAGE_ENV,
@@ -23,7 +24,6 @@ import {
   resolveProjectTarget,
 } from "../project-config.js";
 import { loadValidatedSiteConfig } from "../site-config.js";
-import { readAuthFile } from "../storage.js";
 import type { DeploymentResponse } from "../types.js";
 import { createUploadBatches } from "../upload.js";
 
@@ -31,15 +31,41 @@ interface PushConfig {
   project: string;
   projectDisplayName: string;
   apiUrl: string;
-  authToken: string;
+  authHeaders: Record<string, string>;
+  canAutoCreate: boolean;
   branch: string;
   commitMessage?: string;
   usedLegacyNameFallback: boolean;
 }
 
+// Resolve auth in the documented order: --api-key flag, BLODEMD_API_KEY env,
+// then stored `blodemd login` credentials. An API key authenticates via the
+// admin token header; a stored session uses its Supabase bearer token.
+const resolveAuthHeaders = async (
+  apiKeyOption?: string
+): Promise<{ headers: Record<string, string>; canAutoCreate: boolean }> => {
+  const apiKey = (apiKeyOption ?? process.env[BLODE_API_KEY_ENV])?.trim();
+  if (apiKey) {
+    return { canAutoCreate: false, headers: { "x-admin-token": apiKey } };
+  }
+
+  const resolved = await resolveAuthToken();
+  if (!resolved?.token) {
+    throw new Error(
+      'Not logged in. Run "blodemd login" to authenticate, pass --api-key, or set BLODEMD_API_KEY.'
+    );
+  }
+
+  return {
+    canAutoCreate: true,
+    headers: { Authorization: `Bearer ${resolved.token}` },
+  };
+};
+
 const resolvePushConfig = async (
   config: { name?: string; slug?: string },
   options: {
+    apiKey?: string;
     apiUrl?: string;
     branch?: string;
     message?: string;
@@ -53,9 +79,6 @@ const resolvePushConfig = async (
   });
   const apiUrl =
     options.apiUrl ?? process.env[BLODE_API_URL_ENV] ?? DEFAULT_API_URL;
-
-  const resolved = await resolveAuthToken();
-  const authToken = resolved?.token;
 
   const branch =
     options.branch ??
@@ -84,14 +107,16 @@ const resolvePushConfig = async (
 
     throw new Error(`Invalid project slug "${project}". ${projectSlugError}`);
   }
-  if (!authToken) {
-    throw new Error('Not logged in. Run "blodemd login" to authenticate.');
-  }
+
+  const { headers: authHeaders, canAutoCreate } = await resolveAuthHeaders(
+    options.apiKey
+  );
 
   return {
     apiUrl,
-    authToken,
+    authHeaders,
     branch,
+    canAutoCreate,
     commitMessage,
     project,
     projectDisplayName: config.name?.trim() || project,
@@ -103,10 +128,10 @@ const autoCreateProject = async (
   project: string,
   projectDisplayName: string,
   apiUrl: string,
-  headers: Record<string, string>
+  headers: Record<string, string>,
+  canAutoCreate: boolean
 ): Promise<boolean> => {
-  const authData = await readAuthFile();
-  if (!authData?.session) {
+  if (!canAutoCreate) {
     throw new Error(
       `Project "${project}" not found. Create it at blode.md or login with "blodemd login" to auto-create.`
     );
@@ -175,6 +200,7 @@ export const registerPushCommand = (program: Command): void => {
     .description("Deploy docs")
     .argument("[dir]", "docs directory")
     .option("--project <slug>", "project slug (env: BLODEMD_PROJECT)")
+    .option("--api-key <token>", "API key (env: BLODEMD_API_KEY)")
     .option("--api-url <url>", "API URL (env: BLODEMD_API_URL)")
     .option("--branch <name>", "git branch (env: BLODEMD_BRANCH)")
     .option("--message <msg>", "deploy message (env: BLODEMD_COMMIT_MESSAGE)")
@@ -182,6 +208,7 @@ export const registerPushCommand = (program: Command): void => {
       async (
         dir: string | undefined,
         options: {
+          apiKey?: string;
           apiUrl?: string;
           branch?: string;
           message?: string;
@@ -205,7 +232,8 @@ export const registerPushCommand = (program: Command): void => {
             project,
             projectDisplayName,
             apiUrl,
-            authToken,
+            authHeaders,
+            canAutoCreate,
             branch,
             commitMessage,
             usedLegacyNameFallback,
@@ -223,7 +251,7 @@ export const registerPushCommand = (program: Command): void => {
           s.stop(`Found ${chalk.cyan(String(files.length))} files`);
 
           const headers = {
-            Authorization: `Bearer ${authToken}`,
+            ...authHeaders,
             "Content-Type": "application/json",
           };
 
@@ -259,7 +287,8 @@ export const registerPushCommand = (program: Command): void => {
               project,
               projectDisplayName,
               apiUrl,
-              headers
+              headers,
+              canAutoCreate
             );
             if (!created) {
               log.info("Cancelled");

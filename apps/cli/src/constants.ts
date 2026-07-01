@@ -4,6 +4,7 @@ import { join } from "node:path";
 const CLI_NAME = "blodemd";
 
 export const BLODE_API_URL_ENV = "BLODEMD_API_URL";
+export const BLODE_API_KEY_ENV = "BLODEMD_API_KEY";
 export const BLODE_PROJECT_ENV = "BLODEMD_PROJECT";
 export const BLODE_BRANCH_ENV = "BLODEMD_BRANCH";
 export const BLODE_COMMIT_MESSAGE_ENV = "BLODEMD_COMMIT_MESSAGE";
