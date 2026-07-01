@@ -1,4 +1,4 @@
-export const readJson = async (response: Response): Promise<unknown> => {
+const readJson = async (response: Response): Promise<unknown> => {
   const responseText = await response.text();
   if (!responseText) {
     return null;

@@ -25,7 +25,7 @@ export const readGitValue = (gitArgs: string[]): string | undefined => {
   return value || undefined;
 };
 
-export const shouldSkipEntry = (name: string): boolean =>
+const shouldSkipEntry = (name: string): boolean =>
   name.startsWith(".") || name === "node_modules";
 
 export const collectFiles = async (
