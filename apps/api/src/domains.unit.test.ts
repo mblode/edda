@@ -8,6 +8,7 @@ import type * as VercelModule from "./lib/vercel";
 const authorizeProjectRequest = vi.fn();
 const getById = vi.fn();
 const deleteById = vi.fn();
+const createDomain = vi.fn();
 const syncProjectTenantEdgeConfig = vi.fn();
 const deleteDomain = vi.fn();
 const removeProjectDomain = vi.fn();
@@ -28,6 +29,7 @@ vi.mock("./lib/db", async () => {
     ...actual,
     domainDao: {
       ...actual.domainDao,
+      create: createDomain,
       delete: deleteById,
       getById,
     },
@@ -84,6 +86,7 @@ beforeEach(() => {
   authorizeProjectRequest.mockReset();
   getById.mockReset();
   deleteById.mockReset();
+  createDomain.mockReset();
   syncProjectTenantEdgeConfig.mockReset();
   deleteDomain.mockReset();
   removeProjectDomain.mockReset();
@@ -91,6 +94,7 @@ beforeEach(() => {
   authorizeProjectRequest.mockResolvedValue(true);
   getById.mockResolvedValue(currentDomain);
   deleteById.mockResolvedValue(currentDomain);
+  createDomain.mockResolvedValue(currentDomain);
   syncProjectTenantEdgeConfig.mockResolvedValue();
   deleteDomain.mockResolvedValue();
   removeProjectDomain.mockResolvedValue();
@@ -117,5 +121,34 @@ describe("domains API", () => {
         removedHosts: [currentDomain.hostname],
       }
     );
+  });
+
+  it("restores the row and 502s when routing sync fails on delete", async () => {
+    syncProjectTenantEdgeConfig.mockRejectedValueOnce(new Error("edge down"));
+
+    const response = await request(
+      `/projects/${currentDomain.projectId}/domains/${currentDomain.id}`,
+      { method: "DELETE" }
+    );
+
+    expect(response.status).toBe(502);
+    // Routing sync happens before the external Vercel mutation, so we can undo
+    // by recreating the row and must not have touched Vercel.
+    expect(createDomain).toHaveBeenCalledTimes(1);
+    expect(removeProjectDomain).not.toHaveBeenCalled();
+  });
+
+  it("still succeeds when the best-effort Vercel removal fails on delete", async () => {
+    removeProjectDomain.mockRejectedValueOnce(new Error("vercel down"));
+
+    const response = await request(
+      `/projects/${currentDomain.projectId}/domains/${currentDomain.id}`,
+      { method: "DELETE" }
+    );
+
+    // Routing already reflects the deletion, so an orphaned Vercel domain must
+    // not roll back the database or fail the request.
+    expect(response.status).toBe(204);
+    expect(createDomain).not.toHaveBeenCalled();
   });
 });

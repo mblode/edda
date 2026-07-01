@@ -67,11 +67,7 @@ const getRedirectHostname = (hostname: string) => {
 const getDomainConflictMessage = (hostname: string) =>
   `Domain "${hostname}" already exists.`;
 
-const getDomainHostnameError = (hostname: string | null) => {
-  if (!hostname) {
-    return "Domain hostname must be valid.";
-  }
-
+const getDomainHostnameError = (hostname: string) => {
   if (hostname === rootDomain || hostname.endsWith(`.${rootDomain}`)) {
     return "Domain must be external to the blode.md zone.";
   }
@@ -296,6 +292,9 @@ const restoreDeletedDomain = async (domain: PersistedDomain) => {
   }
 };
 
+// Best-effort: called last in the delete flow, after routing already reflects
+// the deletion, so a failure here only leaves an orphaned Vercel domain — never
+// compensate the (already-synced) database state.
 const removeHostedDomain = async (domain: PersistedDomain) => {
   const redirectHostname = getRedirectHostname(domain.hostname);
 
@@ -306,12 +305,8 @@ const removeHostedDomain = async (domain: PersistedDomain) => {
         logWarn("Failed to remove Vercel redirect domain", error);
       });
     }
-
-    return true;
   } catch (error) {
-    await restoreDeletedDomain(domain);
     logError("Failed to remove Vercel domain", error);
-    return false;
   }
 };
 
@@ -341,12 +336,12 @@ domains.post(
     }
     const body = c.req.valid("json");
     const hostname = normalizeHostnameInput(body.hostname);
+    if (!hostname) {
+      return badRequest(c, "Domain hostname must be valid.");
+    }
     const hostnameError = getDomainHostnameError(hostname);
     if (hostnameError) {
       return badRequest(c, hostnameError);
-    }
-    if (!hostname) {
-      return badRequest(c, "Domain hostname must be valid.");
     }
     const normalizedHostname = hostname;
 
@@ -380,7 +375,24 @@ domains.post(
       return badGateway(c, "Unable to provision domain");
     }
 
-    await syncTenantEdgeConfigAfterDomainChange(projectId, "create");
+    const synced = await syncTenantEdgeConfigAfterDomainChange(
+      projectId,
+      "create"
+    );
+    if (!synced) {
+      // A non-routing row would block the user from retrying, so undo the
+      // whole create: remove the provisioned Vercel domains and the record.
+      await rollbackCreatedDomain({
+        domainId: provisionedDomain.record.id,
+        provisionedHostnames: isVercelEnabled()
+          ? [
+              normalizedHostname,
+              ...(redirectHostname ? [redirectHostname] : []),
+            ]
+          : [],
+      });
+      return badGateway(c, "Unable to update domain routing");
+    }
 
     return c.json(
       {
@@ -486,10 +498,8 @@ domains.delete(
     const redirectHostname = getRedirectHostname(domain.hostname);
     const deletedDomain = await domainDao.delete(domain.id);
 
-    if (isVercelEnabled() && !(await removeHostedDomain(deletedDomain))) {
-      return badGateway(c, "Unable to remove domain");
-    }
-
+    // Sync routing first: it is the only step whose failure we can safely undo
+    // (restore the row) because no external state has changed yet.
     const synced = await syncTenantEdgeConfigAfterDomainChange(
       projectId,
       "delete",
@@ -503,6 +513,11 @@ domains.delete(
     if (!synced) {
       await restoreDeletedDomain(deletedDomain);
       return badGateway(c, "Unable to update domain routing");
+    }
+
+    // Remove the Vercel domain last and best-effort.
+    if (isVercelEnabled()) {
+      await removeHostedDomain(deletedDomain);
     }
 
     return noContent();
