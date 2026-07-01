@@ -124,6 +124,23 @@ export const DomainsManager = ({
   const [verifications, setVerifications] = useState<VerificationState>({});
   const [pendingRemove, setPendingRemove] = useState<Domain | null>(null);
   const [verifyingId, setVerifyingId] = useState<string | null>(null);
+  const [rowErrors, setRowErrors] = useState<Record<string, string>>({});
+
+  const setRowError = useCallback(
+    (domainId: string, message: string | null) => {
+      setRowErrors((prev) => {
+        if (message === null) {
+          if (!(domainId in prev)) {
+            return prev;
+          }
+          const { [domainId]: _removed, ...next } = prev;
+          return next;
+        }
+        return { ...prev, [domainId]: message };
+      });
+    },
+    []
+  );
 
   const handleAdd = useCallback(async () => {
     if (isAdding) {
@@ -168,6 +185,7 @@ export const DomainsManager = ({
   const handleVerify = useCallback(
     async (domain: Domain) => {
       setVerifyingId(domain.id);
+      setRowError(domain.id, null);
       try {
         const result = await apiFetch<DomainVerification>(
           `/projects/${project.id}/domains/${domain.id}/verify`,
@@ -188,12 +206,12 @@ export const DomainsManager = ({
           error instanceof ApiError
             ? error.message
             : "Unable to verify domain.";
-        setError(message);
+        setRowError(domain.id, message);
       } finally {
         setVerifyingId(null);
       }
     },
-    [accessToken, project.id]
+    [accessToken, project.id, setRowError]
   );
 
   const confirmRemove = useCallback(async () => {
@@ -214,13 +232,14 @@ export const DomainsManager = ({
         const { [target.id]: _removed, ...next } = prev;
         return next;
       });
+      setRowError(target.id, null);
       router.refresh();
     } catch (error) {
       const message =
         error instanceof ApiError ? error.message : "Unable to remove domain.";
-      setError(message);
+      setRowError(target.id, message);
     }
-  }, [accessToken, pendingRemove, project.id, router]);
+  }, [accessToken, pendingRemove, project.id, router, setRowError]);
 
   const defaultHost = `${project.slug}.${rootDomain}`;
 
@@ -347,6 +366,11 @@ export const DomainsManager = ({
                   pathPrefix={domain.pathPrefix}
                   status={domain.status}
                 />
+                {rowErrors[domain.id] ? (
+                  <p className="text-sm text-destructive">
+                    {rowErrors[domain.id]}
+                  </p>
+                ) : null}
               </div>
 
               {records.length > 0 ? (

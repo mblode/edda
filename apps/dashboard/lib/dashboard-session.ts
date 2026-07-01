@@ -111,14 +111,15 @@ const readChunkedCookie = async (
     return parseCookieValue(direct);
   }
 
-  // Supabase splits large cookies into baseName.0, baseName.1, ...
+  // Supabase splits large cookies into baseName.0, baseName.1, ... with no
+  // fixed upper bound, so read until the first missing chunk.
   const chunks: string[] = [];
-  for (let i = 0; i < 10; i += 1) {
-    const chunk = store.get(`${baseName}.${i}`)?.value;
-    if (!chunk) {
-      break;
-    }
+  let index = 0;
+  let chunk = store.get(`${baseName}.${index}`)?.value;
+  while (chunk) {
     chunks.push(chunk);
+    index += 1;
+    chunk = store.get(`${baseName}.${index}`)?.value;
   }
   if (chunks.length === 0) {
     return null;
