@@ -405,6 +405,20 @@ describe("toAgentMarkdown", () => {
     expect(output).toContain("`<Tabs>`");
   });
 
+  it("preserves regex replacement patterns inside code", () => {
+    const source = [
+      "```js",
+      "str.replace(/(\\w+)/, '$1-$&-$`-$$');",
+      "```",
+      "",
+      "Inline `sed 's/a/$&/g'` too.",
+    ].join("\n");
+    const output = toAgentMarkdown(source);
+
+    expect(output).toContain("str.replace(/(\\w+)/, '$1-$&-$`-$$');");
+    expect(output).toContain("`sed 's/a/$&/g'`");
+  });
+
   it("renders accordion titles and bodies", () => {
     const output = toAgentMarkdown(`
 <AccordionGroup>

@@ -910,7 +910,9 @@ const protectFencedCodeBlocks = (source: string) => {
 const restoreFencedCodeBlocks = (source: string, blocks: string[]) => {
   let restored = source;
   for (const [index, block] of blocks.entries()) {
-    restored = restored.replace(`@@BLODEMD_CODE_BLOCK_${index}@@`, block);
+    // Function replacer: code may contain `$&`, `$1`, `` $` `` etc. which a
+    // string replacement would interpret as substitution patterns.
+    restored = restored.replace(`@@BLODEMD_CODE_BLOCK_${index}@@`, () => block);
   }
   return restored;
 };
@@ -930,7 +932,7 @@ const protectInlineCode = (source: string) => {
 const restoreInlineCode = (source: string, spans: string[]) => {
   let restored = source;
   for (const [index, span] of spans.entries()) {
-    restored = restored.replace(`@@BLODEMD_INLINE_CODE_${index}@@`, span);
+    restored = restored.replace(`@@BLODEMD_INLINE_CODE_${index}@@`, () => span);
   }
   return restored;
 };
