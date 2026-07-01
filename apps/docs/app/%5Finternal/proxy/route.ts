@@ -2,7 +2,6 @@ import { NextResponse } from "next/server";
 
 import { loadOpenApiProxyConfig } from "@/lib/openapi-proxy";
 import { getRequestHost, resolveTenant } from "@/lib/tenancy";
-import { TENANT_HEADERS } from "@/lib/tenant-headers";
 import { getTenantBySlug } from "@/lib/tenants";
 
 interface ProxyPayload {
@@ -10,6 +9,7 @@ interface ProxyPayload {
   method: string;
   headers?: Record<string, string>;
   body?: string;
+  tenantSlug?: string;
 }
 
 const getTenantPathFromReferer = (request: Request) => {
@@ -28,23 +28,27 @@ const getTenantPathFromReferer = (request: Request) => {
 const jsonError = (error: string, status: number) =>
   NextResponse.json({ error }, { status });
 
-const getTenantSlugFromHeaders = (headerSource: Pick<Headers, "get">) => {
-  const slug = headerSource.get(TENANT_HEADERS.SLUG)?.trim();
-  return slug || null;
-};
-
-const loadResolvedTenant = async (request: Request) => {
-  const tenantSlug = getTenantSlugFromHeaders(request.headers);
-  if (tenantSlug) {
-    return await getTenantBySlug(tenantSlug);
+// Resolve the tenant from the trusted Host/Referer pair. A slug hint supplied in
+// the request body is only honoured when it matches the host-resolved tenant, so
+// a page served for tenant A cannot proxy through tenant B's allowlist.
+const loadResolvedTenant = async (
+  request: Request,
+  slugHint: string | null
+) => {
+  const host = getRequestHost(request.headers);
+  if (!host) {
+    return null;
   }
 
-  const host = getRequestHost(request.headers);
-  const resolution = host
-    ? await resolveTenant(host, getTenantPathFromReferer(request))
-    : null;
-
+  const resolution = await resolveTenant(
+    host,
+    getTenantPathFromReferer(request)
+  );
   if (!resolution) {
+    return null;
+  }
+
+  if (slugHint && slugHint !== resolution.tenant.slug) {
     return null;
   }
 
@@ -52,13 +56,20 @@ const loadResolvedTenant = async (request: Request) => {
 };
 
 export const POST = async (request: Request) => {
-  const payload = (await request.json()) as ProxyPayload;
+  let payload: ProxyPayload;
+  try {
+    payload = (await request.json()) as ProxyPayload;
+  } catch {
+    return jsonError("Invalid payload", 400);
+  }
 
   if (!(payload?.url && payload?.method)) {
     return jsonError("Invalid payload", 400);
   }
 
-  const tenant = await loadResolvedTenant(request);
+  const slugHint =
+    typeof payload.tenantSlug === "string" ? payload.tenantSlug.trim() : "";
+  const tenant = await loadResolvedTenant(request, slugHint || null);
   if (!tenant) {
     return jsonError("Unknown tenant", 400);
   }
@@ -72,7 +83,13 @@ export const POST = async (request: Request) => {
     return jsonError("Proxy disabled", 403);
   }
 
-  const url = new URL(payload.url);
+  let url: URL;
+  try {
+    url = new URL(payload.url);
+  } catch {
+    return jsonError("Invalid URL", 400);
+  }
+
   if (!["http:", "https:"].includes(url.protocol)) {
     return jsonError("Invalid protocol", 400);
   }
@@ -89,11 +106,18 @@ export const POST = async (request: Request) => {
   }
 
   const method = payload.method.toUpperCase();
-  const response = await fetch(payload.url, {
+  const response = await fetch(url, {
     body: method === "GET" ? undefined : payload.body,
     headers: payload.headers,
     method,
+    redirect: "manual",
   });
+
+  // Never follow upstream redirects: a 3xx could bounce the request to an
+  // internal host the allowlist never sanctioned (SSRF).
+  if (response.status >= 300 && response.status < 400) {
+    return jsonError("Upstream redirect not allowed", 502);
+  }
 
   const text = await response.text();
   return new NextResponse(text, {
