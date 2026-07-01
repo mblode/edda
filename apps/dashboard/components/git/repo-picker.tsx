@@ -387,6 +387,9 @@ export const RepoPicker = ({
   const handlePick = (repo: RepoSummary) => {
     setSelected(repo);
     setBranch(repo.defaultBranch || "main");
+    // Reset the docs path so an edit made for a previous repo doesn't carry
+    // over to a freshly picked one.
+    setDocsPath("docs");
     setError(null);
   };
 
