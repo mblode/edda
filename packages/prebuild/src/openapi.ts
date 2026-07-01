@@ -39,21 +39,38 @@ export interface OpenApiOperation {
   responses?: Record<string, unknown>;
 }
 
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === "object" && value !== null && !Array.isArray(value);
+
+// A YAML/JSON document can parse to a scalar, null, or array — none of which
+// are usable as an OpenAPI spec. Validate the shape before the cast so callers
+// fail with a clear message instead of crashing while iterating `paths`.
+const asOpenApiSpec = (value: unknown, sourcePath: string): OpenApiSpec => {
+  const label = sourcePath ? ` (${sourcePath})` : "";
+  if (!isRecord(value)) {
+    throw new Error(`OpenAPI spec${label} must be an object.`);
+  }
+  if (value.paths !== undefined && !isRecord(value.paths)) {
+    throw new Error(`OpenAPI spec${label} has an invalid "paths" section.`);
+  }
+  return value as OpenApiSpec;
+};
+
 export const parseOpenApiSpec = (raw: string, sourcePath = ""): OpenApiSpec => {
   const ext = path.extname(sourcePath).toLowerCase();
 
   if (ext === ".json") {
-    return JSON.parse(raw) as OpenApiSpec;
+    return asOpenApiSpec(JSON.parse(raw), sourcePath);
   }
 
   if (ext === ".yaml" || ext === ".yml") {
-    return YAML.parse(raw) as OpenApiSpec;
+    return asOpenApiSpec(YAML.parse(raw), sourcePath);
   }
 
   try {
-    return JSON.parse(raw) as OpenApiSpec;
+    return asOpenApiSpec(JSON.parse(raw), sourcePath);
   } catch {
-    return YAML.parse(raw) as OpenApiSpec;
+    return asOpenApiSpec(YAML.parse(raw), sourcePath);
   }
 };
 
