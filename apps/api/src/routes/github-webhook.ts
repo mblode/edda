@@ -107,7 +107,7 @@ const runDeployment = async (input: RunInput): Promise<string | null> => {
       );
     }
     try {
-      await revalidateProject(project.slug);
+      await revalidateProject(project.slug, project.id);
     } catch (error) {
       logError(
         "Docs revalidation failed after webhook deployment — ISR HTML will serve stale content until the 1h TTL expires.",
@@ -184,12 +184,15 @@ githubWebhook.post("/", async (c) => {
 
   const installationId = payload.installation.id;
   const repository = payload.repository.full_name;
+  // GitHub repository full names are case-insensitive; git branch names are not.
+  const repositoryKey = repository.toLowerCase();
 
   const allConnections =
     await gitConnectionDao.listByInstallation(installationId);
   const matches = allConnections.filter(
     (connection) =>
-      connection.repository === repository && connection.branch === branch
+      connection.repository.toLowerCase() === repositoryKey &&
+      connection.branch === branch
   );
 
   if (matches.length === 0) {

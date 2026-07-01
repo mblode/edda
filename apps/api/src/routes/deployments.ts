@@ -61,7 +61,7 @@ const refreshPromotedProject = async (
   }
 
   try {
-    await revalidateProject(project.slug);
+    await revalidateProject(project.slug, project.id);
   } catch (error) {
     logError(
       `Docs revalidation failed after deployment ${reason} — ISR HTML will serve stale content until the 1h TTL expires.`,
