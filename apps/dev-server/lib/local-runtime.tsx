@@ -11,6 +11,7 @@ import type {
   ContentSource,
   PageMetadata,
 } from "@repo/previewing";
+import { cache } from "react";
 
 import {
   getDocsCollection,
@@ -278,10 +279,13 @@ const buildArtifacts = async (): Promise<PreviewArtifactsResult> => {
   };
 };
 
-const getArtifacts = async () =>
+// Memoized per request so metadata + page render + content fetch share one
+// artifact build instead of rebuilding it on each call within a request.
+const getArtifacts = cache(async () =>
   USE_LOCAL_RUNTIME_CACHE
     ? await artifactsCache.getOrCreate("preview", buildArtifacts)
-    : await buildArtifacts();
+    : await buildArtifacts()
+);
 
 const buildRenderedPageData = async ({
   artifacts,
@@ -384,7 +388,7 @@ export const getOpenApiProxyContext = async (): Promise<{
 };
 
 // oxlint-disable-next-line eslint/complexity
-export const getDocShellData = async (slugKey: string) => {
+export const getDocShellData = cache(async (slugKey: string) => {
   const artifacts = await getArtifacts();
 
   if (!artifacts || isConfigErrorResult(artifacts)) {
@@ -523,9 +527,9 @@ export const getDocShellData = async (slugKey: string) => {
     tabs: artifacts.tabs,
     toc,
   };
-};
+});
 
-export const getDocPageContent = async (slugKey: string) => {
+export const getDocPageContent = cache(async (slugKey: string) => {
   const artifacts = await getArtifacts();
 
   if (!artifacts || isConfigErrorResult(artifacts)) {
@@ -548,4 +552,4 @@ export const getDocPageContent = async (slugKey: string) => {
     relativePath: entry.relativePath,
     useToc,
   });
-};
+});
