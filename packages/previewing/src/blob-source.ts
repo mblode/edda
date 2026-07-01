@@ -116,12 +116,27 @@ export class BlobContentSource implements ContentSource {
     const manifest = await this.loadManifest();
     const prefix = normalizeDirectory(directory);
 
-    const files = [...manifest.keys()].filter((file) => {
-      if (shouldIgnoreRootDocsFile(file)) {
-        return false;
+    const files: string[] = [];
+    for (const file of manifest.keys()) {
+      if (prefix && !file.startsWith(prefix)) {
+        continue;
       }
-      return prefix ? file.startsWith(prefix) : true;
-    });
+      // Return paths relative to the listed directory, matching
+      // FsContentSource so callers can join them onto the collection root.
+      const relativePath = prefix ? file.slice(prefix.length) : file;
+      if (!relativePath) {
+        continue;
+      }
+      // Only top-level entries of the listed directory are subject to the
+      // root-docs-file ignore list, again matching FsContentSource.
+      if (
+        !relativePath.includes("/") &&
+        shouldIgnoreRootDocsFile(relativePath)
+      ) {
+        continue;
+      }
+      files.push(relativePath);
+    }
     // oxlint-disable-next-line eslint-plugin-unicorn/no-array-sort
     files.sort();
     return files;
