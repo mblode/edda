@@ -1,4 +1,5 @@
 import {
+  ApiKeyDao,
   DeploymentDao,
   DomainDao,
   GitConnectionDao,
@@ -11,3 +12,4 @@ export const deploymentDao = new DeploymentDao();
 export const userDao = new UserDao();
 export const gitConnectionDao = new GitConnectionDao();
 export const domainDao = new DomainDao();
+export const apiKeyDao = new ApiKeyDao();
