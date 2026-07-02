@@ -137,7 +137,9 @@ deployments.post(
       return notFound(c);
     }
 
-    if (!(await authorizeProjectRequest(c, project.id))) {
+    if (
+      !(await authorizeProjectRequest(c, project.id, { allowApiKey: true }))
+    ) {
       return unauthorized(c, "Invalid credentials.");
     }
 
@@ -171,7 +173,9 @@ deployments.post(
       return notFound(c);
     }
 
-    if (!(await authorizeProjectRequest(c, project.id))) {
+    if (
+      !(await authorizeProjectRequest(c, project.id, { allowApiKey: true }))
+    ) {
       return unauthorized(c, "Invalid credentials.");
     }
 
@@ -220,7 +224,9 @@ deployments.post(
       return notFound(c);
     }
 
-    if (!(await authorizeProjectRequest(c, project.id))) {
+    if (
+      !(await authorizeProjectRequest(c, project.id, { allowApiKey: true }))
+    ) {
       return unauthorized(c, "Invalid credentials.");
     }
 
@@ -268,7 +274,9 @@ deployments.post(
       return notFound(c);
     }
 
-    if (!(await authorizeProjectRequest(c, project.id))) {
+    if (
+      !(await authorizeProjectRequest(c, project.id, { allowApiKey: true }))
+    ) {
       return unauthorized(c, "Invalid credentials.");
     }
 

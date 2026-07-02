@@ -1,4 +1,5 @@
 export {
+  mapApiKey,
   mapDeployment,
   mapDomain,
   mapGitConnection,
