@@ -1,7 +1,7 @@
 {
   "version": "8",
   "dialect": "postgres",
-  "id": "15385dab-734f-410e-b2c9-828c9d03487e",
+  "id": "dbb71a7f-2625-46eb-9b8a-4179d91d8768",
   "prevIds": ["a69004a8-87fb-4a7e-b85c-446dd5bf2a5b"],
   "ddl": [
     {
@@ -34,7 +34,7 @@
     },
     {
       "isRlsEnabled": true,
-      "name": "api_keys",
+      "name": "deploy_keys",
       "entityType": "tables",
       "schema": "public"
     },
@@ -85,7 +85,7 @@
       "name": "created_at",
       "entityType": "columns",
       "schema": "public",
-      "table": "api_keys"
+      "table": "deploy_keys"
     },
     {
       "type": "uuid",
@@ -98,7 +98,7 @@
       "name": "id",
       "entityType": "columns",
       "schema": "public",
-      "table": "api_keys"
+      "table": "deploy_keys"
     },
     {
       "type": "text",
@@ -111,7 +111,7 @@
       "name": "key_hash",
       "entityType": "columns",
       "schema": "public",
-      "table": "api_keys"
+      "table": "deploy_keys"
     },
     {
       "type": "text",
@@ -124,7 +124,7 @@
       "name": "key_prefix",
       "entityType": "columns",
       "schema": "public",
-      "table": "api_keys"
+      "table": "deploy_keys"
     },
     {
       "type": "timestamp with time zone",
@@ -137,7 +137,7 @@
       "name": "last_used_at",
       "entityType": "columns",
       "schema": "public",
-      "table": "api_keys"
+      "table": "deploy_keys"
     },
     {
       "type": "text",
@@ -150,7 +150,7 @@
       "name": "name",
       "entityType": "columns",
       "schema": "public",
-      "table": "api_keys"
+      "table": "deploy_keys"
     },
     {
       "type": "uuid",
@@ -163,7 +163,7 @@
       "name": "project_id",
       "entityType": "columns",
       "schema": "public",
-      "table": "api_keys"
+      "table": "deploy_keys"
     },
     {
       "type": "text",
@@ -857,10 +857,10 @@
       "with": "",
       "method": "btree",
       "concurrently": false,
-      "name": "api_keys_key_hash_key",
+      "name": "deploy_keys_key_hash_key",
       "entityType": "indexes",
       "schema": "public",
-      "table": "api_keys"
+      "table": "deploy_keys"
     },
     {
       "nameExplicit": true,
@@ -878,10 +878,10 @@
       "with": "",
       "method": "btree",
       "concurrently": false,
-      "name": "api_keys_project_id_idx",
+      "name": "deploy_keys_project_id_idx",
       "entityType": "indexes",
       "schema": "public",
-      "table": "api_keys"
+      "table": "deploy_keys"
     },
     {
       "nameExplicit": true,
@@ -1136,10 +1136,10 @@
       "columnsTo": ["id"],
       "onUpdate": "NO ACTION",
       "onDelete": "CASCADE",
-      "name": "api_keys_project_id_projects_id_fkey",
+      "name": "deploy_keys_project_id_projects_id_fkey",
       "entityType": "fks",
       "schema": "public",
-      "table": "api_keys"
+      "table": "deploy_keys"
     },
     {
       "nameExplicit": false,
@@ -1209,9 +1209,9 @@
     {
       "columns": ["id"],
       "nameExplicit": false,
-      "name": "api_keys_pkey",
+      "name": "deploy_keys_pkey",
       "schema": "public",
-      "table": "api_keys",
+      "table": "deploy_keys",
       "entityType": "pks"
     },
     {

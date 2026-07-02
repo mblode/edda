@@ -96,8 +96,8 @@ export const domains = pgTable(
   ]
 ).enableRLS();
 
-export const apiKeys = pgTable(
-  "api_keys",
+export const deployKeys = pgTable(
+  "deploy_keys",
   {
     createdAt: timestampColumn("created_at").defaultNow().notNull(),
     id: uuid("id").defaultRandom().primaryKey(),
@@ -110,8 +110,8 @@ export const apiKeys = pgTable(
       .references(() => projects.id, { onDelete: "cascade" }),
   },
   (table) => [
-    uniqueIndex("api_keys_key_hash_key").on(table.keyHash),
-    index("api_keys_project_id_idx").on(table.projectId),
+    uniqueIndex("deploy_keys_key_hash_key").on(table.keyHash),
+    index("deploy_keys_project_id_idx").on(table.projectId),
   ]
 ).enableRLS();
 
