@@ -17,13 +17,11 @@ jobs:
       - run: npx turbo run build --filter=@repo/common --filter=@repo/previewing
       - run: npx tsdown --clean
         working-directory: apps/cli
-      # Best-effort dogfood: push the docs content to the blodemd platform via
-      # the CLI. The docs *site* is deployed by Vercel independently, so this
-      # step must not gate main. It authenticates with BLODEMD_API_KEY, which
-      # the API accepts as its admin token (x-admin-token) — so this only
-      # succeeds when the repo secret equals the API's ADMIN_API_TOKEN.
-      - name: Deploy docs (best-effort)
-        continue-on-error: true
+      # Dogfood: push the docs content to the blodemd platform via the CLI. It
+      # authenticates with BLODEMD_API_KEY, which the API accepts as its admin
+      # token (x-admin-token); the repo secret must equal the API's
+      # ADMIN_API_TOKEN env var.
+      - name: Deploy docs
         run: node apps/cli/dist/cli.mjs push apps/docs/content/docs --project docs
         env:
           BLODEMD_API_KEY: ${{ secrets.BLODEMD_API_KEY }}
