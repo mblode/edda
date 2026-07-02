@@ -144,6 +144,15 @@ const autoCreateProject = async (
     );
   }
 
+  // Auto-create is an interactive confirmation; in --json/CI/non-TTY mode we
+  // must not prompt (it would corrupt stdout and can't be answered). Fail with
+  // a deterministic, actionable error instead.
+  if (!reporter.interactive) {
+    throw new Error(
+      `Project "${project}" not found. Create it in the dashboard or run \`blodemd push\` in an interactive terminal to auto-create it.`
+    );
+  }
+
   const shouldCreate = await confirm({
     message: `Project "${project}" doesn't exist. Create it?`,
   });
