@@ -1,4 +1,5 @@
 import {
+  apiKeys,
   deployments,
   domains,
   gitConnections,
@@ -26,6 +27,16 @@ export const projectSelect = {
   slug: projects.slug,
   updatedAt: projects.updatedAt,
   userId: projects.userId,
+} as const;
+
+// Deliberately excludes keyHash so the secret hash never leaves the DB layer.
+export const apiKeySelect = {
+  createdAt: apiKeys.createdAt,
+  id: apiKeys.id,
+  keyPrefix: apiKeys.keyPrefix,
+  lastUsedAt: apiKeys.lastUsedAt,
+  name: apiKeys.name,
+  projectId: apiKeys.projectId,
 } as const;
 
 export const domainSelect = {

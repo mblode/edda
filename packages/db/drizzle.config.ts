@@ -30,6 +30,7 @@ export default defineConfig({
     "users",
     "projects",
     "domains",
+    "api_keys",
     "deployments",
     "git_connections",
     "github_installations",
