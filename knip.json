@@ -18,6 +18,11 @@
     "apps/cli": {
       "entry": ["src/**/*.unit.test.ts", "scripts/*.mjs", "src/site-config.ts"],
       "project": ["src/**/*.ts"],
+      "ignoreDependencies": ["yaml", "zod"]
+    },
+    "apps/blodemd-dev": {
+      "entry": ["scripts/*.mjs"],
+      "project": ["src/**/*.ts"],
       "ignoreDependencies": [
         "@base-ui/react",
         "@mdx-js/mdx",
@@ -40,9 +45,7 @@
         "shiki",
         "tailwind-merge",
         "tailwindcss",
-        "tw-animate-css",
-        "yaml",
-        "zod"
+        "tw-animate-css"
       ]
     },
     "apps/docs": {

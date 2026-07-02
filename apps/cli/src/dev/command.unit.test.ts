@@ -1,13 +1,9 @@
 import { EventEmitter } from "node:events";
-import fs from "node:fs/promises";
-import os from "node:os";
-import path from "node:path";
 
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import {
   buildDevServerLaunch,
-  createStandaloneRuntimeRoot,
   devCommand,
   resolveDevPort,
   shutdownChildProcess,
@@ -47,16 +43,6 @@ class FakeChildProcess extends EventEmitter {
 
 afterEach(() => {
   vi.useRealTimers();
-});
-
-const tempRoots: string[] = [];
-
-afterEach(async () => {
-  await Promise.all(
-    tempRoots.splice(0).map(async (root) => {
-      await fs.rm(root, { force: true, recursive: true });
-    })
-  );
 });
 
 describe("resolveDevPort", () => {
@@ -113,71 +99,29 @@ describe("shutdownChildProcess", () => {
   });
 });
 
-describe("createStandaloneRuntimeRoot", () => {
-  it("creates a unique runtime directory for each session", async () => {
-    const configDir = await fs.mkdtemp(
-      path.join(os.tmpdir(), "blodemd-runtime-root-")
-    );
-    tempRoots.push(configDir);
-
-    const first = await createStandaloneRuntimeRoot(configDir);
-    const second = await createStandaloneRuntimeRoot(configDir);
-
-    tempRoots.push(first, second);
-
-    expect(first).not.toBe(second);
-    await expect(fs.stat(first)).resolves.toMatchObject({
-      isDirectory: expect.any(Function),
-    });
-    await expect(fs.stat(second)).resolves.toMatchObject({
-      isDirectory: expect.any(Function),
-    });
-  });
-
-  it("removes stale runtime directories before creating a new one", async () => {
-    const configDir = await fs.mkdtemp(
-      path.join(os.tmpdir(), "blodemd-runtime-cleanup-")
-    );
-    tempRoots.push(configDir);
-
-    const staleRoot = path.join(configDir, "standalone-runtime-stale");
-    await fs.mkdir(staleRoot, { recursive: true });
-
-    const staleDate = new Date(Date.now() - 2 * 24 * 60 * 60 * 1000);
-    await fs.utimes(staleRoot, staleDate, staleDate);
-
-    const runtimeRoot = await createStandaloneRuntimeRoot(configDir);
-    tempRoots.push(runtimeRoot);
-
-    await expect(fs.stat(runtimeRoot)).resolves.toMatchObject({
-      isDirectory: expect.any(Function),
-    });
-    await expect(fs.stat(staleRoot)).rejects.toMatchObject({
-      code: "ENOENT",
-    });
-  });
-});
-
 describe("buildDevServerLaunch", () => {
-  it("uses turbopack for standalone launches", () => {
+  it("delegates to blodemd-dev via npx for installed launches", () => {
     const launch = buildDevServerLaunch(
       {
-        devServerDir: "/runtime/dev-server",
-        mode: "standalone",
-        nextPackageRoot: path.join(process.cwd(), "apps/cli"),
-        runtimeRoot: "/runtime",
+        devPackageVersion: "1.2.3",
+        mode: "delegated",
       },
       { port: 3140, root: "/docs" }
     );
 
-    expect(launch.command).toBe(process.execPath);
-    expect(launch.args[0]).toMatch(/node_modules\/next\/dist\/bin\/next$/);
-    expect(launch.args.slice(1)).toEqual(["dev", "--turbopack"]);
-    expect(launch.cwd).toBe("/runtime/dev-server");
-    expect(launch.env.BLODEMD_PACKAGES_DIR).toBe("/runtime/packages");
-    expect(launch.env.BLODEMD_TURBOPACK_ROOT).toBe(
-      path.parse(process.cwd()).root
+    expect(launch.command).toBe(
+      process.platform === "win32" ? "npx.cmd" : "npx"
     );
+    expect(launch.args).toEqual([
+      "-y",
+      "blodemd-dev@1.2.3",
+      "dev",
+      "--port",
+      "3140",
+      "--dir",
+      "/docs",
+      "--no-open",
+    ]);
     expect(launch.env.DOCS_ROOT).toBe("/docs");
     expect(launch.env.PORT).toBe("3140");
   });
@@ -239,7 +183,6 @@ describe("devCommand", () => {
           return Promise.resolve();
         }) as never,
         parsePortValue: vi.fn(() => 3030),
-        removeDirectory: vi.fn(() => Promise.resolve()),
         resolveDevPortValue: vi.fn(() => Promise.resolve(3030)),
         resolveDocsRootValue: vi.fn(() => Promise.resolve("/docs")),
         resolveServer: vi.fn(() =>
@@ -300,7 +243,6 @@ describe("devCommand", () => {
         } as never,
         getOpen: openSpy as never,
         parsePortValue: vi.fn(() => 3030),
-        removeDirectory: vi.fn(() => Promise.resolve()),
         resolveDevPortValue: vi.fn(() => Promise.resolve(3030)),
         resolveDocsRootValue: vi.fn(() => Promise.resolve("/docs")),
         resolveServer: vi.fn(() =>

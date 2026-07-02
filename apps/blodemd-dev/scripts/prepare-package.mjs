@@ -8,19 +8,19 @@ import { fileURLToPath } from "node:url";
 import { REPO_PACKAGES } from "./repo-packages.mjs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const cliRoot = path.resolve(__dirname, "..");
-const repoRoot = path.resolve(cliRoot, "../..");
+const devRoot = path.resolve(__dirname, "..");
+const repoRoot = path.resolve(devRoot, "../..");
 
 const command = process.env.npm_command;
 const isGlobalInstall = process.env.npm_config_global === "true";
 const shouldPackage = command === "pack" || command === "publish";
 
-const hasRepoSources = existsSync(
-  path.join(repoRoot, "packages", "previewing")
-);
+const hasRepoSources =
+  existsSync(path.join(repoRoot, "apps", "dev-server")) &&
+  existsSync(path.join(repoRoot, "packages", "previewing"));
 
 if (!hasRepoSources) {
-  console.log("Skipping package preparation outside the monorepo.");
+  console.log("Skipping standalone package preparation outside the monorepo.");
   process.exit(0);
 }
 
@@ -28,12 +28,10 @@ if (!shouldPackage && !isGlobalInstall) {
   process.exit(0);
 }
 
-console.log("Preparing blodemd package...");
+console.log("Preparing blodemd-dev standalone package...");
 
-// Build @repo/* workspace packages first so tsdown can inline their dist/
-// output into the CLI bundle. Without this, tsdown falls back to treating
-// `@repo/common` etc. as external imports and the published tarball ships
-// unresolved imports that break `npx blodemd`.
+// Build @repo/* workspace packages first so the copied dist/ output is
+// available for the vendored Next.js dev server.
 console.log("Building @repo packages...");
 for (const pkg of REPO_PACKAGES) {
   execSync("npm run build", {
@@ -43,6 +41,11 @@ for (const pkg of REPO_PACKAGES) {
 }
 
 execSync("npm run build", {
-  cwd: cliRoot,
+  cwd: devRoot,
+  stdio: "inherit",
+});
+
+execSync("node scripts/prepare-dist.mjs", {
+  cwd: devRoot,
   stdio: "inherit",
 });

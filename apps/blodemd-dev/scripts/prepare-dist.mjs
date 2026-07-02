@@ -2,7 +2,7 @@
 
 /**
  * Assembles the dev-server, shared docs code, and @repo packages
- * into the CLI package directory for npm publishing.
+ * into the blodemd-dev package directory for npm publishing.
  *
  * Run: node scripts/prepare-dist.mjs
  */
@@ -20,8 +20,8 @@ import { fileURLToPath } from "node:url";
 import { REPO_PACKAGES } from "./repo-packages.mjs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const cliRoot = path.resolve(__dirname, "..");
-const repoRoot = path.resolve(cliRoot, "../..");
+const devRoot = path.resolve(__dirname, "..");
+const repoRoot = path.resolve(devRoot, "../..");
 
 const EXCLUDE_DIRS = new Set([
   "node_modules",
@@ -55,14 +55,14 @@ const createCopyFilter = (sourceRoot) => (source) => {
 
 // Clean previous artifacts
 for (const dir of ["dev-server", "docs", "packages"]) {
-  rmSync(path.join(cliRoot, dir), { force: true, recursive: true });
+  rmSync(path.join(devRoot, dir), { force: true, recursive: true });
 }
 
 // 1. Copy dev-server
 console.log("Copying dev-server...");
 cpSync(
   path.join(repoRoot, "apps/dev-server"),
-  path.join(cliRoot, "dev-server"),
+  path.join(devRoot, "dev-server"),
   {
     filter: createCopyFilter(path.join(repoRoot, "apps/dev-server")),
     recursive: true,
@@ -108,12 +108,12 @@ const standaloneTsConfig = {
   ],
 };
 writeFileSync(
-  path.join(cliRoot, "dev-server/tsconfig.json"),
+  path.join(devRoot, "dev-server/tsconfig.json"),
   `${JSON.stringify(standaloneTsConfig, null, 2)}\n`
 );
 
 writeFileSync(
-  path.join(cliRoot, "dev-server/next-env.d.ts"),
+  path.join(devRoot, "dev-server/next-env.d.ts"),
   [
     '/// <reference types="next" />',
     '/// <reference types="next/image-types/global" />',
@@ -129,27 +129,27 @@ console.log("Copying shared docs code...");
 
 cpSync(
   path.join(repoRoot, "apps/docs/components"),
-  path.join(cliRoot, "docs/components"),
+  path.join(devRoot, "docs/components"),
   {
     filter: createCopyFilter(path.join(repoRoot, "apps/docs/components")),
     recursive: true,
   }
 );
 
-cpSync(path.join(repoRoot, "apps/docs/lib"), path.join(cliRoot, "docs/lib"), {
+cpSync(path.join(repoRoot, "apps/docs/lib"), path.join(devRoot, "docs/lib"), {
   filter: createCopyFilter(path.join(repoRoot, "apps/docs/lib")),
   recursive: true,
 });
 
 // Copy globals.css (imported by dev-server/app/globals.css)
-mkdirSync(path.join(cliRoot, "docs/app"), { recursive: true });
+mkdirSync(path.join(devRoot, "docs/app"), { recursive: true });
 cpSync(
   path.join(repoRoot, "apps/docs/app/globals.css"),
-  path.join(cliRoot, "docs/app/globals.css")
+  path.join(devRoot, "docs/app/globals.css")
 );
 cpSync(
   path.join(repoRoot, "apps/docs/app/favicon.ico"),
-  path.join(cliRoot, "dev-server/app/favicon.ico")
+  path.join(devRoot, "dev-server/app/favicon.ico")
 );
 
 // 4. Copy @repo packages (uses the same REPO_PACKAGES list as the build step)
@@ -186,7 +186,7 @@ const rewriteExportsForStandalone = (exportsField) => {
 };
 
 for (const pkg of REPO_PACKAGES) {
-  const dest = path.join(cliRoot, `packages/@repo/${pkg}`);
+  const dest = path.join(devRoot, `packages/@repo/${pkg}`);
   mkdirSync(dest, { recursive: true });
 
   const sourcePkgJson = JSON.parse(

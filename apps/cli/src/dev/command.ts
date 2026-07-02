@@ -1,7 +1,6 @@
 import { spawn } from "node:child_process";
 import { once } from "node:events";
 import fs from "node:fs/promises";
-import { createRequire } from "node:module";
 import { createServer } from "node:net";
 import path from "node:path";
 import { setTimeout as delay } from "node:timers/promises";
@@ -11,7 +10,6 @@ import { intro, log } from "@clack/prompts";
 import chalk from "chalk";
 import open from "open";
 
-import { CONFIG_DIR } from "../constants.js";
 import { CliError, EXIT_CODES, toCliError } from "../errors.js";
 import { parsePort } from "../validation.js";
 import { resolveDocsRoot, validateDocsRoot } from "./resolve-root.js";
@@ -22,84 +20,7 @@ const DEV_READY_TIMEOUT_MS = 45_000;
 const DEV_PORT_SCAN_LIMIT = 10;
 const DEV_SHUTDOWN_TIMEOUT_MS = 5000;
 const LOCALHOST = "127.0.0.1";
-const RUNTIME_EXCLUDE_DIRS = new Set([".next", ".turbo", "node_modules"]);
-const STANDALONE_RUNTIME_MAX_AGE_MS = 24 * 60 * 60 * 1000;
-const STANDALONE_RUNTIME_PREFIX = "standalone-runtime-";
-const TURBOPACK_ARGS = ["dev", "--turbopack"] as const;
-
-const fileExists = async (filePath: string): Promise<boolean> => {
-  try {
-    await fs.access(filePath);
-    return true;
-  } catch {
-    return false;
-  }
-};
-
-const resolveCommonAncestor = (pathsToCompare: string[]): string => {
-  const [firstPath, ...restPaths] = pathsToCompare;
-  if (!firstPath) {
-    return path.sep;
-  }
-
-  const first = path.resolve(firstPath);
-  const { root } = path.parse(first);
-  const firstSegments = first
-    .slice(root.length)
-    .split(path.sep)
-    .filter(Boolean);
-  const sharedSegments: string[] = [];
-
-  for (const [index, segment] of firstSegments.entries()) {
-    const isShared = restPaths.every((candidatePath) => {
-      const candidate = path.resolve(candidatePath);
-      if (path.parse(candidate).root !== root) {
-        return false;
-      }
-
-      const candidateSegments = candidate
-        .slice(root.length)
-        .split(path.sep)
-        .filter(Boolean);
-      return candidateSegments[index] === segment;
-    });
-
-    if (!isShared) {
-      break;
-    }
-
-    sharedSegments.push(segment);
-  }
-
-  return path.join(root, ...sharedSegments);
-};
-
-const cleanupStandaloneRuntimeRoots = async (
-  configDir: string,
-  maxAgeMs: number = STANDALONE_RUNTIME_MAX_AGE_MS
-): Promise<void> => {
-  const cutoff = Date.now() - maxAgeMs;
-  const entries = await fs.readdir(configDir, { withFileTypes: true });
-
-  await Promise.all(
-    entries
-      .filter(
-        (entry) =>
-          entry.isDirectory() &&
-          entry.name.startsWith(STANDALONE_RUNTIME_PREFIX)
-      )
-      .map(async (entry) => {
-        const entryPath = path.join(configDir, entry.name);
-        const stats = await fs.stat(entryPath);
-
-        if (stats.mtimeMs >= cutoff) {
-          return;
-        }
-
-        await fs.rm(entryPath, { force: true, recursive: true });
-      })
-  );
-};
+const DEV_PACKAGE_NAME = "blodemd-dev";
 
 type PortAvailabilityProbe = (port: number) => Promise<boolean>;
 
@@ -196,19 +117,32 @@ export const shutdownChildProcess = async (
 
 // --- Dev-server resolution ---
 
-interface StandaloneServer {
-  mode: "standalone";
-  devServerDir: string;
-  nextPackageRoot: string;
-  runtimeRoot: string;
-}
-
 interface MonorepoServer {
   mode: "monorepo";
   repoRoot: string;
 }
 
-type DevServerResolution = StandaloneServer | MonorepoServer;
+/**
+ * When the CLI is installed from npm the heavy Next.js dev-server payload no
+ * longer ships inside `blodemd`. Instead the CLI delegates to the companion
+ * `blodemd-dev` package via `npx`, pinned to the CLI's own version so the two
+ * always run in lockstep.
+ */
+interface DelegatedServer {
+  mode: "delegated";
+  devPackageVersion: string;
+}
+
+type DevServerResolution = MonorepoServer | DelegatedServer;
+
+const fileExists = async (filePath: string): Promise<boolean> => {
+  try {
+    await fs.access(filePath);
+    return true;
+  } catch {
+    return false;
+  }
+};
 
 /**
  * Derive the CLI npm package root from the running script path.
@@ -217,184 +151,26 @@ type DevServerResolution = StandaloneServer | MonorepoServer;
 const resolveCliPackageRoot = (cliFilePath: string): string =>
   path.dirname(path.dirname(cliFilePath));
 
-const copyStandaloneTree = async (
-  sourceDir: string,
-  targetDir: string
-): Promise<void> => {
-  await fs.cp(sourceDir, targetDir, {
-    filter: (source) => {
-      const relative = path.relative(sourceDir, source);
-      if (!relative) {
-        return true;
-      }
-
-      const topSegment = relative.split(path.sep)[0] ?? "";
-      return !RUNTIME_EXCLUDE_DIRS.has(topSegment);
-    },
-    recursive: true,
-  });
-};
-
-const isStandaloneCliInstall = async (
-  cliPackageRoot: string
-): Promise<boolean> => {
-  try {
-    const realRoot = await fs.realpath(cliPackageRoot);
-    return realRoot.split(path.sep).includes("node_modules");
-  } catch {
-    return cliPackageRoot.split(path.sep).includes("node_modules");
-  }
-};
-
-export const createStandaloneRuntimeRoot = async (
-  configDir: string = CONFIG_DIR
-): Promise<string> => {
-  await fs.mkdir(configDir, { recursive: true });
-  await cleanupStandaloneRuntimeRoots(configDir);
-  return await fs.mkdtemp(path.join(configDir, STANDALONE_RUNTIME_PREFIX));
+/**
+ * Read the CLI's own version so the delegated `blodemd-dev` invocation is
+ * pinned to the exact matching release (they version together via changesets).
+ */
+const readCliPackageVersion = async (cliFilePath: string): Promise<string> => {
+  const packageJsonPath = path.join(
+    resolveCliPackageRoot(cliFilePath),
+    "package.json"
+  );
+  const raw = await fs.readFile(packageJsonPath, "utf8");
+  const parsed = JSON.parse(raw) as { version?: string };
+  return parsed.version ?? "0.0.0";
 };
 
 /**
- * Locate the `node_modules` directory that actually contains the CLI's
- * transitive dependencies. Package managers like npm/yarn-classic (and
- * `npx` caches) hoist shared deps above the package directory, so
- * `<cliPackageRoot>/node_modules` may not exist or may not contain `next`.
- * Resolve `next/package.json` and use the directory that owns it.
+ * Walk up from the running CLI looking for the blodemd monorepo checkout.
+ * Returns the repo root when found (development mode), otherwise `null`
+ * (installed mode, which delegates to `blodemd-dev`).
  */
-const resolveRuntimeNodeModules = async (
-  cliPackageRoot: string
-): Promise<string> => {
-  const localNodeModules = path.join(cliPackageRoot, "node_modules");
-  if (await fileExists(path.join(localNodeModules, "next", "package.json"))) {
-    return localNodeModules;
-  }
-
-  const nextPkgPath = createRequire(
-    path.join(cliPackageRoot, "package.json")
-  ).resolve("next/package.json");
-  return path.dirname(path.dirname(nextPkgPath));
-};
-
-const materializeStandaloneRuntime = async (
-  cliPackageRoot: string
-): Promise<{
-  devServerDir: string;
-  runtimeRoot: string;
-}> => {
-  const runtimeRoot = await createStandaloneRuntimeRoot();
-
-  try {
-    for (const dir of ["dev-server", "docs", "packages"]) {
-      await copyStandaloneTree(
-        path.join(cliPackageRoot, dir),
-        path.join(runtimeRoot, dir)
-      );
-    }
-
-    const runtimeNodeModules = await resolveRuntimeNodeModules(cliPackageRoot);
-    await fs.symlink(
-      runtimeNodeModules,
-      path.join(runtimeRoot, "node_modules"),
-      process.platform === "win32" ? "junction" : "dir"
-    );
-    // Both dev-server/ and docs/ import from `@repo/*`, and the
-    // `@repo/*` packages import each other. Module resolution walks up
-    // from each consuming file, so every consumption root needs a
-    // `node_modules/@repo` symlink pointing at the shared packages/
-    // copy. `packages/node_modules/@repo` also satisfies lookups from
-    // inside `packages/@repo/<pkg>/dist/*.js` imports.
-    const linkTarget = path.join(runtimeRoot, "packages", "@repo");
-    for (const consumer of ["dev-server", "docs", "packages"]) {
-      await fs.mkdir(path.join(runtimeRoot, consumer, "node_modules"), {
-        recursive: true,
-      });
-      await fs.symlink(
-        linkTarget,
-        path.join(runtimeRoot, consumer, "node_modules", "@repo"),
-        process.platform === "win32" ? "junction" : "dir"
-      );
-    }
-
-    await fs.writeFile(
-      path.join(runtimeRoot, "dev-server", "package.json"),
-      `${JSON.stringify(
-        {
-          dependencies: {
-            next: "16.2.1",
-            react: "^19.2.0",
-            "react-dom": "^19.2.0",
-          },
-          devDependencies: {
-            "@types/node": "^24.12.2",
-            "@types/react": "19.2.14",
-            "@types/react-dom": "19.2.3",
-            typescript: "6.0.2",
-          },
-          name: "blodemd-dev-server",
-          private: true,
-          type: "module",
-        },
-        null,
-        2
-      )}\n`
-    );
-
-    return {
-      devServerDir: path.join(runtimeRoot, "dev-server"),
-      runtimeRoot,
-    };
-  } catch (error) {
-    await fs.rm(runtimeRoot, { force: true, recursive: true });
-    throw error;
-  }
-};
-
-/**
- * Check if a shipped dev-server exists alongside an installed CLI package.
- * We only use standalone mode when the package root lives under `node_modules`.
- */
-const findStandaloneDevServer = async (
-  cliPackageRoot: string
-): Promise<StandaloneServer | null> => {
-  const devServerDir = path.join(cliPackageRoot, "dev-server");
-  if (!(await fileExists(path.join(devServerDir, "next.config.js")))) {
-    return null;
-  }
-
-  if (!(await isStandaloneCliInstall(cliPackageRoot))) {
-    return null;
-  }
-
-  // Verify `next` is resolvable — this distinguishes npm-installed from
-  // a monorepo checkout that happens to have dev-server/ from prepare-dist.
-  try {
-    createRequire(path.join(cliPackageRoot, "package.json")).resolve(
-      "next/package.json"
-    );
-  } catch {
-    return null;
-  }
-
-  const runtime = await materializeStandaloneRuntime(cliPackageRoot);
-
-  return {
-    devServerDir: runtime.devServerDir,
-    mode: "standalone",
-    nextPackageRoot: cliPackageRoot,
-    runtimeRoot: runtime.runtimeRoot,
-  };
-};
-
-/**
- * Resolve the `next` CLI binary from the blodemd package's own dependencies.
- */
-const resolveNextBin = (cliPackageRoot: string): string => {
-  const require = createRequire(path.join(cliPackageRoot, "package.json"));
-  const nextPkgPath = require.resolve("next/package.json");
-  return path.join(path.dirname(nextPkgPath), "dist", "bin", "next");
-};
-
-const findMonorepoRoot = async (start: string): Promise<string> => {
+const findMonorepoRoot = async (start: string): Promise<string | null> => {
   let current = start;
 
   while (true) {
@@ -404,7 +180,13 @@ const findMonorepoRoot = async (start: string): Promise<string> => {
       const parsed = JSON.parse(raw) as { workspaces?: string[] };
       const workspaces = parsed.workspaces ?? [];
 
-      if (workspaces.includes("apps/*") && workspaces.includes("packages/*")) {
+      const hasWorkspaces =
+        workspaces.includes("apps/*") && workspaces.includes("packages/*");
+      const hasDevServer = await fileExists(
+        path.join(current, "apps", "dev-server", "next.config.js")
+      );
+
+      if (hasWorkspaces && hasDevServer) {
         return current;
       }
     }
@@ -416,27 +198,19 @@ const findMonorepoRoot = async (start: string): Promise<string> => {
     current = parent;
   }
 
-  throw new CliError(
-    "Could not locate the blodemd dev server.",
-    EXIT_CODES.ERROR,
-    "Make sure blodemd is installed correctly (npm i blodemd)."
-  );
+  return null;
 };
 
 const resolveDevServer = async (
   cliFilePath: string
 ): Promise<DevServerResolution> => {
-  const cliPackageRoot = resolveCliPackageRoot(cliFilePath);
-
-  // Try standalone mode first (npm-installed)
-  const standalone = await findStandaloneDevServer(cliPackageRoot);
-  if (standalone) {
-    return standalone;
+  const repoRoot = await findMonorepoRoot(path.dirname(cliFilePath));
+  if (repoRoot) {
+    return { mode: "monorepo", repoRoot };
   }
 
-  // Fall back to monorepo mode (development)
-  const repoRoot = await findMonorepoRoot(path.dirname(cliFilePath));
-  return { mode: "monorepo", repoRoot };
+  const devPackageVersion = await readCliPackageVersion(cliFilePath);
+  return { devPackageVersion, mode: "delegated" };
 };
 
 interface DevServerLaunch {
@@ -450,20 +224,27 @@ export const buildDevServerLaunch = (
   server: DevServerResolution,
   { root, port }: { root: string; port: number }
 ): DevServerLaunch => {
-  if (server.mode === "standalone") {
-    const nextBin = resolveNextBin(server.nextPackageRoot);
+  if (server.mode === "delegated") {
+    const npxCommand = process.platform === "win32" ? "npx.cmd" : "npx";
 
+    // The CLI owns readiness polling, the file watcher and opening the
+    // browser, so `blodemd-dev` runs with `--no-open` and only boots the
+    // Next.js server.
     return {
-      args: [nextBin, ...TURBOPACK_ARGS],
-      command: process.execPath,
-      cwd: server.devServerDir,
+      args: [
+        "-y",
+        `${DEV_PACKAGE_NAME}@${server.devPackageVersion}`,
+        "dev",
+        "--port",
+        String(port),
+        "--dir",
+        root,
+        "--no-open",
+      ],
+      command: npxCommand,
+      cwd: process.cwd(),
       env: {
         ...process.env,
-        BLODEMD_PACKAGES_DIR: path.join(server.runtimeRoot, "packages"),
-        BLODEMD_TURBOPACK_ROOT: resolveCommonAncestor([
-          server.nextPackageRoot,
-          server.runtimeRoot,
-        ]),
         DOCS_ROOT: root,
         PORT: String(port),
       },
@@ -503,7 +284,6 @@ interface DevCommandDependencies {
   getOpen: typeof open;
   getLog: typeof log;
   parsePortValue: typeof parsePort;
-  removeDirectory: typeof fs.rm;
   resolveDevPortValue: typeof resolveDevPort;
   resolveDocsRootValue: typeof resolveDocsRoot;
   resolveServer: typeof resolveDevServer;
@@ -564,7 +344,6 @@ const defaultDevCommandDependencies: DevCommandDependencies = {
   getLog: log,
   getOpen: open,
   parsePortValue: parsePort,
-  removeDirectory: fs.rm,
   resolveDevPortValue: resolveDevPort,
   resolveDocsRootValue: resolveDocsRoot,
   resolveServer: resolveDevServer,
@@ -624,13 +403,6 @@ export const devCommand = async (
       }
 
       await dependencies.shutdownChild(child);
-
-      if (server.mode === "standalone") {
-        await dependencies.removeDirectory(server.runtimeRoot, {
-          force: true,
-          recursive: true,
-        });
-      }
     };
 
     process.once("SIGINT", closeAll);

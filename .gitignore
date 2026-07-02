@@ -34,6 +34,9 @@ dist
 apps/cli/dev-server
 apps/cli/docs
 apps/cli/packages
+apps/blodemd-dev/dev-server
+apps/blodemd-dev/docs
+apps/blodemd-dev/packages
 blodemd-*.tgz
 
 

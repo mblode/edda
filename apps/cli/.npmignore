@@ -1,4 +1,2 @@
-dev-server/.next
-dev-server/next-env.d.ts
 **/*.test.*
 **/*.unit.test.*
