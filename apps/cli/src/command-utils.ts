@@ -7,6 +7,7 @@ import { shouldIgnoreRootDocsFile } from "@repo/common";
 import { InvalidArgumentError } from "commander";
 
 import { toCliError } from "./errors.js";
+import { isInteractive } from "./output.js";
 import { validateProjectSlug } from "./project-config.js";
 import { isScaffoldTemplate, SCAFFOLD_TEMPLATES } from "./scaffold.js";
 import type { ScaffoldTemplate } from "./scaffold.js";
@@ -61,14 +62,26 @@ export const collectFiles = async (
   return files.toSorted((left, right) => left.localeCompare(right));
 };
 
-export const reportCommandError = (prefix: string, error: unknown): void => {
+export const reportCommandError = (
+  prefix: string,
+  error: unknown,
+  options?: { json?: boolean }
+): void => {
   const cliError = toCliError(error);
 
-  log.error(`${prefix}: ${cliError.message}`);
-  if (cliError.hint) {
-    log.info(cliError.hint);
+  if (isInteractive(options?.json)) {
+    log.error(`${prefix}: ${cliError.message}`);
+    if (cliError.hint) {
+      log.info(cliError.hint);
+    }
+    log.info("Failed");
+  } else {
+    process.stderr.write(`${prefix}: ${cliError.message}\n`);
+    if (cliError.hint) {
+      process.stderr.write(`${cliError.hint}\n`);
+    }
   }
-  log.info("Failed");
+
   process.exitCode = cliError.exitCode;
 };
 

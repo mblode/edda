@@ -47,6 +47,14 @@ export const toCliError = (error: unknown): CliError => {
       );
     }
 
+    if (/\b401\b/.test(error.message)) {
+      return new CliError(
+        error.message,
+        EXIT_CODES.AUTH_REQUIRED,
+        'Check your API key or run "blodemd login".'
+      );
+    }
+
     return new CliError(error.message, EXIT_CODES.ERROR);
   }
 
