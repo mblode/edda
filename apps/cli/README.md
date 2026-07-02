@@ -9,7 +9,7 @@
 - **One-command deploy:** Push your entire docs folder to Blode.md with `blodemd push`.
 - **Scaffold in seconds:** Generate a ready-to-edit docs folder with `blodemd new`.
 - **Config validation:** Catch `docs.json` errors before deploying.
-- **Zero keys:** Sign in once with GitHub in your browser — the CLI handles the rest.
+- **Zero keys locally:** Sign in once with GitHub in your browser — no keys for local deploys. CI uses a project deploy key.
 
 ## Install
 
@@ -41,6 +41,30 @@ blodemd dev
 blodemd push
 ```
 
+## Deploy from CI
+
+The [GitHub App](#auto-deploy-without-the-cli) is the recommended zero-config path. To run the deploy yourself from GitHub Actions, use a project deploy key stored in the `BLODEMD_API_KEY` secret:
+
+```yaml
+name: Deploy docs
+on:
+  push:
+    branches: [main]
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+      - run: npx blodemd@latest push --project your-project-slug
+        env:
+          BLODEMD_API_KEY: ${{ secrets.BLODEMD_API_KEY }}
+```
+
+Create a deploy key in the dashboard under **Settings → Deploy keys**, or copy the `bmd_...` key that `blodemd push` prints the first time it auto-creates a project. Deploy keys are project-scoped and deploy-only — store them as CI secrets, never commit them.
+
 ## Commands
 
 ```bash
@@ -57,6 +81,7 @@ blodemd dev [dir]         Start the local docs preview server
 
 ```
 --project <slug>    Project slug (env: BLODEMD_PROJECT)
+--api-key <token>   API key (env: BLODEMD_API_KEY)
 --api-url <url>     API URL (env: BLODEMD_API_URL)
 --branch <name>     Git branch (env: BLODEMD_BRANCH)
 --message <msg>     Deploy message (env: BLODEMD_COMMIT_MESSAGE)

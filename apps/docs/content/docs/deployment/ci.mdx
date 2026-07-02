@@ -1,0 +1,65 @@
+---
+title: Continuous deployment
+description: Deploy your documentation automatically from GitHub or any CI provider.
+---
+
+Blode.md deploys your docs on every push. The GitHub App is the zero-config default; if you'd rather run the deploy yourself, use a project deploy key from CI.
+
+## GitHub App (recommended)
+
+Connect your repository in the dashboard **Git** tab. Every push to your configured branch deploys automatically -- no tokens, no workflow file, no CLI. This is the simplest path and the right default for most projects.
+
+<Callout type="info">
+  The GitHub App handles authentication for you. You only need a deploy key if
+  you deploy from your own CI pipeline instead.
+</Callout>
+
+## Deploy from CI (GitHub Actions)
+
+To run the deploy yourself, add a workflow that calls `blodemd push` with a project deploy key in the `BLODEMD_API_KEY` secret:
+
+```yaml title=".github/workflows/deploy.yml"
+name: Deploy docs
+on:
+  push:
+    branches: [main]
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+      - run: npx blodemd@latest push --project your-project-slug
+        env:
+          BLODEMD_API_KEY: ${{ secrets.BLODEMD_API_KEY }}
+```
+
+Store the key as a repository secret named `BLODEMD_API_KEY`. See [Getting a deploy key](#getting-a-deploy-key) below.
+
+## Other CI providers
+
+The same command works on any CI provider:
+
+1. Add your deploy key as a secret named `BLODEMD_API_KEY`.
+2. Run `npx blodemd@latest push --project <slug>` in your deploy step.
+
+If you prefer to pass the key inline instead of the environment variable, use the `--api-key <token>` flag.
+
+The CLI reads the project slug from your `docs.json` `slug` field when `--project` is omitted, and it auto-detects the branch from `GITHUB_REF_NAME` (or the current git branch) so deployments are tagged correctly.
+
+## Getting a deploy key
+
+Deploy keys are project-scoped and deploy-only. Create one in two ways:
+
+- **Dashboard**: open your project, go to **Settings → Deploy keys**, and choose **Create key**. The `bmd_...` value is shown once -- copy it immediately.
+- **First push**: the first time you run `blodemd push` for a project that doesn't exist yet while logged in, the CLI auto-creates the project and prints a `bmd_...` key for CI.
+
+<Callout type="warning">
+  Store deploy keys as CI secrets. Never commit them to your repository.
+</Callout>
+
+## Related pages
+
+- [Deploying with push](/deployment/push) -- the `push` command and its options
