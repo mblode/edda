@@ -6,6 +6,7 @@ import { logger } from "hono/logger";
 import { resolveCorsOrigin } from "./lib/cors";
 import { logError } from "./lib/logger";
 import { internalServerError, notFound } from "./lib/responses";
+import { apiKeys } from "./routes/api-keys";
 import { auth } from "./routes/auth";
 import { deployments } from "./routes/deployments";
 import { domains } from "./routes/domains";
@@ -46,6 +47,7 @@ app.get("/health", (c) =>
 app.route("/auth", auth);
 app.route("/tenants", tenants);
 app.route("/projects", projects);
+app.route("/projects", apiKeys);
 app.route("/projects", domains);
 app.route("/projects", deployments);
 app.route("/projects", projectGit);

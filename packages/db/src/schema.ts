@@ -96,6 +96,25 @@ export const domains = pgTable(
   ]
 ).enableRLS();
 
+export const deployKeys = pgTable(
+  "deploy_keys",
+  {
+    createdAt: timestampColumn("created_at").defaultNow().notNull(),
+    id: uuid("id").defaultRandom().primaryKey(),
+    keyHash: text("key_hash").notNull(),
+    keyPrefix: text("key_prefix").notNull(),
+    lastUsedAt: timestampColumn("last_used_at"),
+    name: text("name").notNull(),
+    projectId: uuid("project_id")
+      .notNull()
+      .references(() => projects.id, { onDelete: "cascade" }),
+  },
+  (table) => [
+    uniqueIndex("deploy_keys_key_hash_key").on(table.keyHash),
+    index("deploy_keys_project_id_idx").on(table.projectId),
+  ]
+).enableRLS();
+
 export const deployments = pgTable(
   "deployments",
   {

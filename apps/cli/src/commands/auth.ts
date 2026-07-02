@@ -16,6 +16,7 @@ import {
   DEFAULT_OAUTH_TIMEOUT_SECONDS,
   OAUTH_CLIENT_ID,
 } from "../constants.js";
+import { EXIT_CODES } from "../errors.js";
 import { requestJson } from "../http.js";
 import { waitForOAuthCode } from "../oauth-callback.js";
 import { exchangeAuthorizationCode } from "../oauth-token.js";
@@ -183,6 +184,7 @@ export const registerAuthCommands = (program: Command): void => {
 
         if (!resolved) {
           log.warn('Not logged in. Run "blodemd login" to authenticate.');
+          process.exitCode = EXIT_CODES.AUTH_REQUIRED;
           return;
         }
 

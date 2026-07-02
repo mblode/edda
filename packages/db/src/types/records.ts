@@ -1,4 +1,5 @@
 import type {
+  deployKeys,
   deployments,
   domains,
   gitConnections,
@@ -10,6 +11,7 @@ import type {
 type UserRow = typeof users.$inferSelect;
 type ProjectRow = typeof projects.$inferSelect;
 type DomainRow = typeof domains.$inferSelect;
+type ApiKeyRow = typeof deployKeys.$inferSelect;
 type DeploymentRow = typeof deployments.$inferSelect;
 type GitConnectionRow = typeof gitConnections.$inferSelect;
 type GithubInstallationRow = typeof githubInstallations.$inferSelect;
@@ -41,6 +43,11 @@ export type DomainRecord = Pick<
   | "projectId"
   | "status"
   | "verifiedAt"
+>;
+
+export type ApiKeyRecord = Pick<
+  ApiKeyRow,
+  "createdAt" | "id" | "keyPrefix" | "lastUsedAt" | "name" | "projectId"
 >;
 
 export type DeploymentRecord = Pick<

@@ -1,4 +1,5 @@
 import {
+  ApiKeyDao,
   DeploymentDao,
   DomainDao,
   GitConnectionDao,
@@ -7,6 +8,7 @@ import {
   UserDao,
 } from "@repo/db";
 
+export const apiKeyDao = new ApiKeyDao();
 export const projectDao = new ProjectDao();
 export const domainDao = new DomainDao();
 export const deploymentDao = new DeploymentDao();

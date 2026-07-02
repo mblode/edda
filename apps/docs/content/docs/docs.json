@@ -50,7 +50,7 @@
           },
           {
             "group": "Deployment",
-            "pages": ["deployment/push"]
+            "pages": ["deployment/push", "deployment/ci"]
           },
           {
             "group": "Features",

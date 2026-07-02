@@ -1,4 +1,4 @@
-import { confirm, intro, isCancel, log, spinner } from "@clack/prompts";
+import { confirm, intro, isCancel } from "@clack/prompts";
 import chalk from "chalk";
 import type { Command } from "commander";
 
@@ -18,6 +18,8 @@ import {
 } from "../constants.js";
 import { resolveDocsRoot } from "../dev/resolve-root.js";
 import { requestJson } from "../http.js";
+import { createReporter } from "../output.js";
+import type { Reporter } from "../output.js";
 import {
   getProjectSlugError,
   LEGACY_PROJECT_NAME_FALLBACK_WARNING,
@@ -39,20 +41,24 @@ interface PushConfig {
 }
 
 // Resolve auth in the documented order: --api-key flag, BLODEMD_API_KEY env,
-// then stored `blodemd login` credentials. An API key authenticates via the
-// admin token header; a stored session uses its Supabase bearer token.
+// then stored `blodemd login` credentials. A project-scoped deploy key and a
+// stored session both authenticate via a bearer token; only sessions may
+// auto-create projects.
 const resolveAuthHeaders = async (
   apiKeyOption?: string
 ): Promise<{ headers: Record<string, string>; canAutoCreate: boolean }> => {
   const apiKey = (apiKeyOption ?? process.env[BLODE_API_KEY_ENV])?.trim();
   if (apiKey) {
-    return { canAutoCreate: false, headers: { "x-admin-token": apiKey } };
+    return {
+      canAutoCreate: false,
+      headers: { Authorization: `Bearer ${apiKey}` },
+    };
   }
 
   const resolved = await resolveAuthToken();
   if (!resolved?.token) {
     throw new Error(
-      'Not logged in. Run "blodemd login" to authenticate, pass --api-key, or set BLODEMD_API_KEY.'
+      'Not logged in. Run "blodemd login" to authenticate, pass --api-key, or set BLODEMD_API_KEY (see https://blode.md/docs/deployment/ci).'
     );
   }
 
@@ -129,11 +135,21 @@ const autoCreateProject = async (
   projectDisplayName: string,
   apiUrl: string,
   headers: Record<string, string>,
-  canAutoCreate: boolean
+  canAutoCreate: boolean,
+  reporter: Reporter
 ): Promise<boolean> => {
   if (!canAutoCreate) {
     throw new Error(
       `Project "${project}" not found. Create it at blode.md or login with "blodemd login" to auto-create.`
+    );
+  }
+
+  // Auto-create is an interactive confirmation; in --json/CI/non-TTY mode we
+  // must not prompt (it would corrupt stdout and can't be answered). Fail with
+  // a deterministic, actionable error instead.
+  if (!reporter.interactive) {
+    throw new Error(
+      `Project "${project}" not found. Create it in the dashboard or run \`blodemd push\` in an interactive terminal to auto-create it.`
     );
   }
 
@@ -155,7 +171,23 @@ const autoCreateProject = async (
     "Failed to create project"
   );
 
-  log.success(`Project ${chalk.cyan(createResult.slug)} created`);
+  reporter.success(`Project ${chalk.cyan(createResult.slug)} created`);
+
+  // Mint a project-scoped deploy key so the new project is CI-ready. The
+  // plaintext key is only returned once, so surface it immediately.
+  const keyResult = await requestJson<{ key: string }>(
+    new URL(`/projects/${createResult.id}/keys`, apiUrl).toString(),
+    {
+      body: JSON.stringify({ name: "CI deploy key" }),
+      headers,
+      method: "POST",
+    },
+    "Failed to create deploy key"
+  );
+
+  reporter.info(
+    `Deploy key created (save this — shown once, use as ${BLODE_API_KEY_ENV} in CI): ${chalk.cyan(keyResult.key)}`
+  );
   return true;
 };
 
@@ -168,9 +200,9 @@ const uploadFiles = async (
   apiPath: (suffix: string) => string,
   deploymentId: string,
   headers: Record<string, string>,
-  s: ReturnType<typeof spinner>
+  reporter: Reporter
 ) => {
-  s.start(`Uploading ${files.length} files`);
+  reporter.step(`Uploading ${files.length} files`);
 
   let uploaded = 0;
   for await (const batch of createUploadBatches({
@@ -188,10 +220,10 @@ const uploadFiles = async (
       "Failed to upload files"
     );
     uploaded += batch.length;
-    s.message(`Uploading files (${uploaded}/${files.length})`);
+    reporter.step(`Uploading files (${uploaded}/${files.length})`);
   }
 
-  s.stop(`Uploaded ${chalk.cyan(String(files.length))} files`);
+  reporter.success(`Uploaded ${chalk.cyan(String(files.length))} files`);
 };
 
 export const registerPushCommand = (program: Command): void => {
@@ -204,6 +236,7 @@ export const registerPushCommand = (program: Command): void => {
     .option("--api-url <url>", "API URL (env: BLODEMD_API_URL)")
     .option("--branch <name>", "git branch (env: BLODEMD_BRANCH)")
     .option("--message <msg>", "deploy message (env: BLODEMD_COMMIT_MESSAGE)")
+    .option("--json", "output machine-readable JSON (implies non-interactive)")
     .action(
       async (
         dir: string | undefined,
@@ -211,21 +244,24 @@ export const registerPushCommand = (program: Command): void => {
           apiKey?: string;
           apiUrl?: string;
           branch?: string;
+          json?: boolean;
           message?: string;
           project?: string;
         }
       ) => {
-        intro(chalk.bold("blodemd push"));
-        const s = spinner();
+        const reporter = createReporter({ json: options.json });
+        if (reporter.interactive) {
+          intro(chalk.bold("blodemd push"));
+        }
 
         try {
           const root = await resolveDocsRoot(dir);
 
-          s.start("Validating configuration");
+          reporter.step("Validating configuration");
           const { config, warnings } = await loadValidatedSiteConfig(root);
-          s.stop("Configuration valid");
+          reporter.success("Configuration valid");
           for (const warning of warnings) {
-            log.warn(warning);
+            reporter.warn(warning);
           }
 
           const {
@@ -240,15 +276,15 @@ export const registerPushCommand = (program: Command): void => {
           } = await resolvePushConfig(config, options);
 
           if (usedLegacyNameFallback) {
-            log.warn(LEGACY_PROJECT_NAME_FALLBACK_WARNING);
+            reporter.warn(LEGACY_PROJECT_NAME_FALLBACK_WARNING);
           }
 
-          s.start("Collecting files");
+          reporter.step("Collecting files");
           const files = await collectFiles(root);
           if (files.length === 0) {
             throw new Error("No files found to deploy.");
           }
-          s.stop(`Found ${chalk.cyan(String(files.length))} files`);
+          reporter.success(`Found ${chalk.cyan(String(files.length))} files`);
 
           const headers = {
             ...authHeaders,
@@ -267,7 +303,7 @@ export const registerPushCommand = (program: Command): void => {
           });
 
           // Try creating the deployment — if 404, offer to create the project
-          s.start("Creating deployment");
+          reporter.step("Creating deployment");
           let deployment: DeploymentResponse;
           try {
             deployment = await requestJson<DeploymentResponse>(
@@ -281,32 +317,40 @@ export const registerPushCommand = (program: Command): void => {
               throw error;
             }
 
-            s.stop("Project not found");
+            reporter.stop("Project not found");
 
             const created = await autoCreateProject(
               project,
               projectDisplayName,
               apiUrl,
               headers,
-              canAutoCreate
+              canAutoCreate,
+              reporter
             );
             if (!created) {
-              log.info("Cancelled");
+              reporter.info("Cancelled");
               return;
             }
 
-            s.start("Creating deployment");
+            reporter.step("Creating deployment");
             deployment = await requestJson<DeploymentResponse>(
               apiPath(""),
               { body: createDeploymentBody, headers, method: "POST" },
               "Failed to create deployment"
             );
           }
-          s.stop(`Deployment ${chalk.cyan(deployment.id)} created`);
+          reporter.success(`Deployment ${chalk.cyan(deployment.id)} created`);
 
-          await uploadFiles(files, root, apiPath, deployment.id, headers, s);
+          await uploadFiles(
+            files,
+            root,
+            apiPath,
+            deployment.id,
+            headers,
+            reporter
+          );
 
-          s.start("Finalizing deployment");
+          reporter.step("Finalizing deployment");
           const finalized = await requestJson<DeploymentResponse>(
             apiPath(`/${deployment.id}/finalize`),
             {
@@ -316,20 +360,26 @@ export const registerPushCommand = (program: Command): void => {
             },
             "Failed to finalize deployment"
           );
-          s.stop("Deployment finalized");
+          reporter.success("Deployment finalized");
 
-          log.success(`Published ${chalk.cyan(finalized.id)}`);
+          reporter.success(`Published ${chalk.cyan(finalized.id)}`);
           if (finalized.manifestUrl) {
-            log.info(`Manifest: ${finalized.manifestUrl}`);
+            reporter.info(`Manifest: ${finalized.manifestUrl}`);
           }
           if (typeof finalized.fileCount === "number") {
-            log.info(`Files: ${finalized.fileCount}`);
+            reporter.info(`Files: ${finalized.fileCount}`);
           }
 
-          log.info("Done");
+          reporter.info("Done");
+
+          reporter.json({
+            deploymentId: finalized.id,
+            fileCount: finalized.fileCount ?? files.length,
+            manifestUrl: finalized.manifestUrl ?? null,
+          });
         } catch (error: unknown) {
-          s.stop("Failed");
-          reportCommandError("Push failed", error);
+          reporter.stop("Failed");
+          reportCommandError("Push failed", error, { json: options.json });
         }
       }
     );

@@ -1,3 +1,7 @@
+import { mapApiKey } from "@repo/db";
+
+import { apiKeyDao } from "@/lib/db";
+
 import { requireProjectContext } from "../_lib";
 import { ProjectSettingsForm } from "./settings-form";
 
@@ -10,6 +14,14 @@ export default async function ProjectSettingsPage({
 }: SettingsPageProps) {
   const { projectSlug } = await params;
   const { accessToken, project } = await requireProjectContext(projectSlug);
+  const records = await apiKeyDao.listByProject(project.id);
+  const apiKeys = records.map(mapApiKey);
 
-  return <ProjectSettingsForm accessToken={accessToken} project={project} />;
+  return (
+    <ProjectSettingsForm
+      accessToken={accessToken}
+      initialApiKeys={apiKeys}
+      project={project}
+    />
+  );
 }

@@ -9,7 +9,7 @@ Upload your documentation files and publish them to Blode.md in a single command
 blodemd push [dir]
 ```
 
-Authenticate once with `blodemd login` first. The CLI uses your browser GitHub session — no API keys.
+Authenticate once with `blodemd login` first. The CLI uses your browser GitHub session for local deploys. For CI, use a project deploy key in `BLODEMD_API_KEY` — see [Continuous deployment](/deployment/ci).
 
 ## Directory resolution
 
@@ -32,6 +32,11 @@ If none contain a `docs.json`, the current directory is used.
     "--project <slug>": {
       description:
         "Project slug. Falls back to the BLODEMD_PROJECT environment variable, then docs.json `slug`.",
+      type: "string",
+    },
+    "--api-key <token>": {
+      description:
+        "Project deploy key for CI. Falls back to the BLODEMD_API_KEY environment variable, then stored credentials from `blodemd login`.",
       type: "string",
     },
     "--api-url <url>": {
@@ -100,9 +105,11 @@ blodemd push --project my-project --branch staging
 
 </CodeGroup>
 
-## Zero-touch deploys
+## Deploying from CI
 
-Prefer not to run the CLI at all? Install the **Blode.md GitHub App** from the project Git tab in the dashboard. Pushes to your configured branch deploy automatically — no CLI, no tokens, no workflows.
+Prefer not to run the CLI at all? Install the **Blode.md GitHub App** from the project Git tab in the dashboard. Pushes to your configured branch deploy automatically — no CLI, no tokens, no workflows. This is the recommended default.
+
+To run the deploy yourself from GitHub Actions or another CI provider, use a project deploy key in `BLODEMD_API_KEY`. See [Continuous deployment](/deployment/ci).
 
 ## Skipped files
 
