@@ -25,7 +25,7 @@ export const metadata: Metadata = {
   other: {
     "apple-mobile-web-app-title": "Blode.md",
   },
-  title: "Blode.md — Terminal-native docs platform",
+  title: "Blode.md | Terminal-native docs platform",
   twitter: {
     card: "summary_large_image",
   },

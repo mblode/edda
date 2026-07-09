@@ -9,7 +9,7 @@ import { siteConfig } from "@/lib/config";
 
 export const metadata: Metadata = {
   description:
-    "Blode.md is a docs platform that lives in your git repo. Write MDX, push to main, and ship documentation as fast as you ship code — with no pipeline to maintain.",
+    "Blode.md is a docs platform that lives in your git repo. Write MDX, push to main, and ship documentation as fast as you ship code, with no pipeline to maintain.",
   title: "About | Blode.md",
 };
 

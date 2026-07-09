@@ -6,7 +6,7 @@ import { siteConfig } from "@/lib/config";
 
 export const metadata: Metadata = {
   description:
-    "Terms of service for Blode.md — the ground rules for using the hosted docs platform, including your content, acceptable use, and account responsibilities.",
+    "Terms of service for Blode.md: the ground rules for using the hosted docs platform, including your content, acceptable use, and account responsibilities.",
   title: "Terms | Blode.md",
 };
 

@@ -6,7 +6,7 @@ import { RelativeTime } from "@/components/ui/relative-time";
 
 export const metadata: Metadata = {
   description:
-    "Every release, fix, and improvement to the Blode.md docs platform — see what shipped, when, and why across the CLI, renderer, and hosting.",
+    "Every release, fix, and improvement to the Blode.md docs platform. See what shipped, when, and why across the CLI, renderer, and hosting.",
   title: "Changelog | Blode.md",
 };
 

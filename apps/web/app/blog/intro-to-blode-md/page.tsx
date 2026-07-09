@@ -11,7 +11,7 @@ import { siteConfig } from "@/lib/config";
 
 export const metadata: Metadata = {
   description:
-    "Why we built Blode.md — a docs-as-code platform that publishes from GitHub in three commands, free and open source.",
+    "Why we built Blode.md, a docs-as-code platform that publishes from GitHub in three commands, free and open source.",
   title: "Hello, Blode.md | Blode.md",
 };
 

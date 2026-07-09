@@ -8,7 +8,7 @@ import { RelativeTime } from "@/components/ui/relative-time";
 
 export const metadata: Metadata = {
   description:
-    "Notes, deep dives, and product updates from the team building Blode.md — the terminal-native docs platform that ships documentation straight from your git repo.",
+    "Notes, deep dives, and product updates from the team building Blode.md, the terminal-native docs platform that ships documentation straight from your git repo.",
   title: "Blog | Blode.md",
 };
 
