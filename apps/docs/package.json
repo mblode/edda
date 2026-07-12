@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "portless run next dev",
     "dev:e2e": "next dev --hostname 127.0.0.1 --port 3001",
-    "build": "npx turbo run build --filter=@repo/common --filter=@repo/contracts --filter=@repo/models --filter=@repo/prebuild --filter=@repo/validation --filter=@repo/previewing && node ../../scripts/next-build.mjs",
+    "build": "npx turbo run build --filter=@repo/common --filter=@repo/contracts --filter=@repo/models --filter=@repo/prebuild --filter=@repo/validation --filter=@repo/previewing && next build",
     "start": "next start",
     "lint": "oxlint .",
     "lint:fix": "oxlint --fix .",
@@ -64,7 +64,7 @@
     "@types/react-dom": "19.2.3",
     "oxfmt": "^0.58.0",
     "oxlint": "^1.73.0",
-    "typescript": "7.0.2",
+    "typescript": "6.0.3",
     "ultracite": "7.9.3"
   },
   "engines": {
