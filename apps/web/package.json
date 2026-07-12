@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "portless run --name blodemd next dev",
     "dev:e2e": "next dev --hostname 127.0.0.1 --port 3000",
-    "build": "next build",
+    "build": "node ../../scripts/next-build.mjs",
     "start": "next start",
     "lint": "oxlint .",
     "lint:fix": "oxlint --fix .",

@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "next dev --hostname 127.0.0.1 --port 3002",
     "dev:e2e": "next dev --hostname 127.0.0.1 --port 3002",
-    "build": "npx turbo run build --filter=@repo/contracts --filter=@repo/db && next build",
+    "build": "npx turbo run build --filter=@repo/contracts --filter=@repo/db && node ../../scripts/next-build.mjs",
     "start": "next start --hostname 127.0.0.1 --port 3002",
     "lint": "oxlint .",
     "lint:fix": "oxlint --fix .",
