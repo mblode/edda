@@ -36,7 +36,7 @@ export const Update = ({ label, description, tags, children }: UpdateProps) => {
           </span>
         ))}
       </div>
-      <div className="prose prose-sm text-muted-foreground [&>p:first-child]:mt-0 [&>p:last-child]:mb-0">
+      <div className="text-muted-foreground text-sm [&>:first-child]:mt-0">
         {children}
       </div>
     </div>

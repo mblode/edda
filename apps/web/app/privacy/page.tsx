@@ -26,70 +26,49 @@ export default function PrivacyPage() {
 
       <section className="pb-24 md:pb-32">
         <div className="container">
-          <div className="measure flex flex-col gap-8 text-muted-foreground leading-relaxed">
-            <div>
-              <h2 className="mb-2 font-semibold text-foreground text-xl">
-                Scope
-              </h2>
-              <p>
-                This policy covers Blode.md, the docs platform at blode.md, and
-                the CLI that publishes to it.
-              </p>
-            </div>
+          <div className="typeset measure text-muted-foreground">
+            <h2>Scope</h2>
+            <p>
+              This policy covers Blode.md, the docs platform at blode.md, and
+              the CLI that publishes to it.
+            </p>
 
-            <div>
-              <h2 className="mb-2 font-semibold text-foreground text-xl">
-                What we collect
-              </h2>
-              <ul className="flex flex-col gap-2 pl-6 [&_li]:list-disc">
-                <li>Your GitHub profile when you sign in.</li>
-                <li>The repos, folders, and domains you connect.</li>
-                <li>Basic request logs so the service can run.</li>
-              </ul>
-            </div>
+            <h2>What we collect</h2>
+            <ul>
+              <li>Your GitHub profile when you sign in.</li>
+              <li>The repos, folders, and domains you connect.</li>
+              <li>Basic request logs so the service can run.</li>
+            </ul>
 
-            <div>
-              <h2 className="mb-2 font-semibold text-foreground text-xl">
-                What we do not do
-              </h2>
-              <p>
-                We do not sell your data. We do not run ad networks on docs you
-                publish. We do not use your content to train models.
-              </p>
-            </div>
+            <h2>What we do not do</h2>
+            <p>
+              We do not sell your data. We do not run ad networks on docs you
+              publish. We do not use your content to train models.
+            </p>
 
-            <div>
-              <h2 className="mb-2 font-semibold text-foreground text-xl">
-                Your data
-              </h2>
-              <p>
-                You can delete your account and data at any time. Need help?
-                Email{" "}
-                <a
-                  className="underline underline-offset-4"
-                  href={`mailto:${siteConfig.links.email}`}
-                >
-                  {siteConfig.links.email}
-                </a>
-                .
-              </p>
-            </div>
+            <h2>Your data</h2>
+            <p>
+              You can delete your account and data at any time. Need help? Email{" "}
+              <a
+                className="underline underline-offset-4"
+                href={`mailto:${siteConfig.links.email}`}
+              >
+                {siteConfig.links.email}
+              </a>
+              .
+            </p>
 
-            <div>
-              <h2 className="mb-2 font-semibold text-foreground text-xl">
-                Contact
-              </h2>
-              <p>
-                Questions about this policy? Email{" "}
-                <a
-                  className="underline underline-offset-4"
-                  href={`mailto:${siteConfig.links.email}`}
-                >
-                  {siteConfig.links.email}
-                </a>
-                .
-              </p>
-            </div>
+            <h2>Contact</h2>
+            <p>
+              Questions about this policy? Email{" "}
+              <a
+                className="underline underline-offset-4"
+                href={`mailto:${siteConfig.links.email}`}
+              >
+                {siteConfig.links.email}
+              </a>
+              .
+            </p>
           </div>
         </div>
       </section>

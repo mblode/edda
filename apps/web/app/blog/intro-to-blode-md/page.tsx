@@ -53,88 +53,80 @@ export default function IntroPostPage() {
 
         <section className="pb-16 md:pb-24">
           <div className="container">
-            <div className="measure mx-auto flex flex-col gap-10 text-base leading-relaxed">
-              <div className="flex flex-col gap-4">
-                <h2 className="h-display font-bold text-2xl md:text-3xl">
-                  Why this exists
-                </h2>
-                <p className="text-muted-foreground">
-                  Existing docs platforms charge per seat or per page. The
-                  others ask your team to learn a new editor and a new review
-                  flow. We wanted Markdown in a repo and a URL.
-                </p>
-                <p className="text-muted-foreground">
-                  Blode.md keeps the surface small on purpose. The pull request
-                  is the review. The merge is the deploy. Docs use the same path
-                  your code already does.
-                </p>
+            <div className="typeset measure mx-auto text-muted-foreground">
+              <h2 className="h-display font-bold text-2xl md:text-3xl">
+                Why this exists
+              </h2>
+              <p>
+                Existing docs platforms charge per seat or per page. The others
+                ask your team to learn a new editor and a new review flow. We
+                wanted Markdown in a repo and a URL.
+              </p>
+              <p>
+                Blode.md keeps the surface small on purpose. The pull request is
+                the review. The merge is the deploy. Docs use the same path your
+                code already does.
+              </p>
+
+              <h2 className="h-display font-bold text-2xl md:text-3xl">
+                What works today
+              </h2>
+              <p>
+                The CLI scaffolds a project, the renderer ships MDX, and the
+                GitHub app deploys on every push. Custom domains, full-text
+                search, and an interactive API reference are included from day
+                one.
+              </p>
+              <p>Three commands to live:</p>
+              <div className="relative">
+                <CopyButton
+                  className="absolute top-3 right-3 text-muted-foreground"
+                  content={installSnippet}
+                  size="sm"
+                  variant="ghost"
+                />
+                <pre className="overflow-x-auto rounded-xl bg-surface p-6 font-mono text-sm md:p-8">
+                  {installSnippet}
+                </pre>
               </div>
 
-              <div className="flex flex-col gap-4">
-                <h2 className="h-display font-bold text-2xl md:text-3xl">
-                  What works today
-                </h2>
-                <p className="text-muted-foreground">
-                  The CLI scaffolds a project, the renderer ships MDX, and the
-                  GitHub app deploys on every push. Custom domains, full-text
-                  search, and an interactive API reference are included from day
-                  one.
-                </p>
-                <p className="text-muted-foreground">Three commands to live:</p>
-                <div className="relative">
-                  <CopyButton
-                    className="absolute top-3 right-3 text-muted-foreground"
-                    content={installSnippet}
-                    size="sm"
-                    variant="ghost"
-                  />
-                  <pre className="overflow-x-auto rounded-xl bg-surface p-6 font-mono text-sm md:p-8">
-                    {installSnippet}
-                  </pre>
-                </div>
-              </div>
+              <h2 className="h-display font-bold text-2xl md:text-3xl">
+                What&apos;s next
+              </h2>
+              <p>
+                Themes, analytics, and team accounts are next on the list.
+                Issues and roadmap live on{" "}
+                <a
+                  className="underline underline-offset-4"
+                  href={siteConfig.links.github}
+                  rel="noopener noreferrer"
+                  target="_blank"
+                >
+                  GitHub
+                </a>
+                . Open an issue, send a PR, or sponsor: it all helps.
+              </p>
 
-              <div className="flex flex-col gap-4">
-                <h2 className="h-display font-bold text-2xl md:text-3xl">
-                  What&apos;s next
-                </h2>
-                <p className="text-muted-foreground">
-                  Themes, analytics, and team accounts are next on the list.
-                  Issues and roadmap live on{" "}
-                  <a
-                    className="underline underline-offset-4"
-                    href={siteConfig.links.github}
-                    rel="noopener noreferrer"
-                    target="_blank"
-                  >
-                    GitHub
-                  </a>
-                  . Open an issue, send a PR, or sponsor — it all helps.
-                </p>
-              </div>
-
-              <div className="flex flex-col gap-4">
-                <h2 className="h-display font-bold text-2xl md:text-3xl">
-                  Try it
-                </h2>
-                <p className="text-muted-foreground">
-                  Sign in with GitHub and your first site is live in under a
-                  minute.
-                </p>
-                <div className="mt-2 flex flex-wrap items-center gap-3">
-                  <Button asChild size="lg">
-                    <Link href="/oauth/consent">
-                      Start shipping
-                      <ArrowRightIcon data-icon="inline-end" />
-                    </Link>
-                  </Button>
-                  <Button asChild size="lg" variant="ghost">
-                    <Link href="/docs">
-                      Read the docs
-                      <ArrowRightIcon data-icon="inline-end" />
-                    </Link>
-                  </Button>
-                </div>
+              <h2 className="h-display font-bold text-2xl md:text-3xl">
+                Try it
+              </h2>
+              <p>
+                Sign in with GitHub and your first site is live in under a
+                minute.
+              </p>
+              <div className="not-typeset mt-6 flex flex-wrap items-center gap-3">
+                <Button asChild size="lg">
+                  <Link href="/oauth/consent">
+                    Start shipping
+                    <ArrowRightIcon data-icon="inline-end" />
+                  </Link>
+                </Button>
+                <Button asChild size="lg" variant="ghost">
+                  <Link href="/docs">
+                    Read the docs
+                    <ArrowRightIcon data-icon="inline-end" />
+                  </Link>
+                </Button>
               </div>
             </div>
           </div>
