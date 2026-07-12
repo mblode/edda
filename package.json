@@ -36,18 +36,28 @@
     "knip": "DATABASE_URL=postgresql://localhost/dummy npx knip"
   },
   "devDependencies": {
-    "@changesets/cli": "^2.30.0",
-    "@playwright/test": "^1.58.2",
-    "@testing-library/jest-dom": "^6.8.0",
-    "jsdom": "^29.0.1",
-    "lefthook": "^2.1.4",
-    "turbo": "^2.8.20",
-    "typescript": "6.0.2",
-    "ultracite": "^7.0.5",
-    "vitest": "^4.1.2"
+    "@changesets/cli": "^2.31.0",
+    "@playwright/test": "^1.61.1",
+    "@testing-library/jest-dom": "^6.9.1",
+    "jsdom": "^29.1.1",
+    "lefthook": "^2.1.10",
+    "oxfmt": "^0.58.0",
+    "oxlint": "^1.73.0",
+    "turbo": "^2.10.4",
+    "typescript": "7.0.2",
+    "ultracite": "7.9.3",
+    "vitest": "^4.1.10"
+  },
+  "overrides": {
+    "rolldown-plugin-dts": {
+      "typescript": "$typescript"
+    },
+    "tsdown": {
+      "typescript": "$typescript"
+    }
   },
   "engines": {
     "node": "24.x"
   },
-  "packageManager": "npm@11.12.1"
+  "packageManager": "npm@12.0.1"
 }

@@ -2,26 +2,16 @@
   "version": "8",
   "dialect": "postgres",
   "id": "a69004a8-87fb-4a7e-b85c-446dd5bf2a5b",
-  "prevIds": [
-    "205824de-25fb-42ee-9508-fe0c3b663ad3"
-  ],
+  "prevIds": ["205824de-25fb-42ee-9508-fe0c3b663ad3"],
   "ddl": [
     {
-      "values": [
-        "production",
-        "preview"
-      ],
+      "values": ["production", "preview"],
       "name": "deployment_environment",
       "entityType": "enums",
       "schema": "public"
     },
     {
-      "values": [
-        "queued",
-        "building",
-        "successful",
-        "failed"
-      ],
+      "values": ["queued", "building", "successful", "failed"],
       "name": "deployment_status",
       "entityType": "enums",
       "schema": "public"
@@ -37,9 +27,7 @@
       "schema": "public"
     },
     {
-      "values": [
-        "github"
-      ],
+      "values": ["github"],
       "name": "git_provider",
       "entityType": "enums",
       "schema": "public"
@@ -1003,14 +991,10 @@
     },
     {
       "nameExplicit": false,
-      "columns": [
-        "project_id"
-      ],
+      "columns": ["project_id"],
       "schemaTo": "public",
       "tableTo": "projects",
-      "columnsTo": [
-        "id"
-      ],
+      "columnsTo": ["id"],
       "onUpdate": "NO ACTION",
       "onDelete": "CASCADE",
       "name": "deployments_project_id_projects_id_fkey",
@@ -1020,14 +1004,10 @@
     },
     {
       "nameExplicit": false,
-      "columns": [
-        "project_id"
-      ],
+      "columns": ["project_id"],
       "schemaTo": "public",
       "tableTo": "projects",
-      "columnsTo": [
-        "id"
-      ],
+      "columnsTo": ["id"],
       "onUpdate": "NO ACTION",
       "onDelete": "CASCADE",
       "name": "domains_project_id_projects_id_fkey",
@@ -1037,14 +1017,10 @@
     },
     {
       "nameExplicit": false,
-      "columns": [
-        "project_id"
-      ],
+      "columns": ["project_id"],
       "schemaTo": "public",
       "tableTo": "projects",
-      "columnsTo": [
-        "id"
-      ],
+      "columnsTo": ["id"],
       "onUpdate": "NO ACTION",
       "onDelete": "CASCADE",
       "name": "git_connections_project_id_projects_id_fkey",
@@ -1054,14 +1030,10 @@
     },
     {
       "nameExplicit": false,
-      "columns": [
-        "user_id"
-      ],
+      "columns": ["user_id"],
       "schemaTo": "public",
       "tableTo": "users",
-      "columnsTo": [
-        "id"
-      ],
+      "columnsTo": ["id"],
       "onUpdate": "NO ACTION",
       "onDelete": "CASCADE",
       "name": "github_installations_user_id_users_id_fkey",
@@ -1071,14 +1043,10 @@
     },
     {
       "nameExplicit": false,
-      "columns": [
-        "user_id"
-      ],
+      "columns": ["user_id"],
       "schemaTo": "public",
       "tableTo": "users",
-      "columnsTo": [
-        "id"
-      ],
+      "columnsTo": ["id"],
       "onUpdate": "NO ACTION",
       "onDelete": "SET NULL",
       "name": "projects_user_id_users_id_fkey",
@@ -1087,9 +1055,7 @@
       "table": "projects"
     },
     {
-      "columns": [
-        "id"
-      ],
+      "columns": ["id"],
       "nameExplicit": false,
       "name": "deployments_pkey",
       "schema": "public",
@@ -1097,9 +1063,7 @@
       "entityType": "pks"
     },
     {
-      "columns": [
-        "id"
-      ],
+      "columns": ["id"],
       "nameExplicit": false,
       "name": "domains_pkey",
       "schema": "public",
@@ -1107,9 +1071,7 @@
       "entityType": "pks"
     },
     {
-      "columns": [
-        "id"
-      ],
+      "columns": ["id"],
       "nameExplicit": false,
       "name": "git_connections_pkey",
       "schema": "public",
@@ -1117,9 +1079,7 @@
       "entityType": "pks"
     },
     {
-      "columns": [
-        "id"
-      ],
+      "columns": ["id"],
       "nameExplicit": false,
       "name": "github_installations_pkey",
       "schema": "public",
@@ -1127,9 +1087,7 @@
       "entityType": "pks"
     },
     {
-      "columns": [
-        "id"
-      ],
+      "columns": ["id"],
       "nameExplicit": false,
       "name": "projects_pkey",
       "schema": "public",
@@ -1137,9 +1095,7 @@
       "entityType": "pks"
     },
     {
-      "columns": [
-        "id"
-      ],
+      "columns": ["id"],
       "nameExplicit": false,
       "name": "users_pkey",
       "schema": "public",

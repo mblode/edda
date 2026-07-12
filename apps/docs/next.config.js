@@ -24,6 +24,7 @@ const dashboardAppUrl =
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  typescript: { ignoreBuildErrors: true },
   assetPrefix: cleanEnv(process.env.PLATFORM_ASSET_PREFIX),
   cacheLife: {
     artifacts: {

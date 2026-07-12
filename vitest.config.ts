@@ -20,7 +20,7 @@ export default defineConfig({
     projects: [
       {
         extends: true,
-        oxc: { jsx: "react-jsx" },
+        oxc: { jsx: { runtime: "automatic" } },
         resolve: { alias: sharedAlias },
         test: {
           environment: "node",
@@ -31,7 +31,7 @@ export default defineConfig({
       },
       {
         extends: true,
-        oxc: { jsx: "react-jsx" },
+        oxc: { jsx: { runtime: "automatic" } },
         resolve: { alias: sharedAlias },
         test: {
           environment: "jsdom",

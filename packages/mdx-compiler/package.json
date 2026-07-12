@@ -25,22 +25,22 @@
   },
   "dependencies": {
     "@mdx-js/mdx": "^3.1.1",
-    "@shikijs/rehype": "^4.0.2",
+    "@shikijs/rehype": "^4.3.1",
     "rehype-autolink-headings": "^7.1.0",
     "rehype-slug": "^6.0.0",
-    "remark-gfm": "^4.0.0",
-    "shiki": "^4.0.2"
+    "remark-gfm": "^4.0.1",
+    "shiki": "^4.3.1"
   },
   "devDependencies": {
     "@repo/typescript-config": "*",
-    "@types/node": "^24.12.2",
-    "@types/react": "19.2.14",
+    "@types/node": "^26.1.1",
+    "@types/react": "19.2.17",
     "@types/react-dom": "19.2.3",
-    "oxfmt": "^0.42.0",
-    "oxlint": "^1.57.0",
-    "react": "^19.2.0",
-    "react-dom": "^19.2.0",
-    "typescript": "6.0.2",
-    "ultracite": "^7.3.2"
+    "oxfmt": "^0.58.0",
+    "oxlint": "^1.73.0",
+    "react": "^19.2.7",
+    "react-dom": "^19.2.7",
+    "typescript": "7.0.2",
+    "ultracite": "7.9.3"
   }
 }

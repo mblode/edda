@@ -221,12 +221,8 @@ const validateAnalytics = (
     return "PostHog project keys start with phc_. Personal API keys (phx_) are not supported.";
   }
   const host = posthogHost.trim();
-  if (host) {
-    try {
-      new URL(host);
-    } catch {
-      return "PostHog host must be a valid URL.";
-    }
+  if (host && !URL.canParse(host)) {
+    return "PostHog host must be a valid URL.";
   }
   return null;
 };
