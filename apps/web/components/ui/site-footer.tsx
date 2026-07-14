@@ -63,13 +63,13 @@ export const SiteFooter = () => (
           target="_blank"
         >
           <span>Crafted by</span>
-          {/* oxlint-disable-next-line no-img-element -- external avatar, intentionally not next/image */}
+          {/* oxlint-disable-next-line no-img-element -- self-hosted 20px avatar, plain img avoids next/image overhead */}
           <img
             alt="Matthew Blode"
             className="rounded-full"
             height={20}
             loading="lazy"
-            src="https://matthewblode.com/avatar-sm.png"
+            src="/avatar-sm.png"
             width={20}
           />
           <span>Matthew Blode</span>
