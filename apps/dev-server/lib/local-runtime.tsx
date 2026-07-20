@@ -92,11 +92,16 @@ const resolveAssetUrl = async (
   source: ContentSource,
   value?: string
 ): Promise<string | undefined> => {
-  if (!value || value.startsWith("/") || ABSOLUTE_URL_REGEX.test(value)) {
+  // External (http[s] or protocol-relative) URLs are used verbatim.
+  if (!value || ABSOLUTE_URL_REGEX.test(value) || value.startsWith("//")) {
     return value;
   }
 
-  const resolved = await source.resolveUrl?.(value);
+  // Deployment-relative assets (logo, favicon, ogImage, font CSS) may be written
+  // with or without a leading slash — the CLI scaffold defaults to "/logo/*.svg"
+  // and "/favicon.svg". Strip it so the lookup matches; fall back to the original
+  // value when a path isn't a deployment file.
+  const resolved = await source.resolveUrl?.(value.replace(/^\//, ""));
   return resolved ?? value;
 };
 
