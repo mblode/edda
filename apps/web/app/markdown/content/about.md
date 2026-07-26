@@ -12,7 +12,7 @@ Blode.md keeps the surface small on purpose. No plugin marketplace, no deep conf
 
 ## Who built it
 
-Blode.md is built by [Matthew Blode](https://matthewblode.com).
+Blode.md is built by [Matthew Blode](https://blode.co).
 
 ## Open source
 

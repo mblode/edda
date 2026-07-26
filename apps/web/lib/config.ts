@@ -48,7 +48,7 @@ export const siteConfig = {
     },
   ] as NavGroup[],
   links: {
-    author: "https://matthewblode.com",
+    author: "https://blode.co",
     email: "m@blode.co",
     github: "https://github.com/mblode/blodemd",
   },

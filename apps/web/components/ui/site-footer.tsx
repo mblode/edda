@@ -58,7 +58,7 @@ export const SiteFooter = () => (
       <div className="mt-14 border-border/60 border-t pt-8 lg:px-8">
         <a
           className="inline-flex items-center gap-2 text-muted-foreground text-xs leading-5 tracking-tight transition-colors hover:text-foreground"
-          href="https://matthewblode.com"
+          href="https://blode.co"
           rel="author noopener noreferrer"
           target="_blank"
         >
