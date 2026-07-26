@@ -368,6 +368,13 @@
     border-radius: var(--radius-xl);
     @apply md:-mx-1;
 
+    /* typeset.css paints prose <pre> with --color-muted, which is the same
+       colour as --code-highlight and so hides highlighted lines. Stay
+       transparent and let the figure's --code show through. */
+    & pre {
+      background-color: transparent;
+    }
+
     &:has([data-rehype-pretty-code-title]) [data-slot="copy-button"] {
       top: calc(var(--spacing) * 1.5) !important;
     }
