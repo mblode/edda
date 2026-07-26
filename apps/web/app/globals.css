@@ -196,15 +196,6 @@
   --selection: oklch(0.922 0 0);
   --selection-foreground: oklch(0.205 0 0);
   --overlay: rgba(43, 53, 68, 0.7);
-  --color-bg: #0b1413;
-  --color-surface: #121c1b;
-  --color-ink: #e6f2ef;
-  --color-muted: #94a3a0;
-  --color-border: #1f2c2a;
-  --color-primary: #6ee7cf;
-  --color-primary-soft: #1a3f37;
-  --color-primary-dark: #0fb59f;
-  --color-shadow: rgba(0, 0, 0, 0.3);
 }
 
 @layer base {
