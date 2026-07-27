@@ -2,6 +2,7 @@ import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 
 import { computeETag, handleIfNoneMatch } from "@/lib/etag";
+import { toDocHref } from "@/lib/routes";
 import {
   getCanonicalDocBasePath,
   getCanonicalOrigin,
@@ -34,7 +35,14 @@ export const GET = async (
     return new NextResponse("Not found", { status: 404 });
   }
 
-  const llmsTxtUrl = `${await getCanonicalOrigin(tenant, requestContext)}${await getCanonicalDocBasePath(tenant, requestContext)}/llms.txt`;
+  const origin = await getCanonicalOrigin(tenant, requestContext);
+  const basePath = await getCanonicalDocBasePath(tenant, requestContext);
+  const llmsTxtUrl = `${origin}${basePath}/llms.txt`;
+  // This file is an alternate representation of the HTML page, so point search
+  // engines at that page rather than hiding it. `noindex` would work too, but
+  // it stops the markdown consolidating its ranking signals into the page it
+  // duplicates.
+  const canonicalUrl = `${origin}${toDocHref(slugKey, basePath)}`;
   const blockquote =
     `> ## Documentation Index\n` +
     `> Fetch the complete documentation index at: ${llmsTxtUrl}\n` +
@@ -54,10 +62,10 @@ export const GET = async (
       "Cache-Control": "public, max-age=3600",
       "Content-Type": "text/markdown; charset=utf-8",
       ETag: etag,
+      Link: `<${canonicalUrl}>; rel="canonical"`,
       Vary: "accept",
       "Vercel-CDN-Cache-Control":
         "public, s-maxage=3600, stale-while-revalidate=86400",
-      "X-Robots-Tag": "noindex, nofollow",
     },
   });
 };
