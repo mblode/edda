@@ -1,5 +1,4 @@
 import { ArrowRightIcon, CheckIcon } from "blode-icons-react";
-import type { Metadata } from "next";
 import Link from "next/link";
 
 import { Badge } from "@/components/ui/badge";
@@ -13,12 +12,14 @@ import {
 } from "@/components/ui/card";
 import { MarketingShell } from "@/components/ui/marketing-shell";
 import { siteConfig } from "@/lib/config";
+import { pageMetadata } from "@/lib/marketing-site";
 
-export const metadata: Metadata = {
+export const metadata = pageMetadata({
   description:
     "Blode.md ships as an MIT-licensed CLI and renderer. Use the hosted version for zero setup, or self-host on any Postgres and any Node host.",
+  path: "/pricing",
   title: "Pricing | Blode.md",
-};
+});
 
 interface Plan {
   cta: { external?: boolean; href: string; label: string };

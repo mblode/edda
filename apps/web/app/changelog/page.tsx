@@ -1,14 +1,14 @@
-import type { Metadata } from "next";
-
 import { Badge } from "@/components/ui/badge";
 import { MarketingShell } from "@/components/ui/marketing-shell";
 import { RelativeTime } from "@/components/ui/relative-time";
+import { pageMetadata } from "@/lib/marketing-site";
 
-export const metadata: Metadata = {
+export const metadata = pageMetadata({
   description:
     "Every release, fix, and improvement to the Blode.md docs platform. See what shipped, when, and why across the CLI, renderer, and hosting.",
+  path: "/changelog",
   title: "Changelog | Blode.md",
-};
+});
 
 const updates = [
   {

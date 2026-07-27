@@ -55,6 +55,12 @@ export { absolutiseInternalLinks, sanitizePlaceholderUrls };
 
 const TENANT_STATIC_CACHE_TTL_MS = 30 * 60 * 1000;
 
+// Matches the docs root token only where it ends a URL, i.e. an index page.
+const UTILITY_DOCS_ROOT_TOKEN_TAIL_REGEX = new RegExp(
+  `${UTILITY_DOCS_ROOT_TOKEN}(?!/)`,
+  "g"
+);
+
 const getTenantStaticCacheKey = (tenant: Tenant) =>
   [
     tenant.id,
@@ -200,7 +206,16 @@ const renderUtilityTemplate = async (
 ) => {
   const origin = await getCanonicalOrigin(tenant, context);
   const basePath = await getCanonicalDocBasePath(tenant, context);
-  return source.replaceAll(UTILITY_DOCS_ROOT_TOKEN, `${origin}${basePath}`);
+  const docsRoot = `${origin}${basePath}`;
+  // Index pages emit the bare token so the docs root never gains a trailing
+  // slash. A tenant served from a domain root has no base path to stand in for
+  // it, so put the slash back rather than emitting a bare origin.
+  return source
+    .replaceAll(
+      UTILITY_DOCS_ROOT_TOKEN_TAIL_REGEX,
+      basePath ? docsRoot : `${origin}/`
+    )
+    .replaceAll(UTILITY_DOCS_ROOT_TOKEN, docsRoot);
 };
 
 const buildTenantUrlData = async (tenant: Tenant) => {

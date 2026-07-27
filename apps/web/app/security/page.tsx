@@ -1,5 +1,3 @@
-import type { Metadata } from "next";
-
 import { Badge } from "@/components/ui/badge";
 import {
   Card,
@@ -9,12 +7,14 @@ import {
 } from "@/components/ui/card";
 import { MarketingShell } from "@/components/ui/marketing-shell";
 import { siteConfig } from "@/lib/config";
+import { pageMetadata } from "@/lib/marketing-site";
 
-export const metadata: Metadata = {
+export const metadata = pageMetadata({
   description:
     "How Blode.md handles security. HTTPS by default, GitHub OAuth for sign-in, and open source code you can read.",
+  path: "/security",
   title: "Security | Blode.md",
-};
+});
 
 const controls = [
   {

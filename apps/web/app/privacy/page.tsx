@@ -1,14 +1,14 @@
-import type { Metadata } from "next";
-
 import { Badge } from "@/components/ui/badge";
 import { MarketingShell } from "@/components/ui/marketing-shell";
 import { siteConfig } from "@/lib/config";
+import { pageMetadata } from "@/lib/marketing-site";
 
-export const metadata: Metadata = {
+export const metadata = pageMetadata({
   description:
     "Privacy policy for Blode.md: what data we collect, how we use it, the third parties we rely on, and how to reach us about your information.",
+  path: "/privacy",
   title: "Privacy | Blode.md",
-};
+});
 
 export default function PrivacyPage() {
   return (

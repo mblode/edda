@@ -346,6 +346,13 @@ describe("buildUtilityIndex", () => {
         (artifact) => artifact.path === PREBUILT_UTILITY_SITEMAP_PATH
       )?.content
     ).toContain(`${UTILITY_DOCS_ROOT_TOKEN}/api/get-projects`);
+    // The index page is the docs root itself. A trailing slash here redirects
+    // to the canonical URL, which puts a 3xx in every published sitemap.
+    expect(
+      artifacts.find(
+        (artifact) => artifact.path === PREBUILT_UTILITY_SITEMAP_PATH
+      )?.content
+    ).toContain(`<loc>${UTILITY_DOCS_ROOT_TOKEN}</loc>`);
     expect(
       artifacts.find(
         (artifact) => artifact.path === PREBUILT_UTILITY_LLMS_FULL_PATH

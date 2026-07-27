@@ -16,6 +16,11 @@ const dashboardAppUrl =
     ? `https://app.${platformRootDomain}`
     : "http://127.0.0.1:3002");
 
+// The docs build serves its chunks under this prefix so they never collide with
+// the marketing build's own `/_next/*`. Keep in sync with `assetPrefix` in
+// apps/docs/next.config.js.
+const DOCS_ASSET_PREFIX = "/_docs";
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   typescript: { ignoreBuildErrors: true },
@@ -54,6 +59,13 @@ const nextConfig = {
   rewrites() {
     return {
       beforeFiles: [
+        // Prefixed docs chunks. Unlike the Referer rules below this needs no
+        // hint from the client, so crawlers that omit Referer still get the
+        // real asset instead of a 404.
+        {
+          destination: `${docsAppUrl}${DOCS_ASSET_PREFIX}/_next/:path*`,
+          source: `${DOCS_ASSET_PREFIX}/_next/:path*`,
+        },
         { destination: `${docsAppUrl}/docs`, source: "/docs" },
         { destination: `${docsAppUrl}/docs/:path*`, source: "/docs/:path*" },
         { destination: `${dashboardAppUrl}/app`, source: "/app" },
@@ -77,9 +89,10 @@ const nextConfig = {
           destination: `${docsAppUrl}/llms-full.txt`,
           source: "/llms-full.txt",
         },
-        // Cross-project /_next/* assets: when the browser requests a chunk
-        // with a Referer from a proxied surface, forward it to the matching
-        // backing app so the correct build serves it.
+        // Cross-project unprefixed /_next/* assets: when the browser requests
+        // a chunk with a Referer from a proxied surface, forward it to the
+        // matching backing app so the correct build serves it. Docs only needs
+        // this in local development, where it runs without an asset prefix.
         {
           destination: `${docsAppUrl}/_next/:path*`,
           has: [
@@ -102,13 +115,6 @@ const nextConfig = {
           ],
           source: "/_next/:path*",
         },
-      ],
-      // Referer is only a hint: crawlers and direct asset fetches omit it, and
-      // every docs chunk then 404s against the marketing build. Anything the
-      // marketing app cannot serve itself falls through to docs, which owns the
-      // bulk of the proxied surface.
-      fallback: [
-        { destination: `${docsAppUrl}/_next/:path*`, source: "/_next/:path*" },
       ],
     };
   },

@@ -1,5 +1,4 @@
 import { ArrowRightIcon, ChevronLeftIcon } from "blode-icons-react";
-import type { Metadata } from "next";
 import Link from "next/link";
 
 import { Badge } from "@/components/ui/badge";
@@ -8,12 +7,15 @@ import { CopyButton } from "@/components/ui/copy-button";
 import { MarketingShell } from "@/components/ui/marketing-shell";
 import { RelativeTime } from "@/components/ui/relative-time";
 import { siteConfig } from "@/lib/config";
+import { pageMetadata } from "@/lib/marketing-site";
 
-export const metadata: Metadata = {
+export const metadata = pageMetadata({
   description:
     "Why we built Blode.md, a docs-as-code platform that publishes from GitHub in three commands, free and open source.",
+  path: "/blog/intro-to-blode-md",
   title: "Hello, Blode.md | Blode.md",
-};
+  type: "article",
+});
 
 const installSnippet = `npm i -g blodemd
 blodemd login

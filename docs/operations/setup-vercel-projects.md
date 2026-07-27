@@ -68,7 +68,11 @@ Use this when recreating the split frontend topology from scratch.
 - `PLATFORM_ROOT_DOMAIN`
 - `REVALIDATE_SECRET`
 - optional `EDGE_CONFIG`
-- optional `PLATFORM_ASSET_PREFIX`
+- optional `PLATFORM_ASSET_PREFIX` — defaults to `/_docs` on Vercel. Docs is
+  proxied under `blode.md/docs`, so without a prefix its chunks collide with the
+  marketing build's `/_next/*` and 404 for any client that omits a `Referer`.
+  Overriding this means updating `DOCS_ASSET_PREFIX` in `apps/web/next.config.js`
+  to match.
 
 ### `blodemd-dashboard`
 

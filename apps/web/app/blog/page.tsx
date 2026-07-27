@@ -1,17 +1,18 @@
 import { ArrowRightIcon } from "blode-icons-react";
-import type { Metadata } from "next";
 import Link from "next/link";
 
 import { Badge } from "@/components/ui/badge";
 import { MarketingShell } from "@/components/ui/marketing-shell";
 import { RelativeTime } from "@/components/ui/relative-time";
 import { blogPosts } from "@/lib/blog";
+import { pageMetadata } from "@/lib/marketing-site";
 
-export const metadata: Metadata = {
+export const metadata = pageMetadata({
   description:
     "Notes, deep dives, and product updates from the team building Blode.md, the terminal-native docs platform that ships documentation straight from your git repo.",
+  path: "/blog",
   title: "Blog | Blode.md",
-};
+});
 
 export default function BlogPage() {
   return (

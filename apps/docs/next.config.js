@@ -22,10 +22,18 @@ const dashboardAppUrl =
     ? `https://app.${platformRootDomain}`
     : "http://127.0.0.1:3002");
 
+// Docs is proxied under `blode.md/docs`, so its chunks share the `/_next/*`
+// namespace with the marketing build and there is no reliable way to tell them
+// apart at the edge. Serving them under a prefix makes the split explicit.
+// Keep in sync with DOCS_ASSET_PREFIX in apps/web/next.config.js.
+const assetPrefix =
+  cleanEnv(process.env.PLATFORM_ASSET_PREFIX) ||
+  (isVercelRuntime ? "/_docs" : "");
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   typescript: { ignoreBuildErrors: true },
-  assetPrefix: cleanEnv(process.env.PLATFORM_ASSET_PREFIX),
+  assetPrefix,
   cacheLife: {
     artifacts: {
       expire: 3600,
@@ -80,7 +88,6 @@ const nextConfig = {
     "/sites/**": ["./content/**/*"],
   },
   rewrites() {
-    const assetPrefix = cleanEnv(process.env.PLATFORM_ASSET_PREFIX);
     const assetRewrite = assetPrefix
       ? [
           {

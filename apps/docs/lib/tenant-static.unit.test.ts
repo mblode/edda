@@ -179,12 +179,12 @@ describe("tenant static LLM helpers", () => {
   it("prefers published utility artifacts when they exist", async () => {
     const docsPath = await createTempUtilityRoot({
       "_utility/llms-full.txt":
-        "# Overview (__BLODEMD_DOCS_ROOT__/)\n\nPublished full text",
+        "# Overview (__BLODEMD_DOCS_ROOT__)\n\nPublished full text",
       "_utility/llms-pages/index.mdx": "# Overview\n\nPublished page text",
       "_utility/llms.txt":
         "# Prebuilt Docs\n\nSitemap: __BLODEMD_DOCS_ROOT__/sitemap.xml",
       "_utility/sitemap.xml":
-        "<urlset><url><loc>__BLODEMD_DOCS_ROOT__/</loc></url></urlset>",
+        "<urlset><url><loc>__BLODEMD_DOCS_ROOT__</loc></url></urlset>",
     });
     const prebuiltTenant = {
       ...tenant,
@@ -201,12 +201,33 @@ describe("tenant static LLM helpers", () => {
     ).resolves.toContain("Sitemap: https://blode.md/example/sitemap.xml");
     await expect(
       buildTenantLlmsFullTxt(prebuiltTenant, context)
-    ).resolves.toContain("# Overview (https://blode.md/example/)");
+    ).resolves.toContain("# Overview (https://blode.md/example)");
+    // A trailing slash here redirects to the canonical URL, which puts a 3xx
+    // in the published sitemap.
     await expect(
       buildTenantSitemapXml(prebuiltTenant, context)
-    ).resolves.toContain("<loc>https://blode.md/example/</loc>");
+    ).resolves.toContain("<loc>https://blode.md/example</loc>");
     await expect(getLlmPageText(prebuiltTenant, "index")).resolves.toBe(
       "# Overview\n\nPublished page text"
+    );
+  });
+
+  it("keeps the index URL valid for a tenant served from a domain root", async () => {
+    const docsPath = await createTempUtilityRoot({
+      "_utility/sitemap.xml":
+        "<urlset><url><loc>__BLODEMD_DOCS_ROOT__</loc></url><url><loc>__BLODEMD_DOCS_ROOT__/guide</loc></url></urlset>",
+    });
+    const rootTenant = {
+      ...tenant,
+      customDomains: [],
+      docsPath,
+    };
+
+    // No base path stands in for the index, so the slash has to come back.
+    await expect(
+      buildTenantSitemapXml(rootTenant, { requestedHost: "docs.example.com" })
+    ).resolves.toBe(
+      "<urlset><url><loc>https://docs.example.com/</loc></url><url><loc>https://docs.example.com/guide</loc></url></urlset>"
     );
   });
 

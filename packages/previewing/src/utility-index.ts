@@ -125,8 +125,11 @@ export const buildUtilityIndex = async (
 
 const toUtilityDocPath = (value: string) => {
   const clean = normalizePath(value);
+  // The index page is the docs root itself, which the root token already
+  // carries. Returning "/" here would emit `https://host/docs/`, which
+  // redirects to the canonical `https://host/docs`.
   if (!clean || clean === "index") {
-    return "/";
+    return "";
   }
   return `/${clean}`;
 };

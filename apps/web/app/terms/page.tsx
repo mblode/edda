@@ -1,14 +1,14 @@
-import type { Metadata } from "next";
-
 import { Badge } from "@/components/ui/badge";
 import { MarketingShell } from "@/components/ui/marketing-shell";
 import { siteConfig } from "@/lib/config";
+import { pageMetadata } from "@/lib/marketing-site";
 
-export const metadata: Metadata = {
+export const metadata = pageMetadata({
   description:
     "Terms of service for Blode.md: the ground rules for using the hosted docs platform, including your content, acceptable use, and account responsibilities.",
+  path: "/terms",
   title: "Terms | Blode.md",
-};
+});
 
 export default function TermsPage() {
   return (

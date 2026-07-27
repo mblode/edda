@@ -1,17 +1,18 @@
 import { ArrowRightIcon } from "blode-icons-react";
-import type { Metadata } from "next";
 import Link from "next/link";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { MarketingShell } from "@/components/ui/marketing-shell";
 import { siteConfig } from "@/lib/config";
+import { pageMetadata } from "@/lib/marketing-site";
 
-export const metadata: Metadata = {
+export const metadata = pageMetadata({
   description:
     "Blode.md is a docs platform that lives in your git repo. Write MDX, push to main, and ship documentation as fast as you ship code, with no pipeline to maintain.",
+  path: "/about",
   title: "About | Blode.md",
-};
+});
 
 export default function AboutPage() {
   return (
@@ -53,6 +54,16 @@ export default function AboutPage() {
                 Blode.md keeps the surface small. No plugin marketplace, no deep
                 config. If a feature widens the gap between code and docs, it
                 does not ship.
+              </p>
+              <p>
+                The longer version of that argument is in{" "}
+                <Link
+                  className="underline underline-offset-4"
+                  href="/blog/intro-to-blode-md"
+                >
+                  Hello, Blode.md
+                </Link>
+                .
               </p>
             </div>
           </div>

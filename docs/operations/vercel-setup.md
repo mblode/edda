@@ -66,7 +66,9 @@ If you need to relink any project in Vercel:
 - `PLATFORM_ROOT_DOMAIN`
 - `REVALIDATE_SECRET`
 - optional `EDGE_CONFIG`
-- optional `PLATFORM_ASSET_PREFIX`
+- optional `PLATFORM_ASSET_PREFIX` — defaults to `/_docs` on Vercel so docs
+  chunks do not collide with the marketing build's `/_next/*`. Overriding it
+  means updating `DOCS_ASSET_PREFIX` in `apps/web/next.config.js` to match.
 
 ### `blodemd-dashboard`
 

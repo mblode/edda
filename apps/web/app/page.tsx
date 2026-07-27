@@ -23,6 +23,16 @@ import { MarketingShell } from "@/components/ui/marketing-shell";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { TextEffect } from "@/components/ui/text-effect";
 import { TextReveal } from "@/components/ui/text-reveal";
+import { pageMetadata } from "@/lib/marketing-site";
+
+// Repeats the root layout's title and description so the home page carries its
+// own canonical and og:url without changing what it already advertises.
+export const metadata = pageMetadata({
+  description:
+    "Documentation should ship as fast as code. Blode.md is a terminal-native docs platform. Write MDX, push from your CLI, deploy on every merge.",
+  path: "/",
+  title: "Blode.md | Terminal-native docs platform",
+});
 
 const features = [
   {
