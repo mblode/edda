@@ -23,13 +23,14 @@ export const siteConfig = {
       links: [
         { href: "/about", label: "About" },
         { href: "/blog", label: "Blog" },
+        { href: "/changelog", label: "Changelog" },
       ],
     },
     {
       label: "Resources",
       links: [
         { href: "/docs/guides/proxy-vercel", label: "Proxy guides" },
-        { href: "/docs/cli", label: "CLI" },
+        { href: "/docs/cli/overview", label: "CLI" },
         { href: "/docs/api/overview", label: "API" },
         {
           external: true,

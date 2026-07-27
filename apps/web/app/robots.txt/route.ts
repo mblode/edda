@@ -26,8 +26,17 @@ const aiCrawlerBlock = AI_CRAWLERS.map(
   (agent) => `User-agent: ${agent}\nAllow: /\nContent-Signal: ${CONTENT_SIGNAL}`
 ).join("\n\n");
 
+// Proxied dashboard and auth surfaces. They carry no search value and each
+// crawl of them burns budget that should go to docs.
+const DISALLOWED_PATHS = ["/app", "/oauth"];
+
+const disallowBlock = DISALLOWED_PATHS.map((path) => `Disallow: ${path}`).join(
+  "\n"
+);
+
 const body = `User-agent: *
 Allow: /
+${disallowBlock}
 Content-Signal: ${CONTENT_SIGNAL}
 
 ${aiCrawlerBlock}

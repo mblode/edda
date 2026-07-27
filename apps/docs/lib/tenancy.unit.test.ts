@@ -120,6 +120,59 @@ describe("tenancy helpers", () => {
     expect(getCanonicalDocBasePath(prefixedTenant, context)).toBe("/docs");
   });
 
+  // The platform docs tenant answers on three URL forms that cannot be
+  // redirected without looping the apex proxy, so all three must agree on one
+  // canonical.
+  it.each([
+    ["proxied via the apex", "/docs"],
+    ["hit directly on the subdomain", ""],
+  ])("canonicalises platform docs at the apex when %s", (_case, basePath) => {
+    const docsTenant = {
+      ...tenant,
+      customDomains: [],
+      pathPrefix: undefined,
+      primaryDomain: "docs.blode.md",
+      slug: "docs",
+    };
+    const headerStore = new Headers({
+      "x-forwarded-proto": "https",
+      "x-tenant-base-path": basePath,
+      "x-tenant-domain": "docs.blode.md",
+      "x-tenant-strategy": "subdomain",
+    });
+
+    const context = getTenantRequestContextFromHeaders(docsTenant, headerStore);
+
+    expect(getCanonicalOrigin(docsTenant, context)).toBe("https://blode.md");
+    expect(getCanonicalDocBasePath(docsTenant, context)).toBe("/docs");
+  });
+
+  it("leaves a customer subdomain canonicalised at its own subdomain", () => {
+    const customerTenant = {
+      ...tenant,
+      customDomains: [],
+      pathPrefix: undefined,
+      primaryDomain: "acme.blode.md",
+      slug: "acme",
+    };
+    const headerStore = new Headers({
+      "x-forwarded-proto": "https",
+      "x-tenant-base-path": "",
+      "x-tenant-domain": "acme.blode.md",
+      "x-tenant-strategy": "subdomain",
+    });
+
+    const context = getTenantRequestContextFromHeaders(
+      customerTenant,
+      headerStore
+    );
+
+    expect(getCanonicalOrigin(customerTenant, context)).toBe(
+      "https://acme.blode.md"
+    );
+    expect(getCanonicalDocBasePath(customerTenant, context)).toBe("");
+  });
+
   it("builds canonical origin from static tenant context without request headers", () => {
     const prefixedTenant = {
       ...tenant,

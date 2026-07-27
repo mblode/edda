@@ -43,6 +43,7 @@ import {
 import type { NavGroup } from "@/lib/navigation";
 import type { OpenApiEntry } from "@/lib/openapi";
 import { loadOpenApiRegistry } from "@/lib/openapi";
+import { platformConfig } from "@/lib/platform-config";
 import { toDocHref, toMarkdownDocHref } from "@/lib/routes";
 import { createTimedPromiseCache } from "@/lib/server-cache";
 import { getRequestProtocol } from "@/lib/tenancy";
@@ -91,14 +92,29 @@ const isMissingContentFileError = (error: unknown) => {
   return error instanceof Error && error.message.includes("not found");
 };
 
+// The platform's own docs are reachable three ways -- docs.blode.md/x,
+// docs.blode.md/docs/x and blode.md/docs/x -- because the marketing app proxies
+// the subdomain under /docs and the proxied request is indistinguishable from a
+// direct one. They cannot be collapsed with redirects without looping the
+// proxy, so every form declares the apex URL as canonical instead.
+const isApexProxiedDocs = (
+  tenant: Tenant,
+  strategy?: TenantResolution["strategy"] | null
+) => strategy === "subdomain" && tenant.slug === platformConfig.docsTenantSlug;
+
 const getCanonicalHost = (
   tenant: Tenant,
   requestedHost?: string,
   strategy?: TenantResolution["strategy"] | null
-) =>
-  (strategy === "custom-domain" || strategy === "path") && requestedHost
-    ? requestedHost
-    : tenant.primaryDomain;
+) => {
+  if ((strategy === "custom-domain" || strategy === "path") && requestedHost) {
+    return requestedHost;
+  }
+  if (isApexProxiedDocs(tenant, strategy)) {
+    return platformConfig.rootDomain;
+  }
+  return tenant.primaryDomain;
+};
 
 const getCanonicalBasePath = (
   tenant: Tenant,
@@ -110,6 +126,9 @@ const getCanonicalBasePath = (
   }
   if (strategy === "custom-domain") {
     return basePath ?? tenant.pathPrefix ?? "";
+  }
+  if (isApexProxiedDocs(tenant, strategy)) {
+    return platformConfig.docsBasePath;
   }
   return basePath ?? "";
 };

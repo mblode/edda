@@ -103,6 +103,13 @@ const nextConfig = {
           source: "/_next/:path*",
         },
       ],
+      // Referer is only a hint: crawlers and direct asset fetches omit it, and
+      // every docs chunk then 404s against the marketing build. Anything the
+      // marketing app cannot serve itself falls through to docs, which owns the
+      // bulk of the proxied surface.
+      fallback: [
+        { destination: `${docsAppUrl}/_next/:path*`, source: "/_next/:path*" },
+      ],
     };
   },
 };

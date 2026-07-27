@@ -5,22 +5,13 @@ import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { MarketingShell } from "@/components/ui/marketing-shell";
 import { RelativeTime } from "@/components/ui/relative-time";
+import { blogPosts } from "@/lib/blog";
 
 export const metadata: Metadata = {
   description:
     "Notes, deep dives, and product updates from the team building Blode.md, the terminal-native docs platform that ships documentation straight from your git repo.",
   title: "Blog | Blode.md",
 };
-
-const posts = [
-  {
-    date: "2026-04-20",
-    excerpt:
-      "Why we built a docs platform that publishes from GitHub in three commands.",
-    slug: "intro-to-blode-md",
-    title: "Hello, Blode.md",
-  },
-];
 
 export default function BlogPage() {
   return (
@@ -42,7 +33,7 @@ export default function BlogPage() {
       <section className="pb-24 md:pb-32">
         <div className="container">
           <ul className="measure mx-auto flex flex-col divide-y divide-border">
-            {posts.map((post) => (
+            {blogPosts.map((post) => (
               <li key={post.slug}>
                 <Link
                   className="group flex flex-col gap-3 py-8 first:pt-0"

@@ -21,3 +21,8 @@ export const platformAssetPrefix =
 
 export const platformRootDomain =
   readTrimmedEnv("PLATFORM_ROOT_DOMAIN") ?? "blode.md";
+
+// The platform's own docs are the one tenant the marketing app proxies under a
+// path prefix. No customer tenant gets that treatment.
+export const platformDocsTenantSlug =
+  readTrimmedEnv("PLATFORM_DOCS_TENANT_SLUG") ?? "docs";

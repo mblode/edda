@@ -70,6 +70,27 @@ const createMdxLink = (basePath: string, currentPath: string) => {
   return MdxLink;
 };
 
+// Components that take an `href` need the same base-path resolution as `a`,
+// otherwise an authored `/quickstart` escapes a proxied site's prefix and 404s.
+const withResolvedHref = <Props extends { href?: string }>(
+  Component: React.ComponentType<Props>,
+  displayName: string,
+  basePath: string,
+  currentPath: string
+) => {
+  const Resolved = (props: Props) =>
+    props.href ? (
+      <Component
+        {...props}
+        href={resolveHref(props.href, basePath, currentPath)}
+      />
+    ) : (
+      <Component {...props} />
+    );
+  Resolved.displayName = displayName;
+  return Resolved;
+};
+
 export const createMdxComponents = (
   basePath = "",
   currentPath = ""
@@ -79,7 +100,7 @@ export const createMdxComponents = (
   AgentInstructions,
   Badge,
   Callout,
-  Card,
+  Card: withResolvedHref(Card, "MdxCard", basePath, currentPath),
   Check,
   CodeGroup,
   Color,
@@ -104,9 +125,9 @@ export const createMdxComponents = (
   Steps,
   Tab,
   Tabs,
-  Tile,
+  Tile: withResolvedHref(Tile, "MdxTile", basePath, currentPath),
   Tip,
-  Tooltip,
+  Tooltip: withResolvedHref(Tooltip, "MdxTooltip", basePath, currentPath),
   Tree,
   TypeTable,
   Update,

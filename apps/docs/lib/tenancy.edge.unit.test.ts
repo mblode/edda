@@ -119,10 +119,40 @@ describe("resolveTenantFromEdgeConfig", () => {
       "/docs/cli"
     );
 
+    // `/docs` is only a base path for the platform's own docs tenant. For a
+    // customer tenant it is an ordinary content path, not a second copy of
+    // `/cli`.
+    expect(resolution).toMatchObject({
+      basePath: "",
+      host: "example.blode.md",
+      rewrittenPath: "/sites/example/docs/cli",
+      strategy: "subdomain",
+    });
+  });
+
+  it("treats /docs as a base path for the platform docs tenant only", async () => {
+    edgeConfigMocks.getTenantEdgeHostRecord.mockResolvedValue(null);
+    edgeConfigMocks.getTenantEdgeSlugRecord.mockResolvedValue({
+      slug: "docs",
+      tenant: {
+        ...tenant,
+        customDomains: [],
+        pathPrefix: undefined,
+        primaryDomain: "docs.blode.md",
+        slug: "docs",
+      },
+      version: 1,
+    });
+
+    const resolution = await resolveTenantFromEdgeConfig(
+      "docs.blode.md",
+      "/docs/cli"
+    );
+
     expect(resolution).toMatchObject({
       basePath: "/docs",
-      host: "example.blode.md",
-      rewrittenPath: "/sites/example/cli",
+      host: "docs.blode.md",
+      rewrittenPath: "/sites/docs/cli",
       strategy: "subdomain",
     });
   });
@@ -146,9 +176,9 @@ describe("resolveTenantFromEdgeConfig", () => {
     );
 
     expect(resolution).toMatchObject({
-      basePath: "/docs",
+      basePath: "",
       host: "example.localhost",
-      rewrittenPath: "/sites/example/cli",
+      rewrittenPath: "/sites/example/docs/cli",
       strategy: "subdomain",
     });
   });
