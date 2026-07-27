@@ -66,6 +66,9 @@ const getTenantUtilityRewritePath = (
   return `/sites/${tenantSlug}${utilityPath}`;
 };
 
+const TENANT_HTML_CACHE_CONTROL =
+  "public, s-maxage=3600, stale-while-revalidate=60";
+
 const isApiPath = (pathname: string) =>
   pathname === "/api" || pathname.startsWith("/api/");
 
@@ -289,14 +292,14 @@ export const proxy = async (request: NextRequest) => {
 
   // Cache the rewritten HTML at the CDN layer even when Next marks the final
   // response dynamic. Content changes are still invalidated explicitly.
-  response.headers.set(
-    "CDN-Cache-Control",
-    "public, s-maxage=3600, stale-while-revalidate=86400"
-  );
-  response.headers.set(
-    "Vercel-CDN-Cache-Control",
-    "public, s-maxage=3600, stale-while-revalidate=86400"
-  );
+  //
+  // These are set before the status is known -- middleware cannot see it -- so
+  // a 404 or config-error page inherits them too. A day-long
+  // stale-while-revalidate meant one transient failure kept being served long
+  // after the site recovered, and differently per edge region. Keep the window
+  // short so a bad response cannot outlive the problem that caused it.
+  response.headers.set("CDN-Cache-Control", TENANT_HTML_CACHE_CONTROL);
+  response.headers.set("Vercel-CDN-Cache-Control", TENANT_HTML_CACHE_CONTROL);
   // Multi-tenant: same path may serve different content per Host or Accept header
   response.headers.set("Vary", "Accept, Host");
 
