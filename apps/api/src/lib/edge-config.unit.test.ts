@@ -91,3 +91,38 @@ describe("buildTenantEdgeConfigItems", () => {
     }
   });
 });
+
+describe("buildTenantEdgeConfigRemovalItems", () => {
+  it("deletes the slug, subdomain and custom hosts of a removed project", async () => {
+    const { buildTenantEdgeConfigRemovalItems } = await import("./edge-config");
+    const {
+      getLegacyTenantEdgeSlugKey,
+      getTenantEdgeHostKey,
+      getTenantEdgeSlugKey,
+    } = await import("@repo/contracts");
+
+    const items = buildTenantEdgeConfigRemovalItems({
+      hosts: ["example.blode.md", "docs.example.com", "www.example.com"],
+      slug: "example",
+    });
+
+    expect(items.every((item) => item.operation === "delete")).toBe(true);
+    expectItemOperation(items, getTenantEdgeSlugKey("example"), "delete");
+    expectItemOperation(items, getLegacyTenantEdgeSlugKey("example"), "delete");
+    expectItemOperation(
+      items,
+      getTenantEdgeHostKey("example.blode.md"),
+      "delete"
+    );
+    expectItemOperation(
+      items,
+      getTenantEdgeHostKey("docs.example.com"),
+      "delete"
+    );
+    expectItemOperation(
+      items,
+      getTenantEdgeHostKey("www.example.com"),
+      "delete"
+    );
+  });
+});

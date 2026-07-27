@@ -5,6 +5,7 @@ import {
   getTenantEdgeHostKeys,
   getTenantEdgeHostKey,
   getTenantEdgeSlugKey,
+  getTenantEdgeSlugKeys,
 } from "@repo/contracts";
 
 import { rootDomain, validConfiguredDomainStatus } from "./config";
@@ -177,6 +178,42 @@ export const buildTenantEdgeConfigItems = (input: {
   }
 
   return dedupeEdgeConfigItems(items);
+};
+
+export const buildTenantEdgeConfigRemovalItems = (input: {
+  hosts: string[];
+  slug: string;
+}) => {
+  const items: EdgeConfigItemOperation[] = [];
+
+  for (const key of getTenantEdgeSlugKeys(input.slug)) {
+    addDeleteOperation(items, key);
+  }
+  for (const host of input.hosts) {
+    for (const key of getTenantEdgeHostKeys(host)) {
+      addDeleteOperation(items, key);
+    }
+  }
+
+  return dedupeEdgeConfigItems(items);
+};
+
+// Stops the edge from routing anything to a project: its slug record, its
+// subdomain, and every custom host it answered on.
+export const removeProjectTenantEdgeConfig = async (input: {
+  hosts: string[];
+  slug: string;
+}) => {
+  if (!isTenantEdgeConfigSyncEnabled()) {
+    return;
+  }
+
+  await applyEdgeConfigItems(
+    buildTenantEdgeConfigRemovalItems({
+      hosts: [`${input.slug}.${rootDomain}`, ...input.hosts],
+      slug: input.slug,
+    })
+  );
 };
 
 export const syncProjectTenantEdgeConfig = async (

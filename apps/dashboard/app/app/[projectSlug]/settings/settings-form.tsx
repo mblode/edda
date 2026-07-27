@@ -48,6 +48,7 @@ import { timeAgo } from "@/lib/time-ago";
 const DETAILS_ANCHOR = "project-details";
 const ANALYTICS_ANCHOR = "analytics";
 const DEPLOY_KEYS_ANCHOR = "deploy-keys";
+const DANGER_ZONE_ANCHOR = "danger-zone";
 
 const GA4_REGEX = /^G-[A-Z0-9]{4,20}$/;
 const POSTHOG_KEY_REGEX = /^phc_[A-Za-z0-9]{20,}$/;
@@ -660,6 +661,124 @@ const DeployKeysCard = ({
   );
 };
 
+const DangerZoneCard = ({ accessToken, project }: ProjectSettingsFormProps) => {
+  const router = useRouter();
+  const [confirming, setConfirming] = useState(false);
+  const [confirmation, setConfirmation] = useState("");
+  const [deleting, setDeleting] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  const closeDialog = useCallback(() => {
+    setConfirming(false);
+    setConfirmation("");
+    setErrorMessage(null);
+  }, []);
+
+  const handleDelete = useCallback(async () => {
+    if (deleting) {
+      return;
+    }
+    setErrorMessage(null);
+    setDeleting(true);
+    try {
+      await apiFetch(`/projects/${project.id}`, {
+        accessToken,
+        method: "DELETE",
+      });
+      router.replace("/app");
+      router.refresh();
+    } catch (error) {
+      const message =
+        error instanceof ApiError ? error.message : "Unable to delete project.";
+      setErrorMessage(message);
+      setDeleting(false);
+    }
+  }, [accessToken, deleting, project.id, router]);
+
+  return (
+    <Card className="border-destructive/40" id={DANGER_ZONE_ANCHOR}>
+      <CardHeader className="gap-2 px-6 pt-2">
+        <SectionTitle anchor={DANGER_ZONE_ANCHOR}>Danger zone</SectionTitle>
+        <p className="text-muted-foreground text-sm">
+          Deleting {project.name} removes its deployments, published files,
+          domains and deploy keys, and its docs stop resolving immediately. This
+          cannot be undone.
+        </p>
+      </CardHeader>
+      <CardFooter className="px-6">
+        <Button
+          onClick={() => setConfirming(true)}
+          type="button"
+          variant="destructive"
+        >
+          <Trash2Icon className="size-4" />
+          Delete project
+        </Button>
+      </CardFooter>
+
+      <Dialog
+        onOpenChange={(open) => {
+          if (!open && !deleting) {
+            closeDialog();
+          }
+        }}
+        open={confirming}
+      >
+        <DialogContent showCloseButton={false}>
+          <DialogHeader>
+            <div className="flex items-start gap-3">
+              <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-destructive/10">
+                <TriangleAlertIcon className="size-5 text-destructive" />
+              </div>
+              <div className="flex flex-col gap-2">
+                <DialogTitle>Delete {project.name}?</DialogTitle>
+                <DialogDescription>
+                  Every deployment, published file, custom domain and deploy key
+                  for this project is deleted. This cannot be undone.
+                </DialogDescription>
+              </div>
+            </div>
+          </DialogHeader>
+          <Field>
+            <FieldLabel htmlFor="delete-confirmation">
+              Type <span className="font-mono">{project.slug}</span> to confirm
+            </FieldLabel>
+            <Input
+              autoComplete="off"
+              disabled={deleting}
+              id="delete-confirmation"
+              onChange={(event) => {
+                setErrorMessage(null);
+                setConfirmation(event.target.value);
+              }}
+              value={confirmation}
+            />
+            {errorMessage ? <FieldError>{errorMessage}</FieldError> : null}
+          </Field>
+          <DialogFooter>
+            <Button
+              disabled={deleting}
+              onClick={closeDialog}
+              type="button"
+              variant="outline"
+            >
+              Cancel
+            </Button>
+            <Button
+              disabled={deleting || confirmation.trim() !== project.slug}
+              onClick={handleDelete}
+              type="button"
+              variant="destructive"
+            >
+              {deleting ? "Deleting..." : "Delete project"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </Card>
+  );
+};
+
 interface ProjectSettingsPageProps extends ProjectSettingsFormProps {
   initialApiKeys: ApiKey[];
 }
@@ -677,5 +796,6 @@ export const ProjectSettingsForm = ({
       initialApiKeys={initialApiKeys}
       project={project}
     />
+    <DangerZoneCard accessToken={accessToken} project={project} />
   </>
 );

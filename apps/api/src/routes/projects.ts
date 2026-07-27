@@ -6,18 +6,30 @@ import {
 import { Hono } from "hono";
 import { z } from "zod";
 
-import { projectDao } from "../lib/db";
+import { domainDao, projectDao } from "../lib/db";
 import { isUniqueViolationError } from "../lib/db-errors";
-import { syncProjectTenantEdgeConfig } from "../lib/edge-config";
-import { logWarn } from "../lib/logger";
+import {
+  removeProjectTenantEdgeConfig,
+  syncProjectTenantEdgeConfig,
+} from "../lib/edge-config";
+import { logError, logWarn } from "../lib/logger";
 import {
   authorizeProjectRequest,
   getAuthenticatedUser,
 } from "../lib/project-auth";
 import { createProject } from "../lib/project-service";
-import { badRequest, notFound, unauthorized } from "../lib/responses";
+import { deleteProjectFiles } from "../lib/publish";
+import {
+  badGateway,
+  badRequest,
+  noContent,
+  notFound,
+  unauthorized,
+} from "../lib/responses";
+import { revalidateProject } from "../lib/revalidate";
 import { validateJson, validateParams } from "../lib/validators";
 import { mapProject } from "../mappers/records";
+import { getDomainRoutingHosts, removeHostedDomains } from "./domains";
 
 const projectIdParamsSchema = z.object({ projectId: z.string().uuid() });
 const projectSlugParamsSchema = z.object({
@@ -107,6 +119,68 @@ projects.get(
       return notFound(c);
     }
     return c.json(mapProject(record), 200);
+  }
+);
+
+// Delete a project and everything it owns
+projects.delete(
+  "/:projectId",
+  validateParams(projectIdParamsSchema),
+  async (c) => {
+    const { projectId } = c.req.valid("param");
+    if (!(await authorizeProjectRequest(c, projectId))) {
+      return unauthorized(c, "Invalid credentials.");
+    }
+    const project = await projectDao.getById(projectId);
+    if (!project) {
+      return notFound(c);
+    }
+
+    const projectDomains = await domainDao.listByProject(projectId);
+
+    // Stop routing first: it is the only step we can still back out of, since
+    // nothing has been destroyed yet.
+    try {
+      await removeProjectTenantEdgeConfig({
+        hosts: getDomainRoutingHosts(projectDomains),
+        slug: project.slug,
+      });
+    } catch (error: unknown) {
+      logError(
+        "Failed to remove tenant Edge Config before project delete",
+        error
+      );
+      return badGateway(
+        c,
+        "Unable to update routing. Project was not deleted."
+      );
+    }
+
+    // Cascades to domains, deployments, deploy keys and git connections.
+    await projectDao.delete(projectId);
+
+    // Everything below is best-effort cleanup of external state: the project is
+    // already gone and unreachable, so failures only leave orphans behind.
+    try {
+      await removeHostedDomains(projectDomains);
+    } catch (error: unknown) {
+      logWarn("Failed to remove Vercel domains after project delete", error);
+    }
+
+    try {
+      await deleteProjectFiles(project.slug);
+    } catch (error: unknown) {
+      logWarn("Failed to delete deployment files after project delete", error);
+    }
+
+    // Drop cached docs HTML so the tenant stops being served before its ISR TTL.
+    try {
+      await revalidateProject(project.slug, project.id);
+    } catch (error: unknown) {
+      logWarn("Failed to revalidate docs app after project delete", error);
+    }
+
+    return noContent();
   }
 );
 

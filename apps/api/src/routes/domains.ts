@@ -310,6 +310,24 @@ const removeHostedDomain = async (domain: PersistedDomain) => {
   }
 };
 
+// Every host a project's custom domains answer on, including www redirects.
+export const getDomainRoutingHosts = (records: PersistedDomain[]) =>
+  records.flatMap((domain) => {
+    const redirectHostname = getRedirectHostname(domain.hostname);
+    return redirectHostname
+      ? [domain.hostname, redirectHostname]
+      : [domain.hostname];
+  });
+
+// Best-effort, for project deletion: routing is already gone by this point, so
+// a failure only leaves an orphaned Vercel domain.
+export const removeHostedDomains = async (records: PersistedDomain[]) => {
+  if (!isVercelEnabled()) {
+    return;
+  }
+  await Promise.allSettled(records.map((domain) => removeHostedDomain(domain)));
+};
+
 export const domains = new Hono();
 
 domains.get(

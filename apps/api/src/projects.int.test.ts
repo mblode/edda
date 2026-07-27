@@ -135,12 +135,69 @@ describe("projects API", () => {
 
     expect(response.status).toBe(201);
     const body = await response.json();
-    expect(body.project.slug).toBe(slug);
-    createdProjectIds.push(body.project.id);
+    expect(body.slug).toBe(slug);
+    createdProjectIds.push(body.id);
 
-    const domains = await new dbModule.DomainDao().listByProject(
-      body.project.id
-    );
+    const domains = await new dbModule.DomainDao().listByProject(body.id);
     expect(domains).toHaveLength(0);
+  });
+
+  it("deletes a project and its owned records", async () => {
+    const slug = `project-${randomUUID().slice(0, 8)}`;
+    const authorizedHeaders = {
+      "content-type": "application/json",
+      "x-admin-token": "test-admin-token",
+    };
+
+    const created = await request("/projects", {
+      body: JSON.stringify({ name: slug, slug }),
+      headers: {
+        authorization: "Bearer eyJ.fake-token",
+        "content-type": "application/json",
+      },
+      method: "POST",
+    });
+    const project = await created.json();
+    createdProjectIds.push(project.id);
+
+    const key = await request(`/projects/${project.id}/keys`, {
+      body: JSON.stringify({ name: "CI" }),
+      headers: authorizedHeaders,
+      method: "POST",
+    });
+    expect(key.status).toBe(201);
+
+    const response = await request(`/projects/${project.id}`, {
+      headers: authorizedHeaders,
+      method: "DELETE",
+    });
+
+    expect(response.status).toBe(204);
+    expect(await new dbModule.ProjectDao().getById(project.id)).toBeNull();
+    expect(
+      await new dbModule.ApiKeyDao().listByProject(project.id)
+    ).toHaveLength(0);
+  });
+
+  it("rejects deleting a project without credentials", async () => {
+    const slug = `project-${randomUUID().slice(0, 8)}`;
+
+    const created = await request("/projects", {
+      body: JSON.stringify({ name: slug, slug }),
+      headers: {
+        authorization: "Bearer eyJ.fake-token",
+        "content-type": "application/json",
+      },
+      method: "POST",
+    });
+    const project = await created.json();
+    createdProjectIds.push(project.id);
+
+    const response = await request(`/projects/${project.id}`, {
+      method: "DELETE",
+    });
+
+    expect(response.status).toBe(401);
+    expect(await new dbModule.ProjectDao().getById(project.id)).not.toBeNull();
   });
 });

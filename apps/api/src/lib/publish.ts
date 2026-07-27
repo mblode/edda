@@ -34,7 +34,7 @@ import {
   serializeUtilityIndex,
 } from "@repo/previewing";
 import type { ContentSource, PrebuiltOpenApiEntry } from "@repo/previewing";
-import { list, put } from "@vercel/blob";
+import { del, list, put } from "@vercel/blob";
 
 const DEPLOYMENT_ROOT = "deployments";
 const SITE_CONFIG_FILE = "docs.json";
@@ -390,6 +390,18 @@ const compileDeploymentMdx = async (
     compiledFiles,
     failures,
   };
+};
+
+const BLOB_DELETE_BATCH_SIZE = 100;
+
+// Removes every uploaded file for a project, across all of its deployments.
+export const deleteProjectFiles = async (projectSlug: string) => {
+  const blobs = await listAllBlobs(`${DEPLOYMENT_ROOT}/${projectSlug}/`);
+  for (let index = 0; index < blobs.length; index += BLOB_DELETE_BATCH_SIZE) {
+    await del(
+      blobs.slice(index, index + BLOB_DELETE_BATCH_SIZE).map((blob) => blob.url)
+    );
+  }
 };
 
 export const finalizeDeploymentManifest = async (input: {
