@@ -39,6 +39,27 @@ the path prefix on your default subdomain in **Dashboard → Project →
 Domains** (the path prefix field on the default subdomain row), or pass
 `pathPrefix: "/docs"` when creating the domain via the API.
 
+## Declare your public URL
+
+A rewrite is invisible to us: the request we receive from Vercel looks
+identical to someone visiting `acme.blode.md` directly, so we cannot tell that
+your domain sits in front. Tell us where the site is published:
+
+```json docs.json
+{
+  "seo": {
+    "siteUrl": "https://yourdomain.com/docs"
+  }
+}
+```
+
+Include the path prefix if you use one. Canonical tags, `og:url`, JSON-LD, the
+sitemap, `llms.txt` and the `.md` alternates are all built from this value.
+
+Skip it and every page canonicalises to `acme.blode.md`, which tells search
+engines the Blode.md subdomain is the real home of your content and leaves your
+own domain out of the index.
+
 ## Verifying the proxy
 
 After deploying, hit `https://yourdomain.com/docs` — you should see the

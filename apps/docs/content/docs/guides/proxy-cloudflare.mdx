@@ -48,3 +48,21 @@ if you need fine control.
 Set the default subdomain path prefix to `/docs` in **Dashboard → Project →
 Domains**, or pass `pathPrefix: "/docs"` when creating the domain via the API,
 so internal links resolve correctly.
+
+## Declare your public URL
+
+A proxy is invisible to us: the request we receive looks identical to someone
+visiting `acme.blode.md` directly, so we cannot tell that your domain sits in
+front. Tell us where the site is published:
+
+```json docs.json
+{
+  "seo": {
+    "siteUrl": "https://yourdomain.com/docs"
+  }
+}
+```
+
+Include the path prefix if you use one. Canonical tags, `og:url`, JSON-LD, the
+sitemap, `llms.txt` and the `.md` alternates are all built from this value.
+Skip it and every page canonicalises to `acme.blode.md` instead of your domain.

@@ -4,6 +4,9 @@
   "slug": "docs",
   "description": "Ship beautiful docs from your terminal. Write MDX locally, deploy with one command.",
   "favicon": "icon0.svg",
+  "seo": {
+    "siteUrl": "https://blode.md/docs"
+  },
   "contextual": {
     "options": [
       "copy",

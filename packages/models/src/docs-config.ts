@@ -127,11 +127,43 @@ export const DocsScriptsSchema = z
   })
   .strict();
 
+// A site's public URL cannot be derived from an incoming request: a proxy is
+// invisible to the origin, so `example.com/docs/x` proxied to `acme.blode.md`
+// arrives byte-identical to a direct hit on `acme.blode.md/docs/x`. The site
+// has to declare it. Everything public -- canonical, og:url, sitemap, llms.txt,
+// the .md alternates and JSON-LD -- is built from this one value.
+export const SiteUrlSchema = z
+  .string()
+  .trim()
+  .refine((value) => {
+    let url: URL;
+    try {
+      url = new URL(value);
+    } catch {
+      return false;
+    }
+    return (
+      (url.protocol === "http:" || url.protocol === "https:") &&
+      !(url.search || url.hash)
+    );
+  }, "siteUrl must be an absolute http(s) URL with no query string or fragment, for example https://example.com/docs");
+
 export const DocsSeoSchema = z
   .object({
     indexing: z.enum(["all", "default"]).optional(),
+    siteUrl: SiteUrlSchema.optional(),
   })
   .strict();
+
+/**
+ * Split a declared `seo.siteUrl` into the origin and base path used to build
+ * every public URL for the site.
+ */
+export const parseSiteUrl = (value: string) => {
+  const url = new URL(value);
+  const basePath = url.pathname.replace(/\/+$/, "");
+  return { basePath, origin: url.origin };
+};
 
 export const DocsFeatureFlagsSchema = z
   .object({

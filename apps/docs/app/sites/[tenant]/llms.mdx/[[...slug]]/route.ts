@@ -34,7 +34,7 @@ export const GET = async (
     return new NextResponse("Not found", { status: 404 });
   }
 
-  const llmsTxtUrl = `${getCanonicalOrigin(tenant, requestContext)}${getCanonicalDocBasePath(tenant, requestContext)}/llms.txt`;
+  const llmsTxtUrl = `${await getCanonicalOrigin(tenant, requestContext)}${await getCanonicalDocBasePath(tenant, requestContext)}/llms.txt`;
   const blockquote =
     `> ## Documentation Index\n` +
     `> Fetch the complete documentation index at: ${llmsTxtUrl}\n` +

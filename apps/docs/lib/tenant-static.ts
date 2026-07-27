@@ -1,5 +1,6 @@
 import { slugify } from "@repo/common";
 import type { TenantResolution } from "@repo/contracts";
+import { parseSiteUrl } from "@repo/models";
 import type { Tenant } from "@repo/models";
 import type { UtilityIndex } from "@repo/previewing";
 import {
@@ -43,7 +44,6 @@ import {
 import type { NavGroup } from "@/lib/navigation";
 import type { OpenApiEntry } from "@/lib/openapi";
 import { loadOpenApiRegistry } from "@/lib/openapi";
-import { platformConfig } from "@/lib/platform-config";
 import { toDocHref, toMarkdownDocHref } from "@/lib/routes";
 import { createTimedPromiseCache } from "@/lib/server-cache";
 import { getRequestProtocol } from "@/lib/tenancy";
@@ -92,15 +92,32 @@ const isMissingContentFileError = (error: unknown) => {
   return error instanceof Error && error.message.includes("not found");
 };
 
-// The platform's own docs are reachable three ways -- docs.blode.md/x,
-// docs.blode.md/docs/x and blode.md/docs/x -- because the marketing app proxies
-// the subdomain under /docs and the proxied request is indistinguishable from a
-// direct one. They cannot be collapsed with redirects without looping the
-// proxy, so every form declares the apex URL as canonical instead.
-const isApexProxiedDocs = (
-  tenant: Tenant,
-  strategy?: TenantResolution["strategy"] | null
-) => strategy === "subdomain" && tenant.slug === platformConfig.docsTenantSlug;
+const siteIdentityCache = createTimedPromiseCache<
+  string,
+  ReturnType<typeof parseSiteUrl> | null
+>({
+  maxEntries: 512,
+  ttlMs: TENANT_STATIC_CACHE_TTL_MS,
+});
+
+/**
+ * The site's own declaration of where it is published, from `seo.siteUrl`.
+ * Null when the site has not declared one, in which case we fall back to
+ * inferring it from the request -- which is only correct when nothing sits in
+ * front of us.
+ */
+const loadDeclaredSiteUrl = async (tenant: Tenant) =>
+  await siteIdentityCache.getOrCreate(
+    getTenantStaticCacheKey(tenant),
+    async () => {
+      const configResult = await loadSiteConfig(getTenantContentSource(tenant));
+      if (!configResult.ok) {
+        return null;
+      }
+      const declared = configResult.config.seo?.siteUrl;
+      return declared ? parseSiteUrl(declared) : null;
+    }
+  );
 
 const getCanonicalHost = (
   tenant: Tenant,
@@ -109,9 +126,6 @@ const getCanonicalHost = (
 ) => {
   if ((strategy === "custom-domain" || strategy === "path") && requestedHost) {
     return requestedHost;
-  }
-  if (isApexProxiedDocs(tenant, strategy)) {
-    return platformConfig.rootDomain;
   }
   return tenant.primaryDomain;
 };
@@ -126,9 +140,6 @@ const getCanonicalBasePath = (
   }
   if (strategy === "custom-domain") {
     return basePath ?? tenant.pathPrefix ?? "";
-  }
-  if (isApexProxiedDocs(tenant, strategy)) {
-    return platformConfig.docsBasePath;
   }
   return basePath ?? "";
 };
@@ -154,33 +165,41 @@ export const getStaticTenantRequestContext = (
   strategy: tenant.customDomains.length > 0 ? "custom-domain" : null,
 });
 
-export const getCanonicalOrigin = (
+export const getCanonicalOrigin = async (
   tenant: Tenant,
   context: TenantRequestContext = {}
-) =>
-  `${context.protocol ?? "https"}://${getCanonicalHost(
+) => {
+  const declared = await loadDeclaredSiteUrl(tenant);
+  if (declared) {
+    return declared.origin;
+  }
+  return `${context.protocol ?? "https"}://${getCanonicalHost(
     tenant,
     context.requestedHost,
     context.strategy
   )}`;
+};
 
-export const getCanonicalDocBasePath = (
+export const getCanonicalDocBasePath = async (
   tenant: Tenant,
   context: TenantRequestContext = {}
-) => getCanonicalBasePath(tenant, context.basePath, context.strategy);
+) => {
+  const declared = await loadDeclaredSiteUrl(tenant);
+  if (declared) {
+    return declared.basePath;
+  }
+  return getCanonicalBasePath(tenant, context.basePath, context.strategy);
+};
 
-const renderUtilityTemplate = (
+const renderUtilityTemplate = async (
   source: string,
   tenant: Tenant,
   context: TenantRequestContext = {}
-) =>
-  source.replaceAll(
-    UTILITY_DOCS_ROOT_TOKEN,
-    `${getCanonicalOrigin(tenant, context)}${getCanonicalDocBasePath(
-      tenant,
-      context
-    )}`
-  );
+) => {
+  const origin = await getCanonicalOrigin(tenant, context);
+  const basePath = await getCanonicalDocBasePath(tenant, context);
+  return source.replaceAll(UTILITY_DOCS_ROOT_TOKEN, `${origin}${basePath}`);
+};
 
 const buildTenantUrlData = async (tenant: Tenant) => {
   const contentSource = getTenantContentSource(tenant);
@@ -380,12 +399,12 @@ export const buildTenantSitemapXml = async (
     PREBUILT_UTILITY_SITEMAP_PATH
   );
   if (prebuilt) {
-    return renderUtilityTemplate(prebuilt, tenant, context);
+    return await renderUtilityTemplate(prebuilt, tenant, context);
   }
 
   const { pages } = await loadTenantUtilityIndex(tenant);
-  const origin = getCanonicalOrigin(tenant, context);
-  const basePath = getCanonicalDocBasePath(tenant, context);
+  const origin = await getCanonicalOrigin(tenant, context);
+  const basePath = await getCanonicalDocBasePath(tenant, context);
   const urls = pages.map(
     (page) => `${origin}${toDocHref(page.slug, basePath)}`
   );
@@ -396,12 +415,12 @@ ${urls.map((url) => `  <url><loc>${url}</loc></url>`).join("\n")}
 </urlset>`;
 };
 
-export const buildTenantRobotsTxt = (
+export const buildTenantRobotsTxt = async (
   tenant: Tenant,
   context: TenantRequestContext = {}
 ) => {
-  const origin = getCanonicalOrigin(tenant, context);
-  const basePath = getCanonicalDocBasePath(tenant, context);
+  const origin = await getCanonicalOrigin(tenant, context);
+  const basePath = await getCanonicalDocBasePath(tenant, context);
   return `User-agent: *
 Allow: /
 Content-Signal: ai-train=no, search=yes, ai-input=yes
@@ -444,13 +463,13 @@ export const buildTenantLlmsTxt = async (
     PREBUILT_UTILITY_LLMS_PATH
   );
   if (prebuilt) {
-    return renderUtilityTemplate(prebuilt, tenant, context);
+    return await renderUtilityTemplate(prebuilt, tenant, context);
   }
 
   const urlData = await loadTenantUrlData(tenant);
   const data = await loadTenantUtilityIndex(tenant);
-  const origin = getCanonicalOrigin(tenant, context);
-  const basePath = getCanonicalDocBasePath(tenant, context);
+  const origin = await getCanonicalOrigin(tenant, context);
+  const basePath = await getCanonicalDocBasePath(tenant, context);
 
   const segments = getNavGroupSegments(urlData);
   const segmentLines =
@@ -489,8 +508,8 @@ export const buildTenantLlmsFullTxt = async (
   tenant: Tenant,
   context: TenantRequestContext = {}
 ) => {
-  const origin = getCanonicalOrigin(tenant, context);
-  const basePath = getCanonicalDocBasePath(tenant, context);
+  const origin = await getCanonicalOrigin(tenant, context);
+  const basePath = await getCanonicalDocBasePath(tenant, context);
   const indexUrl = `${origin}${toDocHref("llms.txt", basePath)}`;
 
   const prebuilt = await loadTenantUtilityTemplate(
@@ -498,7 +517,7 @@ export const buildTenantLlmsFullTxt = async (
     PREBUILT_UTILITY_LLMS_FULL_PATH
   );
   if (prebuilt) {
-    const rendered = renderUtilityTemplate(prebuilt, tenant, context);
+    const rendered = await renderUtilityTemplate(prebuilt, tenant, context);
     return capLlmsFullContent(
       prepareLlmsFullContent(rendered, origin, basePath),
       indexUrl
@@ -578,8 +597,8 @@ export const buildTenantSkillMd = async (
     return null;
   }
 
-  const origin = getCanonicalOrigin(tenant, context);
-  const basePath = getCanonicalDocBasePath(tenant, context);
+  const origin = await getCanonicalOrigin(tenant, context);
+  const basePath = await getCanonicalDocBasePath(tenant, context);
   const description = data.config.description ?? "";
 
   const lines = [
@@ -621,7 +640,7 @@ export const buildTenantLlmsSegment = async (
     `${PREBUILT_UTILITY_LLMS_SEGMENT_PREFIX}${segmentName}.txt`
   );
   if (prebuilt) {
-    return renderUtilityTemplate(prebuilt, tenant, context);
+    return await renderUtilityTemplate(prebuilt, tenant, context);
   }
 
   const data = await loadTenantUrlData(tenant);
@@ -631,8 +650,8 @@ export const buildTenantLlmsSegment = async (
     return null;
   }
 
-  const origin = getCanonicalOrigin(tenant, context);
-  const basePath = getCanonicalDocBasePath(tenant, context);
+  const origin = await getCanonicalOrigin(tenant, context);
+  const basePath = await getCanonicalDocBasePath(tenant, context);
   const utilityIndex = await loadTenantUtilityIndex(tenant);
 
   const segmentPages = utilityIndex.pages.filter((page) =>
@@ -685,8 +704,8 @@ export const getPageJson = async (
     return null;
   }
 
-  const origin = getCanonicalOrigin(tenant, context);
-  const basePath = getCanonicalDocBasePath(tenant, context);
+  const origin = await getCanonicalOrigin(tenant, context);
+  const basePath = await getCanonicalDocBasePath(tenant, context);
   const url = `${origin}${toDocHref(slug, basePath)}`;
   const markdownUrl = `${origin}${toMarkdownDocHref(slug, basePath)}`;
 

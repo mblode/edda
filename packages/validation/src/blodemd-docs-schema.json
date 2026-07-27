@@ -3447,11 +3447,16 @@
     },
     "seo": {
       "additionalProperties": false,
-      "description": "SEO indexing configuration.",
+      "description": "SEO configuration.",
       "properties": {
         "indexing": {
           "description": "Set `all` to index every page, or `default` to respect page-level `noindex` frontmatter.",
           "enum": ["all", "default"],
+          "type": "string"
+        },
+        "siteUrl": {
+          "description": "The public URL your docs are served from, including any path prefix, for example `https://example.com/docs`. Set this whenever you proxy your docs behind your own domain: canonical tags, Open Graph URLs, the sitemap and llms.txt are all built from it.",
+          "format": "uri",
           "type": "string"
         }
       },

@@ -127,7 +127,7 @@ describe("tenant static LLM helpers", () => {
     };
 
     const llms = await buildTenantLlmsTxt(openApiTenant, context);
-    const robots = buildTenantRobotsTxt(openApiTenant, context);
+    const robots = await buildTenantRobotsTxt(openApiTenant, context);
     const sitemap = await buildTenantSitemapXml(openApiTenant, context);
 
     expect(llms).toContain("Sitemap: https://blode.md/example/sitemap.xml");
@@ -159,7 +159,7 @@ describe("tenant static LLM helpers", () => {
     };
 
     const llms = await buildTenantLlmsTxt(prefixedTenant, context);
-    const robots = buildTenantRobotsTxt(prefixedTenant, context);
+    const robots = await buildTenantRobotsTxt(prefixedTenant, context);
     const sitemap = await buildTenantSitemapXml(prefixedTenant, context);
 
     expect(llms).toContain("Sitemap: https://donebear.com/docs/sitemap.xml");

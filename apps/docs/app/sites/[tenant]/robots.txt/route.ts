@@ -21,7 +21,7 @@ export const GET = async (
     return new NextResponse("Not found", { status: 404 });
   }
 
-  const content = buildTenantRobotsTxt(
+  const content = await buildTenantRobotsTxt(
     tenant,
     getTenantRequestContextFromUrl(new URL(request.url)) ??
       getStaticTenantRequestContext(tenant)

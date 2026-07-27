@@ -145,8 +145,8 @@ const createMcpServer = (request: Request, tenant: Tenant): Server => {
   server.setRequestHandler(CallToolRequestSchema, async (req) => {
     const args = (req.params.arguments ?? {}) as Record<string, unknown>;
     const context = buildContext(request, tenant);
-    const origin = getCanonicalOrigin(tenant, context);
-    const basePath = getCanonicalDocBasePath(tenant, context);
+    const origin = await getCanonicalOrigin(tenant, context);
+    const basePath = await getCanonicalDocBasePath(tenant, context);
     const docHref = (slug: string) => {
       const trimmed = (basePath ?? "").replace(/\/+$/, "");
       const path = slug ? `${trimmed}/${slug}` : `${trimmed}/`;

@@ -103,7 +103,10 @@ export const generateMetadata = async ({
     };
   }
 
-  const canonicalBasePath = getCanonicalDocBasePath(tenant, requestContext);
+  const canonicalBasePath = await getCanonicalDocBasePath(
+    tenant,
+    requestContext
+  );
   const canonicalPath = slugKey ? `/${slugKey}` : "";
   // Collapse duplicate slashes and drop any trailing slash so the canonical
   // points at the final URL (the platform 308-redirects `/docs/` -> `/docs`).
@@ -111,7 +114,7 @@ export const generateMetadata = async ({
     `${canonicalBasePath}${canonicalPath}`
       .replaceAll(/\/+/g, "/")
       .replace(/\/$/, "") || "/";
-  const canonicalOrigin = getCanonicalOrigin(tenant, requestContext);
+  const canonicalOrigin = await getCanonicalOrigin(tenant, requestContext);
   const canonicalUrl = `${canonicalOrigin}${fullCanonical}`;
   const favicon = config?.favicon;
   // Always emit a complete Open Graph + Twitter card. Fall back to the docs
@@ -321,7 +324,7 @@ const DocPage = async ({
     );
   }
 
-  const basePath = getCanonicalDocBasePath(shell.tenant, requestContext);
+  const basePath = await getCanonicalDocBasePath(shell.tenant, requestContext);
 
   let content: React.ReactNode;
   let rawContent: string | undefined;
@@ -362,7 +365,10 @@ const DocPage = async ({
     });
   }
 
-  const canonicalOrigin = getCanonicalOrigin(shell.tenant, requestContext);
+  const canonicalOrigin = await getCanonicalOrigin(
+    shell.tenant,
+    requestContext
+  );
   const canonicalPath =
     `${basePath}${slugKey ? `/${slugKey}` : ""}`
       .replaceAll(/\/+/g, "/")
