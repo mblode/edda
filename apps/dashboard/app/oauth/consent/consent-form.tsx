@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -54,6 +54,7 @@ export const ConsentForm = ({
   errorMessage,
   redirectTo,
 }: ConsentFormProps) => {
+  const router = useRouter();
   const [session, setSession] = useState<{
     checked: boolean;
     email: string | null;
@@ -75,27 +76,28 @@ export const ConsentForm = ({
       const {
         data: { session: currentSession },
       } = await supabase.auth.getSession();
+      const email = currentSession?.user?.email ?? null;
 
-      if (currentSession?.user?.email && authorizationId) {
+      if (email && authorizationId) {
         const errorText = await redirectIfAlreadyAuthorized(authorizationId);
+        setSession({ checked: true, email });
         if (errorText) {
-          setSession({ checked: true, email: currentSession.user.email });
           setAutoApproveError(errorText);
-          return;
         }
-
-        setSession({ checked: true, email: currentSession.user.email });
         return;
       }
 
-      setSession({
-        checked: true,
-        email: currentSession?.user?.email ?? null,
-      });
+      // Already signed in and nothing to authorize: straight to the dashboard.
+      if (email) {
+        router.replace(getSafeDashboardPath(redirectTo));
+        return;
+      }
+
+      setSession({ checked: true, email });
     };
 
     checkSession();
-  }, [authorizationId]);
+  }, [authorizationId, redirectTo, router]);
 
   const handleApprove = useCallback(async () => {
     if (!authorizationId) {
@@ -145,12 +147,11 @@ export const ConsentForm = ({
     );
   }
 
-  let description = "Sign in with GitHub to get started";
-  if (isAuthenticated) {
-    description = authorizationId
-      ? "Authorize the CLI to access your account"
-      : "Continue to your dashboard";
-  }
+  // Signed-in visitors without an authorization_id never reach here; the effect
+  // sends them to the dashboard.
+  const description = isAuthenticated
+    ? "Authorize the CLI to access your account"
+    : "Sign in with GitHub to get started";
 
   return (
     <div className="flex min-h-screen items-center justify-center p-4">
@@ -171,22 +172,14 @@ export const ConsentForm = ({
               <p className="text-center text-sm">
                 Signed in as <strong>{session.email}</strong>
               </p>
-              {authorizationId ? (
-                <Button
-                  className="w-full"
-                  disabled={isApproving}
-                  onClick={handleApprove}
-                  type="button"
-                >
-                  {isApproving ? "Authorizing..." : "Authorize"}
-                </Button>
-              ) : (
-                <Button asChild className="w-full">
-                  <Link href={getSafeDashboardPath(redirectTo)}>
-                    Go to dashboard
-                  </Link>
-                </Button>
-              )}
+              <Button
+                className="w-full"
+                disabled={isApproving}
+                onClick={handleApprove}
+                type="button"
+              >
+                {isApproving ? "Authorizing..." : "Authorize"}
+              </Button>
               <button
                 className="text-center text-sm text-muted-foreground hover:text-foreground"
                 onClick={handleSignOut}
