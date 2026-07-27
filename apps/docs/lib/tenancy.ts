@@ -150,18 +150,12 @@ export const isReservedPath = (pathname: string) => {
   return DEFAULT_RESERVED_PATHS.some((prefix) => isPathMatch(pathname, prefix));
 };
 
-// Only the platform's own docs tenant is proxied by the marketing app under
-// `/docs`. Applying this to every subdomain made `acme.blode.md/docs/foo` a
-// second, indexable copy of `acme.blode.md/foo` and shadowed any customer page
-// genuinely living under `docs/`.
-const resolveSubdomainBasePath = (
-  pathname: string,
-  tenantSlug: string
-): string => {
-  if (tenantSlug !== platformConfig.docsTenantSlug) {
-    return "";
-  }
-
+// Every proxy guide tells customers to forward `theirdomain.com/docs/*` to
+// `<slug>.blode.md/docs/*`, so stripping `/docs` here is load-bearing for every
+// proxied site, not just the platform's own. Scoping it to one tenant 404s them
+// all. The duplicate `<slug>.blode.md/docs/x` this leaves reachable is handled
+// by the canonical URL the site declares in `seo.siteUrl`, not by routing.
+const resolveSubdomainBasePath = (pathname: string): string => {
   const normalizedPath = slugifyPath(pathname);
 
   if (
@@ -265,7 +259,7 @@ export const resolveTenantFromEdgeConfig = async (
   if (hostRecord) {
     const basePath =
       hostRecord.strategy === "subdomain"
-        ? resolveSubdomainBasePath(pathname, hostRecord.tenant.slug)
+        ? resolveSubdomainBasePath(pathname)
         : (hostRecord.pathPrefix ?? "");
 
     return buildTenantPathResolution(
@@ -288,7 +282,7 @@ export const resolveTenantFromEdgeConfig = async (
         "preview",
         normalizedHost,
         pathname,
-        resolveSubdomainBasePath(pathname, previewRecord.tenant.slug)
+        resolveSubdomainBasePath(pathname)
       );
     }
   }
@@ -308,7 +302,7 @@ export const resolveTenantFromEdgeConfig = async (
           "subdomain",
           normalizedHost,
           pathname,
-          resolveSubdomainBasePath(pathname, subdomainRecord.tenant.slug)
+          resolveSubdomainBasePath(pathname)
         );
       }
     }
@@ -330,7 +324,7 @@ export const resolveTenantFromEdgeConfig = async (
           "subdomain",
           normalizedHost,
           pathname,
-          resolveSubdomainBasePath(pathname, subdomainRecord.tenant.slug)
+          resolveSubdomainBasePath(pathname)
         );
       }
     }

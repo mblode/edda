@@ -119,18 +119,18 @@ describe("resolveTenantFromEdgeConfig", () => {
       "/docs/cli"
     );
 
-    // `/docs` is only a base path for the platform's own docs tenant. For a
-    // customer tenant it is an ordinary content path, not a second copy of
-    // `/cli`.
+    // Proxied customers forward theirdomain.com/docs/* here, so `/docs` must
+    // be stripped for every subdomain tenant. Scoping this to one tenant 404s
+    // every proxied site.
     expect(resolution).toMatchObject({
-      basePath: "",
+      basePath: "/docs",
       host: "example.blode.md",
-      rewrittenPath: "/sites/example/docs/cli",
+      rewrittenPath: "/sites/example/cli",
       strategy: "subdomain",
     });
   });
 
-  it("treats /docs as a base path for the platform docs tenant only", async () => {
+  it("strips the /docs prefix for the platform docs tenant too", async () => {
     edgeConfigMocks.getTenantEdgeHostRecord.mockResolvedValue(null);
     edgeConfigMocks.getTenantEdgeSlugRecord.mockResolvedValue({
       slug: "docs",
@@ -176,9 +176,9 @@ describe("resolveTenantFromEdgeConfig", () => {
     );
 
     expect(resolution).toMatchObject({
-      basePath: "",
+      basePath: "/docs",
       host: "example.localhost",
-      rewrittenPath: "/sites/example/docs/cli",
+      rewrittenPath: "/sites/example/cli",
       strategy: "subdomain",
     });
   });
