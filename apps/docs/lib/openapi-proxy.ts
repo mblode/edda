@@ -1,5 +1,5 @@
 import type { Tenant } from "@repo/models";
-import { loadSiteConfig } from "@repo/previewing";
+import { loadSiteConfigForRender } from "@repo/previewing";
 
 import { getTenantContentSource } from "@/lib/content-source";
 import { getDocsCollectionWithNavigation } from "@/lib/docs-collection";
@@ -49,7 +49,7 @@ export const loadOpenApiProxyConfig = async (
 
   return await openApiProxyConfigCache.getOrCreate(cacheKey, async () => {
     const contentSource = getTenantContentSource(tenant);
-    const configResult = await loadSiteConfig(contentSource);
+    const configResult = await loadSiteConfigForRender(contentSource);
     if (!configResult.ok) {
       return null;
     }

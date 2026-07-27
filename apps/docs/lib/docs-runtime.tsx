@@ -9,7 +9,7 @@ import {
   loadPrebuiltSearchIndex,
   loadPrebuiltTocIndex,
   loadPrebuiltUtilityIndex,
-  loadSiteConfig,
+  loadSiteConfigForRender,
 } from "@repo/previewing";
 import type {
   ContentIndex,
@@ -182,7 +182,7 @@ const getTenantArtifacts = async (tenantSlug: string) => {
 
   return await artifactsCache.getOrCreate(cacheKey, async () => {
     const contentSource = getTenantContentSource(tenant);
-    const configResult = await loadSiteConfig(contentSource);
+    const configResult = await loadSiteConfigForRender(contentSource);
     if (!configResult.ok) {
       if (
         !tenant.activeDeploymentManifestUrl &&

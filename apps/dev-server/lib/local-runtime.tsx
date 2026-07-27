@@ -4,7 +4,7 @@ import type { PageMode, SiteConfig } from "@repo/models";
 import {
   buildContentIndex,
   buildPageMetadataMap,
-  loadSiteConfig,
+  loadSiteConfigForRender,
 } from "@repo/previewing";
 import type {
   ContentIndex,
@@ -202,7 +202,7 @@ const buildSearchItems = ({
 
 const buildArtifacts = async (): Promise<PreviewArtifactsResult> => {
   const contentSource = createPreviewContentSource();
-  const configResult = await loadSiteConfig(contentSource);
+  const configResult = await loadSiteConfigForRender(contentSource);
 
   if (!configResult.ok) {
     return {

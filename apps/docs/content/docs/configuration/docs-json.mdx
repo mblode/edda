@@ -241,6 +241,15 @@ Run `blodemd validate` to check your `docs.json` against the schema before deplo
 blodemd validate
 ```
 
+Validation is strict: an unknown key is an error, so a typo like `nvaigation`
+fails before it ships rather than silently doing nothing.
+
+A published site is served leniently. If a deployed `docs.json` contains a key
+the platform does not recognise — because it was written for a newer version, or
+a field was retired — the site keeps rendering and the key is ignored. Only
+genuine problems, like a navigation tree of the wrong shape, stop a page from
+being served. Your docs never go down because of a config key.
+
 ## Related pages
 
 - [Navigation](/configuration/navigation) -- configure sidebar groups, tabs, and page ordering

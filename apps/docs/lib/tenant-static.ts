@@ -13,7 +13,7 @@ import {
   getPrebuiltUtilityLlmPagePath,
   loadPrebuiltContentIndex,
   loadPrebuiltUtilityIndex,
-  loadSiteConfig,
+  loadSiteConfigForRender,
   PREBUILT_UTILITY_LLMS_FULL_PATH,
   PREBUILT_UTILITY_LLMS_PATH,
   PREBUILT_UTILITY_LLMS_SEGMENT_PREFIX,
@@ -110,7 +110,9 @@ const loadDeclaredSiteUrl = async (tenant: Tenant) =>
   await siteIdentityCache.getOrCreate(
     getTenantStaticCacheKey(tenant),
     async () => {
-      const configResult = await loadSiteConfig(getTenantContentSource(tenant));
+      const configResult = await loadSiteConfigForRender(
+        getTenantContentSource(tenant)
+      );
       if (!configResult.ok) {
         return null;
       }
@@ -203,7 +205,7 @@ const renderUtilityTemplate = async (
 
 const buildTenantUrlData = async (tenant: Tenant) => {
   const contentSource = getTenantContentSource(tenant);
-  const configResult = await loadSiteConfig(contentSource);
+  const configResult = await loadSiteConfigForRender(contentSource);
   if (!configResult.ok) {
     throw new Error("Invalid config");
   }

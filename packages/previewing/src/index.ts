@@ -4,6 +4,7 @@ export {
   getDocsCollectionWithNavigation,
   getDocsNavigation,
   loadSiteConfig,
+  loadSiteConfigForRender,
 } from "./config-loader.js";
 export {
   LEGACY_PROJECT_NAME_FALLBACK_WARNING,

@@ -1,11 +1,11 @@
 import type * as Previewing from "@repo/previewing";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-const loadSiteConfig = vi.fn();
+const loadSiteConfigForRender = vi.fn();
 
 vi.mock("@repo/previewing", async () => {
   const actual = await vi.importActual<typeof Previewing>("@repo/previewing");
-  return { ...actual, loadSiteConfig };
+  return { ...actual, loadSiteConfigForRender };
 });
 
 const baseTenant = {
@@ -28,7 +28,7 @@ const proxiedContext = {
 };
 
 const withSiteUrl = (siteUrl?: string) => {
-  loadSiteConfig.mockResolvedValue({
+  loadSiteConfigForRender.mockResolvedValue({
     config: { collections: [], name: "Acme", seo: siteUrl ? { siteUrl } : {} },
     ok: true,
   });
@@ -37,7 +37,7 @@ const withSiteUrl = (siteUrl?: string) => {
 describe("declared site URL", () => {
   afterEach(() => {
     vi.resetModules();
-    loadSiteConfig.mockReset();
+    loadSiteConfigForRender.mockReset();
   });
 
   it("publishes at the declared URL even though the request arrived elsewhere", async () => {

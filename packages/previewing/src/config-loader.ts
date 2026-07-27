@@ -2,13 +2,22 @@ import path from "node:path";
 
 import { normalizePath } from "@repo/common";
 import type { DocsConfig, SiteConfig } from "@repo/models";
-import { validateDocsConfig, validateSiteConfig } from "@repo/validation";
+import {
+  validateDocsConfig,
+  validateDocsConfigForRender,
+  validateSiteConfig,
+  validateSiteConfigForRender,
+} from "@repo/validation";
 
 import { LEGACY_PROJECT_NAME_FALLBACK_WARNING } from "./constants.js";
 import type { ContentSource } from "./content-source.js";
 import type { SiteConfigResult } from "./types.js";
 
 const DOCS_CONFIG_FILE = "docs.json";
+
+interface LoadSiteConfigOptions {
+  tolerateUnknownKeys?: boolean;
+}
 
 const defaultLinkLabel = (input: {
   href: string;
@@ -239,33 +248,58 @@ const readResolvedJsonConfig = async (
     new Set([relativePath])
   );
 
+const ignoredKeyWarnings = (ignoredKeys?: string[]) =>
+  ignoredKeys?.length
+    ? [
+        `Ignored unknown ${DOCS_CONFIG_FILE} ${ignoredKeys.length === 1 ? "key" : "keys"}: ${ignoredKeys.join(", ")}.`,
+      ]
+    : [];
+
 const loadDocsConfig = async (
-  source: ContentSource
+  source: ContentSource,
+  { tolerateUnknownKeys = false }: LoadSiteConfigOptions = {}
 ): Promise<SiteConfigResult | null> => {
   if (!(await source.exists(DOCS_CONFIG_FILE))) {
     return null;
   }
 
+  const validateSite = tolerateUnknownKeys
+    ? validateSiteConfigForRender
+    : validateSiteConfig;
+  const validateDocs = tolerateUnknownKeys
+    ? validateDocsConfigForRender
+    : validateDocsConfig;
+
   try {
     const parsed = await readResolvedJsonConfig(source, DOCS_CONFIG_FILE);
 
     // Try SiteConfig format first (has collections, theme, colors, etc.)
-    const siteResult = validateSiteConfig(parsed);
+    const siteResult = validateSite(parsed);
     if (siteResult.success) {
       return {
         config: siteResult.data,
         ok: true,
-        warnings: getProjectWarnings(siteResult.data),
+        warnings: [
+          ...getProjectWarnings(siteResult.data),
+          ...ignoredKeyWarnings(
+            (siteResult as { ignoredKeys?: string[] }).ignoredKeys
+          ),
+        ],
       };
     }
 
     // Fall back to DocsConfig format (Mintlify-compatible) and map to SiteConfig
-    const docsResult = validateDocsConfig(parsed);
+    const docsResult = validateDocs(parsed);
     if (docsResult.success) {
       return {
         config: mapDocsConfig(docsResult.data),
         ok: true,
-        warnings: getProjectWarnings(docsResult.data),
+        warnings: [
+          ...getProjectWarnings(docsResult.data),
+          ...ignoredKeyWarnings(
+            (docsResult as { ignoredKeys?: string[] }).ignoredKeys
+          ),
+        ],
       };
     }
 
@@ -282,10 +316,36 @@ const loadDocsConfig = async (
   }
 };
 
+/**
+ * Strict load, for authoring and deploy: `blodemd validate` and the publish
+ * pipeline. Unknown keys are errors here so typos are caught before they ship.
+ */
 export const loadSiteConfig = async (
   source: ContentSource
 ): Promise<SiteConfigResult> => {
   const docsConfig = await loadDocsConfig(source);
+  if (docsConfig) {
+    return docsConfig;
+  }
+
+  return {
+    errors: [`${DOCS_CONFIG_FILE} not found.`],
+    ok: false,
+  };
+};
+
+/**
+ * Tolerant load, for serving an already-published site. Unknown keys become
+ * warnings rather than taking the site down: a config written against a
+ * different platform version is not a reason to stop rendering content that
+ * was valid when it was deployed.
+ */
+export const loadSiteConfigForRender = async (
+  source: ContentSource
+): Promise<SiteConfigResult> => {
+  const docsConfig = await loadDocsConfig(source, {
+    tolerateUnknownKeys: true,
+  });
   if (docsConfig) {
     return docsConfig;
   }
