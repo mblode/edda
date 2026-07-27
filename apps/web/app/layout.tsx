@@ -11,7 +11,7 @@ const glide = localFont({
   display: "swap",
   src: [{ path: "../public/glide-variable.woff2" }],
   variable: "--font-glide",
-  weight: "400 900",
+  weight: "100 950",
 });
 
 export const metadata: Metadata = {
