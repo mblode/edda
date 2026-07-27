@@ -62,8 +62,13 @@ const nextConfig = {
         // Prefixed docs chunks. Unlike the Referer rules below this needs no
         // hint from the client, so crawlers that omit Referer still get the
         // real asset instead of a 404.
+        //
+        // The prefix is stripped here rather than by the docs app. A Next
+        // rewrite cannot target `/_next/*` -- the destination is reserved and
+        // silently falls through to the tenant catch-all -- so docs only ever
+        // serves these at their unprefixed path.
         {
-          destination: `${docsAppUrl}${DOCS_ASSET_PREFIX}/_next/:path*`,
+          destination: `${docsAppUrl}/_next/:path*`,
           source: `${DOCS_ASSET_PREFIX}/_next/:path*`,
         },
         { destination: `${docsAppUrl}/docs`, source: "/docs" },
