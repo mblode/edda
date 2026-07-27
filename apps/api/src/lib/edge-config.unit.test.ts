@@ -84,9 +84,7 @@ describe("buildTenantEdgeConfigItems", () => {
       "delete"
     );
 
-    for (const item of items.filter(
-      (candidate) => candidate.operation === "upsert"
-    )) {
+    for (const item of items) {
       expect(item.key).toMatch(/^[A-Za-z0-9_-]+$/);
     }
   });
@@ -108,7 +106,11 @@ describe("buildTenantEdgeConfigRemovalItems", () => {
 
     expect(items.every((item) => item.operation === "delete")).toBe(true);
     expectItemOperation(items, getTenantEdgeSlugKey("example"), "delete");
-    expectItemOperation(items, getLegacyTenantEdgeSlugKey("example"), "delete");
+    // Legacy `tenant:slug:` keys are not valid Edge Config keys; sending one
+    // makes Vercel reject the entire batch.
+    expect(
+      items.some((item) => item.key === getLegacyTenantEdgeSlugKey("example"))
+    ).toBe(false);
     expectItemOperation(
       items,
       getTenantEdgeHostKey("example.blode.md"),
@@ -124,5 +126,20 @@ describe("buildTenantEdgeConfigRemovalItems", () => {
       getTenantEdgeHostKey("www.example.com"),
       "delete"
     );
+  });
+});
+
+describe("edge config key safety", () => {
+  it("keeps every removal key within Edge Config's key rules", async () => {
+    const { buildTenantEdgeConfigRemovalItems } = await import("./edge-config");
+
+    const items = buildTenantEdgeConfigRemovalItems({
+      hosts: ["example.blode.md", "docs.example.com"],
+      slug: "example",
+    });
+
+    for (const item of items) {
+      expect(item.key).toMatch(/^[A-Za-z0-9_-]{1,256}$/);
+    }
   });
 });

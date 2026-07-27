@@ -89,10 +89,17 @@ const applyEdgeConfigItems = async (items: EdgeConfigItemOperation[]) => {
   );
 };
 
+const EDGE_CONFIG_KEY_REGEX = /^[A-Za-z0-9_-]{1,256}$/;
+
+// Legacy `tenant:host:` / `tenant:slug:` keys predate Edge Config's key rules,
+// so they can never exist there — and including one makes Vercel reject the
+// whole batch with a validation error, taking the valid operations with it.
 const dedupeEdgeConfigItems = (items: EdgeConfigItemOperation[]) => {
   const map = new Map<string, EdgeConfigItemOperation>();
   for (const item of items) {
-    map.set(item.key, item);
+    if (EDGE_CONFIG_KEY_REGEX.test(item.key)) {
+      map.set(item.key, item);
+    }
   }
   return [...map.values()];
 };

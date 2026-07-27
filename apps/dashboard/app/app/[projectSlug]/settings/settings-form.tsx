@@ -788,7 +788,7 @@ export const ProjectSettingsForm = ({
   initialApiKeys,
   project,
 }: ProjectSettingsPageProps) => (
-  <>
+  <div className="flex flex-col gap-6">
     <ProjectDetailsCard accessToken={accessToken} project={project} />
     <AnalyticsCard accessToken={accessToken} project={project} />
     <DeployKeysCard
@@ -797,5 +797,5 @@ export const ProjectSettingsForm = ({
       project={project}
     />
     <DangerZoneCard accessToken={accessToken} project={project} />
-  </>
+  </div>
 );
