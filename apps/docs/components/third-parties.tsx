@@ -1,7 +1,6 @@
 "use client";
 
 import { GoogleAnalytics } from "@next/third-parties/google";
-import { SpeedInsights } from "@vercel/speed-insights/next";
 import { usePathname } from "next/navigation";
 
 const PRIVATE_PATH_PREFIXES = ["/app", "/oauth"];
@@ -23,10 +22,5 @@ export const ThirdParties = () => {
   if (isPrivatePath(pathname)) {
     return null;
   }
-  return (
-    <>
-      <SpeedInsights />
-      {BLODEMD_GA_ID ? <GoogleAnalytics gaId={BLODEMD_GA_ID} /> : null}
-    </>
-  );
+  return BLODEMD_GA_ID ? <GoogleAnalytics gaId={BLODEMD_GA_ID} /> : null;
 };

@@ -30,7 +30,6 @@
     "@supabase/supabase-js": "^2.110.2",
     "@tailwindcss/postcss": "^4.3.2",
     "@vercel/edge-config": "^1.4.3",
-    "@vercel/speed-insights": "^2.0.0",
     "blode-icons-react": "^0.4.1",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
