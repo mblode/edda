@@ -1,8 +1,20 @@
 pre-commit:
   parallel: true
   jobs:
-    - name: ultracite
+    # oxfmt and oxlint directly, not `ultracite fix`: ultracite exits non-zero
+    # when the staged set contains no lintable JS/TS file, so a docs-only or
+    # CSS-only commit failed the hook outright. Two jobs with their own globs
+    # means lefthook skips whichever one has nothing to do instead.
+    #
+    # `stage_fixed` replaces the old `&& git add {staged_files}`, which re-added
+    # every staged path rather than the ones a fixer actually rewrote.
+    - name: oxfmt
       glob: "*.{js,jsx,ts,tsx,json,jsonc,css,scss,md,mdx}"
-      run: npx ultracite fix {staged_files} && git add {staged_files}
+      run: npx oxfmt --write {staged_files}
+      stage_fixed: true
+    - name: oxlint
+      glob: "*.{js,jsx,ts,tsx}"
+      run: npx oxlint --fix {staged_files}
+      stage_fixed: true
     - name: check-types
       run: npx turbo check-types
