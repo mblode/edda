@@ -3,10 +3,6 @@ import { NextResponse } from "next/server";
 import { getTenantContentSource } from "@/lib/content-source";
 import { getTenantBySlug } from "@/lib/tenants";
 
-export const dynamic = "force-dynamic";
-export const preferredRegion = "home";
-export const revalidate = 3600;
-
 export const GET = async (
   _request: Request,
   { params }: { params: Promise<{ tenant: string; path: string[] }> }

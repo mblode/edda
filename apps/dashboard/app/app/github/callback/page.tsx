@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { Suspense } from "react";
 
 import { ApiError, apiFetch } from "@/lib/api-client";
 import { getDashboardSession } from "@/lib/dashboard-session";
@@ -23,9 +24,10 @@ const ErrorCard = ({ message }: { message: string }) => (
   </div>
 );
 
-export default async function GithubCallbackPage({
-  searchParams,
-}: CallbackPageProps) {
+// Every branch here depends on the session cookie and the params GitHub sends
+// back, so none of it can prerender. Behind a boundary the route still ships a
+// shell instead of baking the signed-out redirect into the static output.
+const InstallResult = async ({ searchParams }: CallbackPageProps) => {
   const session = await getDashboardSession();
   if (!session) {
     redirect("/oauth/consent?redirect_to=/app");
@@ -75,4 +77,21 @@ export default async function GithubCallbackPage({
     query.set("code", code);
   }
   redirect(`/app/${projectSlug}/git?${query.toString()}`);
+};
+
+export default function GithubCallbackPage({
+  searchParams,
+}: CallbackPageProps) {
+  return (
+    <Suspense
+      fallback={
+        <div className="mx-auto max-w-lg space-y-3 py-12 text-center">
+          <div className="mx-auto h-8 w-64 animate-pulse rounded bg-muted" />
+          <div className="mx-auto h-4 w-80 animate-pulse rounded bg-muted" />
+        </div>
+      }
+    >
+      <InstallResult searchParams={searchParams} />
+    </Suspense>
+  );
 }

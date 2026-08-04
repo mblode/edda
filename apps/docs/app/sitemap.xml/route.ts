@@ -2,12 +2,11 @@ import { NextResponse } from "next/server";
 
 import { MARKETING_CANONICAL_PATHS, marketingUrl } from "@/lib/marketing-site";
 
-export const dynamic = "force-static";
-export const preferredRegion = "home";
-export const revalidate = 3600;
-
 export const GET = () => {
-  const lastmod = new Date().toISOString().slice(0, 10);
+  // Prerendered, so this cannot read the clock. `BUILD_DATE` is stamped in
+  // next.config.js and moves on every deploy, which is when the marketing
+  // pages can actually change.
+  const lastmod = process.env.BUILD_DATE;
   const urls = MARKETING_CANONICAL_PATHS.map((path) => {
     const loc = marketingUrl(path);
     const priority = path === "/" ? "1.0" : "0.7";

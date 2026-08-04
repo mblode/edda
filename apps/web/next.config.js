@@ -24,6 +24,21 @@ const DOCS_ASSET_PREFIX = "/_docs";
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   typescript: { ignoreBuildErrors: true },
+  cacheComponents: true,
+  // The sitemap stamps `lastmod` with today's date, and a prerender cannot read
+  // the clock. next.config runs in Node at build time, outside any prerender,
+  // so stamping it here is safe.
+  env: { BUILD_DATE: new Date().toISOString().slice(0, 10) },
+  experimental: {
+    // A bail-out from prerendering throws. Without this every cached GET logs a
+    // stack trace during the build that means nothing.
+    hideLogsAfterAbort: true,
+    // Runs the React Compiler inside Turbopack rather than Babel.
+    turbopackRustReactCompiler: true,
+    // Hold a navigation pending through a connectivity drop and retry on
+    // reconnect, instead of throwing.
+    useOffline: true,
+  },
   headers() {
     const agentDiscoveryLink = [
       '</.well-known/api-catalog>; rel="api-catalog"',
@@ -55,6 +70,7 @@ const nextConfig = {
   outputFileTracingIncludes: {
     "/markdown/*": ["./app/markdown/content/**/*.md"],
   },
+  partialPrefetching: true,
   reactCompiler: true,
   rewrites() {
     return {

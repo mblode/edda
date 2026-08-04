@@ -1,10 +1,8 @@
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 
+import { cacheLife } from "next/cache";
 import { NextResponse } from "next/server";
-
-export const dynamic = "force-static";
-export const revalidate = 3600;
 
 const SLUGS = [
   "home",
@@ -23,6 +21,22 @@ const ALLOWED = new Set<string>(SLUGS);
 
 export const generateStaticParams = () => SLUGS.map((slug) => ({ slug }));
 
+// The directive cannot go on `GET`, and an uncached disk read is enough to pull
+// the whole route out of the prerender. The content ships with the build, so it
+// never goes stale between deploys.
+const readMarkdown = async (slug: Slug): Promise<string> => {
+  "use cache";
+  cacheLife("max");
+  const file = path.join(
+    process.cwd(),
+    "app",
+    "markdown",
+    "content",
+    `${slug}.md`
+  );
+  return await readFile(file, "utf8");
+};
+
 export const GET = async (
   _request: Request,
   context: { params: Promise<{ slug: string }> }
@@ -31,14 +45,7 @@ export const GET = async (
   if (!ALLOWED.has(slug)) {
     return new NextResponse("Not found", { status: 404 });
   }
-  const file = path.join(
-    process.cwd(),
-    "app",
-    "markdown",
-    "content",
-    `${slug as Slug}.md`
-  );
-  const body = await readFile(file, "utf8");
+  const body = await readMarkdown(slug as Slug);
   return new NextResponse(body, {
     headers: {
       "CDN-Cache-Control":

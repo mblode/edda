@@ -2,10 +2,6 @@ import { NextResponse } from "next/server";
 
 import { getTenantSearchItems } from "@/lib/docs-runtime";
 
-export const dynamic = "force-static";
-export const preferredRegion = "home";
-export const revalidate = 300;
-
 interface SearchItem {
   href?: string;
   title: string;

@@ -34,6 +34,10 @@ const assetPrefix =
 const nextConfig = {
   typescript: { ignoreBuildErrors: true },
   assetPrefix,
+  cacheComponents: true,
+  // The marketing sitemap stamps `lastmod`, and a prerender cannot read the
+  // clock. next.config runs in Node at build time, outside any prerender.
+  env: { BUILD_DATE: new Date().toISOString().slice(0, 10) },
   cacheLife: {
     artifacts: {
       expire: 3600,
@@ -47,6 +51,13 @@ const nextConfig = {
     },
   },
   experimental: {
+    // A bail-out from prerendering throws, and the route handlers below catch
+    // it alongside their real errors. Without this every cached GET logs a
+    // stack trace during the build that means nothing.
+    hideLogsAfterAbort: true,
+    // Hold a navigation pending through a connectivity drop and retry on
+    // reconnect, instead of throwing.
+    useOffline: true,
     optimizePackageImports: [
       "blode-icons-react",
       "radix-ui",
@@ -87,6 +98,7 @@ const nextConfig = {
   outputFileTracingIncludes: {
     "/sites/**": ["./content/**/*"],
   },
+  partialPrefetching: true,
   rewrites() {
     const assetRewrite = assetPrefix
       ? [

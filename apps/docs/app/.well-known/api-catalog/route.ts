@@ -2,10 +2,6 @@ import { NextResponse } from "next/server";
 
 import { marketingUrl } from "@/lib/marketing-site";
 
-export const dynamic = "force-static";
-export const preferredRegion = "home";
-export const revalidate = 3600;
-
 const catalog = {
   linkset: [
     {

@@ -5,6 +5,7 @@ import {
   jwtVerify,
 } from "jose";
 import { cookies } from "next/headers";
+import { connection } from "next/server";
 import { cache } from "react";
 
 interface DashboardSession {
@@ -132,6 +133,13 @@ const asString = (value: unknown): string | null =>
 
 export const getDashboardSession = cache(
   async (): Promise<DashboardSession | null> => {
+    // Every early return below is a "signed out" answer, and the first of them
+    // fires before `cookies()` is ever reached. Without this a prerender would
+    // resolve to null and bake the consent redirect into the static output,
+    // sending signed-in users there too. Nothing here can answer ahead of a
+    // request, so say so up front rather than depending on which branch runs.
+    await connection();
+
     const ref = getProjectRef();
     if (!ref) {
       return null;

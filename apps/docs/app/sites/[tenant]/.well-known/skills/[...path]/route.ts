@@ -8,10 +8,6 @@ import {
 import { getTenantRequestContextFromUrl } from "@/lib/tenant-utility-context";
 import { getTenantBySlug } from "@/lib/tenants";
 
-export const dynamic = "force-dynamic";
-export const preferredRegion = "home";
-export const revalidate = 3600;
-
 const CACHE_HEADERS = {
   "CDN-Cache-Control": "public, s-maxage=3600, stale-while-revalidate=86400",
   "Cache-Control": "public, max-age=3600",

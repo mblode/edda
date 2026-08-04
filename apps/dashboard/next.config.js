@@ -15,7 +15,14 @@ const monorepoRoot = path.join(appDir, "..", "..");
 const nextConfig = {
   typescript: { ignoreBuildErrors: true },
   assetPrefix: cleanEnv(process.env.PLATFORM_ASSET_PREFIX),
+  cacheComponents: true,
   experimental: {
+    // A bail-out from prerendering throws. Without this every cached GET logs a
+    // stack trace during the build that means nothing.
+    hideLogsAfterAbort: true,
+    // Hold a navigation or Server Action pending through a connectivity drop
+    // and retry on reconnect, instead of throwing.
+    useOffline: true,
     optimizePackageImports: [
       "blode-icons-react",
       "radix-ui",
@@ -33,6 +40,7 @@ const nextConfig = {
       },
     ],
   },
+  partialPrefetching: true,
   redirects() {
     return [
       {

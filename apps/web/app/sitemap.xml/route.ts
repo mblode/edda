@@ -3,12 +3,11 @@ import { NextResponse } from "next/server";
 import { blogPosts } from "@/lib/blog";
 import { CANONICAL_PATHS, marketingUrl } from "@/lib/marketing-site";
 
-export const dynamic = "force-static";
-export const preferredRegion = "home";
-export const revalidate = 3600;
-
 export const GET = () => {
-  const today = new Date().toISOString().slice(0, 10);
+  // Prerendered, so this cannot read the clock. `BUILD_DATE` is stamped in
+  // next.config.js and moves on every deploy, which is when the canonical
+  // pages can actually change.
+  const today = process.env.BUILD_DATE;
   const entries = [
     ...CANONICAL_PATHS.map((path) => ({
       lastmod: today,

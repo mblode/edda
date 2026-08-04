@@ -2,10 +2,6 @@ import { NextResponse } from "next/server";
 
 import { MARKETING_ORIGIN, marketingUrl } from "@/lib/marketing-site";
 
-export const dynamic = "force-static";
-export const preferredRegion = "home";
-export const revalidate = 3600;
-
 const metadata = {
   authorization_endpoint: marketingUrl("/oauth/consent"),
   claims_supported: ["sub", "iss", "aud", "exp", "iat", "email", "name"],

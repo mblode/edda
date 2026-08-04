@@ -19,9 +19,6 @@ import {
 import type { TenantRequestContext } from "@/lib/tenant-utility-context";
 import { getTenantBySlug } from "@/lib/tenants";
 
-export const dynamic = "force-dynamic";
-export const runtime = "nodejs";
-
 const NO_STORE_HEADER = "no-store";
 const SEARCH_RESULT_LIMIT = 10;
 const SNIPPET_LENGTH = 240;

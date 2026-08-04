@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
+import { Suspense } from "react";
 
 import { Providers } from "@/components/providers";
 import { ThirdParties } from "@/components/third-parties";
@@ -75,7 +76,11 @@ export default function RootLayout({
       </head>
       <body className="relative flex w-full flex-col justify-center scroll-smooth bg-background font-sans antialiased [--header-height:calc(var(--spacing)*16)]">
         <Providers>{children}</Providers>
-        <ThirdParties />
+        {/* Reads the pathname, which only exists at runtime on the tenant
+            routes, so it streams in after the shell rather than blocking it. */}
+        <Suspense fallback={null}>
+          <ThirdParties />
+        </Suspense>
         <WebMcpTools />
       </body>
     </html>

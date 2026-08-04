@@ -3,10 +3,6 @@ import { NextResponse } from "next/server";
 import { siteConfig } from "@/lib/config";
 import { marketingUrl } from "@/lib/marketing-site";
 
-export const dynamic = "force-static";
-export const preferredRegion = "home";
-export const revalidate = 3600;
-
 const serverCard = {
   $schema:
     "https://raw.githubusercontent.com/modelcontextprotocol/modelcontextprotocol/main/schema/server-card.schema.json",

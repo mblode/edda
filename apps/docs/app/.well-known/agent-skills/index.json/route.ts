@@ -7,10 +7,6 @@ import {
 } from "@/lib/agent-skills";
 import { marketingUrl } from "@/lib/marketing-site";
 
-export const dynamic = "force-static";
-export const preferredRegion = "home";
-export const revalidate = 3600;
-
 const index = {
   $schema:
     "https://raw.githubusercontent.com/cloudflare/agent-skills-discovery-rfc/main/schema/v0.2.0/agent-skills-index.schema.json",

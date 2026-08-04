@@ -22,9 +22,6 @@ import {
   getTenantRequestContextFromHeaders,
 } from "@/lib/tenant-static";
 
-export const preferredRegion = "home";
-export const revalidate = 3600;
-
 const getTenantRequestContext = async (
   tenantSlug: string,
   tenant: Parameters<typeof getTenantRequestContextFromHeaders>[0]

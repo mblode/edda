@@ -4,10 +4,6 @@ import { capLlmsFullContent } from "@/lib/llms-full";
 import { getMarketingMarkdown } from "@/lib/marketing-markdown";
 import { MARKETING_CANONICAL_PATHS } from "@/lib/marketing-site";
 
-export const dynamic = "force-static";
-export const preferredRegion = "home";
-export const revalidate = 3600;
-
 const body = capLlmsFullContent(
   MARKETING_CANONICAL_PATHS.map((path) => getMarketingMarkdown(path))
     .filter((markdown): markdown is string => markdown !== null)

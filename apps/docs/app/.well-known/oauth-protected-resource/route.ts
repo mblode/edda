@@ -2,10 +2,6 @@ import { NextResponse } from "next/server";
 
 import { MARKETING_ORIGIN, marketingUrl } from "@/lib/marketing-site";
 
-export const dynamic = "force-static";
-export const preferredRegion = "home";
-export const revalidate = 3600;
-
 const metadata = {
   authorization_servers: [MARKETING_ORIGIN],
   bearer_methods_supported: ["header"],

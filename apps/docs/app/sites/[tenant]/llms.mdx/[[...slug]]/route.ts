@@ -11,10 +11,6 @@ import {
 } from "@/lib/tenant-static";
 import { getTenantBySlug } from "@/lib/tenants";
 
-export const dynamic = "force-dynamic";
-export const preferredRegion = "home";
-export const revalidate = 3600;
-
 export const GET = async (
   request: Request,
   { params }: { params: Promise<{ tenant: string; slug?: string[] }> }

@@ -2,10 +2,6 @@ import { NextResponse } from "next/server";
 
 import { marketingUrl } from "@/lib/marketing-site";
 
-export const dynamic = "force-static";
-export const preferredRegion = "home";
-export const revalidate = 3600;
-
 const body = `User-agent: *
 Allow: /
 Content-Signal: ai-train=no, search=yes, ai-input=yes
