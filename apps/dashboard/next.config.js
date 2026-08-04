@@ -13,7 +13,6 @@ const monorepoRoot = path.join(appDir, "..", "..");
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  typescript: { ignoreBuildErrors: true },
   assetPrefix: cleanEnv(process.env.PLATFORM_ASSET_PREFIX),
   cacheComponents: true,
   experimental: {

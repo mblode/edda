@@ -23,7 +23,6 @@ const DOCS_ASSET_PREFIX = "/_docs";
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  typescript: { ignoreBuildErrors: true },
   cacheComponents: true,
   // The sitemap stamps `lastmod` with today's date, and a prerender cannot read
   // the clock. next.config runs in Node at build time, outside any prerender,

@@ -32,7 +32,6 @@ const assetPrefix =
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  typescript: { ignoreBuildErrors: true },
   assetPrefix,
   cacheComponents: true,
   // The marketing sitemap stamps `lastmod`, and a prerender cannot read the
