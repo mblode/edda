@@ -1,102 +1,92 @@
-# Blode.md
+<div align="center">
 
-Ship beautiful docs from your terminal. Write MDX locally, deploy with one command.
+# [Blode.md](https://blode.md)
 
-Blode.md is a multi-app documentation platform — marketing in `apps/web`, tenant docs in `apps/docs`, dashboard/auth in `apps/dashboard`, and a Hono API behind them.
+**Beautiful documentation sites from MDX, scaffolded and deployed from your terminal**
 
-## Apps
+Write your docs as MDX files next to your code, then push them live with one command.
 
-| App              | Description                                                                         | Port     |
-| ---------------- | ----------------------------------------------------------------------------------- | -------- |
-| `apps/web`       | Next.js marketing frontend and rewrite entrypoint for `/docs`, `/app`, and `/oauth` | portless |
-| `apps/docs`      | Next.js docs frontend with dynamic tenant routing and MDX rendering                 | 3001     |
-| `apps/dashboard` | Next.js dashboard and auth frontend for `/app` and `/oauth`                         | 3002     |
-| `apps/api`       | Hono REST API for multi-tenant data, content, and Vercel Blob storage               | 4000     |
-| `apps/cli`       | CLI tool for deploying docs content via the API                                     | —        |
+<p align="center">
+  <a href="https://www.npmjs.com/package/blodemd">
+    <img src="https://img.shields.io/npm/v/blodemd?style=flat&colorA=000000&colorB=000000" />
+  </a>
+  <a href="https://github.com/mblode/blodemd/blob/main/LICENSE">
+    <img src="https://img.shields.io/github/license/mblode/blodemd?style=flat&colorA=000000&colorB=000000" />
+  </a>
+</p>
 
-## Packages
+</div>
 
-| Package                   | Description                                 |
-| ------------------------- | ------------------------------------------- |
-| `@repo/contracts`         | Zod schemas shared between frontend and API |
-| `@repo/db`                | Drizzle ORM setup and PostgreSQL migrations |
-| `@repo/models`            | Core data models                            |
-| `@repo/common`            | Shared utilities                            |
-| `@repo/validation`        | Validation logic built on `@repo/models`    |
-| `@repo/ui`                | Shared React component library              |
-| `@repo/api-client`        | HTTP client utilities for consuming the API |
-| `@repo/prebuild`          | Pre-build YAML processing                   |
-| `@repo/previewing`        | Preview data handling                       |
-| `@repo/typescript-config` | Shared `tsconfig.json` configurations       |
+## Demo
 
-## Requirements
+Every docs site on the platform is built this way, including [captain.blode.md](https://captain.blode.md).
 
-- Node >= 18
-- npm 10.9.3
+<p>
+<a href="https://blode.md">
+<img alt="View demo" src=".github/assets/demo.svg" width="200" />
+</a>
+</p>
 
-## Quick Start
+## Install
 
-```sh
-npm install
-cp .env.example .env.local   # fill in DATABASE_URL, BLOB_READ_WRITE_TOKEN, etc.
-npm run dev                  # web → portless blodemd.localhost, docs → :3001, dashboard → :3002, api → :4000
+```bash
+npm install -g blodemd
 ```
 
-## Development
+## Quickstart
 
-```sh
-# All apps
-npm run dev
+```bash
+# Sign in with GitHub in your browser, once
+blodemd login
 
-# Single app
-npx turbo run dev --filter=web
-npx turbo run dev --filter=docs
-npx turbo run dev --filter=dashboard
-npx turbo run dev --filter=api
+# Scaffold a docs site into ./docs
+blodemd new docs --template starter
 
-# Build all
-npm run build
+# Preview it at localhost:3030, reloading as you edit
+blodemd dev
+
+# Deploy
+blodemd push docs
 ```
 
-## Testing
+Your site is live on its own `blode.md` subdomain, taking its name, navigation, and theme from the `docs.json` that `blodemd new` writes.
 
-```sh
-npm run test              # full suite: unit → component → integration → smoke → e2e
-npm run test:unit         # Vitest unit tests
-npm run test:component    # Vitest component tests
-npm run test:integration  # Vitest integration tests
-npm run test:smoke        # Vitest smoke tests
-npm run test:e2e          # Playwright end-to-end tests
-```
+## Commands
 
-## Code Quality
+| Command              | Description                                                    |
+| -------------------- | -------------------------------------------------------------- |
+| `blodemd login`      | Authenticate with GitHub in your browser, no API key to manage |
+| `blodemd new [dir]`  | Scaffold a docs site, `--template minimal` or `starter`        |
+| `blodemd dev`        | Serve the docs locally and reload on save                      |
+| `blodemd validate`   | Check `docs.json` before you deploy                            |
+| `blodemd push [dir]` | Deploy a docs directory to its project                         |
+| `blodemd projects`   | List the projects on your account                              |
+| `blodemd analytics`  | Point a project at your own GA4 or PostHog                     |
 
-```sh
-npm run fix           # Ultracite auto-fix (lint + format)
-npm run check         # Ultracite check without fixing
-npm run check-types   # TypeScript type check across all workspaces
-npm run lint          # Oxlint across monorepo
-npm run format        # Oxfmt across monorepo
-```
-
-## Agent Skill
+## Agent skill
 
 Install the slash command for Claude Code or any [skills.sh](https://skills.sh)-compatible agent:
 
-```sh
+```bash
 npx skills add mblode/blodemd -g --all -y
 ```
 
-Scaffold and deploy docs with natural language:
+Then scaffold and deploy in plain language:
 
-```
+```text
 /blodemd new my-project --template starter
 /blodemd push docs/ --project my-project
 ```
 
+## Notes
+
+- Node.js 24.
+- `push`, `validate`, and `projects` take `--json`, and `push` reads `BLODEMD_PROJECT`, `BLODEMD_API_KEY`, and `BLODEMD_BRANCH` from the environment, so CI can deploy without an interactive login.
+- Install the GitHub App from your project's dashboard to deploy automatically on every push to a branch.
+
 ## License
 
-[MIT](LICENSE)
+MIT
 
 ---
 
