@@ -23,7 +23,7 @@ Every docs site on the platform is built this way, including [captain.blode.md](
 
 <p>
 <a href="https://blode.md">
-<img alt="View demo" src=".github/assets/demo.svg" width="200" />
+<img alt="Read the docs" src=".github/assets/demo.svg" width="200" />
 </a>
 </p>
 
