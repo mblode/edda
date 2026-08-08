@@ -45,6 +45,11 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
+# Screenshots and verification captures left at the repo root by agents and
+# Playwright runs. Anchored to the root so app assets like apps/web/app/icon1.png
+# stay tracked.
+/*.png
+
 # Misc
 .DS_Store
 *.pem
