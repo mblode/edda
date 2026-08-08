@@ -78,6 +78,10 @@ If you need to relink any project in Vercel:
 - `NEXT_PUBLIC_SUPABASE_URL`
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
 - `SUPABASE_JWT_SECRET`
+- optional `PLATFORM_ASSET_PREFIX` — defaults to `/_app` on Vercel so dashboard
+  chunks do not collide with the marketing build's `/_next/*`. Overriding it
+  means updating `DASHBOARD_ASSET_PREFIX` in `apps/web/next.config.js` and the
+  `/_app/_next` rewrite in `apps/docs/next.config.js` to match.
 
 `blodemd-dashboard` runs `npm run db:push:ci --workspace=packages/db` as part of
 production builds before Next.js compiles. That keeps the production schema in

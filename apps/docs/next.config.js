@@ -120,6 +120,13 @@ const nextConfig = {
       ],
       beforeFiles: [
         ...assetRewrite,
+        // Prefixed dashboard chunks, for the same reason as the Referer rule
+        // below but without needing the client to send one. Keep in sync with
+        // `assetPrefix` in apps/dashboard/next.config.js.
+        {
+          destination: `${dashboardAppUrl}/_next/:path*`,
+          source: "/_app/_next/:path*",
+        },
         { destination: `${dashboardAppUrl}/app`, source: "/app" },
         {
           destination: `${dashboardAppUrl}/app/:path*`,

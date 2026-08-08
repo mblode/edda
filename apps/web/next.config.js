@@ -21,6 +21,10 @@ const dashboardAppUrl =
 // apps/docs/next.config.js.
 const DOCS_ASSET_PREFIX = "/_docs";
 
+// Same idea for the dashboard build. Keep in sync with `assetPrefix` in
+// apps/dashboard/next.config.js.
+const DASHBOARD_ASSET_PREFIX = "/_app";
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   cacheComponents: true,
@@ -85,6 +89,10 @@ const nextConfig = {
         {
           destination: `${docsAppUrl}/_next/:path*`,
           source: `${DOCS_ASSET_PREFIX}/_next/:path*`,
+        },
+        {
+          destination: `${dashboardAppUrl}/_next/:path*`,
+          source: `${DASHBOARD_ASSET_PREFIX}/_next/:path*`,
         },
         { destination: `${docsAppUrl}/docs`, source: "/docs" },
         { destination: `${docsAppUrl}/docs/:path*`, source: "/docs/:path*" },

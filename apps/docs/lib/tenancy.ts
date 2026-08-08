@@ -12,6 +12,10 @@ import { platformConfig } from "./platform-config";
 import { createTimedPromiseCache } from "./server-cache";
 
 const DEFAULT_RESERVED_PATHS = [
+  // The dashboard's asset prefix. Reserved for the same reason as `/app`: apex
+  // traffic that lands here must reach the rewrite rather than resolve as a
+  // tenant page.
+  "/_app",
   "/_internal",
   "/_next",
   "/.well-known",
@@ -141,7 +145,7 @@ export const isRootRuntimeHost = (host: string) => {
 
 export const isReservedPath = (pathname: string) => {
   const { assetPrefix } = platformConfig;
-  if (assetPrefix && pathname.startsWith(assetPrefix)) {
+  if (assetPrefix && isPathMatch(pathname, assetPrefix)) {
     return true;
   }
   if (isRootStaticAsset(pathname)) {

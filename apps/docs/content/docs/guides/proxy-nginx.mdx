@@ -23,10 +23,22 @@ location /docs/ {
 location = /docs {
   return 301 /docs/;
 }
+
+location /_docs/ {
+  proxy_pass https://acme.blode.md/_docs/;
+  proxy_set_header Host acme.blode.md;
+  proxy_ssl_server_name on;
+  proxy_http_version 1.1;
+}
 ```
 
 Replace `acme` with your project slug. The trailing slashes matter — they tell
 Nginx to strip the `/docs` prefix before forwarding.
+
+The second block is easy to miss and the page renders unstyled without it.
+Shared CSS, JavaScript and fonts are served from `/_docs/` at the root of your
+domain, not under `/docs`, so they need their own location block — and this one
+keeps the prefix instead of stripping it.
 
 ## Strip the prefix in Blode.md
 

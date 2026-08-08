@@ -82,7 +82,10 @@ Use this when recreating the split frontend topology from scratch.
 - `NEXT_PUBLIC_SUPABASE_URL`
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
 - `SUPABASE_JWT_SECRET`
-- optional `PLATFORM_ASSET_PREFIX`
+- optional `PLATFORM_ASSET_PREFIX` — defaults to `/_app` on Vercel, for the same
+  reason docs defaults to `/_docs`. Overriding this means updating
+  `DASHBOARD_ASSET_PREFIX` in `apps/web/next.config.js` and the `/_app/_next`
+  rewrite in `apps/docs/next.config.js` to match.
 
 Production dashboard builds run `npm run db:push:ci --workspace=packages/db`
 before the app build, so `DATABASE_URL` must be present in the Vercel project.

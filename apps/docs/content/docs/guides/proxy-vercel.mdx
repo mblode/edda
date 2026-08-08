@@ -22,6 +22,10 @@ const nextConfig = {
         source: "/docs/:path*",
         destination: "https://acme.blode.md/:path*",
       },
+      {
+        source: "/_docs/:path*",
+        destination: "https://acme.blode.md/_docs/:path*",
+      },
     ];
   },
 };
@@ -29,8 +33,14 @@ const nextConfig = {
 export default nextConfig;
 ```
 
-Replace `acme` with your project slug. The rewrite forwards every request under
-`/docs` to your Blode.md site, so search, navigation, and assets keep working.
+Replace `acme` with your project slug. The first two rewrites forward every
+request under `/docs` to your Blode.md site, so search and navigation keep
+working.
+
+The third one is easy to miss and the page renders unstyled without it. Shared
+CSS, JavaScript and fonts are served from `/_docs/*` at the root of your domain
+— not under `/docs` — because they are the same files for every page, so they
+need their own rewrite.
 
 ## Strip the prefix in Blode.md
 
@@ -74,6 +84,8 @@ tab to confirm requests are 200 OK and being proxied.
 
 ## Troubleshooting
 
+- **Page renders as unstyled HTML**: the `/_docs/:path*` rewrite is missing.
+  Every stylesheet and script 404s without it.
 - **404 on assets**: double-check the path prefix matches what you set in the
   domain config.
 - **Redirect loops**: make sure your Blode.md project doesn&apos;t have a

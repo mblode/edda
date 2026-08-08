@@ -16,8 +16,15 @@ const readTrimmedEnv = (name: string) => {
 export const docsApiBase =
   process.env.NEXT_PUBLIC_API_URL?.trim() || "http://localhost:4000";
 
+// Must match the assetPrefix default in apps/docs/next.config.js. That file
+// decides where asset URLs point; this one keeps those paths reserved so the
+// tenant proxy passes them through. When the two disagreed, every
+// `/_docs/_next/*` request resolved as a tenant page and 404ed, which rendered
+// every docs site unstyled. Literal `process.env` access for the same reason as
+// above: the proxy runs in the edge bundle, where only inlined reads survive.
 export const platformAssetPrefix =
-  readTrimmedEnv("PLATFORM_ASSET_PREFIX") ?? "";
+  process.env.PLATFORM_ASSET_PREFIX?.trim() ||
+  (process.env.VERCEL === "1" ? "/_docs" : "");
 
 export const platformRootDomain =
   readTrimmedEnv("PLATFORM_ROOT_DOMAIN") ?? "blode.md";

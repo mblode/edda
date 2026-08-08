@@ -14,6 +14,12 @@ const TARGET = "https://acme.blode.md";
 export default {
   async fetch(request) {
     const url = new URL(request.url);
+    // Shared CSS, JavaScript and fonts live at the root of your domain rather
+    // than under /docs, and are forwarded with the path intact.
+    if (url.pathname.startsWith("/_docs/")) {
+      const upstream = new URL(url.pathname + url.search, TARGET);
+      return fetch(new Request(upstream, request));
+    }
     if (!url.pathname.startsWith("/docs")) {
       return fetch(request);
     }
@@ -24,7 +30,8 @@ export default {
 };
 ```
 
-Replace `acme` with your project slug.
+Replace `acme` with your project slug. Drop the `/_docs/` branch and the pages
+still load, but as unstyled HTML — every stylesheet and script 404s.
 
 ## Routes
 
@@ -32,10 +39,12 @@ In **Workers → Triggers**, add a route like:
 
 ```
 yourdomain.com/docs*
+yourdomain.com/_docs/*
 ```
 
 Cloudflare invokes the Worker for every matching request and forwards them to
-your Blode.md site without exposing the upstream URL to users.
+your Blode.md site without exposing the upstream URL to users. Both routes are
+required — the second is what makes the asset branch above reachable.
 
 ## Caching
 

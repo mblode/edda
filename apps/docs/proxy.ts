@@ -21,8 +21,12 @@ import {
 } from "./lib/tenant-headers";
 import { applyTenantUtilityContextSearchParams } from "./lib/tenant-utility-context";
 
+// `_docs` is the assetPrefix the docs build uses on Vercel, so its chunks are
+// static assets too. `isReservedPath` still covers a custom
+// PLATFORM_ASSET_PREFIX; skipping the default here just keeps a page load from
+// spending one proxy invocation per chunk.
 export const config = {
-  matcher: ["/((?!_next/static|_next/image|favicon.ico).*)"],
+  matcher: ["/((?!_next/static|_next/image|_docs/_next/|favicon.ico).*)"],
 };
 
 const TENANT_UTILITY_REWRITE_PATHS = {
