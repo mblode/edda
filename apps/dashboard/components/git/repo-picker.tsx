@@ -158,7 +158,8 @@ const ConfigureRepoCard = ({
             value={docsPath}
           />
           <FieldDescription>
-            Folder inside the repo with your <code>docs.json</code>.
+            Must contain <code>docs.json</code>. Create one with{" "}
+            <code>blodemd new docs</code>.
           </FieldDescription>
         </Field>
       </FieldGroup>
@@ -456,7 +457,8 @@ export const RepoPicker = ({
       <CardHeader>
         <CardTitle>Import Git repository</CardTitle>
         <CardDescription>
-          Choose the repo with your docs. We&apos;ll deploy on every push to the
+          Choose a repo that already has a docs folder with{" "}
+          <code>docs.json</code>. We&apos;ll deploy on every push to the
           selected branch.
         </CardDescription>
       </CardHeader>

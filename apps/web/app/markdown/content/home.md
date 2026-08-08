@@ -2,7 +2,7 @@
 
 > Docs your users love. And their AI understands.
 
-Ship Markdown docs from GitHub in minutes. Versioned, searchable, and built so the LLMs your users ask can actually read them.
+Ship Markdown docs from your terminal in minutes. Versioned, searchable, and built so the LLMs your users ask can actually read them.
 
 ## Get started
 
@@ -10,12 +10,6 @@ Ship Markdown docs from GitHub in minutes. Versioned, searchable, and built so t
 - [Read the docs](https://blode.md/docs)
 
 ## How it works
-
-### GitHub
-
-1. Sign in with GitHub
-2. Pick a repo and a docs folder
-3. Push to `main`, deployed to `acme.blode.md`
 
 ### CLI
 
@@ -34,6 +28,12 @@ blodemd push docs
 ```
 
 Deployed to `acme.blode.md`.
+
+### GitHub
+
+1. Add a `docs/` folder first (or run `blodemd new docs`)
+2. Sign in with GitHub and pick the repo
+3. Point at the folder with `docs.json`, then push to `main`
 
 ## What you get
 

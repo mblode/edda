@@ -23,7 +23,7 @@ import { Input } from "@/components/ui/input";
 import { ApiError, apiFetch } from "@/lib/api-client";
 import { platformRootDomain } from "@/lib/env";
 
-type SetupPath = "template" | "cli";
+type SetupPath = "cli" | "github";
 
 const SLUG_PATTERN = /^(?!-)[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/;
 const MAX_SLUG_LENGTH = 63;
@@ -47,20 +47,22 @@ const PATH_OPTIONS: readonly {
 }[] = [
   {
     badge: "Recommended",
-    description: "Start from the official Blode.md MDX template.",
-    title: "Use a template",
-    value: "template",
-  },
-  {
-    description: "Stay in the terminal — scaffold and push from your repo.",
+    description:
+      "Scaffold with blodemd new docs, then push — the fastest path to a live site.",
     title: "Start from the CLI",
     value: "cli",
+  },
+  {
+    description:
+      "Connect a repo that already has a docs folder with docs.json. Auto-deploy on every push.",
+    title: "Connect a GitHub repo",
+    value: "github",
   },
 ];
 
 export const NewProjectWizard = ({ accessToken }: NewProjectWizardProps) => {
   const router = useRouter();
-  const [path, setPath] = useState<SetupPath>("template");
+  const [path, setPath] = useState<SetupPath>("cli");
   const [name, setName] = useState("");
   const [slug, setSlug] = useState("");
   const [slugTouched, setSlugTouched] = useState(false);
@@ -113,8 +115,8 @@ export const NewProjectWizard = ({ accessToken }: NewProjectWizardProps) => {
         method: "POST",
       });
       const next =
-        path === "template"
-          ? `/app/${effectiveSlug}?template=starter`
+        path === "github"
+          ? `/app/${effectiveSlug}/git`
           : `/app/${effectiveSlug}`;
       router.push(next);
     } catch (error) {

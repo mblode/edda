@@ -296,6 +296,79 @@ const splitRepository = (repository: string): [string, string] => {
 
 const stripSlashes = (value: string) => value.replaceAll(/^\/+|\/+$/g, "");
 
+const isGithubNotFound = (error: unknown): boolean => {
+  if (!error || typeof error !== "object") {
+    return false;
+  }
+  const status = "status" in error ? error.status : undefined;
+  return status === 404;
+};
+
+/**
+ * Confirm the docs path on a branch contains `docs.json` via the Contents API.
+ * Used at bind time so a bad path fails before the first deploy.
+ */
+export const verifyDocsPath = async (input: {
+  installationId: number;
+  repository: string;
+  ref: string;
+  docsPath: string;
+}): Promise<{ ok: true } | { ok: false; reason: string }> => {
+  const octokit = buildOctokit(input.installationId);
+  const [owner, repo] = splitRepository(input.repository);
+  const normalizedPath = stripSlashes(input.docsPath);
+  const docsJsonPath = normalizedPath
+    ? `${normalizedPath}/docs.json`
+    : "docs.json";
+
+  try {
+    const { data } = await octokit.repos.getContent({
+      owner,
+      path: docsJsonPath,
+      ref: input.ref,
+      repo,
+    });
+    if (Array.isArray(data) || data.type !== "file") {
+      return {
+        ok: false,
+        reason: `"${docsJsonPath}" is not a file on branch "${input.ref}". Point docs path at the folder that contains docs.json.`,
+      };
+    }
+    return { ok: true };
+  } catch (error) {
+    if (isGithubNotFound(error)) {
+      // Distinguish a missing folder from a missing docs.json when we can.
+      if (normalizedPath) {
+        try {
+          await octokit.repos.getContent({
+            owner,
+            path: normalizedPath,
+            ref: input.ref,
+            repo,
+          });
+          return {
+            ok: false,
+            reason: `No docs.json found at "${docsJsonPath}" on branch "${input.ref}". Create one with \`blodemd new docs\`.`,
+          };
+        } catch (folderError) {
+          if (isGithubNotFound(folderError)) {
+            return {
+              ok: false,
+              reason: `Docs path "${normalizedPath}" was not found on branch "${input.ref}". Add a docs folder (or run \`blodemd new docs\`) before connecting.`,
+            };
+          }
+          throw folderError;
+        }
+      }
+      return {
+        ok: false,
+        reason: `No docs.json found at "${docsJsonPath}" on branch "${input.ref}". Create one with \`blodemd new docs\`.`,
+      };
+    }
+    throw error;
+  }
+};
+
 /**
  * Fetch every file under `docsPath` in the given ref using the GitHub Trees +
  * Blobs API. Returns resolved commit SHA plus file contents for the caller to

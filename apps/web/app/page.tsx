@@ -203,45 +203,17 @@ export default function HomePage() {
                 merge, same deploy.
               </p>
             </div>
-            <Tabs className="min-w-0" defaultValue="github">
+            <Tabs className="min-w-0" defaultValue="cli">
               <TabsList>
-                <TabsTrigger value="github">
-                  <GithubIcon data-icon="inline-start" />
-                  GitHub
-                </TabsTrigger>
                 <TabsTrigger value="cli">
                   <CodeIcon data-icon="inline-start" />
                   CLI
                 </TabsTrigger>
+                <TabsTrigger value="github">
+                  <GithubIcon data-icon="inline-start" />
+                  GitHub
+                </TabsTrigger>
               </TabsList>
-
-              <TabsContent className="mt-6 min-w-0" value="github">
-                <div className="overflow-hidden rounded-xl bg-surface p-6 text-sm md:p-8">
-                  <ol className="space-y-4">
-                    <li className="flex gap-3">
-                      <span className="text-muted-foreground">1.</span>
-                      <span className="min-w-0 break-words">
-                        Sign in with GitHub
-                      </span>
-                    </li>
-                    <li className="flex gap-3">
-                      <span className="text-muted-foreground">2.</span>
-                      <span>Pick a repo and a docs folder</span>
-                    </li>
-                    <li className="flex gap-3">
-                      <span className="text-muted-foreground">3.</span>
-                      <span className="min-w-0 break-words">
-                        Push to{" "}
-                        <span className="font-mono text-foreground">main</span>,
-                        deployed to{" "}
-                        <span className="font-mono text-foreground">
-                          acme.blode.md
-                        </span>
-                      </span>
-                    </li>
-                  </ol>
-                </div>
-              </TabsContent>
 
               <TabsContent className="mt-6 min-w-0" value="cli">
                 <div className="relative overflow-hidden rounded-xl bg-surface px-6 pb-6 pt-14 font-mono text-sm md:p-8 md:pt-8">
@@ -288,6 +260,42 @@ export default function HomePage() {
                       Deployed to acme.blode.md
                     </p>
                   </div>
+                </div>
+              </TabsContent>
+
+              <TabsContent className="mt-6 min-w-0" value="github">
+                <div className="overflow-hidden rounded-xl bg-surface p-6 text-sm md:p-8">
+                  <ol className="space-y-4">
+                    <li className="flex gap-3">
+                      <span className="text-muted-foreground">1.</span>
+                      <span className="min-w-0 break-words">
+                        Add a{" "}
+                        <span className="font-mono text-foreground">docs/</span>{" "}
+                        folder first (or run{" "}
+                        <span className="font-mono text-foreground">
+                          blodemd new docs
+                        </span>
+                        )
+                      </span>
+                    </li>
+                    <li className="flex gap-3">
+                      <span className="text-muted-foreground">2.</span>
+                      <span className="min-w-0 break-words">
+                        Sign in with GitHub and pick the repo
+                      </span>
+                    </li>
+                    <li className="flex gap-3">
+                      <span className="text-muted-foreground">3.</span>
+                      <span className="min-w-0 break-words">
+                        Point at the folder with{" "}
+                        <span className="font-mono text-foreground">
+                          docs.json
+                        </span>
+                        , then push to{" "}
+                        <span className="font-mono text-foreground">main</span>
+                      </span>
+                    </li>
+                  </ol>
                 </div>
               </TabsContent>
             </Tabs>
@@ -387,8 +395,10 @@ export default function HomePage() {
             Ship the knowledge layer your AI needs.
           </h2>
           <p className="mx-auto mt-6 max-w-xl text-balance text-muted-foreground md:text-lg">
-            Sign in with GitHub, pick a repo, point us at your docs folder. Live
-            in under a minute. Every push ships itself from there.
+            Run{" "}
+            <span className="font-mono text-foreground">blodemd new docs</span>,
+            push, and you&apos;re live. Or connect GitHub once you have a docs
+            folder — every push ships itself from there.
           </p>
           <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
             <Button asChild className="rounded-full" size="lg">

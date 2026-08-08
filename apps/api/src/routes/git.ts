@@ -12,6 +12,7 @@ import {
   listInstallationRepos,
   listUserInstallations,
   signInstallState,
+  verifyDocsPath,
   verifyInstallState,
 } from "../lib/github";
 import { logError } from "../lib/logger";
@@ -149,6 +150,25 @@ projectGit.post(
         c,
         `Repository "${body.repository}" is not accessible from this installation.`
       );
+    }
+
+    const docsPathCheck = await verifyDocsPath({
+      docsPath: body.docsPath,
+      installationId: body.installationId,
+      ref: body.branch,
+      repository: body.repository,
+    }).catch((error: unknown) => {
+      logError("Failed to verify docs path on GitHub", error);
+      return null;
+    });
+    if (!docsPathCheck) {
+      return badGateway(
+        c,
+        "Could not verify the docs path against GitHub. Try again in a moment."
+      );
+    }
+    if (!docsPathCheck.ok) {
+      return badRequest(c, docsPathCheck.reason);
     }
 
     const record = await gitConnectionDao.upsert({

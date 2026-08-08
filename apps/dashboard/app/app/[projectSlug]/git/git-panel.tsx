@@ -142,16 +142,17 @@ export const GitConnectionPanel = ({
       <CardHeader>
         <CardTitle>GitHub</CardTitle>
         <CardDescription>
-          Install the Blode.md GitHub App to deploy on every push. No API keys.
+          Connect a repo that already has a docs folder with{" "}
+          <code>docs.json</code>. Then every push deploys — no API keys.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         {formError && <FieldError>{formError}</FieldError>}
         <div className="space-y-3 text-sm">
           <p className="text-muted-foreground">
-            Click below to install the Blode.md app on your GitHub account or
-            organization. We&apos;ll bring you back here to pick a repo and docs
-            path.
+            Need a docs folder first? Run{" "}
+            <code className="text-foreground">blodemd new docs</code> in your
+            repo, commit it, then install the Blode.md GitHub App below.
           </p>
           <Button disabled={pending} onClick={handleInstall} type="button">
             {pending ? "Redirecting..." : "Install on GitHub"}
