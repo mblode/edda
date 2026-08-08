@@ -145,7 +145,7 @@ Move each docs set into `apps/docs/content/<slug>` with:
   - `/Users/mblode/Code/mblode/dnd-grid/apps/docs/logo/light.svg`
   - `/Users/mblode/Code/mblode/dnd-grid/apps/docs/logo/dark.svg`
 - [ ] Decide whether to copy `/Users/mblode/Code/mblode/dnd-grid/apps/docs/snippets` even though the current MDX pages inline their example code.
-- [ ] Decide whether external iframe previews like `https://dnd-grid.com/examples/basic-example?embed=1` stay external in phase 1.
+- [ ] Decide whether external iframe previews like `https://blode.co/dnd-grid/examples/basic-example?embed=1` stay external in phase 1.
 
 ## Phase 4: Fumadocs Conversion With Runtime Feature Gaps
 
