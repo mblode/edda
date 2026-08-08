@@ -14,7 +14,12 @@ export const TypeTable = ({ type }: { type: Record<string, TypeField> }) => {
   const hasDefault = entries.some((entry) => entry.default);
 
   return (
+    // typeset styles bare tables too — a 1px `border-block-start` on every body
+    // cell and a `border-block-end` on the table — which lands on top of the
+    // separators this table already draws, doubling every rule. Opting the
+    // subtree out leaves one set of borders: these.
     <div
+      data-not-typeset=""
       data-typeset-block=""
       className="no-scrollbar w-full overflow-y-auto rounded-xl border border-border"
     >
@@ -40,7 +45,9 @@ export const TypeTable = ({ type }: { type: Record<string, TypeField> }) => {
             ) : null}
           </tr>
         </thead>
-        <tbody>
+        {/* The wrapper draws the bottom edge, so the final row must not draw
+            its own or the two stack into a doubled rule. */}
+        <tbody className="[&>tr:last-child>td]:border-b-0">
           {entries.map((entry) => {
             const required = entry.required ?? !entry.optional;
             return (

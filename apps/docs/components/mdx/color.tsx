@@ -12,7 +12,7 @@ const ColorItem = ({ name, value }: ColorItemProps) => {
   const darkValue = typeof value === "string" ? value : value.dark;
 
   return (
-    <div data-typeset-block="" className="flex items-center gap-3">
+    <div className="flex items-center gap-3">
       <div
         className="size-8 shrink-0 rounded-md border border-border"
         style={{ backgroundColor: lightValue }}
@@ -62,10 +62,13 @@ interface ColorProps {
   children: ReactNode;
 }
 
+// Entirely bespoke markup, and the table variant would otherwise pick up
+// typeset's own cell borders on top of the ones the rows already draw.
 const Color = ({ variant = "compact", children }: ColorProps) => (
   <div
+    data-not-typeset=""
+    data-typeset-block=""
     className={cn(
-      "my-4",
       variant === "compact" &&
         "grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4",
       variant === "table" && "overflow-hidden rounded-xl border border-border"
