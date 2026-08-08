@@ -38,7 +38,7 @@ export const ViewGroup = ({ children }: ViewGroupProps) => {
   }
 
   return (
-    <div className="my-4">
+    <div data-typeset-block="">
       <div className="mb-4 flex flex-wrap gap-2">
         {items.map((item, index) => (
           <button

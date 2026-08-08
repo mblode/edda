@@ -15,7 +15,11 @@ const colStyles: Record<number, string> = {
 };
 
 export const Columns = ({ cols = 2, children }: ColumnsProps) => (
-  <div className={cn("my-4 grid gap-4", colStyles[cols] ?? colStyles[2])}>
+  <div
+    data-typeset-block=""
+    data-typeset-stack=""
+    className={cn("grid gap-4", colStyles[cols] ?? colStyles[2])}
+  >
     {children}
   </div>
 );

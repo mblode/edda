@@ -77,7 +77,10 @@ export const Accordion = ({
 };
 
 export const AccordionGroup = ({ children }: { children: ReactNode }) => (
-  <div className="my-4 divide-y divide-border rounded-xl border border-border px-4">
+  <div
+    data-typeset-block=""
+    className="divide-y divide-border rounded-xl border border-border px-4"
+  >
     {children}
   </div>
 );

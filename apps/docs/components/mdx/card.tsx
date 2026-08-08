@@ -31,6 +31,7 @@ const CardInner = ({
 
   return (
     <div
+      data-typeset-block={href ? undefined : ""}
       className={cn(
         "group/card rounded-xl border border-border bg-card p-4 transition-colors",
         href && "hover:border-primary/30 hover:bg-accent/50",
@@ -90,18 +91,30 @@ const CardInner = ({
   );
 };
 
+// typeset underlines every `a` in the content body, and text-decoration
+// propagates to descendants, so a bare anchor wrapper strikes a line through
+// the card's title and description.
+const linkClassName =
+  "block rounded-xl no-underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring";
+
 export const Card = (props: CardProps) => {
   if (props.href) {
     const isExternal = props.href.startsWith("http");
     if (isExternal) {
       return (
-        <a href={props.href} rel="noopener noreferrer" target="_blank">
+        <a
+          className={linkClassName}
+          data-typeset-block=""
+          href={props.href}
+          rel="noopener noreferrer"
+          target="_blank"
+        >
           <CardInner {...props} />
         </a>
       );
     }
     return (
-      <Link href={props.href}>
+      <Link className={linkClassName} data-typeset-block="" href={props.href}>
         <CardInner {...props} />
       </Link>
     );

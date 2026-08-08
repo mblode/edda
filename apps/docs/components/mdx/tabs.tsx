@@ -140,6 +140,7 @@ export const Tabs = ({
 
   return (
     <div
+      data-typeset-block=""
       className={cn(
         "overflow-hidden rounded-xl bg-code",
         borderBottom && "border-b-2"

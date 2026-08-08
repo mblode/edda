@@ -44,6 +44,7 @@ export const Iframe = ({
 
   return (
     <div
+      data-typeset-block=""
       className={cn(
         "relative overflow-hidden rounded-xl border border-border bg-card",
         className

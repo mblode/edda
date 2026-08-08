@@ -63,7 +63,10 @@ export const Steps = ({ children, titleSize }: StepsProps) => {
 
   if (!hasStepChildren) {
     return (
-      <div className="steps mb-12 [counter-reset:step] md:ml-4 md:border-l md:pl-8 [&>h3]:step">
+      <div
+        data-typeset-block=""
+        className="steps [counter-reset:step] md:ml-4 md:border-l md:pl-8 [&>h3]:step"
+      >
         {children}
       </div>
     );
@@ -87,6 +90,8 @@ export const Steps = ({ children, titleSize }: StepsProps) => {
   });
 
   return (
-    <div className="my-6 border-l border-border pl-2">{numberedChildren}</div>
+    <div data-typeset-block="" className="border-l border-border pl-2">
+      {numberedChildren}
+    </div>
   );
 };

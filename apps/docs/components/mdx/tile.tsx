@@ -31,13 +31,28 @@ export const Tile = ({ href, title, description, children }: TileProps) => {
     </div>
   );
 
+  // Same underline leak as Card: typeset underlines content anchors and the
+  // decoration propagates into the tile's title and description.
+  const linkClassName =
+    "block rounded-xl no-underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring";
+
   if (isExternal) {
     return (
-      <a href={href} rel="noopener noreferrer" target="_blank">
+      <a
+        className={linkClassName}
+        data-typeset-block=""
+        href={href}
+        rel="noopener noreferrer"
+        target="_blank"
+      >
         {inner}
       </a>
     );
   }
 
-  return <Link href={href}>{inner}</Link>;
+  return (
+    <Link className={linkClassName} data-typeset-block="" href={href}>
+      {inner}
+    </Link>
+  );
 };

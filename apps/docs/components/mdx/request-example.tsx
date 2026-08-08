@@ -5,7 +5,7 @@ interface RequestExampleProps {
 }
 
 export const RequestExample = ({ children }: RequestExampleProps) => (
-  <div className="my-4">
+  <div data-typeset-block="">
     <div className="mb-1 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
       Request
     </div>
@@ -16,7 +16,7 @@ export const RequestExample = ({ children }: RequestExampleProps) => (
 );
 
 export const ResponseExample = ({ children }: RequestExampleProps) => (
-  <div className="my-4">
+  <div data-typeset-block="">
     <div className="mb-1 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
       Response
     </div>

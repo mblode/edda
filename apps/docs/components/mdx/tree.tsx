@@ -109,7 +109,10 @@ export const TreeFolder = ({
 };
 
 const TreeRoot = ({ children }: { children: ReactNode }) => (
-  <div className="my-4 rounded-xl border border-border bg-card p-4 font-mono text-sm">
+  <div
+    data-typeset-block=""
+    className="rounded-xl border border-border bg-card p-4 font-mono text-sm"
+  >
     {children}
   </div>
 );

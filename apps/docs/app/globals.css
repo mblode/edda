@@ -331,6 +331,25 @@
 }
 
 @layer components {
+  /* typeset.css sets the vertical rhythm by element name, so the MDX block
+     components — which render as plain divs, asides, and sections — inherit no
+     flow margin and collide with whatever sits above them. Marking their roots
+     puts them back on the same rhythm as paragraphs and lists.
+
+     `:first-child` covers every nesting depth (step body, tab panel, table
+     cell, callout body) without enumerating containers, and
+     `[data-typeset-stack]` opts out the containers that already space their own
+     children with a grid gap or dividers. */
+  .typeset [data-typeset-block] {
+    margin-block-start: var(--typeset-flow);
+    margin-block-end: 0;
+  }
+
+  .typeset [data-typeset-block]:first-child,
+  .typeset [data-typeset-stack] > [data-typeset-block] {
+    margin-block-start: 0;
+  }
+
   .steps {
     &:first-child {
       @apply !mt-0;

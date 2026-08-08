@@ -7,7 +7,7 @@ interface FrameProps {
 }
 
 export const Frame = ({ caption, hint, children }: FrameProps) => (
-  <figure className="my-4">
+  <figure>
     {hint ? (
       <div className="mb-2 text-sm text-muted-foreground">{hint}</div>
     ) : null}

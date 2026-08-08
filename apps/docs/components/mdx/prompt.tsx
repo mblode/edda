@@ -32,7 +32,10 @@ export const Prompt = ({ description, icon, children }: PromptProps) => {
   }, [text]);
 
   return (
-    <div className="my-4 rounded-xl border border-border bg-card">
+    <div
+      data-typeset-block=""
+      className="rounded-xl border border-border bg-card"
+    >
       <div className="flex items-start gap-3 border-b border-border p-4">
         {icon ? (
           <span className="mt-0.5 flex size-5 shrink-0 items-center justify-center text-muted-foreground">
