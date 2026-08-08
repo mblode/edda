@@ -38,7 +38,7 @@ Clone the repo, point it at a Postgres, and run the same CLI we do.
 None. The CLI, renderer, and API are MIT. Hosting costs us, but we'd rather earn trust now and figure out paid tiers later.
 
 **Will it ever cost money?**
-A future hosted tier may charge for team features like SSO and audit logs. The core renderer and CLI stay free.
+The core renderer and CLI stay free.
 
 **How do you make money?**
 We don't, yet. Sponsor on GitHub if you want to help keep the lights on.

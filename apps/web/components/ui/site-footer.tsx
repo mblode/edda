@@ -55,11 +55,16 @@ export const SiteFooter = () => (
         ))}
       </div>
 
-      <div className="mt-14 border-border/60 border-t pt-8 lg:px-8">
+      {/*
+        blode.md is its own domain, not one of the zones proxied under
+        blode.co, so both of these are genuine cross-origin links: new tab,
+        and rel="noopener noreferrer".
+      */}
+      <div className="mt-14 flex flex-wrap items-center gap-x-2 border-border/60 border-t pt-8 lg:px-8">
         <a
           className="inline-flex items-center gap-2 text-muted-foreground text-xs leading-5 tracking-tight transition-colors hover:text-foreground"
           href="https://blode.co"
-          rel="author noopener noreferrer"
+          rel="noopener noreferrer author"
           target="_blank"
         >
           <span>Crafted by</span>
@@ -73,6 +78,17 @@ export const SiteFooter = () => (
             width={20}
           />
           <span>Matthew Blode</span>
+        </a>
+        <span aria-hidden="true" className="text-muted-foreground text-xs">
+          &middot;
+        </span>
+        <a
+          className="inline-flex items-center text-muted-foreground text-xs leading-5 tracking-tight transition-colors hover:text-foreground"
+          href="https://blode.co/projects"
+          rel="noopener noreferrer"
+          target="_blank"
+        >
+          All projects
         </a>
       </div>
     </div>

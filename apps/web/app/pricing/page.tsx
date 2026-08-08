@@ -76,8 +76,7 @@ const faqs = [
     question: "What's the catch?",
   },
   {
-    answer:
-      "A future hosted tier may charge for team features like SSO and audit logs. The core renderer and CLI stay free.",
+    answer: "The core renderer and CLI stay free.",
     question: "Will it ever cost money?",
   },
   {
