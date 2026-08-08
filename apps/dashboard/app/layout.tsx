@@ -8,8 +8,8 @@ import "./globals.css";
 const glide = localFont({
   display: "swap",
   src: [
-    { path: "../public/glide-variable.woff2", style: "normal" },
-    { path: "../public/glide-variable-italic.woff2", style: "italic" },
+    { path: "./fonts/glide-variable.woff2", style: "normal" },
+    { path: "./fonts/glide-variable-italic.woff2", style: "italic" },
   ],
   variable: "--font-glide",
   weight: "100 950",
@@ -17,7 +17,7 @@ const glide = localFont({
 
 const glideMono = localFont({
   display: "swap",
-  src: [{ path: "../public/glide-mono.woff2" }],
+  src: [{ path: "./fonts/glide-mono.woff2" }],
   variable: "--font-glide-mono",
   weight: "400",
 });
