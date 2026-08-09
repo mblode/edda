@@ -11,7 +11,7 @@ if (projectToken && apiHost) {
     api_host: apiHost,
     capture_exceptions: true,
     debug: process.env.NODE_ENV === "development",
-    defaults: "2026-01-30",
+    defaults: "2026-05-30",
     // Required when api_host is a reverse proxy (e.g. s.blode.md).
     ui_host: uiHost,
   });
