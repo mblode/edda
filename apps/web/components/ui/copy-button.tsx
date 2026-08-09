@@ -12,6 +12,7 @@ import type { MouseEvent } from "react";
 import { Button as ButtonPrimitive } from "@/components/animate-ui/primitives/buttons/button";
 import type { ButtonProps as ButtonPrimitiveProps } from "@/components/animate-ui/primitives/buttons/button";
 import { useControlledState } from "@/hooks/use-controlled-state";
+import { captureEvent } from "@/lib/analytics";
 import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
@@ -88,6 +89,7 @@ const CopyButton = ({
       if (content) {
         try {
           await navigator.clipboard.writeText(content);
+          captureEvent("documentation_command_copied");
           setIsCopied(true);
           onCopiedChange?.(true, content);
           if (timeoutRef.current) {

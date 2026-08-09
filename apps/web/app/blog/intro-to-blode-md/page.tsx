@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { CopyButton } from "@/components/ui/copy-button";
 import { MarketingShell } from "@/components/ui/marketing-shell";
 import { RelativeTime } from "@/components/ui/relative-time";
+import { SignupLink } from "@/components/ui/signup-link";
 import { siteConfig } from "@/lib/config";
 import { pageMetadata } from "@/lib/marketing-site";
 
@@ -118,10 +119,10 @@ export default function IntroPostPage() {
               </p>
               <div className="not-typeset mt-6 flex flex-wrap items-center gap-3">
                 <Button asChild size="lg">
-                  <Link href="/oauth/consent">
+                  <SignupLink location="blog_intro">
                     Start shipping
                     <ArrowRightIcon data-icon="inline-end" />
-                  </Link>
+                  </SignupLink>
                 </Button>
                 <Button asChild size="lg" variant="ghost">
                   <Link href="/docs">

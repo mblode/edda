@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
+import { LoginLink } from "@/components/ui/login-link";
 import { MorphIcon } from "@/components/ui/morph-icon";
 import {
   Sheet,
@@ -15,6 +16,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import { SignupLink } from "@/components/ui/signup-link";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { siteConfig } from "@/lib/config";
 import { cn } from "@/lib/utils";
@@ -95,18 +97,18 @@ export const MarketingHeader = () => {
           )}
         </nav>
         <nav aria-label="Account" className="flex items-center gap-1">
-          <Link
+          <LoginLink
             className="hidden rounded-full px-3 py-1.5 text-muted-foreground text-sm transition-colors hover:bg-muted hover:text-foreground sm:inline-flex"
-            href="/oauth/consent"
+            location="header_desktop"
           >
             Log in
-          </Link>
-          <Link
+          </LoginLink>
+          <SignupLink
             className="inline-flex h-8 items-center rounded-full bg-foreground px-4 font-medium text-background text-sm transition-opacity hover:opacity-90"
-            href="/oauth/consent"
+            location="header_desktop"
           >
             Sign up
-          </Link>
+          </SignupLink>
           <Sheet onOpenChange={setOpen} open={open}>
             <SheetTrigger asChild>
               <Button
@@ -124,12 +126,12 @@ export const MarketingHeader = () => {
               </SheetHeader>
               <div className="flex flex-col gap-1 px-4">
                 <SheetClose asChild>
-                  <Link
+                  <SignupLink
                     className="mb-2 inline-flex h-10 items-center justify-center rounded-full bg-foreground px-4 font-medium text-background text-sm transition-opacity hover:opacity-90"
-                    href="/oauth/consent"
+                    location="header_mobile"
                   >
                     Sign up
-                  </Link>
+                  </SignupLink>
                 </SheetClose>
                 {navLinks.map((link) => (
                   <SheetClose asChild key={link.href}>
@@ -154,12 +156,12 @@ export const MarketingHeader = () => {
                   </SheetClose>
                 ))}
                 <SheetClose asChild>
-                  <Link
+                  <LoginLink
                     className="rounded-md px-2 py-2 text-lg font-medium transition-colors hover:bg-muted sm:hidden"
-                    href="/oauth/consent"
+                    location="header_mobile"
                   >
                     Log in
-                  </Link>
+                  </LoginLink>
                 </SheetClose>
               </div>
               <div className="mt-auto flex items-center justify-between border-t border-border px-4 py-4">

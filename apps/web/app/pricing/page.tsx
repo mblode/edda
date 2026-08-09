@@ -11,6 +11,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { MarketingShell } from "@/components/ui/marketing-shell";
+import { SignupLink } from "@/components/ui/signup-link";
 import { siteConfig } from "@/lib/config";
 import { pageMetadata } from "@/lib/marketing-site";
 
@@ -128,10 +129,17 @@ const PlanCard = ({ plan }: { plan: Plan }) => (
         </Button>
       ) : (
         <Button asChild variant={plan.recommended ? "default" : "outline"}>
-          <Link href={plan.cta.href}>
-            {plan.cta.label}
-            <ArrowRightIcon data-icon="inline-end" />
-          </Link>
+          {plan.cta.href === "/oauth/consent" ? (
+            <SignupLink location={`pricing_${plan.eyebrow.toLowerCase()}`}>
+              {plan.cta.label}
+              <ArrowRightIcon data-icon="inline-end" />
+            </SignupLink>
+          ) : (
+            <Link href={plan.cta.href}>
+              {plan.cta.label}
+              <ArrowRightIcon data-icon="inline-end" />
+            </Link>
+          )}
         </Button>
       )}
     </CardContent>
@@ -205,10 +213,10 @@ export default function PricingPage() {
           </p>
           <div className="mt-10 flex flex-wrap items-center gap-3">
             <Button asChild size="lg">
-              <Link href="/oauth/consent">
+              <SignupLink location="pricing_footer">
                 Start shipping
                 <ArrowRightIcon data-icon="inline-end" />
-              </Link>
+              </SignupLink>
             </Button>
             <Button asChild size="lg" variant="ghost">
               <a

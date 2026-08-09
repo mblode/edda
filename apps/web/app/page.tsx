@@ -20,6 +20,7 @@ import {
 import { CopyButton } from "@/components/ui/copy-button";
 import { HeroMedia } from "@/components/ui/hero-media";
 import { MarketingShell } from "@/components/ui/marketing-shell";
+import { SignupLink } from "@/components/ui/signup-link";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { TextEffect } from "@/components/ui/text-effect";
 import { TextReveal } from "@/components/ui/text-reveal";
@@ -148,7 +149,7 @@ export default function HomePage() {
             }}
           >
             <Button asChild className="rounded-full" size="lg">
-              <Link href="/oauth/consent">Get started free</Link>
+              <SignupLink location="home_hero">Get started free</SignupLink>
             </Button>
 
             <Button
@@ -402,7 +403,7 @@ export default function HomePage() {
           </p>
           <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
             <Button asChild className="rounded-full" size="lg">
-              <Link href="/oauth/consent">Get started free</Link>
+              <SignupLink location="home_cta">Get started free</SignupLink>
             </Button>
 
             <Button
