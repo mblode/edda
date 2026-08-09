@@ -7,7 +7,7 @@ export const metadata = pageMetadata({
   description:
     "Every release, fix, and improvement to the Blode.md docs platform. See what shipped, when, and why across the CLI, renderer, and hosting.",
   path: "/changelog",
-  title: "Changelog | Blode.md",
+  title: "Changelog",
 });
 
 const updates = [

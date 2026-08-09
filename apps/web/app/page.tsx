@@ -24,7 +24,7 @@ import { SignupLink } from "@/components/ui/signup-link";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { TextEffect } from "@/components/ui/text-effect";
 import { TextReveal } from "@/components/ui/text-reveal";
-import { pageMetadata } from "@/lib/marketing-site";
+import { HOME_TITLE, pageMetadata } from "@/lib/marketing-site";
 
 // Repeats the root layout's title and description so the home page carries its
 // own canonical and og:url without changing what it already advertises.
@@ -32,7 +32,7 @@ export const metadata = pageMetadata({
   description:
     "Documentation should ship as fast as code. Blode.md is a terminal-native docs platform. Write MDX, push from your CLI, deploy on every merge.",
   path: "/",
-  title: "Blode.md | Terminal-native docs platform",
+  title: HOME_TITLE,
 });
 
 const features = [

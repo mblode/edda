@@ -11,7 +11,7 @@ export const metadata = pageMetadata({
   description:
     "Notes, deep dives, and product updates from the team building Blode.md, the terminal-native docs platform that ships documentation straight from your git repo.",
   path: "/blog",
-  title: "Blog | Blode.md",
+  title: "Blog",
 });
 
 export default function BlogPage() {

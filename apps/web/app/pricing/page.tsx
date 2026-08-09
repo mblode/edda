@@ -19,7 +19,7 @@ export const metadata = pageMetadata({
   description:
     "Blode.md ships as an MIT-licensed CLI and renderer. Use the hosted version for zero setup, or self-host on any Postgres and any Node host.",
   path: "/pricing",
-  title: "Pricing | Blode.md",
+  title: "Pricing",
 });
 
 interface Plan {

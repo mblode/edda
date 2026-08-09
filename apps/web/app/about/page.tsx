@@ -11,7 +11,7 @@ export const metadata = pageMetadata({
   description:
     "Blode.md is a docs platform that lives in your git repo. Write MDX, push to main, and ship documentation as fast as you ship code, with no pipeline to maintain.",
   path: "/about",
-  title: "About | Blode.md",
+  title: "About",
 });
 
 export default function AboutPage() {

@@ -14,7 +14,7 @@ export const metadata = pageMetadata({
   description:
     "Why we built Blode.md, a docs-as-code platform that publishes from GitHub in three commands, free and open source.",
   path: "/blog/intro-to-blode-md",
-  title: "Hello, Blode.md | Blode.md",
+  title: "Hello, Blode.md",
   type: "article",
 });
 

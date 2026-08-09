@@ -2,6 +2,14 @@ import type { Metadata } from "next";
 
 export const MARKETING_ORIGIN = "https://blode.md";
 
+export const SITE_NAME = "Blode.md";
+
+/** `Product: what it does`, under 60 characters so the SERP does not clip it. */
+export const HOME_TITLE = "Blode.md: terminal-native docs platform";
+
+/** Inner pages set a bare title and the root layout appends the product. */
+export const TITLE_TEMPLATE = `%s | ${SITE_NAME}`;
+
 export const CANONICAL_PATHS = [
   "/",
   "/about",
@@ -20,8 +28,13 @@ export const marketingUrl = (path: string) => `${MARKETING_ORIGIN}${path}`;
 /**
  * Page metadata with a canonical URL and `og:url`.
  *
- * Next replaces `openGraph` wholesale rather than merging it, so a page that
- * sets only `url` would drop the site name and type declared in the root
+ * `title` is the bare page name ("Pricing"), not the finished string: the root
+ * layout's template appends the product. Next applies that template to `<title>`
+ * only, so `og:title` is resolved here by hand. The home page is the exception
+ * and carries the full site title absolutely.
+ *
+ * Next also replaces `openGraph` wholesale rather than merging it, so a page
+ * that set only `url` would drop the site name and type declared in the root
  * layout. Building the whole block here keeps every page complete.
  */
 export const pageMetadata = ({
@@ -34,15 +47,18 @@ export const pageMetadata = ({
   path: string;
   title: string;
   type?: "article" | "website";
-}): Metadata => ({
-  alternates: { canonical: path },
-  description,
-  openGraph: {
+}): Metadata => {
+  const isHome = path === "/";
+  return {
+    alternates: { canonical: path },
     description,
-    siteName: "Blode.md",
-    title,
-    type,
-    url: marketingUrl(path),
-  },
-  title,
-});
+    openGraph: {
+      description,
+      siteName: SITE_NAME,
+      title: isHome ? title : `${title} | ${SITE_NAME}`,
+      type,
+      url: marketingUrl(path),
+    },
+    title: isHome ? { absolute: title } : title,
+  };
+};

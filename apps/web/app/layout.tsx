@@ -3,6 +3,8 @@ import localFont from "next/font/local";
 
 import { Providers } from "@/components/providers";
 import { WebMcpTools } from "@/components/web-mcp";
+import { HOME_TITLE, SITE_NAME, TITLE_TEMPLATE } from "@/lib/marketing-site";
+import { siteJsonLd } from "@/lib/structured-data";
 
 import "./globals.css";
 
@@ -24,19 +26,29 @@ const glideMono = localFont({
 });
 
 export const metadata: Metadata = {
+  authors: [{ name: "Matthew Blode", url: "https://blode.co" }],
+  creator: "Matthew Blode",
   description:
     "Documentation should ship as fast as code. Blode.md is a terminal-native docs platform. Write MDX, push from your CLI, deploy on every merge.",
   metadataBase: new URL("https://blode.md"),
   openGraph: {
-    siteName: "Blode.md",
+    siteName: SITE_NAME,
     type: "website",
   },
   other: {
-    "apple-mobile-web-app-title": "Blode.md",
+    "apple-mobile-web-app-title": SITE_NAME,
   },
-  title: "Blode.md | Terminal-native docs platform",
+  publisher: "Matthew Blode",
+  title: {
+    default: HOME_TITLE,
+    template: TITLE_TEMPLATE,
+  },
   twitter: {
     card: "summary_large_image",
+    creator: "@mattblode",
+  },
+  verification: {
+    google: "mFwyBIbXTaKK4uF_NA0MzVWFyY40hPgBjFObg3rje04",
   },
 };
 
@@ -57,6 +69,11 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <body className="relative flex w-full flex-col justify-center scroll-smooth bg-background font-sans antialiased [--header-height:calc(var(--spacing)*16)]">
+        <script
+          // oxlint-disable-next-line no-danger -- JSON-LD for SEO
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(siteJsonLd) }}
+          type="application/ld+json"
+        />
         <Providers>
           <WebMcpTools />
           {children}

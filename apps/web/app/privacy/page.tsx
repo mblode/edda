@@ -7,7 +7,7 @@ export const metadata = pageMetadata({
   description:
     "Privacy policy for Blode.md: what data we collect, how we use it, the third parties we rely on, and how to reach us about your information.",
   path: "/privacy",
-  title: "Privacy | Blode.md",
+  title: "Privacy",
 });
 
 export default function PrivacyPage() {

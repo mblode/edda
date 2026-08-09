@@ -13,7 +13,7 @@ export const metadata = pageMetadata({
   description:
     "How Blode.md handles security. HTTPS by default, GitHub OAuth for sign-in, and open source code you can read.",
   path: "/security",
-  title: "Security | Blode.md",
+  title: "Security",
 });
 
 const controls = [
