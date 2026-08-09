@@ -22,7 +22,7 @@ Per-tenant analytics (PostHog project API key) are treated as **tenant configura
 
 ## Platform PostHog vs tenant PostHog
 
-Blode's own product analytics (`NEXT_PUBLIC_POSTHOG_*`, `apps/docs/instrumentation-client.ts`) must only initialize on platform hosts (`isPlatformAnalyticsHost` in `apps/docs/lib/platform-analytics.ts`). Customer tenant subdomains and custom domains skip the platform SDK entirely. Tenant BYO PostHog uses a named `"tenant"` instance in `apps/docs/components/posthog-provider.tsx` so it cannot clobber the platform singleton.
+Blode's own product analytics (`NEXT_PUBLIC_POSTHOG_*`, `apps/docs/instrumentation-client.ts`) must only initialize on platform hosts (`isPlatformAnalyticsHost` in `apps/docs/lib/platform-analytics.ts`). Customer tenant subdomains and custom domains skip the platform SDK entirely. Tenant BYO PostHog uses a named `"tenant"` instance in `apps/docs/components/posthog-provider.tsx` so it cannot clobber the platform singleton. Platform ingestion uses the managed reverse proxy at `https://s.blode.md` (`NEXT_PUBLIC_POSTHOG_HOST`) with `NEXT_PUBLIC_POSTHOG_UI_HOST=https://us.posthog.com` so toolbar/links still resolve to PostHog.
 
 ## llms-full.txt sanitisation runs before content emission
 
