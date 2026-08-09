@@ -1,6 +1,6 @@
 ---
 title: blodemd analytics
-description: Manage tenant analytics integrations (GA4, PostHog) from the CLI.
+description: Manage tenant analytics integrations (PostHog) from the CLI.
 ---
 
 `blodemd analytics` reads and writes the per-project analytics config that the dashboard exposes at **Settings → Analytics**. Use it to script rollouts, wire analytics into CI, or keep your docs repo the source of truth.
@@ -12,16 +12,12 @@ description: Manage tenant analytics integrations (GA4, PostHog) from the CLI.
 blodemd analytics get [--project <slug>] [--json]
 ```
 
-```bash title="Set Google Analytics 4"
-blodemd analytics set ga4 <measurementId> [--project <slug>]
-```
-
 ```bash title="Set PostHog"
 blodemd analytics set posthog <projectKey> [--host <url>] [--project <slug>]
 ```
 
 ```bash title="Remove a provider"
-blodemd analytics unset <ga4|posthog> [--project <slug>]
+blodemd analytics unset posthog [--project <slug>]
 ```
 
 </CodeGroup>
@@ -31,16 +27,13 @@ The project slug is resolved in this order: `--project`, `BLODEMD_PROJECT`, `slu
 ## Examples
 
 ```bash
-# Set GA4 for the project in the current directory
-blodemd analytics set ga4 G-ABC123DEFG
-
 # Set PostHog with the EU cloud host
 blodemd analytics set posthog phc_abc123def456 --host https://eu.i.posthog.com
 
 # Check what's configured, as JSON, so you can pipe it
 blodemd analytics get --json
 
-# Remove only PostHog, keep GA4
+# Remove PostHog
 blodemd analytics unset posthog
 ```
 
@@ -73,7 +66,6 @@ blodemd analytics unset posthog
 
 The CLI validates inputs before hitting the API:
 
-- **GA4 measurement ID** must match `G-XXXXXXXXXX` (uppercase, 4–20 alphanumerics).
 - **PostHog project key** must start with `phc_` and be at least 24 characters. Personal API keys (`phx_`) are rejected — they have far more privilege than the project key needs and would leak to the browser.
 - **PostHog host** must be an `https://` URL.
 

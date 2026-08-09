@@ -14,11 +14,15 @@
 
 ## Analytics are client-safe, tenant-scoped, public tokens
 
-Per-tenant analytics (GA4 measurement ID, PostHog project API key) are treated as **tenant configuration**, not secrets. They are stored as JSONB on `projects.analytics`, flow through the public `Tenant` contract, and land in the browser as-is. PostHog `phx_*` personal API keys are rejected by contract and CLI validators — they carry far more privilege than a write-only project key.
+Per-tenant analytics (PostHog project API key) are treated as **tenant configuration**, not secrets. They are stored as JSONB on `projects.analytics`, flow through the public `Tenant` contract, and land in the browser as-is. PostHog `phx_*` personal API keys are rejected by contract and CLI validators — they carry far more privilege than a write-only project key.
 
 ## Analytics are production-only
 
-`<TenantAnalytics>` (`apps/docs/components/tenant-analytics.tsx`) short-circuits unless `VERCEL_ENV === "production"`. This means GA/PostHog never fires from local `next dev`, the CLI `dev-server`, or preview deployments — tenant metrics stay clean. Blodemd's own GA is a separate code path (`apps/docs/components/third-parties.tsx`, driven by `NEXT_PUBLIC_BLODEMD_GA_ID`) and follows the same gate.
+`<TenantAnalytics>` (`apps/docs/components/tenant-analytics.tsx`) short-circuits unless `VERCEL_ENV === "production"`. This means PostHog never fires from local `next dev`, the CLI `dev-server`, or preview deployments — tenant metrics stay clean.
+
+## Platform PostHog vs tenant PostHog
+
+Blode's own product analytics (`NEXT_PUBLIC_POSTHOG_*`, `apps/docs/instrumentation-client.ts`) must only initialize on platform hosts (`isPlatformAnalyticsHost` in `apps/docs/lib/platform-analytics.ts`). Customer tenant subdomains and custom domains skip the platform SDK entirely. Tenant BYO PostHog uses a named `"tenant"` instance in `apps/docs/components/posthog-provider.tsx` so it cannot clobber the platform singleton.
 
 ## llms-full.txt sanitisation runs before content emission
 

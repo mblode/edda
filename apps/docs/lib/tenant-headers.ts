@@ -16,16 +16,29 @@ export const TENANT_HEADERS = {
   SUBDOMAIN: "x-tenant-subdomain",
 } as const;
 
-const hasAnyProvider = (value: ProjectAnalytics): boolean =>
-  Boolean(value.ga4?.measurementId || value.posthog?.projectKey);
+const toWireAnalytics = (value: ProjectAnalytics): ProjectAnalytics | null => {
+  if (!value.posthog?.projectKey) {
+    return null;
+  }
+  return {
+    posthog: {
+      projectKey: value.posthog.projectKey,
+      ...(value.posthog.host ? { host: value.posthog.host } : {}),
+    },
+  };
+};
 
 export const encodeTenantAnalyticsHeader = (
   analytics: ProjectAnalytics | undefined
 ): string | null => {
-  if (!analytics || !hasAnyProvider(analytics)) {
+  if (!analytics) {
     return null;
   }
-  return encodeURIComponent(JSON.stringify(analytics));
+  const wire = toWireAnalytics(analytics);
+  if (!wire) {
+    return null;
+  }
+  return encodeURIComponent(JSON.stringify(wire));
 };
 
 export const decodeTenantAnalyticsHeader = (
@@ -36,7 +49,7 @@ export const decodeTenantAnalyticsHeader = (
   }
   try {
     const parsed = JSON.parse(decodeURIComponent(encoded)) as ProjectAnalytics;
-    return hasAnyProvider(parsed) ? parsed : null;
+    return toWireAnalytics(parsed);
   } catch {
     return null;
   }

@@ -50,7 +50,6 @@ const ANALYTICS_ANCHOR = "analytics";
 const DEPLOY_KEYS_ANCHOR = "deploy-keys";
 const DANGER_ZONE_ANCHOR = "danger-zone";
 
-const GA4_REGEX = /^G-[A-Z0-9]{4,20}$/;
 const POSTHOG_KEY_REGEX = /^phc_[A-Za-z0-9]{20,}$/;
 
 const SectionTitle = ({
@@ -191,32 +190,24 @@ const ProjectDetailsCard = ({
 };
 
 const buildAnalyticsPayload = (
-  ga4Id: string,
   posthogKey: string,
   posthogHost: string
 ): ProjectAnalytics | null => {
-  const payload: ProjectAnalytics = {};
-  if (ga4Id.trim()) {
-    payload.ga4 = { measurementId: ga4Id.trim() };
+  if (!posthogKey.trim()) {
+    return null;
   }
-  if (posthogKey.trim()) {
-    payload.posthog = {
+  return {
+    posthog: {
       projectKey: posthogKey.trim(),
       ...(posthogHost.trim() ? { host: posthogHost.trim() } : {}),
-    };
-  }
-  return payload.ga4 || payload.posthog ? payload : null;
+    },
+  };
 };
 
 const validateAnalytics = (
-  ga4Id: string,
   posthogKey: string,
   posthogHost: string
 ): string | null => {
-  const ga4 = ga4Id.trim();
-  if (ga4 && !GA4_REGEX.test(ga4)) {
-    return "GA4 measurement IDs look like G-XXXXXXXXXX.";
-  }
   const key = posthogKey.trim();
   if (key && !POSTHOG_KEY_REGEX.test(key)) {
     return "PostHog project keys start with phc_. Personal API keys (phx_) are not supported.";
@@ -231,7 +222,6 @@ const validateAnalytics = (
 const AnalyticsCard = ({ accessToken, project }: ProjectSettingsFormProps) => {
   const router = useRouter();
   const initial = project.analytics ?? null;
-  const [ga4Id, setGa4Id] = useState(initial?.ga4?.measurementId ?? "");
   const [posthogKey, setPosthogKey] = useState(
     initial?.posthog?.projectKey ?? ""
   );
@@ -241,7 +231,7 @@ const AnalyticsCard = ({ accessToken, project }: ProjectSettingsFormProps) => {
   const [saved, setSaved] = useState(false);
 
   const handleSave = useCallback(async () => {
-    const validationError = validateAnalytics(ga4Id, posthogKey, posthogHost);
+    const validationError = validateAnalytics(posthogKey, posthogHost);
     if (validationError) {
       setErrorMessage(validationError);
       setSaved(false);
@@ -254,7 +244,7 @@ const AnalyticsCard = ({ accessToken, project }: ProjectSettingsFormProps) => {
       await apiFetch(`/projects/${project.id}`, {
         accessToken,
         body: {
-          analytics: buildAnalyticsPayload(ga4Id, posthogKey, posthogHost),
+          analytics: buildAnalyticsPayload(posthogKey, posthogHost),
         },
         method: "PATCH",
       });
@@ -267,36 +257,19 @@ const AnalyticsCard = ({ accessToken, project }: ProjectSettingsFormProps) => {
     } finally {
       setSaving(false);
     }
-  }, [accessToken, ga4Id, posthogHost, posthogKey, project.id, router]);
+  }, [accessToken, posthogHost, posthogKey, project.id, router]);
 
   return (
     <Card id={ANALYTICS_ANCHOR}>
       <CardHeader className="gap-2 px-6 pt-2">
         <SectionTitle anchor={ANALYTICS_ANCHOR}>Analytics</SectionTitle>
         <p className="text-muted-foreground text-sm">
-          Bring your own Google Analytics 4 or PostHog. We inject the scripts on
-          every tenant page. Leave a field empty to disable that provider.
+          Bring your own PostHog. We inject the script on every tenant page.
+          Leave the project key empty to disable analytics.
         </p>
       </CardHeader>
       <CardContent className="px-6">
         <FieldGroup className="gap-4">
-          <Field>
-            <FieldLabel htmlFor="ga4">Google Analytics 4</FieldLabel>
-            <Input
-              className="w-[300px] max-w-full"
-              id="ga4"
-              onChange={(event) => {
-                setErrorMessage(null);
-                setGa4Id(event.target.value);
-                setSaved(false);
-              }}
-              placeholder="G-XXXXXXXXXX"
-              value={ga4Id}
-            />
-            <FieldDescription>
-              Measurement ID. Find it in GA4 → Admin → Data streams.
-            </FieldDescription>
-          </Field>
           <Field>
             <FieldLabel htmlFor="posthog-key">PostHog project key</FieldLabel>
             <Input

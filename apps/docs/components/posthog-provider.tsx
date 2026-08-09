@@ -2,9 +2,10 @@
 
 import { usePathname, useSearchParams } from "next/navigation";
 import posthogJs from "posthog-js";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 
-const DEFAULT_POSTHOG_HOST = "https://us.i.posthogJs.com";
+const DEFAULT_POSTHOG_HOST = "https://us.i.posthog.com";
+const TENANT_INSTANCE_NAME = "tenant";
 
 interface PostHogProviderProps {
   projectKey: string;
@@ -12,30 +13,34 @@ interface PostHogProviderProps {
 }
 
 export const PostHogProvider = ({ projectKey, host }: PostHogProviderProps) => {
+  const tenantPosthog = useRef<ReturnType<typeof posthogJs.init> | null>(null);
+
   useEffect(() => {
     if (!projectKey) {
       return;
     }
-    if (posthogJs.__loaded) {
-      return;
-    }
-    posthogJs.init(projectKey, {
-      api_host: host || DEFAULT_POSTHOG_HOST,
-      capture_pageleave: true,
-      capture_pageview: false,
-      person_profiles: "identified_only",
-    });
+    tenantPosthog.current = posthogJs.init(
+      projectKey,
+      {
+        api_host: host || DEFAULT_POSTHOG_HOST,
+        capture_pageleave: true,
+        capture_pageview: false,
+        person_profiles: "identified_only",
+      },
+      TENANT_INSTANCE_NAME
+    );
   }, [projectKey, host]);
 
   const pathname = usePathname();
   const searchParams = useSearchParams();
   useEffect(() => {
-    if (!(pathname && posthogJs.__loaded)) {
+    const client = tenantPosthog.current;
+    if (!(pathname && client)) {
       return;
     }
     const query = searchParams?.toString();
     const url = query ? `${pathname}?${query}` : pathname;
-    posthogJs.capture("$pageview", { $current_url: url });
+    client.capture("$pageview", { $current_url: url });
   }, [pathname, searchParams]);
 
   return null;

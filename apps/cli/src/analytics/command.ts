@@ -14,7 +14,6 @@ import { CliError, EXIT_CODES, toCliError } from "../errors.js";
 import { resolveProjectTarget } from "../project-config.js";
 import { loadValidatedSiteConfig } from "../site-config.js";
 import {
-  parseGa4MeasurementId,
   parsePosthogHost,
   parsePosthogProjectKey,
   parseProvider,
@@ -132,16 +131,13 @@ const normalizeAnalytics = (
     return null;
   }
   const next: ProjectAnalytics = {};
-  if (analytics.ga4?.measurementId) {
-    next.ga4 = { measurementId: analytics.ga4.measurementId };
-  }
   if (analytics.posthog?.projectKey) {
     next.posthog = {
       projectKey: analytics.posthog.projectKey,
       ...(analytics.posthog.host ? { host: analytics.posthog.host } : {}),
     };
   }
-  return next.ga4 || next.posthog ? next : null;
+  return next.posthog ? next : null;
 };
 
 const printAnalytics = (
@@ -159,9 +155,6 @@ const printAnalytics = (
   if (!analytics) {
     log.info("  No analytics configured.");
     return;
-  }
-  if (analytics.ga4) {
-    log.info(`  GA4:     ${chalk.cyan(analytics.ga4.measurementId)}`);
   }
   if (analytics.posthog) {
     log.info(`  PostHog: ${chalk.cyan(analytics.posthog.projectKey)}`);
@@ -183,20 +176,6 @@ const runGet = async (options: GetOptions) => {
   printAnalytics(project, options.json ? "json" : "text");
 };
 
-const runSetGa4 = async (measurementId: string, options: CommonOptions) => {
-  const authorization = await resolveAuthorization();
-  const apiUrl = apiBase(options);
-  const slug = await resolveSlug(options);
-  const project = await getProjectBySlug(apiUrl, authorization, slug);
-  const next = {
-    ...project.analytics,
-    ga4: { measurementId },
-  } satisfies ProjectAnalytics;
-  const updated = await patchAnalytics(apiUrl, authorization, project.id, next);
-  log.success(`Updated GA4 for ${chalk.cyan(updated.slug)}.`);
-  printAnalytics(updated, "text");
-};
-
 interface SetPosthogOptions extends CommonOptions {
   host?: string;
 }
@@ -210,7 +189,7 @@ const runSetPosthog = async (
   const slug = await resolveSlug(options);
   const project = await getProjectBySlug(apiUrl, authorization, slug);
   const next = {
-    ...project.analytics,
+    ...normalizeAnalytics(project.analytics),
     posthog: {
       projectKey,
       ...(options.host ? { host: options.host } : {}),
@@ -221,10 +200,7 @@ const runSetPosthog = async (
   printAnalytics(updated, "text");
 };
 
-const runUnset = async (
-  provider: "ga4" | "posthog",
-  options: CommonOptions
-) => {
+const runUnset = async (provider: "posthog", options: CommonOptions) => {
   const authorization = await resolveAuthorization();
   const apiUrl = apiBase(options);
   const slug = await resolveSlug(options);
@@ -234,9 +210,7 @@ const runUnset = async (
     [provider]: undefined,
   });
   const updated = await patchAnalytics(apiUrl, authorization, project.id, next);
-  log.success(
-    `Removed ${provider.toUpperCase()} for ${chalk.cyan(updated.slug)}.`
-  );
+  log.success(`Removed ${provider} for ${chalk.cyan(updated.slug)}.`);
   printAnalytics(updated, "text");
 };
 
@@ -259,7 +233,7 @@ const runAction = async (
 export const registerAnalyticsCommand = (program: Command): void => {
   const analytics = program
     .command("analytics")
-    .description("Manage tenant analytics integrations (GA4, PostHog)");
+    .description("Manage tenant analytics integrations (PostHog)");
 
   analytics
     .command("get")
@@ -274,22 +248,6 @@ export const registerAnalyticsCommand = (program: Command): void => {
   const set = analytics
     .command("set")
     .description("Set an analytics integration");
-
-  set
-    .command("ga4")
-    .description("Set the Google Analytics 4 measurement ID")
-    .argument(
-      "<measurementId>",
-      "GA4 measurement ID (G-XXXXXXXXXX)",
-      parseGa4MeasurementId
-    )
-    .option("--project <slug>", "project slug (env: BLODEMD_PROJECT)")
-    .option("--api-url <url>", "API URL (env: BLODEMD_API_URL)")
-    .action(async (measurementId: string, options: CommonOptions) => {
-      await runAction("Set GA4 failed", () =>
-        runSetGa4(measurementId, options)
-      );
-    });
 
   set
     .command("posthog")
@@ -315,10 +273,10 @@ export const registerAnalyticsCommand = (program: Command): void => {
   analytics
     .command("unset")
     .description("Remove an analytics integration")
-    .argument("<provider>", "provider to remove (ga4 | posthog)", parseProvider)
+    .argument("<provider>", "provider to remove (posthog)", parseProvider)
     .option("--project <slug>", "project slug (env: BLODEMD_PROJECT)")
     .option("--api-url <url>", "API URL (env: BLODEMD_API_URL)")
-    .action(async (provider: "ga4" | "posthog", options: CommonOptions) => {
+    .action(async (provider: "posthog", options: CommonOptions) => {
       await runAction("Unset failed", () => runUnset(provider, options));
     });
 };

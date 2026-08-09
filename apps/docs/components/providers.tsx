@@ -2,6 +2,8 @@
 
 import { ThemeProvider } from "next-themes";
 
+import { PostHogIdentity } from "./posthog-identity";
+
 export const Providers = ({ children }: { children: React.ReactNode }) => (
   <ThemeProvider
     attribute="class"
@@ -10,6 +12,7 @@ export const Providers = ({ children }: { children: React.ReactNode }) => (
     enableColorScheme
     storageKey="theme"
   >
+    <PostHogIdentity />
     {children}
   </ThemeProvider>
 );

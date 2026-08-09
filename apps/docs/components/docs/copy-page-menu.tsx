@@ -17,6 +17,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { capturePlatformEvent } from "@/lib/platform-analytics";
 
 interface CopyPageMenuProps {
   content?: string;
@@ -251,6 +252,7 @@ export const CopyPageMenu = ({
         const markdown = formatMarkdownForCopy(nextContent, title);
         await navigator.clipboard.writeText(markdown);
       }
+      capturePlatformEvent("documentation_copied");
       setTemporaryCopyStatus("copied");
       closeMenu();
     } catch {

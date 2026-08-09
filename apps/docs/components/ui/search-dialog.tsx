@@ -23,6 +23,7 @@ import {
   DialogDescription,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { capturePlatformEvent } from "@/lib/platform-analytics";
 import { isExternalHref, resolveHref, toDocHref } from "@/lib/routes";
 
 export interface SearchItem {
@@ -296,6 +297,9 @@ export const SearchDialog = ({
 
   const runSelection = useCallback(
     (item: SearchItem) => {
+      capturePlatformEvent("documentation_search_result_selected", {
+        result_path: item.path,
+      });
       closeSearch();
       const href = item.href
         ? resolveHref(item.href, basePath)

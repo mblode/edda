@@ -9,17 +9,15 @@ describe("ProjectUpdateSchema", () => {
     });
   });
 
-  it("accepts an analytics payload with both providers", () => {
+  it("accepts an analytics payload with PostHog", () => {
     expect(
       ProjectUpdateSchema.parse({
         analytics: {
-          ga4: { measurementId: "G-ABC123DEFG" },
           posthog: { projectKey: "phc_abcdefghijklmnopqrstuvwxyz" },
         },
       })
     ).toEqual({
       analytics: {
-        ga4: { measurementId: "G-ABC123DEFG" },
         posthog: { projectKey: "phc_abcdefghijklmnopqrstuvwxyz" },
       },
     });
@@ -31,10 +29,10 @@ describe("ProjectUpdateSchema", () => {
     });
   });
 
-  it("rejects invalid measurement IDs", () => {
+  it("rejects invalid PostHog project keys", () => {
     expect(() =>
       ProjectUpdateSchema.parse({
-        analytics: { ga4: { measurementId: "not-a-ga4-id" } },
+        analytics: { posthog: { projectKey: "not-a-posthog-key" } },
       })
     ).toThrow();
   });

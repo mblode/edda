@@ -1,14 +1,9 @@
-export interface TenantAnalyticsGa4 {
-  measurementId: string;
-}
-
 export interface TenantAnalyticsPosthog {
   projectKey: string;
   host?: string;
 }
 
 export interface TenantAnalytics {
-  ga4?: TenantAnalyticsGa4;
   posthog?: TenantAnalyticsPosthog;
 }
 

@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Field, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import type { OpenApiEntry } from "@/lib/openapi";
+import { capturePlatformEvent } from "@/lib/platform-analytics";
 
 interface OperationParameter {
   description?: string;
@@ -306,6 +307,10 @@ export const ApiPlayground = ({
 
   const handleSend = useCallback(async () => {
     const url = buildUrl();
+    capturePlatformEvent("api_playground_request_sent", {
+      method: entry.operation.method,
+      uses_docs_proxy: useProxy,
+    });
     dispatch({ type: "requestStart" });
 
     try {

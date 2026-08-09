@@ -1,17 +1,6 @@
 import { InvalidArgumentError } from "commander";
 
-const GA4_MEASUREMENT_ID_REGEX = /^G-[A-Z0-9]{4,20}$/;
 const POSTHOG_PROJECT_KEY_REGEX = /^phc_[A-Za-z0-9]{20,}$/;
-
-export const parseGa4MeasurementId = (value: string): string => {
-  const trimmed = value.trim();
-  if (!GA4_MEASUREMENT_ID_REGEX.test(trimmed)) {
-    throw new InvalidArgumentError(
-      "GA4 measurement IDs look like G-XXXXXXXXXX."
-    );
-  }
-  return trimmed;
-};
 
 export const parsePosthogProjectKey = (value: string): string => {
   const trimmed = value.trim();
@@ -44,12 +33,12 @@ export const parsePosthogHost = (value: string): string => {
   return trimmed;
 };
 
-export const parseProvider = (value: string): "ga4" | "posthog" => {
+export const parseProvider = (value: string): "posthog" => {
   const normalized = value.trim().toLowerCase();
-  if (normalized === "ga4" || normalized === "posthog") {
+  if (normalized === "posthog") {
     return normalized;
   }
   throw new InvalidArgumentError(
-    `Unknown provider "${value}". Expected "ga4" or "posthog".`
+    `Unknown provider "${value}". Expected "posthog".`
   );
 };
