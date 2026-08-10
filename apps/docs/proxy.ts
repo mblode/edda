@@ -19,6 +19,7 @@ import {
   encodeTenantAnalyticsHeader,
   TENANT_HEADERS,
 } from "./lib/tenant-headers";
+import { tenantNotFoundResponse } from "./lib/tenant-not-found-response";
 import { lookupTenantDocSlug } from "./lib/tenant-slug-index";
 import { applyTenantUtilityContextSearchParams } from "./lib/tenant-utility-context";
 
@@ -313,22 +314,10 @@ export const proxy = async (request: NextRequest) => {
       docSlug === "/" ? "" : docSlug.replace(/^\//, "") || "";
     docSlugLookup = await lookupTenantDocSlug(resolution.tenant, relativeSlug);
     if (docSlugLookup === "miss") {
-      // Real HTTP 404 before Cache Components can stream a soft-200 shell.
-      // Rewrite to a route handler that owns the status + no-store CDN headers.
-      const notFoundUrl = request.nextUrl.clone();
-      notFoundUrl.pathname = `/sites/${resolution.tenant.slug}/http-404`;
-      const notFoundResponse = NextResponse.rewrite(notFoundUrl, {
-        request: { headers: requestHeaders },
-      });
-      notFoundResponse.headers.set(
-        "CDN-Cache-Control",
-        TENANT_ERROR_CACHE_CONTROL
-      );
-      notFoundResponse.headers.set(
-        "Vercel-CDN-Cache-Control",
-        TENANT_ERROR_CACHE_CONTROL
-      );
-      return notFoundResponse;
+      // Return the 404 body + status from the proxy itself. Rewriting to a
+      // route/page lets Cache Components commit a soft-200 shell first; a
+      // direct response owns the status code.
+      return tenantNotFoundResponse();
     }
   }
 
