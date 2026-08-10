@@ -9,12 +9,13 @@ export const computeETag = (content: string): string => {
 
 export const handleIfNoneMatch = (
   request: Request,
-  etag: string
+  etag: string,
+  extraHeaders?: HeadersInit
 ): NextResponse | null => {
   const ifNoneMatch = request.headers.get("if-none-match");
   if (ifNoneMatch && ifNoneMatch === etag) {
     return new NextResponse(null, {
-      headers: { ETag: etag },
+      headers: { ...extraHeaders, ETag: etag },
       status: 304,
     });
   }

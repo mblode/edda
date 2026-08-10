@@ -37,12 +37,14 @@ Deployed to `acme.blode.md`.
 
 ## What you get
 
-- **GitHub auto-deploy** — install once. Every push to your branch deploys in seconds.
-- **Custom domains** — point a domain, get SSL. Or proxy docs at yourdomain.com/docs.
-- **MDX components** — 30+ out of the box: callouts, tabs, code groups, API refs.
-- **Search** — full-text search across every page. No plugin, no config.
-- **Content types** — docs, blogs, changelogs, and courses in one project, one domain.
-- **API reference** — point at an OpenAPI spec, ship an interactive API reference.
+Components, hosting, search, and an API reference, all from the same repo. Everything to keep people and agents reading the same docs. Background on the Markdown index agents fetch is in our [free online llms.txt resources](https://blode.md/free-online-llms-txt-resources).
+
+- **GitHub auto-deploy**: install once. Every push to your branch deploys in seconds.
+- **Custom domains**: point a domain, get SSL. Or proxy docs at yourdomain.com/docs.
+- **MDX components**: 30+ out of the box: callouts, tabs, code groups, API refs.
+- **Search**: full-text search across every page. No plugin, no config.
+- **Content types**: docs, blogs, changelogs, and courses in one project, one domain.
+- **API reference**: point at an OpenAPI spec, ship an interactive API reference.
 
 ## Keep docs on your domain
 

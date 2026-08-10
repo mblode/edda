@@ -1,9 +1,13 @@
 ---
 title: Code group
-description: Display multiple code blocks with tabbed navigation.
+description: Show related code samples in a CodeGroup with tabbed navigation so readers can switch languages, package managers, or tools in one place.
 ---
 
 Use the `CodeGroup` component to show multiple related code blocks in a single tabbed container. This is useful for showing the same command or snippet across different languages or tools.
+
+Use `CodeGroup` whenever readers need the same instruction in more than one form: package managers, programming languages, or shell variants. It keeps the page shorter than stacking separate code blocks and lets readers pick their stack without scrolling past irrelevant commands. Tab labels come from each fence's `title` attribute, so name tabs explicitly when two blocks share a language.
+
+On quickstart pages, a common pattern is a `CodeGroup` with npm, pnpm, and yarn install commands followed by `blodemd new`. For API reference pages, group Node.js, Python, and cURL examples so integrators can copy the sample that matches their backend.
 
 ## Basic usage
 
@@ -109,3 +113,9 @@ Tabs are labeled in this order of priority:
   Always set explicit `title` attributes when the language alone does not
   distinguish the tabs.
 </Tip>
+
+## Related pages
+
+- [Code blocks](/content/code-blocks) -- syntax highlighting and titles for single snippets
+- [Tabs](/components/tabs) -- tabbed prose or mixed content, not just code
+- [Installer](/components/installer) -- copyable install command when only one package manager matters

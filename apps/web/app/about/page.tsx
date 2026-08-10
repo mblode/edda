@@ -9,9 +9,9 @@ import { pageMetadata } from "@/lib/marketing-site";
 
 export const metadata = pageMetadata({
   description:
-    "Blode.md is a docs platform that lives in your git repo. Write MDX, push to main, and ship documentation as fast as you ship code, with no pipeline to maintain.",
+    "About Blode.md, the docs platform in your git repo. Write MDX locally, push to main, and ship documentation as fast as you ship code.",
   path: "/about",
-  title: "About",
+  title: "About the Blode.md docs platform",
 });
 
 export default function AboutPage() {
@@ -28,7 +28,15 @@ export default function AboutPage() {
           <p className="measure mt-6 text-balance text-lg text-muted-foreground md:text-xl">
             Docs used to be pages people scanned. They still are. They are also
             how every AI agent learns your product. Blode.md keeps that
-            interface where it belongs, next to the code.
+            interface where it belongs, next to the code. How agents find that
+            content on the open web is covered in our{" "}
+            <Link
+              className="underline underline-offset-4"
+              href="/free-online-llms-txt-resources"
+            >
+              free online llms.txt resources
+            </Link>
+            .
           </p>
         </div>
       </section>
@@ -54,6 +62,19 @@ export default function AboutPage() {
                 Blode.md keeps the surface small. No plugin marketplace, no deep
                 config. If a feature widens the gap between code and docs, it
                 does not ship.
+              </p>
+              <p>
+                The CLI scaffolds a project, the renderer ships MDX, and the
+                hosted service deploys on every push. Custom domains, search,
+                and an API reference are included from day one. See{" "}
+                <Link className="underline underline-offset-4" href="/pricing">
+                  pricing
+                </Link>{" "}
+                for hosted and self-hosted options, or read the{" "}
+                <Link className="underline underline-offset-4" href="/docs">
+                  docs
+                </Link>{" "}
+                to get started.
               </p>
               <p>
                 The longer version of that argument is in{" "}

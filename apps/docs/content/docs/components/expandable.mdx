@@ -1,6 +1,6 @@
 ---
 title: Expandable
-description: Collapsible sections for nested property details.
+description: Hide nested properties, optional fields, and advanced options behind Expandable sections so reference docs stay readable without losing detail.
 ---
 
 Use the `Expandable` component to hide supplementary details behind a toggle. This is useful for documenting nested objects, optional configuration, or advanced options without overwhelming the reader.
@@ -9,15 +9,15 @@ Use the `Expandable` component to hide supplementary details behind a toggle. Th
 
 ```mdx
 <Expandable title="child properties">
-  - **name** (`string`) — Display name of the item. - **value** (`number`) —
-  Numeric value associated with the item. - **metadata** (`object`) — Additional
+  - **name** (`string`): Display name of the item. - **value** (`number`):
+  Numeric value associated with the item. - **metadata** (`object`): Additional
   key-value pairs.
 </Expandable>
 ```
 
 <Expandable title="child properties">
-  - **name** (`string`) — Display name of the item. - **value** (`number`) —
-  Numeric value associated with the item. - **metadata** (`object`) — Additional
+  - **name** (`string`): Display name of the item. - **value** (`number`):
+  Numeric value associated with the item. - **metadata** (`object`): Additional
   key-value pairs.
 </Expandable>
 
@@ -27,16 +27,14 @@ Set `defaultOpen` to reveal the content on page load:
 
 ```mdx
 <Expandable title="response fields" defaultOpen>
-  - **id** (`string`) — Unique identifier. - **status** (`"active" |
-  "archived"`) — Current status. - **createdAt** (`string`) — ISO 8601
-  timestamp.
+  - **id** (`string`): Unique identifier. - **status** (`"active" |
+  "archived"`): Current status. - **createdAt** (`string`): ISO 8601 timestamp.
 </Expandable>
 ```
 
 <Expandable title="response fields" defaultOpen>
-  - **id** (`string`) — Unique identifier. - **status** (`"active" |
-  "archived"`) — Current status. - **createdAt** (`string`) — ISO 8601
-  timestamp.
+  - **id** (`string`): Unique identifier. - **status** (`"active" |
+  "archived"`): Current status. - **createdAt** (`string`): ISO 8601 timestamp.
 </Expandable>
 
 ## Nested expandables
@@ -45,23 +43,23 @@ You can nest expandables to document deeply nested structures:
 
 ```mdx
 <Expandable title="project properties">
-  - **name** (`string`) — Project name.
-  - **config** (`object`) — Project configuration.
+  - **name** (`string`): Project name.
+  - **config** (`object`): Project configuration.
 
   <Expandable title="config properties">
-    - **appearance** (`object`) — Light and dark mode settings.
-    - **navigation** (`array`) — Sidebar navigation items.
+    - **appearance** (`object`): Light and dark mode settings.
+    - **navigation** (`array`): Sidebar navigation items.
   </Expandable>
 </Expandable>
 ```
 
 <Expandable title="project properties">
-  - **name** (`string`) — Project name.
-  - **config** (`object`) — Project configuration.
+  - **name** (`string`): Project name.
+  - **config** (`object`): Project configuration.
 
   <Expandable title="config properties">
-    - **appearance** (`object`) — Light and dark mode settings.
-    - **navigation** (`array`) — Sidebar navigation items.
+    - **appearance** (`object`): Light and dark mode settings.
+    - **navigation** (`array`): Sidebar navigation items.
   </Expandable>
 </Expandable>
 

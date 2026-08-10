@@ -3,7 +3,12 @@ import localFont from "next/font/local";
 
 import { Providers } from "@/components/providers";
 import { WebMcpTools } from "@/components/web-mcp";
-import { HOME_TITLE, SITE_NAME, TITLE_TEMPLATE } from "@/lib/marketing-site";
+import {
+  HOME_DESCRIPTION,
+  HOME_TITLE,
+  SITE_NAME,
+  TITLE_TEMPLATE,
+} from "@/lib/marketing-site";
 import { siteJsonLd } from "@/lib/structured-data";
 
 import "./globals.css";
@@ -28,8 +33,7 @@ const glideMono = localFont({
 export const metadata: Metadata = {
   authors: [{ name: "Matthew Blode", url: "https://blode.co" }],
   creator: "Matthew Blode",
-  description:
-    "Documentation should ship as fast as code. Blode.md is a terminal-native docs platform. Write MDX, push from your CLI, deploy on every merge.",
+  description: HOME_DESCRIPTION,
   metadataBase: new URL("https://blode.md"),
   openGraph: {
     siteName: SITE_NAME,

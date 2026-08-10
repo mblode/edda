@@ -34,10 +34,9 @@ export const GET = async (
   const origin = await getCanonicalOrigin(tenant, requestContext);
   const basePath = await getCanonicalDocBasePath(tenant, requestContext);
   const llmsTxtUrl = `${origin}${basePath}/llms.txt`;
-  // This file is an alternate representation of the HTML page, so point search
-  // engines at that page rather than hiding it. `noindex` would work too, but
-  // it stops the markdown consolidating its ranking signals into the page it
-  // duplicates.
+  // Markdown alternates stay fetchable for AI agents, but must not be indexed
+  // as standalone URLs (empty titles / short meta). Point crawlers at the HTML
+  // page via Link rel=canonical and keep them out of the index with noindex.
   const canonicalUrl = `${origin}${toDocHref(slugKey, basePath)}`;
   const blockquote =
     `> ## Documentation Index\n` +
@@ -46,7 +45,8 @@ export const GET = async (
 
   const body = blockquote + content;
   const etag = computeETag(body);
-  const notModified = handleIfNoneMatch(request, etag);
+  const robotsHeaders = { "X-Robots-Tag": "noindex" } as const;
+  const notModified = handleIfNoneMatch(request, etag, robotsHeaders);
   if (notModified) {
     return notModified;
   }
@@ -62,6 +62,7 @@ export const GET = async (
       Vary: "accept",
       "Vercel-CDN-Cache-Control":
         "public, s-maxage=3600, stale-while-revalidate=86400",
+      ...robotsHeaders,
     },
   });
 };

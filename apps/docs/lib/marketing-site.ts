@@ -7,6 +7,7 @@ export const MARKETING_CANONICAL_PATHS = [
   "/about",
   "/blog",
   "/changelog",
+  "/free-online-llms-txt-resources",
   "/pricing",
   "/privacy",
   "/security",

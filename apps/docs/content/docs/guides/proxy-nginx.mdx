@@ -1,6 +1,6 @@
 ---
 title: Proxy /docs through Nginx
-description: Reverse-proxy /docs/* to your Blode.md site with an Nginx location block.
+description: Add Nginx location blocks to reverse-proxy /docs and /_docs on your domain to a Blode.md site while keeping the rest of your site on your server.
 ---
 
 Drop this block into your Nginx server config to host docs under
@@ -32,12 +32,12 @@ location /_docs/ {
 }
 ```
 
-Replace `acme` with your project slug. The trailing slashes matter — they tell
+Replace `acme` with your project slug. The trailing slashes matter: they tell
 Nginx to strip the `/docs` prefix before forwarding.
 
 The second block is easy to miss and the page renders unstyled without it.
 Shared CSS, JavaScript and fonts are served from `/_docs/` at the root of your
-domain, not under `/docs`, so they need their own location block — and this one
+domain, not under `/docs`, so they need their own location block: and this one
 keeps the prefix instead of stripping it.
 
 ## Strip the prefix in Blode.md

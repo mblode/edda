@@ -2,26 +2,6 @@ import { NextResponse } from "next/server";
 
 import { marketingUrl } from "@/lib/marketing-site";
 
-const AI_CRAWLERS = [
-  "GPTBot",
-  "OAI-SearchBot",
-  "ChatGPT-User",
-  "Claude-Web",
-  "ClaudeBot",
-  "Claude-SearchBot",
-  "Claude-User",
-  "Google-Extended",
-  "PerplexityBot",
-  "Applebot-Extended",
-  "CCBot",
-];
-
-const CONTENT_SIGNAL = "ai-train=yes, search=yes, ai-input=yes";
-
-const aiCrawlerBlock = AI_CRAWLERS.map(
-  (agent) => `User-agent: ${agent}\nAllow: /\nContent-Signal: ${CONTENT_SIGNAL}`
-).join("\n\n");
-
 // Proxied dashboard and auth surfaces. They carry no search value and each
 // crawl of them burns budget that should go to docs.
 const DISALLOWED_PATHS = ["/app", "/oauth"];
@@ -33,9 +13,6 @@ const disallowBlock = DISALLOWED_PATHS.map((path) => `Disallow: ${path}`).join(
 const body = `User-agent: *
 Allow: /
 ${disallowBlock}
-Content-Signal: ${CONTENT_SIGNAL}
-
-${aiCrawlerBlock}
 
 Sitemap: ${marketingUrl("/sitemap.xml")}
 Sitemap: ${marketingUrl("/docs/sitemap.xml")}

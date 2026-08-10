@@ -1,9 +1,13 @@
 ---
 title: Installer
-description: Display a styled package installation command.
+description: Display a copyable package install command with the Installer component, including a styled default command generated from a package path.
 ---
 
 Use the `Installer` component to show a copyable installation command in a styled container.
+
+Place an `Installer` near the top of quickstart and onboarding pages so readers can install the CLI before they run other commands. The built-in copy button means they do not need to select text from a plain code block. If your docs cover multiple package managers, pass a custom `command` prop or pair this component with [Code group](/components/code-group) for npm, pnpm, and yarn variants on the same page.
+
+A typical getting started flow: show the install command, link to [CLI overview](/cli/overview), then walk through `blodemd new` and `blodemd dev`. On the CLI overview page itself, `Installer` renders the global install command with one line of MDX.
 
 ## Basic usage
 
@@ -42,3 +46,9 @@ If you omit the `command` prop, a default command is generated from the `path` v
     },
   }}
 />
+
+## Related pages
+
+- [CLI overview](/cli/overview) -- install the CLI and browse all commands
+- [Code group](/components/code-group) -- show npm, pnpm, and yarn install commands in tabs
+- [Tabs](/components/tabs) -- switch between related install or setup instructions

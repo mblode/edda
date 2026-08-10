@@ -1,6 +1,7 @@
 ---
-title: REST API
-description: Programmatic access to projects, deployments, and domains.
+title: REST API overview
+sidebarTitle: Overview
+description: Use the Blode.md REST API for programmatic access to projects, deployments, and domains when you need custom tooling beyond the CLI workflows.
 ---
 
 The base URL for all requests is `https://api.blode.md`.
@@ -47,7 +48,7 @@ All errors return JSON with an `error` string and an optional `issues` field for
 | GET    | `/projects/:projectId` | Get a project                                |
 | PATCH  | `/projects/:projectId` | Update a project                             |
 
-**POST /projects/ — request body**
+**POST /projects/: request body**
 
 <TypeTable
   type={{
@@ -70,7 +71,7 @@ All errors return JSON with an `error` string and an optional `issues` field for
 
 Returns the created project.
 
-**PATCH /projects/:projectId — request body**
+**PATCH /projects/:projectId: request body**
 
 <TypeTable
   type={{
@@ -104,7 +105,7 @@ Deployments follow a three-step flow: create → upload files → finalize.
 | POST   | `/projects/slug/:slug/deployments/:id/files/batch` | Upload files in batch |
 | POST   | `/projects/slug/:slug/deployments/:id/finalize`    | Finalize and promote  |
 
-**POST /projects/slug/:slug/deployments — request body**
+**POST /projects/slug/:slug/deployments: request body**
 
 <TypeTable
   type={{
@@ -126,7 +127,7 @@ Deployments follow a three-step flow: create → upload files → finalize.
   }}
 />
 
-**POST .../files/batch — request body**
+**POST .../files/batch: request body**
 
 <TypeTable
   type={{
@@ -146,7 +147,7 @@ Deployments follow a three-step flow: create → upload files → finalize.
   }}
 />
 
-**POST .../finalize — request body**
+**POST .../finalize: request body**
 
 <TypeTable
   type={{
@@ -170,7 +171,7 @@ Deployments follow a three-step flow: create → upload files → finalize.
 | GET    | `/projects/:projectId/domains/:domainId/verification` | Get DNS verification records |
 | POST   | `/projects/:projectId/domains/:domainId/verify`       | Trigger domain verification  |
 
-**POST /projects/:projectId/domains — request body**
+**POST /projects/:projectId/domains: request body**
 
 <TypeTable
   type={{

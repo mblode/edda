@@ -1,6 +1,6 @@
 ---
 title: blodemd analytics
-description: Manage tenant analytics integrations (PostHog) from the CLI.
+description: Use blodemd analytics to read and write PostHog project keys for a tenant, script rollouts in CI, and keep analytics config in your docs repo.
 ---
 
 `blodemd analytics` reads and writes the per-project analytics config that the dashboard exposes at **Settings → Analytics**. Use it to script rollouts, wire analytics into CI, or keep your docs repo the source of truth.
@@ -66,7 +66,7 @@ blodemd analytics unset posthog
 
 The CLI validates inputs before hitting the API:
 
-- **PostHog project key** must start with `phc_` and be at least 24 characters. Personal API keys (`phx_`) are rejected — they have far more privilege than the project key needs and would leak to the browser.
+- **PostHog project key** must start with `phc_` and be at least 24 characters. Personal API keys (`phx_`) are rejected: they have far more privilege than the project key needs and would leak to the browser.
 - **PostHog host** must be an `https://` URL.
 
 ## Authentication

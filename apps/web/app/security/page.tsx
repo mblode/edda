@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 import { Badge } from "@/components/ui/badge";
 import {
   Card,
@@ -11,9 +13,9 @@ import { pageMetadata } from "@/lib/marketing-site";
 
 export const metadata = pageMetadata({
   description:
-    "How Blode.md handles security. HTTPS by default, GitHub OAuth for sign-in, and open source code you can read.",
+    "How Blode.md handles security today: HTTPS by default, GitHub OAuth for sign-in, open source code you can audit, and a clear path to report vulnerabilities.",
   path: "/security",
-  title: "Security",
+  title: "Security practices and reporting",
 });
 
 const controls = [
@@ -61,6 +63,31 @@ export default function SecurityPage() {
                 </CardHeader>
               </Card>
             ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="border-border border-t py-24 md:py-32">
+        <div className="container">
+          <div className="measure text-muted-foreground">
+            <p>
+              We keep the attack surface small by design. The hosted service
+              runs on managed infrastructure, builds happen on push, and
+              published docs are static after deploy. Self-hosters run the same
+              open source stack and inherit the same defaults.
+            </p>
+            <p className="mt-4">
+              For operational details on connecting repos and publishing, read
+              the{" "}
+              <Link className="underline underline-offset-4" href="/docs">
+                docs
+              </Link>
+              . For what we collect when you use the service, see the{" "}
+              <Link className="underline underline-offset-4" href="/privacy">
+                privacy policy
+              </Link>
+              .
+            </p>
           </div>
         </div>
       </section>

@@ -20,7 +20,7 @@
     "pretest": "npm run build:packages",
     "test": "vitest run && npm run test:e2e",
     "pretest:unit": "npm run build:packages",
-    "test:unit": "vitest run --project unit",
+    "test:unit": "vitest run --project unit --project unit-web",
     "pretest:component": "npm run build:packages",
     "test:component": "vitest run --project component --passWithNoTests",
     "pretest:integration": "npm run build:packages",

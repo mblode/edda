@@ -11,8 +11,12 @@ const sharedExclude = [
   "apps/cli/packages/**",
 ];
 
-const sharedAlias = {
+const docsAlias = {
   "@": path.resolve(import.meta.dirname, "apps/docs"),
+};
+
+const webAlias = {
+  "@": path.resolve(import.meta.dirname, "apps/web"),
 };
 
 export default defineConfig({
@@ -21,10 +25,10 @@ export default defineConfig({
       {
         extends: true,
         oxc: { jsx: { runtime: "automatic" } },
-        resolve: { alias: sharedAlias },
+        resolve: { alias: docsAlias },
         test: {
           environment: "node",
-          exclude: sharedExclude,
+          exclude: [...sharedExclude, "apps/web/**"],
           include: ["**/*.unit.test.ts", "**/*.unit.test.tsx"],
           name: "unit",
         },
@@ -32,7 +36,21 @@ export default defineConfig({
       {
         extends: true,
         oxc: { jsx: { runtime: "automatic" } },
-        resolve: { alias: sharedAlias },
+        resolve: { alias: webAlias },
+        test: {
+          environment: "node",
+          exclude: sharedExclude,
+          include: [
+            "apps/web/**/*.unit.test.ts",
+            "apps/web/**/*.unit.test.tsx",
+          ],
+          name: "unit-web",
+        },
+      },
+      {
+        extends: true,
+        oxc: { jsx: { runtime: "automatic" } },
+        resolve: { alias: docsAlias },
         test: {
           environment: "jsdom",
           exclude: sharedExclude,

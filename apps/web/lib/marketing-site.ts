@@ -5,7 +5,11 @@ export const MARKETING_ORIGIN = "https://blode.md";
 export const SITE_NAME = "Blode.md";
 
 /** `Product: what it does`, under 60 characters so the SERP does not clip it. */
-export const HOME_TITLE = "Blode.md: terminal-native docs platform";
+export const HOME_TITLE = "Blode.md: Docs platform for MDX & CLI";
+
+/** Default meta description for the home page and root layout. */
+export const HOME_DESCRIPTION =
+  "Blode.md is a docs platform for shipping MDX documentation from your CLI. Write in your repo, push, and deploy on every merge.";
 
 /** Inner pages set a bare title and the root layout appends the product. */
 export const TITLE_TEMPLATE = `%s | ${SITE_NAME}`;
@@ -15,6 +19,7 @@ export const CANONICAL_PATHS = [
   "/about",
   "/blog",
   "/changelog",
+  "/free-online-llms-txt-resources",
   "/pricing",
   "/privacy",
   "/security",

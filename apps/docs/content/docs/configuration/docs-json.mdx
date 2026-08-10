@@ -1,6 +1,6 @@
 ---
 title: docs.json reference
-description: Configure navigation, branding, and runtime behavior with docs.json.
+description: Reference every supported docs.json field for navigation, branding, collections, OpenAPI, analytics, and deployment settings in your Blode.md project.
 ---
 
 Every Blode.md project is configured through a single `docs.json` file at the root of your docs directory.
@@ -245,8 +245,8 @@ Validation is strict: an unknown key is an error, so a typo like `nvaigation`
 fails before it ships rather than silently doing nothing.
 
 A published site is served leniently. If a deployed `docs.json` contains a key
-the platform does not recognise — because it was written for a newer version, or
-a field was retired — the site keeps rendering and the key is ignored. Only
+the platform does not recognise: because it was written for a newer version, or
+a field was retired: the site keeps rendering and the key is ignored. Only
 genuine problems, like a navigation tree of the wrong shape, stop a page from
 being served. Your docs never go down because of a config key.
 

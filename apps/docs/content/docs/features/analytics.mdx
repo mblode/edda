@@ -1,16 +1,17 @@
 ---
-title: Analytics
-description: Bring your own PostHog project key.
+title: PostHog analytics
+sidebarTitle: Analytics
+description: Connect your own PostHog project key in the dashboard to load analytics on every tenant docs page, with an optional EU host and no content wiring.
 ---
 
-Blode.md does not ship a proprietary analytics tool. Instead, we inject the analytics you already trust — PostHog — into every page of your tenant docs. Paste your key into the dashboard, and the script loads on the next request. There is nothing to wire up in your content.
+Blode.md does not ship a proprietary analytics tool. Instead, we inject the analytics you already trust: PostHog: into every page of your tenant docs. Paste your key into the dashboard, and the script loads on the next request. There is nothing to wire up in your content.
 
 ## Add PostHog
 
 1. Open the dashboard, pick your project, and go to **Settings → Analytics**.
 2. Fill in:
-   - **PostHog** — paste your project API key (starts with `phc_`). Find it in PostHog → Project settings. Personal API keys (`phx_`) are not supported.
-   - **PostHog host** — optional. Defaults to `https://us.i.posthog.com`. Use `https://eu.i.posthog.com` if your project lives in the EU cloud.
+   - **PostHog**: paste your project API key (starts with `phc_`). Find it in PostHog → Project settings. Personal API keys (`phx_`) are not supported.
+   - **PostHog host**: optional. Defaults to `https://us.i.posthog.com`. Use `https://eu.i.posthog.com` if your project lives in the EU cloud.
 3. Save. The next request on your tenant domain loads the script.
 
 Leave the project key empty to disable analytics.
@@ -22,7 +23,7 @@ When tenant analytics are configured, every request through the docs proxy carri
 PostHog only loads when `VERCEL_ENV === "production"`, so local dev previews and preview deployments never pollute your numbers.
 
 <Callout type="info">
-  PostHog project keys are public client-side tokens — they are designed to be
+  PostHog project keys are public client-side tokens: they are designed to be
   shipped to the browser. Blode.md treats them as tenant configuration, not
   secrets, and surfaces them in the dashboard as-is.
 </Callout>

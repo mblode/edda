@@ -9,9 +9,9 @@ import { pageMetadata } from "@/lib/marketing-site";
 
 export const metadata = pageMetadata({
   description:
-    "Notes, deep dives, and product updates from the team building Blode.md, the terminal-native docs platform that ships documentation straight from your git repo.",
+    "Notes, deep dives, and product updates from the Blode.md team. The terminal-native docs platform that ships documentation from your git repo.",
   path: "/blog",
-  title: "Blog",
+  title: "Blog, updates, and product notes",
 });
 
 export default function BlogPage() {
@@ -28,6 +28,44 @@ export default function BlogPage() {
           <p className="measure mt-6 text-balance text-lg text-muted-foreground md:text-xl">
             Updates, decisions, and ship notes from the team behind Blode.md.
           </p>
+        </div>
+      </section>
+
+      <section className="border-border border-t py-16 md:py-20">
+        <div className="container">
+          <div className="measure mx-auto text-muted-foreground">
+            <p>
+              We write here when we ship something worth explaining, when a
+              design choice needs context, or when a docs-as-code workflow
+              deserves a walkthrough. For step-by-step guides and reference
+              material, use the{" "}
+              <Link className="underline underline-offset-4" href="/docs">
+                docs
+              </Link>
+              . Release history lives on the{" "}
+              <Link className="underline underline-offset-4" href="/changelog">
+                changelog
+              </Link>
+              .
+            </p>
+            <p className="mt-4">
+              If you are new to the product, start with{" "}
+              <Link
+                className="underline underline-offset-4"
+                href="/blog/intro-to-blode-md"
+              >
+                Hello, Blode.md
+              </Link>{" "}
+              or browse our{" "}
+              <Link
+                className="underline underline-offset-4"
+                href="/free-online-llms-txt-resources"
+              >
+                free online llms.txt resources
+              </Link>{" "}
+              for background on agent-readable docs.
+            </p>
+          </div>
         </div>
       </section>
 

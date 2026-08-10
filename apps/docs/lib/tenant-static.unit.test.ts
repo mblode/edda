@@ -135,10 +135,9 @@ describe("tenant static LLM helpers", () => {
       "[List projects](https://blode.md/example/api/get-projects.md)"
     );
     expect(robots).toContain("Sitemap: https://blode.md/example/sitemap.xml");
-    expect(robots).toContain(
-      "Content-Signal: ai-train=no, search=yes, ai-input=yes"
-    );
+    expect(robots).not.toContain("Content-Signal:");
     expect(robots).toContain("# https://blode.md/example/llms.txt");
+    expect(robots.match(/^User-agent: \*$/gm)).toHaveLength(1);
     expect(sitemap).toContain(
       "<loc>https://blode.md/example/api/get-projects</loc>"
     );
@@ -167,10 +166,9 @@ describe("tenant static LLM helpers", () => {
       "[List projects](https://donebear.com/docs/api/get-projects.md)"
     );
     expect(robots).toContain("Sitemap: https://donebear.com/docs/sitemap.xml");
-    expect(robots).toContain(
-      "Content-Signal: ai-train=no, search=yes, ai-input=yes"
-    );
+    expect(robots).not.toContain("Content-Signal:");
     expect(robots).toContain("# https://donebear.com/docs/llms.txt");
+    expect(robots.match(/^User-agent: \*$/gm)).toHaveLength(1);
     expect(sitemap).toContain(
       "<loc>https://donebear.com/docs/api/get-projects</loc>"
     );

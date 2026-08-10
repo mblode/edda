@@ -1,6 +1,6 @@
 ---
 title: How it works
-description: Understand the architecture behind Blode.md's docs-as-code platform.
+description: See how local MDX, the blodemd CLI, Hono API, Vercel Blob storage, and the Next.js renderer work together when you push documentation.
 ---
 
 Blode.md turns local MDX files into a hosted documentation site. Here is how the pieces fit together.
@@ -60,7 +60,7 @@ Each project is an isolated tenant. Tenants are identified by subdomain (`projec
 
 During finalization, the API generates several indices alongside your content:
 
-- **Content index** — searchable page tree for the search feature
-- **Table of contents index** — heading structure for right-side navigation
-- **Utility index** — OpenAPI specs, `robots.txt`, `sitemap.xml`, and `llms.txt`
-- **Compiled MDX** — pre-compiled output for fast rendering
+- **Content index**: searchable page tree for the search feature
+- **Table of contents index**: heading structure for right-side navigation
+- **Utility index**: OpenAPI specs, `robots.txt`, `sitemap.xml`, and `llms.txt`
+- **Compiled MDX**: pre-compiled output for fast rendering

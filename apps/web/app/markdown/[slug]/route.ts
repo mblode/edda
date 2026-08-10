@@ -4,11 +4,14 @@ import path from "node:path";
 import { cacheLife } from "next/cache";
 import { NextResponse } from "next/server";
 
+import { marketingUrl } from "@/lib/marketing-site";
+
 const SLUGS = [
   "home",
   "about",
   "blog",
   "changelog",
+  "free-online-llms-txt-resources",
   "pricing",
   "privacy",
   "security",
@@ -46,11 +49,13 @@ export const GET = async (
     return new NextResponse("Not found", { status: 404 });
   }
   const body = await readMarkdown(slug as Slug);
+  const canonicalPath = slug === "home" ? "/" : `/${slug}`;
   return new NextResponse(body, {
     headers: {
       "CDN-Cache-Control":
         "public, s-maxage=3600, stale-while-revalidate=86400",
       "Content-Type": "text/markdown; charset=utf-8",
+      Link: `<${marketingUrl(canonicalPath)}>; rel="canonical"`,
       "Vercel-CDN-Cache-Control":
         "public, s-maxage=3600, stale-while-revalidate=86400",
       "X-Robots-Tag": "noindex",

@@ -151,6 +151,7 @@ export const proxy = async (request: NextRequest) => {
             Vary: "Accept",
             "Vercel-CDN-Cache-Control":
               "public, s-maxage=3600, stale-while-revalidate=86400",
+            "X-Robots-Tag": "noindex",
             "x-markdown-tokens": String(markdown.length),
           },
         });

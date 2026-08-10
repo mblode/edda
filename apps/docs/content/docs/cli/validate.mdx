@@ -1,9 +1,13 @@
 ---
 title: blodemd validate
-description: Validate your docs.json configuration file.
+description: Validate docs.json and your docs directory before deploy so the CLI catches schema errors, missing files, and common config mistakes early.
 ---
 
 Check that your `docs.json` file is valid JSON and can be parsed by the CLI before deploying.
+
+Run `blodemd validate` early in your workflow to catch schema errors, missing navigation pages, and malformed config before you spend time on preview or deploy. Unlike `blodemd push`, validate does not require authentication, which makes it a good fit for pre-commit hooks and CI jobs that only check configuration.
+
+A practical sequence: scaffold with `blodemd new`, edit `docs.json` and add pages, run `blodemd validate`, then `blodemd dev` to preview and `blodemd push` when you are ready. If validate fails, fix the reported issue in `docs.json` or your page paths before trying again.
 
 ```bash
 blodemd validate [dir]
@@ -54,3 +58,9 @@ i Done
   standalone validate step is useful when you want to fail fast without needing
   authentication.
 </Callout>
+
+## Related pages
+
+- [blodemd push](/cli/push) -- deploy after validate passes
+- [blodemd new](/cli/new) -- scaffold docs.json and index.mdx
+- [docs.json reference](/configuration/docs-json) -- schema fields validate checks

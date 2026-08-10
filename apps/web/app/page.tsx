@@ -24,13 +24,16 @@ import { SignupLink } from "@/components/ui/signup-link";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { TextEffect } from "@/components/ui/text-effect";
 import { TextReveal } from "@/components/ui/text-reveal";
-import { HOME_TITLE, pageMetadata } from "@/lib/marketing-site";
+import {
+  HOME_DESCRIPTION,
+  HOME_TITLE,
+  pageMetadata,
+} from "@/lib/marketing-site";
 
 // Repeats the root layout's title and description so the home page carries its
 // own canonical and og:url without changing what it already advertises.
 export const metadata = pageMetadata({
-  description:
-    "Documentation should ship as fast as code. Blode.md is a terminal-native docs platform. Write MDX, push from your CLI, deploy on every merge.",
+  description: HOME_DESCRIPTION,
   path: "/",
   title: HOME_TITLE,
 });
@@ -316,7 +319,14 @@ export default function HomePage() {
             <p className="measure mt-4 text-muted-foreground">
               Components, hosting, search, and an API reference, all from the
               same repo. Everything to keep people and agents reading the same
-              docs.
+              docs. Background on the Markdown index agents fetch is in our{" "}
+              <Link
+                className="underline underline-offset-4"
+                href="/free-online-llms-txt-resources"
+              >
+                free online llms.txt resources
+              </Link>
+              .
             </p>
           </div>
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
@@ -399,7 +409,7 @@ export default function HomePage() {
             Run{" "}
             <span className="font-mono text-foreground">blodemd new docs</span>,
             push, and you&apos;re live. Or connect GitHub once you have a docs
-            folder — every push ships itself from there.
+            folder. Every push ships itself from there.
           </p>
           <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
             <Button asChild className="rounded-full" size="lg">

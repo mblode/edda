@@ -17,9 +17,9 @@ import { pageMetadata } from "@/lib/marketing-site";
 
 export const metadata = pageMetadata({
   description:
-    "Blode.md ships as an MIT-licensed CLI and renderer. Use the hosted version for zero setup, or self-host on any Postgres and any Node host.",
+    "Blode.md pricing: MIT-licensed CLI and renderer you can self-host, plus free hosted docs with GitHub deploy, custom domains, and unlimited seats.",
   path: "/pricing",
-  title: "Pricing",
+  title: "Pricing for hosted and self-hosted docs",
 });
 
 interface Plan {
@@ -162,6 +162,22 @@ export default function PricingPage() {
             MIT-licensed CLI and renderer. Use the hosted version for zero
             setup, or self-host on any Postgres and any Node host. Same binary
             either way.
+          </p>
+          <p className="measure mt-4 text-muted-foreground">
+            Both paths include MDX rendering, full-text search, custom domains,
+            and agent-readable exports like llms.txt. The{" "}
+            <Link className="underline underline-offset-4" href="/docs">
+              docs
+            </Link>{" "}
+            walk through setup for either option. Background on llms.txt is in
+            our{" "}
+            <Link
+              className="underline underline-offset-4"
+              href="/free-online-llms-txt-resources"
+            >
+              free online llms.txt resources
+            </Link>
+            .
           </p>
         </div>
       </section>

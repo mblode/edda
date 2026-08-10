@@ -1,6 +1,6 @@
 ---
 title: Proxy /docs through Cloudflare Workers
-description: Forward /docs/* to your Blode.md site with a Cloudflare Worker.
+description: Use a Cloudflare Worker to proxy /docs and /_docs paths on your domain to a Blode.md site, keeping marketing pages on your apex or subdomain.
 ---
 
 Use a Cloudflare Worker to proxy any path under `/docs` to your Blode.md site.
@@ -31,7 +31,7 @@ export default {
 ```
 
 Replace `acme` with your project slug. Drop the `/_docs/` branch and the pages
-still load, but as unstyled HTML — every stylesheet and script 404s.
+still load, but as unstyled HTML: every stylesheet and script 404s.
 
 ## Routes
 
@@ -44,7 +44,7 @@ yourdomain.com/_docs/*
 
 Cloudflare invokes the Worker for every matching request and forwards them to
 your Blode.md site without exposing the upstream URL to users. Both routes are
-required — the second is what makes the asset branch above reachable.
+required: the second is what makes the asset branch above reachable.
 
 ## Caching
 

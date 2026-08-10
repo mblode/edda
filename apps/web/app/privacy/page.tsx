@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 import { Badge } from "@/components/ui/badge";
 import { MarketingShell } from "@/components/ui/marketing-shell";
 import { siteConfig } from "@/lib/config";
@@ -5,9 +7,9 @@ import { pageMetadata } from "@/lib/marketing-site";
 
 export const metadata = pageMetadata({
   description:
-    "Privacy policy for Blode.md: what data we collect, how we use it, the third parties we rely on, and how to reach us about your information.",
+    "Privacy policy for Blode.md: what we collect when you sign in or publish docs, how we use it, third parties we rely on, and how to contact us.",
   path: "/privacy",
-  title: "Privacy",
+  title: "Privacy policy and data practices",
 });
 
 export default function PrivacyPage() {
@@ -21,6 +23,10 @@ export default function PrivacyPage() {
           <h1 className="h-display max-w-3xl text-balance font-bold text-4xl md:text-6xl">
             Privacy policy
           </h1>
+          <p className="measure mt-6 text-balance text-lg text-muted-foreground md:text-xl">
+            What we collect, what we do with it, and how to reach us if you have
+            questions about your account or published content.
+          </p>
         </div>
       </section>
 
@@ -30,7 +36,13 @@ export default function PrivacyPage() {
             <h2>Scope</h2>
             <p>
               This policy covers Blode.md, the docs platform at blode.md, and
-              the CLI that publishes to it.
+              the CLI that publishes to it. It applies when you sign in with
+              GitHub, connect a repository, or use the hosted service. For how
+              we protect the platform itself, see our{" "}
+              <Link className="underline underline-offset-4" href="/security">
+                security page
+              </Link>
+              .
             </p>
 
             <h2>What we collect</h2>
@@ -44,6 +56,11 @@ export default function PrivacyPage() {
             <p>
               We do not sell your data. We do not run ad networks on docs you
               publish. We do not use your content to train models.
+            </p>
+            <p>
+              Docs you publish are public by default on your chosen domain.
+              Treat anything sensitive accordingly, and use your repo
+              permissions the same way you would for application code.
             </p>
 
             <h2>Your data</h2>

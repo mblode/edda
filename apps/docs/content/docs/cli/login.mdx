@@ -1,9 +1,13 @@
 ---
 title: blodemd login
-description: Authenticate with Blode.md via GitHub in your browser.
+description: Authenticate the Blode.md CLI with GitHub in your browser, store a local OAuth session, and unlock deploy commands like blodemd push.
 ---
 
 Authenticate your CLI session so you can deploy documentation with `blodemd push`.
+
+You only need `blodemd login` once per machine unless you run `blodemd logout` or your session expires. After login, the CLI stores OAuth tokens locally and refreshes them automatically when you run commands like `blodemd push` or `blodemd whoami`. Local deploys use your GitHub session; CI pipelines should use a project deploy key instead (see [Continuous deployment](/deployment/ci)).
+
+First-time setup often looks like: install the CLI from [CLI overview](/cli/overview), run `blodemd new`, then `blodemd login` and `blodemd push`. If port 8787 is in use, pass `--port` or use `--no-open` in headless environments.
 
 ```bash
 blodemd login
@@ -55,3 +59,9 @@ blodemd login --port 9090 --no-open
 ## Credential storage
 
 Credentials are stored at `~/.config/blodemd/credentials.json`. The OAuth session includes a refresh token so the CLI can renew your session automatically. Run `blodemd logout` to remove stored credentials.
+
+## Related pages
+
+- [blodemd whoami](/cli/whoami) -- confirm the signed-in email
+- [blodemd logout](/cli/logout) -- remove stored credentials
+- [blodemd push](/cli/push) -- deploy after authentication

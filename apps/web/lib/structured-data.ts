@@ -40,7 +40,10 @@ export const siteJsonLd = {
       "@id": ORGANIZATION_ID,
       "@type": "Organization",
       founder: person,
-      logo: marketingUrl("/web-app-manifest-512x512.png"),
+      logo: {
+        "@type": "ImageObject",
+        url: marketingUrl("/web-app-manifest-512x512.png"),
+      },
       name: SITE_NAME,
       sameAs: ["https://github.com/mblode/blodemd"],
       url: `${MARKETING_ORIGIN}/`,
@@ -55,13 +58,13 @@ export const siteJsonLd = {
     },
     {
       /**
-       * `SoftwareApplication` rather than `SoftwareSourceCode` because the
-       * hosted platform is the product the site sells, and /pricing publishes a
-       * real price for it. A `SoftwareApplication` with no `offers` would be a
-       * type the page does not back up.
+       * `SoftwareApplication` / `WebApplication` for the hosted product.
+       * We omit `offers` until real reviews or an aggregateRating exist;
+       * an Offer without ratings fails Semrush / rich-result validation for
+       * Software Application across every page that emits this graph.
        */
       "@id": SOFTWARE_ID,
-      "@type": "SoftwareApplication",
+      "@type": ["SoftwareApplication", "WebApplication"],
       applicationCategory: "DeveloperApplication",
       author: { "@id": PERSON_ID },
       description:
@@ -69,13 +72,7 @@ export const siteJsonLd = {
       isAccessibleForFree: true,
       license: "https://opensource.org/licenses/MIT",
       name: SITE_NAME,
-      offers: {
-        "@type": "Offer",
-        price: "0",
-        priceCurrency: "USD",
-        url: marketingUrl("/pricing"),
-      },
-      operatingSystem: "Any",
+      operatingSystem: "Web",
       publisher: { "@id": ORGANIZATION_ID },
       url: `${MARKETING_ORIGIN}/`,
     },

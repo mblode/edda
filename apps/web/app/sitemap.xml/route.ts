@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { blogPosts } from "@/lib/blog";
+import { educationalResources } from "@/lib/educational-resources";
 import { CANONICAL_PATHS, marketingUrl } from "@/lib/marketing-site";
 
 export const GET = () => {
@@ -8,6 +9,7 @@ export const GET = () => {
   // next.config.js and moves on every deploy, which is when the canonical
   // pages can actually change.
   const today = process.env.BUILD_DATE;
+  const canonicalSet = new Set<string>(CANONICAL_PATHS);
   const entries = [
     ...CANONICAL_PATHS.map((path) => ({
       lastmod: today,
@@ -19,6 +21,13 @@ export const GET = () => {
       path: `/blog/${post.slug}`,
       priority: "0.6",
     })),
+    ...educationalResources
+      .filter((resource) => !canonicalSet.has(resource.path))
+      .map((resource) => ({
+        lastmod: resource.updatedAt,
+        path: resource.path,
+        priority: "0.6",
+      })),
   ];
 
   const urls = entries

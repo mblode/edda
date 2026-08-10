@@ -1,6 +1,6 @@
 ---
 title: Proxy /docs through Vercel
-description: Host Blode.md docs at yourdomain.com/docs by adding a single rewrite to your Next.js project.
+description: Host Blode.md docs at yourdomain.com/docs by adding rewrites for /docs and /_docs to your Next.js next.config.js on an existing Vercel marketing site.
 ---
 
 If your marketing site already lives on Vercel, you can host docs at
@@ -39,7 +39,7 @@ working.
 
 The third one is easy to miss and the page renders unstyled without it. Shared
 CSS, JavaScript and fonts are served from `/_docs/*` at the root of your domain
-— not under `/docs` — because they are the same files for every page, so they
+, not under `/docs`: because they are the same files for every page, so they
 need their own rewrite.
 
 ## Strip the prefix in Blode.md
@@ -72,14 +72,14 @@ own domain out of the index.
 
 ## Verifying the proxy
 
-After deploying, hit `https://yourdomain.com/docs` — you should see the
+After deploying, hit `https://yourdomain.com/docs`: you should see the
 homepage of your Blode.md site rendered under your domain. View the network
 tab to confirm requests are 200 OK and being proxied.
 
 ## Why proxy?
 
 - One canonical domain for SEO.
-- No DNS work for users — pages just appear under your existing site.
+- No DNS work for users: pages just appear under your existing site.
 - Switch backends later by changing the rewrite target.
 
 ## Troubleshooting

@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 import { Badge } from "@/components/ui/badge";
 import { MarketingShell } from "@/components/ui/marketing-shell";
 import { RelativeTime } from "@/components/ui/relative-time";
@@ -5,9 +7,9 @@ import { pageMetadata } from "@/lib/marketing-site";
 
 export const metadata = pageMetadata({
   description:
-    "Every release, fix, and improvement to the Blode.md docs platform. See what shipped, when, and why across the CLI, renderer, and hosting.",
+    "Every release, fix, and improvement to Blode.md. See what shipped across the CLI, renderer, hosting, and agent-readable exports.",
   path: "/changelog",
-  title: "Changelog",
+  title: "Changelog and release notes",
 });
 
 const updates = [
@@ -36,6 +38,31 @@ export default function ChangelogPage() {
           <p className="measure mt-6 text-balance text-lg text-muted-foreground md:text-xl">
             Changes to the hosted platform, CLI, renderer, and docs runtime.
           </p>
+        </div>
+      </section>
+
+      <section className="border-border border-t py-16 md:py-20">
+        <div className="container">
+          <div className="measure text-muted-foreground">
+            <p>
+              We log notable releases here when they affect how you ship or
+              consume docs. Smaller fixes and dependency updates usually land
+              quietly on GitHub. For narrative context on bigger decisions,
+              check the{" "}
+              <Link className="underline underline-offset-4" href="/blog">
+                blog
+              </Link>
+              . To try what shipped, follow the{" "}
+              <Link className="underline underline-offset-4" href="/docs">
+                docs
+              </Link>{" "}
+              or sign in from the{" "}
+              <Link className="underline underline-offset-4" href="/pricing">
+                pricing
+              </Link>{" "}
+              page.
+            </p>
+          </div>
         </div>
       </section>
 

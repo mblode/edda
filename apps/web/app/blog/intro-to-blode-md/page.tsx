@@ -12,9 +12,9 @@ import { pageMetadata } from "@/lib/marketing-site";
 
 export const metadata = pageMetadata({
   description:
-    "Why we built Blode.md, a docs-as-code platform that publishes from GitHub in three commands, free and open source.",
+    "Why we built Blode.md, a docs-as-code platform that publishes from GitHub in three commands. Free, open source, and designed to keep docs next to your code.",
   path: "/blog/intro-to-blode-md",
-  title: "Hello, Blode.md",
+  title: "Introducing the Blode.md docs platform",
   type: "article",
 });
 
@@ -69,6 +69,21 @@ export default function IntroPostPage() {
                 Blode.md keeps the surface small on purpose. The pull request is
                 the review. The merge is the deploy. Docs use the same path your
                 code already does.
+              </p>
+              <p>
+                Hosted docs are free today, with self-hosting available under
+                the MIT license. See{" "}
+                <Link className="underline underline-offset-4" href="/pricing">
+                  pricing
+                </Link>{" "}
+                for what that includes. We also publish{" "}
+                <Link
+                  className="underline underline-offset-4"
+                  href="/free-online-llms-txt-resources"
+                >
+                  llms.txt resources
+                </Link>{" "}
+                so agents can find your docs on the open web.
               </p>
 
               <h2 className="h-display font-bold text-2xl md:text-3xl">

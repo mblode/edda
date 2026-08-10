@@ -1,9 +1,13 @@
 ---
 title: blodemd logout
-description: Remove stored credentials from your local machine.
+description: Remove the Blode.md CLI credentials file from your machine so the local OAuth session ends and future deploys require login again.
 ---
 
 Delete the credentials file saved by `blodemd login` from your local machine.
+
+Use `blodemd logout` when you finish on a shared computer, need to switch GitHub accounts, or want to confirm no local credentials remain before handing off a machine. After logout, commands that require auth, such as `blodemd push`, prompt you to run `blodemd login` again.
+
+To switch accounts, run `blodemd logout`, then `blodemd login` and verify with `blodemd whoami`. Logout only removes the local credentials file; it does not revoke access in the Blode.md dashboard or delete deployed docs.
 
 ```bash
 blodemd logout
@@ -34,3 +38,9 @@ i Done
 $ blodemd logout
 i No credentials found.
 ```
+
+## Related pages
+
+- [blodemd login](/cli/login) -- sign in again after logout
+- [blodemd whoami](/cli/whoami) -- confirm which account is active
+- [CLI overview](/cli/overview) -- credentials storage and global CLI behavior

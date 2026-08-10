@@ -1,9 +1,13 @@
 ---
 title: blodemd whoami
-description: Show the currently authenticated user.
+description: Print the email for the active Blode.md CLI session, refresh stored OAuth credentials when needed, and confirm you are logged in before deploying.
 ---
 
 Print the email of the active browser session.
+
+Run `blodemd whoami` when you need to confirm which GitHub account the CLI will use for deploys. This is especially helpful on shared machines, after switching between personal and work accounts, or when a `blodemd push` fails with an auth error. The command refreshes stored OAuth credentials when possible, so a successful run means your session is still valid for push and dashboard-linked commands.
+
+Typical workflow: run `blodemd login` once, then `blodemd whoami` before your first push on a new laptop. If whoami shows the wrong email, run `blodemd logout` and sign in again.
 
 ```bash
 blodemd whoami
@@ -20,3 +24,9 @@ $ blodemd whoami
 ~ Logged in as you@example.com
 i Done
 ```
+
+## Related pages
+
+- [blodemd login](/cli/login) -- sign in with GitHub when whoami shows no session
+- [blodemd logout](/cli/logout) -- clear credentials before switching accounts
+- [CLI overview](/cli/overview) -- full command list and install steps

@@ -1,6 +1,6 @@
 ---
 title: blodemd push
-description: Deploy documentation to Blode.md.
+description: Deploy your local MDX docs to Blode.md with blodemd push, using a browser session locally or a project deploy key in CI pipelines.
 ---
 
 Upload your documentation files and publish them to Blode.md in a single command.
@@ -9,7 +9,7 @@ Upload your documentation files and publish them to Blode.md in a single command
 blodemd push [dir]
 ```
 
-Authenticate once with `blodemd login` first. The CLI uses your browser GitHub session for local deploys. For CI, use a project deploy key in `BLODEMD_API_KEY` — see [Continuous deployment](/deployment/ci).
+Authenticate once with `blodemd login` first. The CLI uses your browser GitHub session for local deploys. For CI, use a project deploy key in `BLODEMD_API_KEY`: see [Continuous deployment](/deployment/ci).
 
 ## Directory resolution
 
@@ -107,7 +107,7 @@ blodemd push --project my-project --branch staging
 
 ## Deploying from CI
 
-Prefer not to run the CLI at all? Install the **Blode.md GitHub App** from the project Git tab in the dashboard. Pushes to your configured branch deploy automatically — no CLI, no tokens, no workflows. This is the recommended default.
+Prefer not to run the CLI at all? Install the **Blode.md GitHub App** from the project Git tab in the dashboard. Pushes to your configured branch deploy automatically: no CLI, no tokens, no workflows. This is the recommended default.
 
 To run the deploy yourself from GitHub Actions or another CI provider, use a project deploy key in `BLODEMD_API_KEY`. See [Continuous deployment](/deployment/ci).
 
@@ -117,3 +117,9 @@ The CLI skips the following entries during file collection:
 
 - Files and directories starting with `.` (dotfiles)
 - The `node_modules` directory
+
+## Related pages
+
+- [blodemd login](/cli/login) -- authenticate before your first push
+- [blodemd validate](/cli/validate) -- fail fast on config errors
+- [Continuous deployment](/deployment/ci) -- deploy from CI with a project key

@@ -1,9 +1,13 @@
 ---
 title: Frame
-description: Wrap content in a bordered container with an optional caption.
+description: Wrap screenshots, diagrams, and media in a Frame with an optional caption to separate visuals from body copy in your documentation pages.
 ---
 
 Use the `Frame` component to visually set apart screenshots, diagrams, or other media with a bordered container and an optional caption.
+
+Reach for `Frame` when a screenshot or diagram needs more visual weight than an inline image. Product walkthroughs, dashboard tours, and configuration guides benefit from a bordered container that separates the visual from surrounding prose. Add a `caption` to explain what the reader should notice, or a `hint` when the image is clickable or opens in a lightbox-style view in your theme.
+
+On a feature page, write the steps in prose, drop in a `Frame` with the relevant UI screenshot, then continue with the next section. Captions work well for before-and-after comparisons or calling out a specific control in a busy dashboard.
 
 ## Basic frame
 
@@ -60,3 +64,9 @@ Use the `hint` prop to display helper text above the frame:
     },
   }}
 />
+
+## Related pages
+
+- [Callout](/components/callout) -- highlight tips or warnings alongside screenshots
+- [Card](/components/card) -- link to related feature pages from visual sections
+- [Code blocks](/content/code-blocks) -- show configuration snippets next to UI screenshots

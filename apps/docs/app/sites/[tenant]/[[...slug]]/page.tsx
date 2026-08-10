@@ -16,6 +16,7 @@ import { CopyButton } from "@/components/ui/copy-button";
 import { defaultOgImageUrl } from "@/lib/default-og-image";
 import { getDocPageContent, getDocShellData } from "@/lib/docs-runtime";
 import { toMarkdownDocHref } from "@/lib/routes";
+import { buildDocsSeoTitle } from "@/lib/seo-title";
 import { TENANT_HEADERS } from "@/lib/tenant-headers";
 import {
   getCanonicalDocBasePath,
@@ -106,8 +107,12 @@ export const generateMetadata = async ({
   // `og:site_name` is a separate lever from the title suffix. It defaults to
   // `name` so a site that says nothing is unaffected.
   const siteName = config?.seo?.siteName ?? baseTitle;
-  const titleTemplate = `%s · ${baseTitle}`;
-  const title = pageTitle ? titleTemplate.replace("%s", pageTitle) : baseTitle;
+  const title = buildDocsSeoTitle({
+    baseTitle,
+    pageDescription,
+    pageTitle,
+    titleTemplate: config?.metadata?.titleTemplate,
+  });
   const requestContext = await getTenantRequestContext(tenantSlug, tenant);
   if (!requestContext) {
     notFound();

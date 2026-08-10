@@ -160,6 +160,15 @@ const nextConfig = {
   reactCompiler: true,
   rewrites() {
     return {
+      // afterFiles: filesystem routes like /robots.txt win first. IndexNow
+      // requires https://blode.md/<key>.txt; Next cannot parse app/[key].txt
+      // as a dynamic segment (typegen sees empty params), so rewrite here.
+      afterFiles: [
+        {
+          destination: "/indexnow/key/:key",
+          source: "/:key.txt",
+        },
+      ],
       beforeFiles: [
         // Prefixed docs chunks. Unlike the Referer rules below this needs no
         // hint from the client, so crawlers that omit Referer still get the
