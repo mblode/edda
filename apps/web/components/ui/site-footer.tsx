@@ -60,14 +60,14 @@ export const SiteFooter = () => (
         blode.co, so both of these are genuine cross-origin links: new tab,
         and rel="noopener noreferrer".
       */}
-      <div className="mt-14 flex flex-wrap items-center justify-center gap-x-2 border-border/60 border-t pt-8 lg:px-8">
+      <div className="mt-14 flex flex-wrap items-center justify-center gap-2 border-border/60 border-t pt-8 text-muted-foreground text-xs leading-5 tracking-tight lg:px-8">
+        <span>Crafted by</span>
         <a
-          className="inline-flex items-center gap-2 text-muted-foreground text-xs leading-5 tracking-tight transition-colors hover:text-foreground"
+          className="inline-flex items-center gap-2 transition-colors hover:text-foreground"
           href="https://blode.co"
           rel="noopener noreferrer author"
           target="_blank"
         >
-          <span>Crafted by</span>
           {/* oxlint-disable-next-line no-img-element -- self-hosted 20px avatar, plain img avoids next/image overhead */}
           <img
             // Decorative: the link's own text already reads "Matthew Blode", so
