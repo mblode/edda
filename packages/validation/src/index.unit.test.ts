@@ -29,6 +29,27 @@ describe("config validation", () => {
         "indexign"
       );
     });
+
+    it("accepts seo.siteName as a separate lever from name", () => {
+      const result = validateDocsConfig({
+        ...baseConfig,
+        seo: { siteName: "Matthew Blode" },
+      });
+
+      expect(result.success).toBe(true);
+      // `name` still drives the title suffix; only the card credit moves.
+      expect(result.success && result.data.name).toBe("Acme");
+      expect(result.success && result.data.seo?.siteName).toBe("Matthew Blode");
+    });
+
+    it("rejects an empty seo.siteName rather than emitting a blank credit", () => {
+      const result = validateDocsConfig({
+        ...baseConfig,
+        seo: { siteName: "   " },
+      });
+
+      expect(result.success).toBe(false);
+    });
   });
 
   describe("rendering", () => {

@@ -151,6 +151,17 @@ export const SiteUrlSchema = z
 export const DocsSeoSchema = z
   .object({
     indexing: z.enum(["all", "default"]).optional(),
+    // `og:site_name` when the publisher is not the product.
+    //
+    // It defaults to `name`, which is also the title suffix
+    // (`Introduction · <name>`), so without this the two cannot be separated:
+    // a site that wants its card to credit a person has to rename itself in
+    // every page title to do it. Five blode.co zones proxy these docs and each
+    // had to rewrite this one meta tag out of the served HTML with a regex.
+    //
+    // Omit it and nothing changes, which is what keeps external tenants out of
+    // this entirely.
+    siteName: z.string().trim().min(1).optional(),
     siteUrl: SiteUrlSchema.optional(),
   })
   .strict();

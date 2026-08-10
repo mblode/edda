@@ -90,6 +90,9 @@ export const generateMetadata = async ({
   } = data;
 
   const baseTitle = config?.name ?? "Docs";
+  // `og:site_name` is a separate lever from the title suffix. It defaults to
+  // `name` so a site that says nothing is unaffected.
+  const siteName = config?.seo?.siteName ?? baseTitle;
   const titleTemplate = `%s · ${baseTitle}`;
   const title = pageTitle ? titleTemplate.replace("%s", pageTitle) : baseTitle;
   const requestContext = await getTenantRequestContext(tenantSlug, tenant);
@@ -136,7 +139,7 @@ export const generateMetadata = async ({
     openGraph: {
       description: ogDescription,
       images: [ogImage],
-      siteName: baseTitle,
+      siteName,
       title,
       type: "website",
       url: canonicalUrl,
