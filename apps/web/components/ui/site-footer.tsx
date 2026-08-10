@@ -70,7 +70,9 @@ export const SiteFooter = () => (
           <span>Crafted by</span>
           {/* oxlint-disable-next-line no-img-element -- self-hosted 20px avatar, plain img avoids next/image overhead */}
           <img
-            alt="Matthew Blode"
+            // Decorative: the link's own text already reads "Matthew Blode", so
+            // any alt here would make its accessible name say the name twice.
+            alt=""
             className="rounded-full"
             height={20}
             loading="lazy"
