@@ -25,6 +25,71 @@ const DOCS_ASSET_PREFIX = "/_docs";
 // apps/dashboard/next.config.js.
 const DASHBOARD_ASSET_PREFIX = "/_app";
 
+const isDev = process.env.NODE_ENV === "development";
+
+// Safe on every response this app serves, including the ones it only proxies:
+// none of them can change how a page renders.
+const baseSecurityHeaders = [
+  { key: "X-Content-Type-Options", value: "nosniff" },
+  { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+  { key: "X-DNS-Prefetch-Control", value: "on" },
+  {
+    key: "Permissions-Policy",
+    value: "camera=(), microphone=(), geolocation=(), payment=()",
+  },
+];
+
+// PostHog runs through the `s.blode.md` reverse proxy, so one origin covers the
+// SDK's own script loads and its ingest calls. Unset at build time means
+// analytics is off (instrumentation-client soft no-ops) and the directive is
+// simply narrower.
+const posthogOrigin = (process.env.NEXT_PUBLIC_POSTHOG_HOST ?? "").trim();
+const posthogSource = posthogOrigin ? ` ${posthogOrigin}` : "";
+
+const contentSecurityPolicy = [
+  "default-src 'self'",
+  `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""}${posthogSource}`,
+  `connect-src 'self'${posthogSource}`,
+  // Remote images are configured for Vercel Blob. next/image serves them back
+  // through `/_next/image` on this origin, but an unoptimized one would not.
+  "img-src 'self' data: https://*.public.blob.vercel-storage.com",
+  "style-src 'self' 'unsafe-inline'",
+  "font-src 'self'",
+  "worker-src 'self' blob:",
+  "object-src 'none'",
+  "base-uri 'self'",
+  "form-action 'self'",
+  "frame-ancestors 'self'",
+  "upgrade-insecure-requests",
+].join("; ");
+
+// The CSP and the frame policy describe the marketing pages, and only those.
+// Everything below is rewritten to the docs or dashboard build, and a header
+// set here still lands on the proxied response: tenant docs render customer
+// MDX with arbitrary images, `<Iframe>` embeds and a per-tenant PostHog host,
+// so this policy would break them. Those apps set their own headers.
+const PROXIED_PREFIXES = [
+  "_app",
+  "_docs",
+  "\\.well-known",
+  "api",
+  "app",
+  "docs",
+  "docs\\.json",
+  "llms-full\\.txt",
+  "llms\\.txt",
+  "oauth",
+  "sites",
+];
+// A `/:path(...)` source needs a non-empty segment, so `/` is matched
+// separately rather than folded in here.
+const MARKETING_PATHS = `/:path((?!${PROXIED_PREFIXES.join("|")}).*)`;
+
+const marketingSecurityHeaders = [
+  { key: "Content-Security-Policy", value: contentSecurityPolicy },
+  { key: "X-Frame-Options", value: "SAMEORIGIN" },
+];
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   cacheComponents: true,
@@ -55,7 +120,21 @@ const nextConfig = {
       '</sitemap.xml>; rel="sitemap"; type="application/xml"',
       '</llms.txt>; rel="https://llmstxt.org/rel/llms-txt"; type="text/plain"',
     ].join(", ");
+    // Every matching rule applies in array order and a later value wins per
+    // header key, so the catch-all goes first and the narrower rules after it.
     return [
+      {
+        headers: baseSecurityHeaders,
+        source: "/(.*)",
+      },
+      {
+        headers: marketingSecurityHeaders,
+        source: "/",
+      },
+      {
+        headers: marketingSecurityHeaders,
+        source: MARKETING_PATHS,
+      },
       {
         headers: [{ key: "Link", value: agentDiscoveryLink }],
         source: "/",

@@ -22,10 +22,30 @@ const assetPrefix =
   cleanEnv(process.env.PLATFORM_ASSET_PREFIX) ||
   (isVercelRuntime ? "/_app" : "");
 
+// This is the authenticated surface, so `X-Frame-Options` earns its place:
+// `/oauth/consent` is exactly the kind of page clickjacking targets.
+//
+// No CSP here. Supabase auth calls its own project origin, which is an env var
+// rather than a constant, and a `connect-src` that is wrong at build time
+// fails as a sign-in that does not work. The headers below cannot.
+const securityHeaders = [
+  { key: "X-Content-Type-Options", value: "nosniff" },
+  { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+  { key: "X-Frame-Options", value: "SAMEORIGIN" },
+  { key: "X-DNS-Prefetch-Control", value: "on" },
+  {
+    key: "Permissions-Policy",
+    value: "camera=(), microphone=(), geolocation=(), payment=()",
+  },
+];
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   assetPrefix,
   cacheComponents: true,
+  headers() {
+    return [{ headers: securityHeaders, source: "/(.*)" }];
+  },
   experimental: {
     // A bail-out from prerendering throws. Without this every cached GET logs a
     // stack trace during the build that means nothing.

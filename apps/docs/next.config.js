@@ -30,6 +30,30 @@ const assetPrefix =
   cleanEnv(process.env.PLATFORM_ASSET_PREFIX) ||
   (isVercelRuntime ? "/_docs" : "");
 
+// Safe on every response, tenant docs included: none of these can change how a
+// page renders.
+//
+// Deliberately absent, and not an oversight:
+//
+// - **No CSP.** This app renders customer-authored MDX. `<Iframe>` and
+//   `<Video>` take an arbitrary `src`, images come from whatever CDN the
+//   customer uses, and `analytics.posthog.host` in a project's config is a
+//   free-form URL. Any `script-src`, `frame-src`, `connect-src` or `img-src`
+//   narrow enough to be worth setting would break somebody's published docs.
+// - **No `X-Frame-Options` on tenant docs.** A customer embedding their own
+//   docs in their own product is a supported-looking thing to do, and these
+//   pages are public and read-only, so the clickjacking they would prevent has
+//   nothing to act on. The dashboard paths below are the exception.
+const baseSecurityHeaders = [
+  { key: "X-Content-Type-Options", value: "nosniff" },
+  { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+  { key: "X-DNS-Prefetch-Control", value: "on" },
+  {
+    key: "Permissions-Policy",
+    value: "camera=(), microphone=(), geolocation=(), payment=()",
+  },
+];
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   assetPrefix,
@@ -79,7 +103,23 @@ const nextConfig = {
       '</.well-known/openid-configuration>; rel="http://openid.net/specs/connect/1.0/issuer"; type="application/json"',
       '</sitemap.xml>; rel="sitemap"; type="application/xml"',
     ].join(", ");
+    // Every matching rule applies in array order and a later value wins per
+    // header key, so the catch-all goes first and the narrower rules after it.
     return [
+      {
+        headers: baseSecurityHeaders,
+        source: "/(.*)",
+      },
+      // Auth and dashboard traffic this app proxies when apex requests land
+      // here. Framing those is worth blocking; framing a docs page is not.
+      {
+        headers: [{ key: "X-Frame-Options", value: "SAMEORIGIN" }],
+        source: "/app/:path*",
+      },
+      {
+        headers: [{ key: "X-Frame-Options", value: "SAMEORIGIN" }],
+        source: "/oauth/:path*",
+      },
       {
         headers: [{ key: "Link", value: agentDiscoveryLink }],
         source: "/",
