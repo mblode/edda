@@ -122,10 +122,14 @@ const nextConfig = {
     ].join(", ");
     // Every matching rule applies in array order and a later value wins per
     // header key, so the catch-all goes first and the narrower rules after it.
+    //
+    // `/:path*` is the house form for a catch-all. `/(.*)` works here, but it
+    // stops matching the bare root once an app sets a `basePath`, so the fleet
+    // uses the one form that is correct in both cases.
     return [
       {
         headers: baseSecurityHeaders,
-        source: "/(.*)",
+        source: "/:path*",
       },
       {
         headers: marketingSecurityHeaders,

@@ -44,7 +44,7 @@ const nextConfig = {
   assetPrefix,
   cacheComponents: true,
   headers() {
-    return [{ headers: securityHeaders, source: "/(.*)" }];
+    return [{ headers: securityHeaders, source: "/:path*" }];
   },
   experimental: {
     // A bail-out from prerendering throws. Without this every cached GET logs a

@@ -108,7 +108,7 @@ const nextConfig = {
     return [
       {
         headers: baseSecurityHeaders,
-        source: "/(.*)",
+        source: "/:path*",
       },
       // Auth and dashboard traffic this app proxies when apex requests land
       // here. Framing those is worth blocking; framing a docs page is not.
