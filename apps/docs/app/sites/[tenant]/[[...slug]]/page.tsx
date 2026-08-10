@@ -13,6 +13,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { CopyButton } from "@/components/ui/copy-button";
+import { defaultOgImageUrl } from "@/lib/default-og-image";
 import { getDocPageContent, getDocShellData } from "@/lib/docs-runtime";
 import { toMarkdownDocHref } from "@/lib/routes";
 import { TENANT_HEADERS } from "@/lib/tenant-headers";
@@ -21,6 +22,11 @@ import {
   getCanonicalOrigin,
   getTenantRequestContextFromHeaders,
 } from "@/lib/tenant-static";
+
+// Allow this segment to block on the existence check so `notFound()` can set a
+// real HTTP 404. With Cache Components the layout used to stream a Suspense
+// shell first, which committed 200 before the page could 404 (soft-404s).
+export const instant = false;
 
 const getTenantRequestContext = async (
   tenantSlug: string,
@@ -70,7 +76,14 @@ export const generateMetadata = async ({
   const { slug = [], tenant: tenantSlug } = await params;
   const slugKey = slug.join("/");
   const data = await getDocShellData(tenantSlug, slugKey);
-  if (!data || "configErrors" in data || "emptyState" in data) {
+  if (!data) {
+    // Unknown slug: throw so the response is a real 404, not title "Docs".
+    notFound();
+  }
+  if ("configErrors" in data || "emptyState" in data) {
+    if ("emptyState" in data && slugKey) {
+      notFound();
+    }
     return {
       description: "Documentation",
       title: "Docs",
@@ -97,10 +110,7 @@ export const generateMetadata = async ({
   const title = pageTitle ? titleTemplate.replace("%s", pageTitle) : baseTitle;
   const requestContext = await getTenantRequestContext(tenantSlug, tenant);
   if (!requestContext) {
-    return {
-      description: "Documentation",
-      title: "Docs",
-    };
+    notFound();
   }
 
   const canonicalBasePath = await getCanonicalDocBasePath(
@@ -119,8 +129,10 @@ export const generateMetadata = async ({
   const favicon = config?.favicon;
   // Always emit a complete Open Graph + Twitter card. Fall back to the docs
   // app's default OG image when the tenant hasn't configured a custom one.
+  // Path-aware: seo.siteUrl may include a zone path that must not be dropped.
   const ogImage =
-    config?.metadata?.ogImage ?? `${canonicalOrigin}/opengraph-image.png`;
+    config?.metadata?.ogImage ??
+    defaultOgImageUrl(canonicalOrigin, canonicalBasePath);
   const ogDescription =
     metaDescription ?? pageDescription ?? config?.description;
   const noindex = pageNoindex || (hidden && config.seo?.indexing !== "all");

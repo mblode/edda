@@ -19,6 +19,7 @@ import {
   encodeTenantAnalyticsHeader,
   TENANT_HEADERS,
 } from "./lib/tenant-headers";
+import { lookupTenantDocSlug } from "./lib/tenant-slug-index";
 import { applyTenantUtilityContextSearchParams } from "./lib/tenant-utility-context";
 
 // `_docs` is the assetPrefix the docs build uses on Vercel, so its chunks are
@@ -72,9 +73,29 @@ const getTenantUtilityRewritePath = (
 
 const TENANT_HTML_CACHE_CONTROL =
   "public, s-maxage=3600, stale-while-revalidate=60";
+const TENANT_ERROR_CACHE_CONTROL = "private, no-store";
 
 const isApiPath = (pathname: string) =>
   pathname === "/api" || pathname.startsWith("/api/");
+
+const ROOT_METADATA_IMAGE_PATHS = new Set([
+  "/opengraph-image",
+  "/opengraph-image.png",
+  "/twitter-image",
+  "/twitter-image.png",
+]);
+
+const getTenantMetadataImagePath = (pathname: string, basePath: string) => {
+  const normalizedPath = stripBasePath(pathname, basePath);
+  if (!ROOT_METADATA_IMAGE_PATHS.has(normalizedPath)) {
+    return null;
+  }
+  // Static metadata files live at the app root. Path-prefixed siteUrls advertise
+  // them under the zone path, so map that back before tenant page resolution.
+  return normalizedPath.endsWith(".png")
+    ? normalizedPath
+    : `${normalizedPath}.png`;
+};
 
 const getRedirectPathname = (
   pathname: string,
@@ -241,6 +262,25 @@ export const proxy = async (request: NextRequest) => {
 
   const url = request.nextUrl.clone();
   const rewritten = resolution.rewrittenPath;
+  const metadataImagePath = getTenantMetadataImagePath(
+    pathname,
+    resolution.basePath
+  );
+  if (metadataImagePath) {
+    // Serve the app-root metadata image even when seo.siteUrl nests it under a
+    // zone path (e.g. /allmd/docs/opengraph-image.png).
+    const imageResponse = NextResponse.rewrite(
+      new URL(metadataImagePath, request.url),
+      { request: { headers: requestHeaders } }
+    );
+    imageResponse.headers.set("CDN-Cache-Control", TENANT_HTML_CACHE_CONTROL);
+    imageResponse.headers.set(
+      "Vercel-CDN-Cache-Control",
+      TENANT_HTML_CACHE_CONTROL
+    );
+    return imageResponse;
+  }
+
   const utilityRewritePath = getTenantUtilityRewritePath(
     pathname,
     resolution.basePath,
@@ -259,6 +299,38 @@ export const proxy = async (request: NextRequest) => {
     (acceptsMarkdown
       ? getMarkdownExportSlug(`${pathname}.md`, resolution.basePath)
       : null);
+
+  // Per-page markdown alternate: only when the request resolves to the doc HTML
+  // shell (not utility txt, JSON page, or markdown content-negotiated branch).
+  const isDocHtmlBranch =
+    !utilityRewritePath && effectiveMarkdownSlug === null && !acceptsJson;
+
+  let docSlugLookup: Awaited<ReturnType<typeof lookupTenantDocSlug>> =
+    "unknown";
+  if (isDocHtmlBranch) {
+    const docSlug = stripBasePath(pathname, resolution.basePath);
+    const relativeSlug =
+      docSlug === "/" ? "" : docSlug.replace(/^\//, "") || "";
+    docSlugLookup = await lookupTenantDocSlug(resolution.tenant, relativeSlug);
+    if (docSlugLookup === "miss") {
+      // Real HTTP 404 before Cache Components can stream a soft-200 shell.
+      // Rewrite to a route handler that owns the status + no-store CDN headers.
+      const notFoundUrl = request.nextUrl.clone();
+      notFoundUrl.pathname = `/sites/${resolution.tenant.slug}/http-404`;
+      const notFoundResponse = NextResponse.rewrite(notFoundUrl, {
+        request: { headers: requestHeaders },
+      });
+      notFoundResponse.headers.set(
+        "CDN-Cache-Control",
+        TENANT_ERROR_CACHE_CONTROL
+      );
+      notFoundResponse.headers.set(
+        "Vercel-CDN-Cache-Control",
+        TENANT_ERROR_CACHE_CONTROL
+      );
+      return notFoundResponse;
+    }
+  }
 
   if (acceptsJson && !utilityRewritePath && effectiveMarkdownSlug === null) {
     const jsonSlug = stripBasePath(pathname, resolution.basePath).replace(
@@ -294,16 +366,24 @@ export const proxy = async (request: NextRequest) => {
     },
   });
 
-  // Cache the rewritten HTML at the CDN layer even when Next marks the final
-  // response dynamic. Content changes are still invalidated explicitly.
-  //
-  // These are set before the status is known -- middleware cannot see it -- so
-  // a 404 or config-error page inherits them too. A day-long
-  // stale-while-revalidate meant one transient failure kept being served long
-  // after the site recovered, and differently per edge region. Keep the window
-  // short so a bad response cannot outlive the problem that caused it.
-  response.headers.set("CDN-Cache-Control", TENANT_HTML_CACHE_CONTROL);
-  response.headers.set("Vercel-CDN-Cache-Control", TENANT_HTML_CACHE_CONTROL);
+  // Cache rewritten HTML at the CDN only when the slug is a known hit. Proxy
+  // cannot see the final status, so attaching the success TTL to every rewrite
+  // previously cached soft-200 "Page not found" bodies (and config-error pages)
+  // for an hour. Misses return above; unknown (no prebuilt index) gets no CDN
+  // success TTL so error HTML cannot outlive the problem that caused it.
+  if (isDocHtmlBranch) {
+    const htmlCacheControl =
+      docSlugLookup === "hit"
+        ? TENANT_HTML_CACHE_CONTROL
+        : TENANT_ERROR_CACHE_CONTROL;
+    response.headers.set("CDN-Cache-Control", htmlCacheControl);
+    response.headers.set("Vercel-CDN-Cache-Control", htmlCacheControl);
+  } else {
+    // Utility / markdown / JSON branches set their own route-level CDN headers.
+    // Keep a short shared window for anything that still flows through rewrite.
+    response.headers.set("CDN-Cache-Control", TENANT_HTML_CACHE_CONTROL);
+    response.headers.set("Vercel-CDN-Cache-Control", TENANT_HTML_CACHE_CONTROL);
+  }
   // Multi-tenant: same path may serve different content per Host or Accept header
   response.headers.set("Vary", "Accept, Host");
 
@@ -315,10 +395,6 @@ export const proxy = async (request: NextRequest) => {
     `<${llmsBasePath}/.well-known/skills/index.json>; rel="skills"`,
   ];
 
-  // Per-page markdown alternate: only when the request resolves to the doc HTML
-  // shell (not utility txt, JSON page, or markdown content-negotiated branch).
-  const isDocHtmlBranch =
-    !utilityRewritePath && effectiveMarkdownSlug === null && !acceptsJson;
   if (isDocHtmlBranch) {
     const docSlug = stripBasePath(pathname, resolution.basePath);
     const relativeSlug =
