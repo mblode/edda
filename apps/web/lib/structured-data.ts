@@ -39,13 +39,19 @@ export const siteJsonLd = {
     {
       "@id": ORGANIZATION_ID,
       "@type": "Organization",
+      contactPoint: {
+        "@type": "ContactPoint",
+        contactType: "customer support",
+        email: "m@blode.co",
+      },
+      email: "m@blode.co",
       founder: person,
       logo: {
         "@type": "ImageObject",
         url: marketingUrl("/web-app-manifest-512x512.png"),
       },
       name: SITE_NAME,
-      sameAs: ["https://github.com/mblode/blodemd"],
+      sameAs: ["https://github.com/mblode/blodemd", "https://blode.co"],
       url: `${MARKETING_ORIGIN}/`,
     },
     {

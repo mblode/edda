@@ -27,7 +27,9 @@ import { TextReveal } from "@/components/ui/text-reveal";
 import {
   HOME_DESCRIPTION,
   HOME_TITLE,
+  marketingUrl,
   pageMetadata,
+  SITE_NAME,
 } from "@/lib/marketing-site";
 
 // Repeats the root layout's title and description so the home page carries its
@@ -37,6 +39,62 @@ export const metadata = pageMetadata({
   path: "/",
   title: HOME_TITLE,
 });
+
+/** Visible publish / last-updated date for freshness and AI citation signals. */
+const HOME_UPDATED_AT = "2026-08-11";
+
+const faqs = [
+  {
+    answer:
+      "Blode.md is a documentation platform for MDX projects. Keep docs in your git repo, deploy with the CLI or GitHub auto-deploy, and serve versioned, searchable docs that people and AI agents can both read.",
+    question: "What is Blode.md?",
+  },
+  {
+    answer:
+      "Hosted Blode.md is free: unlimited projects, pages, and team seats, with custom domains, search, MDX components, and API references included. The CLI and renderer are MIT-licensed if you prefer to self-host. See the pricing page for plan details.",
+    question: "How much does Blode.md cost?",
+  },
+  {
+    answer:
+      "Install the CLI with npm i -g blodemd, run blodemd login, scaffold with blodemd new docs, then blodemd push docs. Or connect a GitHub repo once a docs folder with docs.json exists; every push to main deploys automatically.",
+    question: "How do I get started?",
+  },
+  {
+    answer:
+      "Yes. Sites get llms.txt, llms-full.txt, robots.txt, sitemaps, and per-page Markdown exports so agents can load concise docs without scraping HTML. Content is also structured for people browsing the same pages.",
+    question: "Is Blode.md built for AI agents?",
+  },
+  {
+    answer:
+      "Blode.md is built by Matthew Blode. For support, email m@blode.co or open an issue on the GitHub repository at github.com/mblode/blodemd. Company background is on the About page at blode.md/about.",
+    question: "Who builds Blode.md and how do I get support?",
+  },
+];
+
+const homeJsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebPage",
+      dateModified: HOME_UPDATED_AT,
+      datePublished: "2025-01-01",
+      description: HOME_DESCRIPTION,
+      name: HOME_TITLE,
+      url: marketingUrl("/"),
+    },
+    {
+      "@type": "FAQPage",
+      mainEntity: faqs.map((faq) => ({
+        "@type": "Question",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: faq.answer,
+        },
+        name: faq.question,
+      })),
+    },
+  ],
+};
 
 const features = [
   {
@@ -111,6 +169,11 @@ async rewrites() {
 export default function HomePage() {
   return (
     <MarketingShell>
+      <script
+        // oxlint-disable-next-line no-danger -- page-level WebPage + FAQPage JSON-LD
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(homeJsonLd) }}
+        type="application/ld+json"
+      />
       <section className="pb-16 pt-[calc(var(--header-height)+4rem)] md:pb-24 md:pt-[calc(var(--header-height)+7rem)] lg:pt-[calc(var(--header-height)+9rem)]">
         <div className="container flex flex-col items-center text-center">
           <h1 className="sr-only">The knowledge layer your AI runs on.</h1>
@@ -136,6 +199,11 @@ export default function HomePage() {
             AI agents learn your product from your docs. Blode.md keeps them in
             your repo, versioned with the code, readable by people and machines.
           </TextEffect>
+          <p className="mt-4 text-muted-foreground text-sm">
+            {SITE_NAME}
+            <span aria-hidden="true"> · </span>
+            Last updated <time dateTime={HOME_UPDATED_AT}>11 August 2026</time>
+          </p>
 
           <AnimatedGroup
             className="mt-10 flex flex-wrap items-center justify-center gap-3"
@@ -318,8 +386,12 @@ export default function HomePage() {
             </h2>
             <p className="measure mt-4 text-muted-foreground">
               Components, hosting, search, and an API reference, all from the
-              same repo. Everything to keep people and agents reading the same
-              docs. Background on the Markdown index agents fetch is in our{" "}
+              same repo. Hosted Blode.md is free with unlimited projects, pages,
+              and seats — see{" "}
+              <Link className="underline underline-offset-4" href="/pricing">
+                pricing
+              </Link>
+              . Background on the Markdown index agents fetch is in our{" "}
               <Link
                 className="underline underline-offset-4"
                 href="/free-online-llms-txt-resources"
@@ -393,6 +465,45 @@ export default function HomePage() {
                 </TabsContent>
               ))}
             </Tabs>
+          </div>
+        </div>
+      </section>
+
+      <section className="border-t border-border py-24 md:py-32" id="faq">
+        <div className="container">
+          <div className="grid gap-12 md:grid-cols-[1fr_1.4fr] md:items-start">
+            <div className="min-w-0">
+              <p className="mb-4 text-sm font-medium text-muted-foreground">
+                FAQ
+              </p>
+              <h2 className="h-title text-balance text-3xl font-semibold md:text-4xl">
+                Common questions
+              </h2>
+              <p className="measure mt-4 text-muted-foreground">
+                Short answers about the product, pricing, AI exports, and how to
+                reach the team. More detail lives in the{" "}
+                <Link className="underline underline-offset-4" href="/docs">
+                  docs
+                </Link>
+                ,{" "}
+                <Link className="underline underline-offset-4" href="/pricing">
+                  pricing
+                </Link>
+                , and{" "}
+                <Link className="underline underline-offset-4" href="/about">
+                  about
+                </Link>{" "}
+                pages.
+              </p>
+            </div>
+            <dl className="flex flex-col divide-y divide-border">
+              {faqs.map((faq) => (
+                <div className="py-6 first:pt-0 last:pb-0" key={faq.question}>
+                  <dt className="font-medium text-base">{faq.question}</dt>
+                  <dd className="mt-3 text-muted-foreground">{faq.answer}</dd>
+                </div>
+              ))}
+            </dl>
           </div>
         </div>
       </section>

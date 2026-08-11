@@ -5,7 +5,7 @@ import { marketingUrl } from "@/lib/marketing-site";
 import { GET } from "./route";
 
 describe("marketing robots.txt", () => {
-  it("returns a single valid robots body without Content-Signal", async () => {
+  it("returns a single valid robots body with Content-Signal", async () => {
     const response = GET();
     const body = await response.text();
 
@@ -16,9 +16,11 @@ describe("marketing robots.txt", () => {
     expect(body).toContain("Allow: /");
     expect(body).toContain("Disallow: /app");
     expect(body).toContain("Disallow: /oauth");
+    expect(body).toContain(
+      "Content-Signal: search=yes, ai-input=yes, ai-train=yes"
+    );
     expect(body).toContain(`Sitemap: ${marketingUrl("/sitemap.xml")}`);
     expect(body).toContain(`Sitemap: ${marketingUrl("/docs/sitemap.xml")}`);
-    expect(body).not.toContain("Content-Signal:");
     expect(body).not.toContain("User-agent: GPTBot");
     expect(body.match(/^User-agent: \*$/gm)).toHaveLength(1);
   });
