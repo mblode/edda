@@ -5,7 +5,7 @@ import { MARKETING_CANONICAL_PATHS, marketingUrl } from "@/lib/marketing-site";
 const body = [
   "# Blode.md",
   "",
-  "> Docs that match the code you shipped.",
+  "> No second editor. On purpose.",
   "",
   "## Pages",
   ...MARKETING_CANONICAL_PATHS.map((path) => {

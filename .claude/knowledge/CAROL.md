@@ -1,6 +1,6 @@
 # Carol — Blode.md
 
-Carol is the ideal customer for Blode.md. Definition first. Keystones, deal-breakers, and inciting events below are the working files this synthesizes. Evidence is the public product record plus hypothesized triggers; no customer interviews yet.
+Carol is the **hypothesized** ideal customer for Blode.md. Definition first. Keystones, deal-breakers, and inciting events below are the working files this synthesizes. Evidence is the public product record plus hypothesized triggers; no customer interviews yet. Until those exist, the about page speaks first-person as the founder (the first Carol), and the homepage does not treat hypothesized inciting events as observed commiseration.
 
 This file is whose stack `NEEDS-STACK.md` belongs to, and whose language `POSITIONING.md` must speak.
 
@@ -45,4 +45,4 @@ All hypothesized until onboarding interviews exist:
 
 ## How to use this
 
-Marketing speaks K1 in the headline and E1/E3 in the commiseration line. Sales (when it exists) qualifies on git/MDX and disqualifies D1–D5. Product builds what thrills K1–K4 and does not build for D1.
+Marketing speaks V1 in the headline (the refusal Mintlify will not paste) and P10 as the supporting beat (you do not stand up Docusaurus). Do not put E1/E3 on the homepage until observed. Sales (when it exists) qualifies on git/MDX and disqualifies D1–D5. Product builds what thrills K1–K4 and does not build for D1.

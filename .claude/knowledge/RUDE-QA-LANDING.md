@@ -6,10 +6,11 @@ phase: D
 target: "Shipped homepage (commits 1d5c936, 97f629d) plus CAROL.md / POSITIONING.md / VOTERS.md"
 started: 2026-08-12
 concluded: 2026-08-12
-outcome: not-yet-ready
+outcome: sharpened-plan
+executed: 2026-08-12
 ---
 
-This is a second pass. The first `RUDE-QA-LANDING.md` diagnosed the pre-voter homepage, then the same session implemented its own answers. That is theater. This file attacks **what is live on the branch now**. Homepage copy was not rewritten during this pass.
+This file attacked the homepage after commits 1d5c936 and 97f629d. The founder then said execute the plan. Decisions below were locked and shipped in copy. The interrogation above is the record of the attack, not current page copy.
 
 Method: `asb-rude-qa` (Berkun / Cohen). Craft bar: [shop.hiddenmultipliers.com](https://shop.hiddenmultipliers.com). Rival checked on 2026-08-12: [mintlify.com](https://www.mintlify.com/) ("The knowledge infrastructure agents build on") plus Mintlify's own docs: git is source of truth; the web editor is an optional third workflow that commits back to the repo.
 
@@ -130,27 +131,21 @@ P1 says the docs match the code. The close says a folder becomes a site. Those a
 
 ## Conclusion
 
-**Not yet ready.** The copy is sharper than "knowledge layer" / "Get started free." That is a local improvement against GitBook. It is not a strategy that wins against Mintlify, and it barely shows up against Docusaurus.
+**Sharpened plan.** The founder executed the honest line. Decisions (chose A over B; consequence accepted):
 
-The honest line, if you are willing to say it:
+1. **Named enemy is Mintlify** over GitBook and Docusaurus. Accepted: H1 cannot be "git-native MDX" (table stakes). GitBook is D1 in the FAQ. Docusaurus is P10 on the scroll beat.
+2. **More for Less** over Less for Less. Accepted: name the holes (no editor, no marketplace, no SOC 2/SSO, founder support, pruned schema). "What's the catch? None." is deleted.
+3. **H1 is V1** ("No second editor. On purpose.") over P1. P1 closes the page. Accepted: mixed teams bounce.
+4. **Carol stays hypothesized**; about is first-person. P13 stays off the homepage until observed.
+5. **About + pricing recant** to the same story.
+6. **Viability on the fold:** hosted price plus MIT if we disappear, in the subhead and a feature card.
 
-> Mintlify's git workflow without the seat tax or the marketplace. Same MDX in the repo. No second editor, on purpose. Hosted is `$0`. MIT if we disappear.
+Whether this is _correct_ (leveraged, asymmetric) is still a later question. It is now a defensible story.
 
-Ugly. True. Not on the page. The page still wants to be the opposite of the category. The product is a price/surface fork of Mintlify with a harder refusal.
-
-This pass does **not** rewrite the homepage. Answering the rude questions in copy without picking a named enemy is how the last file became theater.
-
-Whether a sharpened version would be _correct_ (leveraged, asymmetric, futuristic) is a later question. It is not yet even defensible.
+The interrogation above this heading is historical. Current copy lives in `apps/web/app/page.tsx`.
 
 ## Open questions
 
-The founder owes himself a pick on each. Until then, do not spend another copy pass.
-
-1. **Named enemy:** Mintlify (price/surface) vs GitBook (editor) vs Docusaurus (no host to maintain). One. The other two become supporting contrast, not the H1 war.
-2. **Price story:** More for Less (name trade-offs: no editor, no marketplace, no SOC 2, founder support, pruned `docs.json`; delete "What's the catch? None.") vs Less for Less (keep `$0` as identity; stop listing Mintlify amenities as if they were a surplus).
-3. **Carol:** hypothesis to test on the next five signups (what prompted you — verbatim) vs first-person founder page until that evidence exists.
-4. **H1:** keep P1 (stealable vs Mintlify) vs V1 (refusal) vs P10 (obsolete Docusaurus).
-5. **About + pricing:** recant to match the homepage, or admit the homepage recant was incomplete.
-6. **Viability on the fold:** MIT self-host / "one founder, email me" as a named trade-off, or keep pretending `$0` unlimited is a finished company.
-
-Do not run commiseration ads on E1/E3 until those events are observed in onboarding, not in the about page.
+- Ask the next five signups what prompted them (verbatim). V1 is still unproven by customers.
+- Do not run commiseration ads on E1/E3 until observed.
+- Paid hosted tier is still "later"; D3 buyers remain gone.

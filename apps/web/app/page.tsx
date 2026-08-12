@@ -46,23 +46,13 @@ const HOME_UPDATED_AT = "2026-08-12";
 const faqs = [
   {
     answer:
-      "Blode.md publishes MDX from your git repo. The pull request is the review. The merge is the deploy. You get a searchable site on your domain, plus llms.txt and per-page Markdown from that same commit.",
-    question: "What is Blode.md?",
+      "It is the git-native MDX path without the seat tax, the plugin marketplace, or a second editor. Write MDX in the repo. The pull request is the review. The merge publishes a searchable site on your domain, plus llms.txt and per-page Markdown from that same commit. We do not claim drop-in compatibility with every Mintlify config key.",
+    question: "Is this Mintlify without the seats?",
   },
   {
     answer:
-      "Hosted Blode.md is $0: unlimited projects, pages, and team seats, with custom domains, search, MDX components, and API references included. The CLI and renderer are MIT-licensed if you prefer to self-host. See the pricing page for plan details.",
+      "Hosted Blode.md is $0: unlimited projects, pages, and team seats, with custom domains, search, MDX, and API references included. What you do not get: a visual editor, a plugin marketplace, SOC 2, SSO, an SLA, or a logo wall. Support is the founder. The CLI and renderer are MIT if you want the same binary on your Postgres. See the pricing page.",
     question: "How much does Blode.md cost?",
-  },
-  {
-    answer:
-      "Install the CLI with npm i -g blodemd, run blodemd login, scaffold with blodemd new docs, then blodemd push docs. Or connect a GitHub repo once a docs folder with docs.json exists; every push to main deploys automatically.",
-    question: "How do I get started?",
-  },
-  {
-    answer:
-      "On every deploy the site writes llms.txt, llms-full.txt, robots.txt, a sitemap, and per-page .md exports from the MDX. Agents fetch those files instead of scraping HTML. Humans still get the HTML site from the same commit.",
-    question: "Do agents get Markdown, or only the HTML site?",
   },
   {
     answer:
@@ -71,7 +61,17 @@ const faqs = [
   },
   {
     answer:
-      "Blode.md is built by Matthew Blode. For support, email m@blode.co or open an issue on the GitHub repository at github.com/mblode/blodemd. Company background is on the About page at blode.md/about.",
+      "No. Sign in with GitHub and push. You do not run a Docusaurus or Next docs app, a search index, or a custom-domain pipeline to get a public URL. Self-host is still there if you want the same CLI on your Postgres.",
+    question: "Do I have to stand up Docusaurus?",
+  },
+  {
+    answer:
+      "On every deploy the site writes llms.txt, llms-full.txt, robots.txt, a sitemap, and per-page .md exports from the MDX. Agents fetch those files instead of scraping HTML. Humans still get the HTML site from the same commit.",
+    question: "Do agents get Markdown, or only the HTML site?",
+  },
+  {
+    answer:
+      "Blode.md is built by Matthew Blode. For support, email m@blode.co or open an issue on the GitHub repository at github.com/mblode/blodemd. The source is MIT. Company background is on the About page at blode.md/about.",
     question: "Who builds Blode.md and how do I get support?",
   },
 ];
@@ -115,13 +115,9 @@ const features = [
     title: "Custom domains",
   },
   {
-    Icon: CodeIcon,
-    description: "40 components: callouts, tabs, code groups, OpenAPI refs.",
-    title: "MDX components",
-  },
-  {
     Icon: MagnifyingGlassIcon,
-    description: "One full-text index. Same results in the docs search box.",
+    description:
+      "Full-text search included. No separate Algolia project to bill.",
     title: "Search",
   },
   {
@@ -135,6 +131,12 @@ const features = [
     description:
       "Point docs.json at an OpenAPI spec. Ship the reference in the same deploy.",
     title: "API reference",
+  },
+  {
+    Icon: CodeIcon,
+    description:
+      "Same CLI and renderer, your Postgres. MIT if you want to run it when we are gone.",
+    title: "MIT if we disappear",
   },
 ];
 
@@ -181,7 +183,7 @@ export default function HomePage() {
       />
       <section className="pb-16 pt-[calc(var(--header-height)+4rem)] md:pb-24 md:pt-[calc(var(--header-height)+7rem)] lg:pt-[calc(var(--header-height)+9rem)]">
         <div className="container flex flex-col items-center text-center">
-          <h1 className="sr-only">Docs that match the code you shipped.</h1>
+          <h1 className="sr-only">No second editor. On purpose.</h1>
           <TextEffect
             aria-hidden="true"
             as="div"
@@ -190,7 +192,7 @@ export default function HomePage() {
             preset="fade-in-blur"
             speedSegment={0.3}
           >
-            Docs that match the code you shipped.
+            No second editor. On purpose.
           </TextEffect>
 
           <TextEffect
@@ -201,9 +203,9 @@ export default function HomePage() {
             preset="fade-in-blur"
             speedSegment={0.2}
           >
-            Write MDX in the repo. Most docs tools want you to leave your
-            editor. The pull request is the review. The merge publishes the
-            site, including the Markdown agents fetch from that commit.
+            Write MDX in the repo. The pull request is the review. The merge
+            publishes the site, including the Markdown agents fetch from that
+            commit. Hosted is $0. MIT if you self-host.
           </TextEffect>
           <p className="mt-4 text-muted-foreground text-sm">
             {SITE_NAME}
@@ -226,7 +228,7 @@ export default function HomePage() {
             }}
           >
             <Button asChild className="rounded-full" size="lg">
-              <SignupLink location="home_hero">Start shipping</SignupLink>
+              <SignupLink location="home_hero">Connect GitHub</SignupLink>
             </Button>
 
             <Button
@@ -258,9 +260,7 @@ export default function HomePage() {
       </section>
 
       <section>
-        <TextReveal>
-          Most docs tools want you to leave your editor. Blode.md doesn&apos;t.
-        </TextReveal>
+        <TextReveal>You do not stand up a docs app to get a URL.</TextReveal>
       </section>
 
       <section className="py-24 md:py-32" id="how-it-works">
@@ -274,9 +274,9 @@ export default function HomePage() {
                 The merge is the deploy
               </h2>
               <p className="measure mt-4 text-muted-foreground">
-                Docs that live in a separate CMS lag the release. Then the agent
-                answering your users cites the old API. Blode.md publishes from
-                the same commit you merged.
+                Sign in with GitHub and push. You do not run Docusaurus, a
+                search index, or a custom-domain pipeline to get a public URL.
+                The merge publishes the site from that commit.
               </p>
             </div>
             <Tabs className="min-w-0" defaultValue="cli">
@@ -383,15 +383,16 @@ export default function HomePage() {
         <div className="container">
           <div className="mb-12 max-w-2xl">
             <p className="mb-4 text-sm font-medium text-muted-foreground">
-              What you get
+              Named trade-offs
             </p>
             <h2 className="h-title text-balance text-3xl font-semibold md:text-4xl">
               What the merge publishes
             </h2>
             <p className="measure mt-4 text-muted-foreground">
-              No plugin marketplace. No second editor. If a feature does not
-              move docs closer to the code, it does not ship. Hosted Blode.md is
-              $0 with unlimited projects, pages, and seats — see{" "}
+              No plugin marketplace. No second editor. No SOC 2, no SSO, no logo
+              wall. Support is the founder. If a feature does not move docs
+              closer to the code, it does not ship. Hosted Blode.md is $0 with
+              unlimited projects, pages, and seats — see{" "}
               <Link className="underline underline-offset-4" href="/pricing">
                 pricing
               </Link>
@@ -480,12 +481,11 @@ export default function HomePage() {
                 FAQ
               </p>
               <h2 className="h-title text-balance text-3xl font-semibold md:text-4xl">
-                Common questions
+                Is this Mintlify without the seats?
               </h2>
               <p className="measure mt-4 text-muted-foreground">
-                Short answers about git-native publish, pricing, Markdown
-                exports for agents, and how to reach the team. More detail lives
-                in the{" "}
+                Short answers about the smaller surface, the missing editor, and
+                who is on the other end of the email. More detail lives in the{" "}
                 <Link className="underline underline-offset-4" href="/docs">
                   docs
                 </Link>
@@ -518,17 +518,15 @@ export default function HomePage() {
           id="get-started"
         >
           <h2 className="h-display mx-auto max-w-4xl text-balance text-5xl font-semibold md:text-6xl lg:text-7xl">
-            Push a docs folder. You&apos;re live.
+            The answer matches the commit you merged.
           </h2>
           <p className="mx-auto mt-6 max-w-xl text-balance text-muted-foreground md:text-lg">
-            Run{" "}
-            <span className="font-mono text-foreground">blodemd new docs</span>,
-            push, and the site is up. No new editor. Or connect GitHub once you
-            have a docs folder. Every push to main publishes from there.
+            llms.txt and per-page Markdown come from that same deploy. Connect
+            GitHub, or clone the MIT repo and run the same CLI.
           </p>
           <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
             <Button asChild className="rounded-full" size="lg">
-              <SignupLink location="home_cta">Start shipping</SignupLink>
+              <SignupLink location="home_cta">Connect GitHub</SignupLink>
             </Button>
 
             <Button

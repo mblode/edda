@@ -5,11 +5,11 @@ export const MARKETING_ORIGIN = "https://blode.md";
 export const SITE_NAME = "Blode.md";
 
 /** `Product: what it does`, under 60 characters so the SERP does not clip it. */
-export const HOME_TITLE = "Blode.md: MDX docs from git, live on merge";
+export const HOME_TITLE = "Blode.md: git-native docs, no second editor";
 
 /** Default meta description for the home page and root layout. */
 export const HOME_DESCRIPTION =
-  "Write MDX in your repo. Merge to publish a docs site with search, custom domains, and Markdown exports for agents. Hosted is $0.";
+  "MDX in your git repo. Merge publishes the site. No second editor, no marketplace, no seats. Hosted is $0. MIT if you self-host.";
 
 /** Inner pages set a bare title and the root layout appends the product. */
 export const TITLE_TEMPLATE = `%s | ${SITE_NAME}`;

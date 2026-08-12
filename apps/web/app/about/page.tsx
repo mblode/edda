@@ -9,7 +9,7 @@ import { pageMetadata } from "@/lib/marketing-site";
 
 export const metadata = pageMetadata({
   description:
-    "About Blode.md, the docs platform in your git repo. Write MDX locally, push to main, and ship documentation as fast as you ship code.",
+    "Matthew Blode built Blode.md to keep docs in git. No second editor, no marketplace. Hosted is $0. MIT if you run it yourself.",
   path: "/about",
   title: "About the Blode.md docs platform",
 });
@@ -23,13 +23,12 @@ export default function AboutPage() {
             About
           </Badge>
           <h1 className="h-display max-w-3xl text-balance font-bold text-4xl md:text-6xl">
-            Your docs are your AI interface.
+            I will not ship a second editor.
           </h1>
           <p className="measure mt-6 text-balance text-lg text-muted-foreground md:text-xl">
-            Docs used to be pages people scanned. They still are. They are also
-            how every AI agent learns your product. Blode.md keeps that
-            interface where it belongs, next to the code. How agents find that
-            content on the open web is covered in our{" "}
+            I built Blode.md so docs stay in the repo, in the editor I already
+            use. The pull request is the review. The merge publishes the site.
+            How agents find that Markdown on the open web is covered in our{" "}
             <Link
               className="underline underline-offset-4"
               href="/free-online-llms-txt-resources"
@@ -49,35 +48,35 @@ export default function AboutPage() {
                 Why
               </Badge>
               <h2 className="h-display text-balance font-bold text-3xl md:text-4xl">
-                The knowledge layer belongs with the code
+                Git-native MDX, without the extras
               </h2>
             </div>
             <div className="measure flex flex-col gap-6 text-muted-foreground">
               <p>
-                Docs in a separate CMS drift. Agents reading drifted docs give
-                the wrong answer. The pull request is the review. The merge is
-                the deploy. Docs should use the same path.
+                Other git-native docs hosts added a web editor that commits back
+                to the repo, plus seats and a marketplace. I will not. A second
+                editor splits the release. If your team writes docs in a CMS,
+                this is the wrong tool.
               </p>
               <p>
-                Blode.md keeps the surface small. No plugin marketplace, no deep
-                config. If a feature widens the gap between code and docs, it
-                does not ship.
+                The surface stays small. No plugin marketplace, no SOC 2, no
+                SSO, no logo wall. Support is me. If a feature does not move
+                docs closer to the code, it does not ship.
               </p>
               <p>
-                The CLI scaffolds a project, the renderer ships MDX, and the
-                hosted service deploys on every push. Custom domains, search,
-                and an API reference are included from day one. See{" "}
+                Hosted is $0. The CLI and renderer are MIT — same binary on your
+                Postgres if you want to run it yourself. See{" "}
                 <Link className="underline underline-offset-4" href="/pricing">
                   pricing
                 </Link>{" "}
-                for hosted and self-hosted options, or read the{" "}
+                for both paths, or read the{" "}
                 <Link className="underline underline-offset-4" href="/docs">
                   docs
-                </Link>{" "}
-                to get started.
+                </Link>
+                .
               </p>
               <p>
-                The longer version of that argument is in{" "}
+                The longer version of why this exists is in{" "}
                 <Link
                   className="underline underline-offset-4"
                   href="/blog/intro-to-blode-md"
@@ -121,7 +120,7 @@ export default function AboutPage() {
                 >
                   GitHub
                 </a>
-                .
+                . MIT licensed.
               </p>
             </div>
             <div>

@@ -123,4 +123,4 @@ Yes. Blode.md sites get tenant-aware `/llms.txt`, `/llms-full.txt`, robots.txt, 
 
 If you want the educational path above without maintaining generators yourself, Blode.md turns a folder of MDX into a docs site that includes the AI-facing exports. Write locally, push from the CLI, review in a pull request. Same loop as code.
 
-[Start shipping docs](https://blode.md/oauth/consent) · [Read SEO docs](https://blode.md/docs/features/seo)
+[Connect GitHub](https://blode.md/oauth/consent) · [Read SEO docs](https://blode.md/docs/features/seo)

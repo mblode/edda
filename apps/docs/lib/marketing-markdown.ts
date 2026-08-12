@@ -1,13 +1,13 @@
 const MARKETING_MARKDOWN: Record<string, string> = {
   "/": `# Blode.md
 
-Docs that match the code you shipped.
+No second editor. On purpose.
 
-Write MDX in the repo. Most docs tools want you to leave your editor. The pull request is the review. The merge publishes the site, including the Markdown agents fetch from that commit.
+Write MDX in the repo. The pull request is the review. The merge publishes the site, including the Markdown agents fetch from that commit. Hosted is $0. MIT if you self-host.
 
 ## How it works
 
-Docs that live in a separate CMS lag the release. Then the agent answering your users cites the old API. Blode.md publishes from the same commit you merged.
+Sign in with GitHub and push. You do not run Docusaurus, a search index, or a custom-domain pipeline to get a public URL. The merge publishes the site from that commit.
 
 1. Install the GitHub app at github.com/apps/blodemd
 2. Pick a repo and a docs folder
@@ -24,14 +24,14 @@ blodemd push docs
 
 ## What the merge publishes
 
-No plugin marketplace. No second editor. If a feature does not move docs closer to the code, it does not ship.
+No plugin marketplace. No second editor. No SOC 2, no SSO, no logo wall. Support is the founder.
 
 - **GitHub auto-deploy**: install the GitHub App. Every push to main publishes.
 - **Custom domains**: point a domain, get SSL. Or proxy /docs on the site you already run.
-- **MDX components**: 40 components: callouts, tabs, code groups, OpenAPI refs.
-- **Search**: one full-text index. Same results in the docs search box.
+- **Search**: full-text search included. No separate Algolia project to bill.
 - **Content types**: docs, blogs, changelogs, and courses on one domain, from one repo.
 - **API reference**: point docs.json at an OpenAPI spec. Ship the reference in the same deploy.
+- **MIT if we disappear**: same CLI and renderer, your Postgres.
 
 ## Links
 
@@ -47,7 +47,7 @@ No plugin marketplace. No second editor. If a feature does not move docs closer 
 `,
   "/about": `# About Blode.md
 
-blode.md is a docs platform that lives in your git repo. Write MDX, push to main, ship docs.
+I will not ship a second editor. Docs stay in the git repo. Hosted is $0. MIT if you run it yourself.
 `,
   "/blog": `# Blog
 

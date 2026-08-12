@@ -71,8 +71,8 @@ Additional context is available in the files below. Consult the relevant file wh
 - `.claude/knowledge/incident-troubleshooting.md` — Incident debugging and recovery. Known failure modes, debugging approaches, runbooks, recovery steps.
 - `.claude/knowledge/local-dev-setup.md` — Local Development Setup. Node 24 runtime, test commands, Drizzle push workflow.
 - `.claude/knowledge/architecture-boundaries.md` — Architecture & System Boundaries. Dual Tenant type, tenant header flow, edge-config sync site, analytics scope.
-- `.claude/knowledge/CAROL.md` — Ideal customer for marketing and product (git-native MDX writer). Working files sit beside it (`OBSERVATIONS.md`, `STRENGTHS-WEAKNESSES.md`, `KEYSTONES.md`, `DEALBREAKERS.md`, `INCITING-EVENTS.md`).
+- `.claude/knowledge/CAROL.md` — Hypothesized ideal customer (git-native MDX writer). About page is first-person until interviews exist. Working files sit beside it (`OBSERVATIONS.md`, `STRENGTHS-WEAKNESSES.md`, `KEYSTONES.md`, `DEALBREAKERS.md`, `INCITING-EVENTS.md`).
 - `.claude/knowledge/NEEDS-STACK.md` — Customer needs ladder: features at publish-from-git, promise is the current correct answer, brag about obviating a self-hosted docs stack.
-- `.claude/knowledge/POSITIONING.md` — Reusable homepage/ad statements. Pricing story is More for Less. Do not revive "knowledge layer" or "Get started free."
-- `.claude/knowledge/VOTERS.md` — The one bet: docs stay in the customer's editor and git. Lead homepage commiseration with that refusal.
-- `.claude/knowledge/RUDE-QA-LANDING.md` — Adversarial review of the shipped homepage + Carol stack. Outcome: not yet ready. Do not rewrite homepage copy until the open questions are picked.
+- `.claude/knowledge/POSITIONING.md` — Reusable homepage/ad statements. Named enemy is Mintlify. H1 is V1 ("No second editor. On purpose."). More for Less with named trade-offs. Do not revive "knowledge layer," "Get started free," "Start shipping," or "What's the catch? None."
+- `.claude/knowledge/VOTERS.md` — The one bet: docs stay in the customer's editor and git. That refusal is the H1. Do not frame it as "most docs tools want you to leave your editor" (false of Mintlify git).
+- `.claude/knowledge/RUDE-QA-LANDING.md` — Adversarial review. Decisions locked 2026-08-12; homepage/about/pricing must tell that one story.
