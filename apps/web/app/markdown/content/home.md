@@ -1,20 +1,32 @@
 # Blode.md
 
-> Docs your users love. And their AI understands.
+> The answer matches the commit you merged.
 
-Ship Markdown docs from your terminal in minutes. Versioned, searchable, and built so the LLMs your users ask can actually read them.
+I built this for people who already write MDX in git. Hosted is $0. MIT if I disappear.
 
-Last updated: 11 August 2026
+Last updated: 12 August 2026
 
 ## Get started
 
-- [Sign in with GitHub](https://blode.md/oauth/consent)
+- [Connect GitHub](https://blode.md/oauth/consent)
 - [Read the docs](https://blode.md/docs)
 - [Pricing](https://blode.md/pricing)
 
-## How it works
+## No second editor. On purpose.
 
-### CLI
+Git-native docs hosts added a web editor that commits back to the repo, plus a marketplace. If you want that, that product exists.
+
+If you want a CMS, this is the wrong tool. You're not looking for a second review flow.
+
+Write MDX in the repo. The pull request is the review. The merge publishes the site, including the Markdown agents fetch from that commit.
+
+## What's inside
+
+### The merge is the deploy
+
+Sign in with GitHub and push. You do not run Docusaurus, a search index, or a custom-domain pipeline to get a public URL.
+
+#### CLI
 
 ```bash
 # install the CLI
@@ -32,42 +44,47 @@ blodemd push docs
 
 Deployed to `acme.blode.md`.
 
-### GitHub
+#### GitHub
 
 1. Add a `docs/` folder first (or run `blodemd new docs`)
 2. Sign in with GitHub and pick the repo
 3. Point at the folder with `docs.json`, then push to `main`
 
-## What you get
+### Markdown from that commit
 
-Components, hosting, search, and an API reference, all from the same repo. Hosted Blode.md is free with unlimited projects, pages, and seats — see [pricing](https://blode.md/pricing). Background on the Markdown index agents fetch is in our [free online llms.txt resources](https://blode.md/free-online-llms-txt-resources).
+`llms.txt`, `llms-full.txt`, and per-page `.md` exports are written from the same MDX as the HTML.
 
-- **GitHub auto-deploy**: install once. Every push to your branch deploys in seconds.
-- **Custom domains**: point a domain, get SSL. Or proxy docs at yourdomain.com/docs.
-- **MDX components**: 30+ out of the box: callouts, tabs, code groups, API refs.
-- **Search**: full-text search across every page. No plugin, no config.
-- **Content types**: docs, blogs, changelogs, and courses in one project, one domain.
-- **API reference**: point at an OpenAPI spec, ship an interactive API reference.
+### On the domain they already trust
 
-## Keep docs on your domain
+Proxy `/docs` through the site you already run. See the [proxy guides](https://blode.md/docs/guides/proxy-vercel).
 
-Proxy `/docs` through your marketing site so Blode.md never looks like a detour. Ready-made configs for Vercel, Cloudflare, Nginx, and Caddy.
+### MIT if I disappear
 
-See the [proxy guides](https://blode.md/docs/guides/proxy-vercel).
+Same CLI and renderer, your Postgres. Source on [GitHub](https://github.com/mblode/blodemd).
+
+## Choose your edition
+
+Named for what you do not get. The catch is on [pricing](https://blode.md/pricing).
+
+- **No second editor** — $0 hosted. [Connect GitHub](https://blode.md/oauth/consent)
+- **Your Postgres** — MIT. [View on GitHub](https://github.com/mblode/blodemd)
 
 ## FAQ
 
-**What is Blode.md?**
-Blode.md is a documentation platform for MDX projects. Keep docs in your git repo, deploy with the CLI or GitHub auto-deploy, and serve versioned, searchable docs that people and AI agents can both read.
+**Who should use Blode.md?**
+People who already write MDX in git and review docs in a pull request. If you want a visual editor, a plugin marketplace, or a CMS, this is the wrong tool.
+
+**How is this different from Mintlify?**
+Mintlify Starter is also $0 and includes a web editor. We will not ship one. We do not claim drop-in compatibility with every Mintlify config key.
 
 **How much does Blode.md cost?**
-Hosted Blode.md is free: unlimited projects, pages, and team seats, with custom domains, search, MDX components, and API references included. The CLI and renderer are MIT-licensed if you prefer to self-host. See [pricing](https://blode.md/pricing).
+Hosted is $0. What you do not get: a visual editor, a plugin marketplace, SOC 2, SSO, an SLA, or a logo wall. Support is the founder. The CLI and renderer are MIT. See [pricing](https://blode.md/pricing).
 
-**How do I get started?**
-Install the CLI with `npm i -g blodemd`, run `blodemd login`, scaffold with `blodemd new docs`, then `blodemd push docs`. Or connect a GitHub repo once a docs folder with `docs.json` exists; every push to main deploys automatically.
+**Is there a visual editor?**
+No. The pull request is the review.
 
-**Is Blode.md built for AI agents?**
-Yes. Sites get `llms.txt`, `llms-full.txt`, robots.txt, sitemaps, and per-page Markdown exports so agents can load concise docs without scraping HTML.
+**Do agents get Markdown, or only the HTML site?**
+On every deploy the site writes `llms.txt`, `llms-full.txt`, robots.txt, a sitemap, and per-page `.md` exports from the MDX.
 
 **Who builds Blode.md and how do I get support?**
-Blode.md is built by [Matthew Blode](https://blode.co). For support, email [m@blode.co](mailto:m@blode.co) or open an issue on [GitHub](https://github.com/mblode/blodemd). Background is on the [About](https://blode.md/about) page.
+Blode.md is built by [Matthew Blode](https://blode.co). Email [m@blode.co](mailto:m@blode.co) or open an issue on [GitHub](https://github.com/mblode/blodemd).

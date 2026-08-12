@@ -1,12 +1,4 @@
-import {
-  ArrowRightIcon,
-  BookIcon,
-  CodeIcon,
-  GithubIcon,
-  LayersTwoIcon,
-  MagnifyingGlassIcon,
-  WorldIcon,
-} from "blode-icons-react";
+import { ArrowRightIcon, CodeIcon, GithubIcon } from "blode-icons-react";
 import Link from "next/link";
 
 import { AnimatedGroup } from "@/components/ui/animated-group";
@@ -24,6 +16,7 @@ import { SignupLink } from "@/components/ui/signup-link";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { TextEffect } from "@/components/ui/text-effect";
 import { TextReveal } from "@/components/ui/text-reveal";
+import { siteConfig } from "@/lib/config";
 import {
   HOME_DESCRIPTION,
   HOME_TITLE,
@@ -41,32 +34,37 @@ export const metadata = pageMetadata({
 });
 
 /** Visible publish / last-updated date for freshness and AI citation signals. */
-const HOME_UPDATED_AT = "2026-08-11";
+const HOME_UPDATED_AT = "2026-08-12";
 
 const faqs = [
   {
     answer:
-      "Blode.md is a documentation platform for MDX projects. Keep docs in your git repo, deploy with the CLI or GitHub auto-deploy, and serve versioned, searchable docs that people and AI agents can both read.",
-    question: "What is Blode.md?",
+      "People who already write MDX in git and review docs in a pull request. If you want a visual editor, a plugin marketplace, or a CMS, this is the wrong tool.",
+    question: "Who should use Blode.md?",
   },
   {
     answer:
-      "Hosted Blode.md is free: unlimited projects, pages, and team seats, with custom domains, search, MDX components, and API references included. The CLI and renderer are MIT-licensed if you prefer to self-host. See the pricing page for plan details.",
+      "Mintlify Starter is also $0 and includes a web editor. We will not ship one. Write MDX in the repo. The pull request is the review. The merge publishes a searchable site on your domain, plus llms.txt and per-page Markdown from that same commit. MIT if we disappear. We do not claim drop-in compatibility with every Mintlify config key.",
+    question: "How is this different from Mintlify?",
+  },
+  {
+    answer:
+      "Hosted Blode.md is $0: unlimited projects, pages, and team seats, with custom domains, search, MDX, and API references included. What you do not get: a visual editor, a plugin marketplace, SOC 2, SSO, an SLA, or a logo wall. Support is the founder. The CLI and renderer are MIT if you want the same binary on your Postgres. See the pricing page.",
     question: "How much does Blode.md cost?",
   },
   {
     answer:
-      "Install the CLI with npm i -g blodemd, run blodemd login, scaffold with blodemd new docs, then blodemd push docs. Or connect a GitHub repo once a docs folder with docs.json exists; every push to main deploys automatically.",
-    question: "How do I get started?",
+      "No. The pull request is the review. If your team writes docs in a CMS instead of git, this is the wrong tool.",
+    question: "Is there a visual editor?",
   },
   {
     answer:
-      "Yes. Sites get llms.txt, llms-full.txt, robots.txt, sitemaps, and per-page Markdown exports so agents can load concise docs without scraping HTML. Content is also structured for people browsing the same pages.",
-    question: "Is Blode.md built for AI agents?",
+      "On every deploy the site writes llms.txt, llms-full.txt, robots.txt, a sitemap, and per-page .md exports from the MDX. Agents fetch those files instead of scraping HTML. Humans still get the HTML site from the same commit.",
+    question: "Do agents get Markdown, or only the HTML site?",
   },
   {
     answer:
-      "Blode.md is built by Matthew Blode. For support, email m@blode.co or open an issue on the GitHub repository at github.com/mblode/blodemd. Company background is on the About page at blode.md/about.",
+      "Blode.md is built by Matthew Blode. For support, email m@blode.co or open an issue on the GitHub repository at github.com/mblode/blodemd. The source is MIT. Company background is on the About page at blode.md/about.",
     question: "Who builds Blode.md and how do I get support?",
   },
 ];
@@ -96,75 +94,29 @@ const homeJsonLd = {
   ],
 };
 
-const features = [
+const insides: {
+  body: string;
+  href?: string;
+  hrefLabel?: string;
+  title: string;
+}[] = [
   {
-    Icon: GithubIcon,
-    description: "Every push rebuilds in seconds. No pipeline to maintain.",
-    title: "GitHub auto-deploy",
+    body: "llms.txt, llms-full.txt, and per-page .md exports are written from the same MDX as the HTML. Agents fetch those files instead of scraping a stale page.",
+    title: "Markdown from that commit",
   },
   {
-    Icon: WorldIcon,
-    description:
-      "Point a domain, get SSL. Or proxy docs at yourdomain.com/docs.",
-    title: "Custom domains",
+    body: "Proxy /docs through the site you already run. Paste-ready configs for Vercel, Cloudflare, Nginx, and Caddy live in the guides — not as a second product.",
+    href: "/docs/guides/proxy-vercel",
+    hrefLabel: "Read the proxy guides",
+    title: "On the domain they already trust",
   },
   {
-    Icon: CodeIcon,
-    description:
-      "30+ components out of the box. Content people skim and agents parse.",
-    title: "MDX components",
-  },
-  {
-    Icon: MagnifyingGlassIcon,
-    description: "One search index. Same results for people and agents.",
-    title: "Search",
-  },
-  {
-    Icon: LayersTwoIcon,
-    description:
-      "Docs, blogs, changelogs, and courses on one domain. One source of truth.",
-    title: "Content types",
-  },
-  {
-    Icon: BookIcon,
-    description:
-      "Point at an OpenAPI spec. Ship a reference developers and agents can follow.",
-    title: "API reference",
+    body: "Same CLI and renderer, your Postgres. No license keys. The bus-factor path is the source, not a promise that a $0 host lasts forever.",
+    href: siteConfig.links.github,
+    hrefLabel: "View on GitHub",
+    title: "MIT if I disappear",
   },
 ];
-
-const proxySnippets = {
-  caddy: `# Caddyfile
-yourdomain.com {
-  reverse_proxy /docs/* https://acme.blode.md {
-    header_up Host acme.blode.md
-  }
-}`,
-  cloudflare: `// worker.js
-export default {
-  async fetch(request) {
-    const url = new URL(request.url);
-    if (url.pathname.startsWith('/docs')) {
-      return fetch(
-        \`https://acme.blode.md\${url.pathname.replace('/docs', '')}\`,
-      );
-    }
-    return fetch(request);
-  },
-};`,
-  nginx: `# nginx.conf
-location /docs/ {
-  proxy_pass https://acme.blode.md/;
-  proxy_set_header Host acme.blode.md;
-}`,
-  vercel: `// next.config.js
-async rewrites() {
-  return [
-    { source: '/docs/:path*',
-      destination: 'https://acme.blode.md/:path*' },
-  ];
-}`,
-};
 
 export default function HomePage() {
   return (
@@ -176,7 +128,7 @@ export default function HomePage() {
       />
       <section className="pb-16 pt-[calc(var(--header-height)+4rem)] md:pb-24 md:pt-[calc(var(--header-height)+7rem)] lg:pt-[calc(var(--header-height)+9rem)]">
         <div className="container flex flex-col items-center text-center">
-          <h1 className="sr-only">The knowledge layer your AI runs on.</h1>
+          <h1 className="sr-only">The answer matches the commit you merged.</h1>
           <TextEffect
             aria-hidden="true"
             as="div"
@@ -185,7 +137,7 @@ export default function HomePage() {
             preset="fade-in-blur"
             speedSegment={0.3}
           >
-            The knowledge layer your AI runs on.
+            The answer matches the commit you merged.
           </TextEffect>
 
           <TextEffect
@@ -196,13 +148,13 @@ export default function HomePage() {
             preset="fade-in-blur"
             speedSegment={0.2}
           >
-            AI agents learn your product from your docs. Blode.md keeps them in
-            your repo, versioned with the code, readable by people and machines.
+            I built this for people who already write MDX in git. Hosted is $0.
+            MIT if I disappear.
           </TextEffect>
           <p className="mt-4 text-muted-foreground text-sm">
             {SITE_NAME}
             <span aria-hidden="true"> · </span>
-            Last updated <time dateTime={HOME_UPDATED_AT}>11 August 2026</time>
+            Last updated <time dateTime={HOME_UPDATED_AT}>12 August 2026</time>
           </p>
 
           <AnimatedGroup
@@ -220,7 +172,7 @@ export default function HomePage() {
             }}
           >
             <Button asChild className="rounded-full" size="lg">
-              <SignupLink location="home_hero">Get started free</SignupLink>
+              <SignupLink location="home_hero">Connect GitHub</SignupLink>
             </Button>
 
             <Button
@@ -252,27 +204,45 @@ export default function HomePage() {
       </section>
 
       <section>
-        <TextReveal>
-          A folder of MDX in your repo becomes fast docs on your domain.
-          Reviewed like code, rebuilt on every commit, read by people and agents
-          alike.
-        </TextReveal>
+        <TextReveal>No second editor. On purpose.</TextReveal>
       </section>
 
-      <section className="py-24 md:py-32" id="how-it-works">
+      <section className="pb-24 md:pb-32">
+        <div className="container">
+          <div className="measure mx-auto flex flex-col gap-6 text-muted-foreground md:text-lg">
+            <p>
+              Git-native docs hosts added a web editor that commits back to the
+              repo, plus a marketplace. If you want that, that product exists.
+            </p>
+            <p>
+              If you want a CMS, this is the wrong tool. You&apos;re not looking
+              for a second review flow.
+            </p>
+            <p>
+              Write MDX in the repo. The pull request is the review. The merge
+              publishes the site, including the Markdown agents fetch from that
+              commit.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section
+        className="border-t border-border py-24 md:py-32"
+        id="how-it-works"
+      >
         <div className="container">
           <div className="grid gap-12 md:grid-cols-[1fr_1.4fr] md:items-start">
             <div className="min-w-0">
               <p className="mb-4 text-sm font-medium text-muted-foreground">
-                How it works
+                What&apos;s inside
               </p>
               <h2 className="h-title text-balance text-3xl font-semibold md:text-4xl">
-                Docs that ship with the code
+                The merge is the deploy
               </h2>
               <p className="measure mt-4 text-muted-foreground">
-                Docs that drift from the code start telling agents the wrong
-                thing. Blode.md ships from the same commit. Same review, same
-                merge, same deploy.
+                Sign in with GitHub and push. You do not run Docusaurus, a
+                search index, or a custom-domain pipeline to get a public URL.
               </p>
             </div>
             <Tabs className="min-w-0" defaultValue="cli">
@@ -372,47 +342,101 @@ export default function HomePage() {
               </TabsContent>
             </Tabs>
           </div>
+
+          <ol className="mt-16 grid gap-10 border-t border-border pt-16 md:grid-cols-3">
+            {insides.map((item, index) => (
+              <li key={item.title}>
+                <p className="mb-3 font-mono text-muted-foreground text-sm">
+                  {String(index + 2).padStart(2, "0")}
+                </p>
+                <h3 className="h-title text-balance font-semibold text-xl">
+                  {item.title}
+                </h3>
+                <p className="mt-3 text-muted-foreground">{item.body}</p>
+                {item.href ? (
+                  <div className="mt-4">
+                    <Button asChild variant="outline">
+                      {item.href.startsWith("http") ? (
+                        <a
+                          href={item.href}
+                          rel="noopener noreferrer"
+                          target="_blank"
+                        >
+                          {item.hrefLabel}
+                          <ArrowRightIcon data-icon="inline-end" />
+                        </a>
+                      ) : (
+                        <Link href={item.href}>
+                          {item.hrefLabel}
+                          <ArrowRightIcon data-icon="inline-end" />
+                        </Link>
+                      )}
+                    </Button>
+                  </div>
+                ) : null}
+              </li>
+            ))}
+          </ol>
         </div>
       </section>
 
       <section className="border-t border-border py-24 md:py-32">
         <div className="container">
-          <div className="mb-12 max-w-2xl">
-            <p className="mb-4 text-sm font-medium text-muted-foreground">
-              What you get
-            </p>
-            <h2 className="h-title text-balance text-3xl font-semibold md:text-4xl">
-              One MDX project, one domain, one price
-            </h2>
-            <p className="measure mt-4 text-muted-foreground">
-              Components, hosting, search, and an API reference, all from the
-              same repo. Hosted Blode.md is free with unlimited projects, pages,
-              and seats — see{" "}
-              <Link className="underline underline-offset-4" href="/pricing">
-                pricing
-              </Link>
-              . Background on the Markdown index agents fetch is in our{" "}
-              <Link
-                className="underline underline-offset-4"
-                href="/free-online-llms-txt-resources"
-              >
-                free online llms.txt resources
-              </Link>
-              .
-            </p>
-          </div>
-          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            {features.map(({ Icon, title, description }) => (
-              <Card className="justify-start" key={title}>
-                <CardHeader>
-                  <div className="mb-3 inline-flex size-9 items-center justify-center rounded-lg bg-muted text-foreground">
-                    <Icon />
-                  </div>
-                  <CardTitle>{title}</CardTitle>
-                  <CardDescription>{description}</CardDescription>
-                </CardHeader>
-              </Card>
-            ))}
+          <p className="mb-4 text-sm font-medium text-muted-foreground">
+            Choose your edition
+          </p>
+          <h2 className="h-title max-w-2xl text-balance text-3xl font-semibold md:text-4xl">
+            Named for what you do not get
+          </h2>
+          <p className="measure mt-4 text-muted-foreground">
+            Same renderer either way. The hosted plan is $0 because paid tiers
+            come later. The catch is on{" "}
+            <Link className="underline underline-offset-4" href="/pricing">
+              pricing
+            </Link>
+            .
+          </p>
+          <div className="mt-12 grid gap-3 md:grid-cols-2">
+            <Card className="justify-start">
+              <CardHeader>
+                <p className="mb-2 text-muted-foreground text-sm">$0 hosted</p>
+                <CardTitle className="text-2xl">No second editor</CardTitle>
+                <CardDescription>
+                  Sign in with GitHub and push. Custom domains, search, MDX, and
+                  API references included. No visual editor, no marketplace.
+                </CardDescription>
+                <div className="pt-4">
+                  <Button asChild>
+                    <SignupLink location="home_edition_hosted">
+                      Connect GitHub
+                      <ArrowRightIcon data-icon="inline-end" />
+                    </SignupLink>
+                  </Button>
+                </div>
+              </CardHeader>
+            </Card>
+            <Card className="justify-start">
+              <CardHeader>
+                <p className="mb-2 text-muted-foreground text-sm">MIT</p>
+                <CardTitle className="text-2xl">Your Postgres</CardTitle>
+                <CardDescription>
+                  Clone the repo, point it at a Postgres, and run the same CLI.
+                  No license keys, no telemetry.
+                </CardDescription>
+                <div className="pt-4">
+                  <Button asChild variant="outline">
+                    <a
+                      href={siteConfig.links.github}
+                      rel="noopener noreferrer"
+                      target="_blank"
+                    >
+                      View on GitHub
+                      <ArrowRightIcon data-icon="inline-end" />
+                    </a>
+                  </Button>
+                </div>
+              </CardHeader>
+            </Card>
           </div>
         </div>
       </section>
@@ -422,49 +446,34 @@ export default function HomePage() {
           <div className="grid gap-12 md:grid-cols-[1fr_1.4fr] md:items-start">
             <div className="min-w-0">
               <p className="mb-4 text-sm font-medium text-muted-foreground">
-                On your domain
+                About
               </p>
               <h2 className="h-title text-balance text-3xl font-semibold md:text-4xl">
-                Keep docs under the domain your users already trust
+                One founder. The source is MIT.
               </h2>
-              <p className="measure mt-4 text-muted-foreground">
-                Proxy /docs through your marketing site. Blode.md never looks
-                like a detour, to your users or the agents they send. Ready-made
-                configs for Vercel, Cloudflare, Nginx and Caddy. Paste in, ship
-                it.
+            </div>
+            <div className="measure flex flex-col gap-6 text-muted-foreground">
+              <p>
+                I built Blode.md so docs stay in the repo, in the editor I
+                already use. Support is me:{" "}
+                <a
+                  className="underline underline-offset-4"
+                  href={`mailto:${siteConfig.links.email}`}
+                >
+                  {siteConfig.links.email}
+                </a>
+                , or a GitHub issue. There is no logo wall. I will not invent
+                one.
               </p>
-              <div className="mt-6">
+              <div>
                 <Button asChild variant="outline">
-                  <Link href="/docs/guides/proxy-vercel">
-                    Read the proxy guides
+                  <Link href="/about">
+                    Read the about page
                     <ArrowRightIcon data-icon="inline-end" />
                   </Link>
                 </Button>
               </div>
             </div>
-            <Tabs className="min-w-0" defaultValue="vercel">
-              <TabsList className="max-w-full overflow-x-auto no-scrollbar">
-                <TabsTrigger value="vercel">Vercel</TabsTrigger>
-                <TabsTrigger value="cloudflare">Cloudflare</TabsTrigger>
-                <TabsTrigger value="nginx">Nginx</TabsTrigger>
-                <TabsTrigger value="caddy">Caddy</TabsTrigger>
-              </TabsList>
-              {Object.entries(proxySnippets).map(([key, snippet]) => (
-                <TabsContent className="mt-6 min-w-0" key={key} value={key}>
-                  <div className="relative min-w-0">
-                    <CopyButton
-                      className="absolute right-3 top-3 z-10 text-muted-foreground"
-                      content={snippet}
-                      size="sm"
-                      variant="ghost"
-                    />
-                    <pre className="overflow-x-auto rounded-xl bg-surface px-6 pb-6 pt-14 font-mono text-sm md:p-8 md:pt-8">
-                      {snippet}
-                    </pre>
-                  </div>
-                </TabsContent>
-              ))}
-            </Tabs>
           </div>
         </div>
       </section>
@@ -477,11 +486,10 @@ export default function HomePage() {
                 FAQ
               </p>
               <h2 className="h-title text-balance text-3xl font-semibold md:text-4xl">
-                Common questions
+                Who this is for
               </h2>
               <p className="measure mt-4 text-muted-foreground">
-                Short answers about the product, pricing, AI exports, and how to
-                reach the team. More detail lives in the{" "}
+                And who it is not. More detail lives in the{" "}
                 <Link className="underline underline-offset-4" href="/docs">
                   docs
                 </Link>
@@ -514,17 +522,14 @@ export default function HomePage() {
           id="get-started"
         >
           <h2 className="h-display mx-auto max-w-4xl text-balance text-5xl font-semibold md:text-6xl lg:text-7xl">
-            Ship the knowledge layer your AI needs.
+            Write MDX in the repo.
           </h2>
           <p className="mx-auto mt-6 max-w-xl text-balance text-muted-foreground md:text-lg">
-            Run{" "}
-            <span className="font-mono text-foreground">blodemd new docs</span>,
-            push, and you&apos;re live. Or connect GitHub once you have a docs
-            folder. Every push ships itself from there.
+            Connect GitHub, or clone the MIT repo and run the same CLI.
           </p>
           <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
             <Button asChild className="rounded-full" size="lg">
-              <SignupLink location="home_cta">Get started free</SignupLink>
+              <SignupLink location="home_cta">Connect GitHub</SignupLink>
             </Button>
 
             <Button

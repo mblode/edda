@@ -570,7 +570,7 @@ export default function FreeOnlineLlmsTxtResourcesPage() {
               <div className="not-typeset mt-6 flex flex-wrap items-center gap-3">
                 <Button asChild size="lg">
                   <SignupLink location="edu_llms_txt_resources">
-                    Start shipping docs
+                    Connect GitHub
                     <ArrowRightIcon data-icon="inline-end" />
                   </SignupLink>
                 </Button>

@@ -128,14 +128,11 @@ export default function IntroPostPage() {
               <h2 className="h-display font-bold text-2xl md:text-3xl">
                 Try it
               </h2>
-              <p>
-                Sign in with GitHub and your first site is live in under a
-                minute.
-              </p>
+              <p>Sign in with GitHub and push. The merge publishes the site.</p>
               <div className="not-typeset mt-6 flex flex-wrap items-center gap-3">
                 <Button asChild size="lg">
                   <SignupLink location="blog_intro">
-                    Start shipping
+                    Connect GitHub
                     <ArrowRightIcon data-icon="inline-end" />
                   </SignupLink>
                 </Button>

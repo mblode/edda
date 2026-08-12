@@ -17,7 +17,7 @@ import { marketingUrl, pageMetadata } from "@/lib/marketing-site";
 
 export const metadata = pageMetadata({
   description:
-    "Blode.md pricing: MIT-licensed CLI and renderer you can self-host, plus free hosted docs with GitHub deploy, custom domains, and unlimited seats.",
+    "Blode.md pricing: hosted is $0 with unlimited seats. No visual editor, no marketplace, no SOC 2. MIT CLI and renderer if you self-host.",
   path: "/pricing",
   title: "Pricing for hosted and self-hosted docs",
 });
@@ -34,9 +34,9 @@ interface Plan {
 
 const plans: Plan[] = [
   {
-    cta: { href: "/oauth/consent", label: "Start shipping" },
+    cta: { href: "/oauth/consent", label: "Connect GitHub" },
     description:
-      "Sign in with GitHub and push. Your first docs site is live in about a minute.",
+      "Sign in with GitHub and push. Custom domains, search, MDX, and API references included. No visual editor.",
     eyebrow: "Hosted",
     features: [
       "GitHub auto-deploy",
@@ -47,7 +47,7 @@ const plans: Plan[] = [
     ],
     note: "$0 · Unlimited projects, pages, and seats",
     recommended: true,
-    title: "Hosted by us",
+    title: "No second editor",
   },
   {
     cta: {
@@ -66,23 +66,24 @@ const plans: Plan[] = [
       "No license keys, no telemetry",
     ],
     note: "MIT licensed · Deploy anywhere Node runs",
-    title: "Hosted by you",
+    title: "Your Postgres",
   },
 ];
 
 const faqs = [
   {
     answer:
-      "None. Docs your AI depends on should be yours to inspect and own, so the CLI, renderer and API are MIT. Hosting costs us. We'd rather earn trust now and work out paid tiers later.",
+      "No visual editor, no plugin marketplace, no SOC 2, no SSO, no SLA. Support is the founder at m@blode.co. The config surface is smaller than Mintlify's — we do not claim drop-in compatibility. Hosted is $0 because paid tiers come later. The CLI and renderer are MIT if you want to run them yourself.",
     question: "What's the catch?",
   },
   {
-    answer: "The core renderer and CLI stay free.",
+    answer:
+      "The core renderer and CLI stay MIT. Hosted paid tiers, if they arrive, are later.",
     question: "Will it ever cost money?",
   },
   {
     answer:
-      "We don't, yet. Sponsor on GitHub if you want to help keep the lights on.",
+      "We don't, yet. Sponsor on GitHub if you want to help keep the lights on. Self-host is the bus-factor path.",
     question: "How do you make money?",
   },
 ];
@@ -174,13 +175,13 @@ export default function PricingPage() {
             Pricing
           </Badge>
           <h1 className="h-display max-w-3xl text-balance font-bold text-4xl md:text-6xl">
-            Open source. Zero seats.
+            Choose your edition
           </h1>
           <p className="measure mt-6 text-balance text-lg text-muted-foreground md:text-xl">
-            The docs your AI runs on shouldn&apos;t be rented. Blode.md is an
-            MIT-licensed CLI and renderer. Use the hosted version for zero
-            setup, or self-host on any Postgres and any Node host. Same binary
-            either way.
+            Named for what you do not get. A git-native docs host: custom
+            domains, search, MDX, API references, unlimited seats. No second
+            editor, no plugin marketplace, no SOC 2, no SSO, no logo wall.
+            Support is the founder.
           </p>
           <p className="measure mt-4 text-muted-foreground">
             Both paths include MDX rendering, full-text search, custom domains,
@@ -243,13 +244,12 @@ export default function PricingPage() {
             Make the next commit a deploy
           </h2>
           <p className="measure mt-4 text-muted-foreground">
-            Sign in with GitHub or clone the repo. Either way, your first docs
-            site is live in under a minute.
+            Sign in with GitHub, or clone the MIT repo and run the same CLI.
           </p>
           <div className="mt-10 flex flex-wrap items-center gap-3">
             <Button asChild size="lg">
               <SignupLink location="pricing_footer">
-                Start shipping
+                Connect GitHub
                 <ArrowRightIcon data-icon="inline-end" />
               </SignupLink>
             </Button>

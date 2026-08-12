@@ -71,3 +71,11 @@ Additional context is available in the files below. Consult the relevant file wh
 - `.claude/knowledge/incident-troubleshooting.md` — Incident debugging and recovery. Known failure modes, debugging approaches, runbooks, recovery steps.
 - `.claude/knowledge/local-dev-setup.md` — Local Development Setup. Node 24 runtime, test commands, Drizzle push workflow.
 - `.claude/knowledge/architecture-boundaries.md` — Architecture & System Boundaries. Dual Tenant type, tenant header flow, edge-config sync site, analytics scope.
+- `.claude/knowledge/CAROL.md` — Hypothesized ideal customer (git-native MDX writer). About page is first-person until interviews exist. Working files sit beside it (`OBSERVATIONS.md`, `STRENGTHS-WEAKNESSES.md`, `KEYSTONES.md`, `DEALBREAKERS.md`, `INCITING-EVENTS.md`).
+- `.claude/knowledge/NEEDS-STACK.md` — Customer needs ladder: features at publish-from-git, promise is the current correct answer, brag about obviating a self-hosted docs stack.
+- `.claude/knowledge/POSITIONING.md` — Reusable homepage/ad statements. Named enemy is Mintlify. Shop structure: H1 is P1, anti-market beat is V1 ("No second editor. On purpose."), editions named for what you do not get. More for Less with named trade-offs. Do not revive "knowledge layer," "Get started free," "Start shipping," or "What's the catch? None." Do not pitch "$0 vs Mintlify" — Mintlify Starter is also $0.
+- `.claude/knowledge/VOTERS.md` — The one bet: docs stay in the customer's editor and git. That refusal is the anti-market beat, not the H1. Do not frame it as "most docs tools want you to leave your editor" (false of Mintlify git).
+- `.claude/knowledge/RUDE-QA-LANDING.md` — Adversarial review. Decisions locked 2026-08-12; homepage/about/pricing must tell that one story.
+- `.claude/knowledge/PROBLEM-SCORE.md` — Good Market? score. $0 hosted is not a viable business as scored. Weak links: Lucrative and identity. Mintlify Starter is $0 with a web editor.
+- `.claude/knowledge/GOALS.md` — Interview goals for the next signups. Hypotheses and questions sit beside it (`HYPOTHESES.md`, `QUESTIONS.md`). Find Yourself step 1 (`WHO-ME.md`) is blocked on the founder.
+- `.claude/knowledge/SKILLS.md` — Live [skills.asmartbear.com](https://skills.asmartbear.com/) catalog mapped to files in this folder. Who, Me? and interview debriefs are the remaining steps; do not invent them.

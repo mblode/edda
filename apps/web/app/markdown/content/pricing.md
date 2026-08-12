@@ -1,14 +1,14 @@
 # Pricing
 
-## Open source. Zero seats.
+## Choose your edition
 
-Blode.md ships as an MIT-licensed CLI and renderer. Use the hosted version for zero setup, or self-host on any Postgres and any Node host. Same binary either way.
+Named for what you do not get.
 
-## Hosted by us (Recommended)
+## No second editor (Recommended)
 
 **$0 · Unlimited projects, pages, and seats**
 
-Sign in with GitHub and push. Your first docs site is live in about a minute.
+Sign in with GitHub and push. Custom domains, search, MDX, and API references included. No visual editor.
 
 - GitHub auto-deploy
 - Custom domains with SSL
@@ -16,9 +16,9 @@ Sign in with GitHub and push. Your first docs site is live in about a minute.
 - MDX components + API reference
 - Unlimited team seats
 
-[Start shipping](https://blode.md/oauth/consent)
+[Connect GitHub](https://blode.md/oauth/consent)
 
-## Hosted by you
+## Your Postgres
 
 **MIT licensed · Deploy anywhere Node runs**
 
@@ -35,10 +35,10 @@ Clone the repo, point it at a Postgres, and run the same CLI we do.
 ## FAQ
 
 **What's the catch?**
-None. The CLI, renderer, and API are MIT. Hosting costs us, but we'd rather earn trust now and figure out paid tiers later.
+No visual editor, no plugin marketplace, no SOC 2, no SSO, no SLA. Support is the founder. The config surface is smaller than Mintlify's — we do not claim drop-in compatibility. Hosted is $0 because paid tiers come later. The CLI and renderer are MIT if you want to run them yourself.
 
 **Will it ever cost money?**
-The core renderer and CLI stay free.
+The core renderer and CLI stay MIT. Hosted paid tiers, if they arrive, are later.
 
 **How do you make money?**
-We don't, yet. Sponsor on GitHub if you want to help keep the lights on.
+We don't, yet. Sponsor on GitHub if you want to help keep the lights on. Self-host is the bus-factor path.

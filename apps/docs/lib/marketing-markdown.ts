@@ -1,11 +1,19 @@
 const MARKETING_MARKDOWN: Record<string, string> = {
   "/": `# Blode.md
 
-Docs your users love. And their AI understands.
+The answer matches the commit you merged.
 
-Write MDX, commit, push. blode.md ships a fast, beautiful docs site in one git push, wired up for the LLMs your users ask too.
+I built this for people who already write MDX in git. Hosted is $0. MIT if I disappear.
 
-## How it works
+## No second editor. On purpose.
+
+Git-native docs hosts added a web editor that commits back to the repo, plus a marketplace. If you want a CMS, this is the wrong tool.
+
+Write MDX in the repo. The pull request is the review. The merge publishes the site.
+
+## What's inside
+
+Sign in with GitHub and push. You do not run Docusaurus to get a public URL.
 
 1. Install the GitHub app at github.com/apps/blodemd
 2. Pick a repo and a docs folder
@@ -20,14 +28,10 @@ blodemd new docs
 blodemd push docs
 \`\`\`
 
-## What you get
+## Choose your edition
 
-- **GitHub auto-deploy**: install once. Every push to your branch deploys in seconds.
-- **Custom domains**: point a domain, get SSL. Or proxy docs at yourdomain.com/docs.
-- **MDX components**: 30+ components out of the box: callouts, tabs, code groups, API refs.
-- **Search**: full-text search across every page. No plugin, no config.
-- **Content types**: docs, blogs, changelogs, and courses in one project, one domain.
-- **API reference**: point at an OpenAPI spec, ship an interactive API reference.
+- **No second editor**: $0 hosted. Sign in with GitHub and push.
+- **Your Postgres**: MIT. Clone the repo and run the same CLI.
 
 ## Links
 
@@ -43,7 +47,7 @@ blodemd push docs
 `,
   "/about": `# About Blode.md
 
-blode.md is a docs platform that lives in your git repo. Write MDX, push to main, ship docs.
+I will not ship a second editor. Docs stay in the git repo. Hosted is $0. MIT if you run it yourself.
 `,
   "/blog": `# Blog
 
