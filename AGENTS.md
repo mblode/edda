@@ -78,3 +78,4 @@ Additional context is available in the files below. Consult the relevant file wh
 - `.claude/knowledge/RUDE-QA-LANDING.md` — Adversarial review. Decisions locked 2026-08-12; homepage/about/pricing must tell that one story.
 - `.claude/knowledge/PROBLEM-SCORE.md` — Good Market? score. $0 hosted is not a viable business as scored. Weak links: Lucrative and identity. Mintlify Starter is $0 with a web editor.
 - `.claude/knowledge/GOALS.md` — Interview goals for the next signups. Hypotheses and questions sit beside it (`HYPOTHESES.md`, `QUESTIONS.md`). Find Yourself step 1 (`WHO-ME.md`) is blocked on the founder.
+- `.claude/knowledge/SKILLS.md` — Live [skills.asmartbear.com](https://skills.asmartbear.com/) catalog mapped to files in this folder. Who, Me? and interview debriefs are the remaining steps; do not invent them.

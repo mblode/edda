@@ -213,7 +213,6 @@ export default function HomePage() {
             <p>
               Git-native docs hosts added a web editor that commits back to the
               repo, plus a marketplace. If you want that, that product exists.
-              exists.
             </p>
             <p>
               If you want a CMS, this is the wrong tool. You&apos;re not looking
