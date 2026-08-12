@@ -39,8 +39,8 @@ Homepage role: subhead + viability card. Not the button.
 
 ## Against the vendors above (bracket cites the level countered)
 
-**P8.** Mintlify's git workflow is MDX in the repo, plus a web editor that commits back, plus seats and a marketplace. Blode.md is that git path without the editor, the marketplace, or the seat tax. We do not claim drop-in compatibility with every Mintlify config key. [N1; V1; W6]
-Gap-fill: named enemy. Homepage role: FAQ "How is this different from Mintlify?"
+**P8.** Mintlify's git workflow is MDX in the repo, plus a web editor that commits back, plus a marketplace. Starter is $0. Blode.md is that git path without the editor or the marketplace. We do not claim drop-in compatibility with every Mintlify config key. [N1; V1; W6]
+Gap-fill: named enemy. Homepage role: FAQ "How is this different from Mintlify?" — do not say "without the seats"; Starter already includes five.
 
 **P8b.** A docs CMS (GitBook, Notion, Confluence) will take the writing out of the pull request. If that is the workflow you want, this is the wrong tool. [N4; K1; D1]
 Supporting anti-market. FAQ "Is there a visual editor?" — not the H1. Do not say "most docs tools want you to leave your editor"; that is false of Mintlify's git workflow.

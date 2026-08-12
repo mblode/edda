@@ -7,7 +7,7 @@ I built this for people who already write MDX in git. Hosted is $0. MIT if I dis
 
 ## No second editor. On purpose.
 
-Git-native docs hosts added a web editor that commits back to the repo, plus seats and a marketplace. If you want a CMS, this is the wrong tool.
+Git-native docs hosts added a web editor that commits back to the repo, plus a marketplace. If you want a CMS, this is the wrong tool.
 
 Write MDX in the repo. The pull request is the review. The merge publishes the site.
 

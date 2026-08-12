@@ -14,7 +14,7 @@ Last updated: 12 August 2026
 
 ## No second editor. On purpose.
 
-Git-native docs hosts added a web editor that commits back to the repo, plus seats and a marketplace. If you want that, that product exists.
+Git-native docs hosts added a web editor that commits back to the repo, plus a marketplace. If you want that, that product exists.
 
 If you want a CMS, this is the wrong tool. You're not looking for a second review flow.
 
@@ -75,7 +75,7 @@ Named for what you do not get. The catch is on [pricing](https://blode.md/pricin
 People who already write MDX in git and review docs in a pull request. If you want a visual editor, a plugin marketplace, or a CMS, this is the wrong tool.
 
 **How is this different from Mintlify?**
-It is the git-native MDX path without the seat tax, the plugin marketplace, or a second editor. We do not claim drop-in compatibility with every Mintlify config key.
+Mintlify Starter is also $0 and includes a web editor. We will not ship one. We do not claim drop-in compatibility with every Mintlify config key.
 
 **How much does Blode.md cost?**
 Hosted is $0. What you do not get: a visual editor, a plugin marketplace, SOC 2, SSO, an SLA, or a logo wall. Support is the founder. The CLI and renderer are MIT. See [pricing](https://blode.md/pricing).

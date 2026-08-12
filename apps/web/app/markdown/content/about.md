@@ -6,7 +6,7 @@ I built Blode.md so docs stay in the repo, in the editor I already use. The pull
 
 ## Git-native MDX, without the extras
 
-Other git-native docs hosts added a web editor that commits back to the repo, plus seats and a marketplace. I will not. A second editor splits the release. If your team writes docs in a CMS, this is the wrong tool.
+Other git-native docs hosts added a web editor that commits back to the repo, plus a marketplace. I will not. A second editor splits the release. If your team writes docs in a CMS, this is the wrong tool.
 
 The surface stays small. No plugin marketplace, no SOC 2, no SSO, no logo wall. Support is me. If a feature does not move docs closer to the code, it does not ship.
 

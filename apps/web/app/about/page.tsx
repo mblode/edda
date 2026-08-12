@@ -54,9 +54,9 @@ export default function AboutPage() {
             <div className="measure flex flex-col gap-6 text-muted-foreground">
               <p>
                 Other git-native docs hosts added a web editor that commits back
-                to the repo, plus seats and a marketplace. I will not. A second
-                editor splits the release. If your team writes docs in a CMS,
-                this is the wrong tool.
+                to the repo, plus a marketplace. I will not. A second editor
+                splits the release. If your team writes docs in a CMS, this is
+                the wrong tool.
               </p>
               <p>
                 The surface stays small. No plugin marketplace, no SOC 2, no

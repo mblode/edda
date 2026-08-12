@@ -44,7 +44,7 @@ const faqs = [
   },
   {
     answer:
-      "It is the git-native MDX path without the seat tax, the plugin marketplace, or a second editor. Write MDX in the repo. The pull request is the review. The merge publishes a searchable site on your domain, plus llms.txt and per-page Markdown from that same commit. We do not claim drop-in compatibility with every Mintlify config key.",
+      "Mintlify Starter is also $0 and includes a web editor. We will not ship one. Write MDX in the repo. The pull request is the review. The merge publishes a searchable site on your domain, plus llms.txt and per-page Markdown from that same commit. MIT if we disappear. We do not claim drop-in compatibility with every Mintlify config key.",
     question: "How is this different from Mintlify?",
   },
   {
@@ -212,7 +212,7 @@ export default function HomePage() {
           <div className="measure mx-auto flex flex-col gap-6 text-muted-foreground md:text-lg">
             <p>
               Git-native docs hosts added a web editor that commits back to the
-              repo, plus seats and a marketplace. If you want that, that product
+              repo, plus a marketplace. If you want that, that product exists.
               exists.
             </p>
             <p>
