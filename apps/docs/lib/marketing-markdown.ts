@@ -1,11 +1,13 @@
 const MARKETING_MARKDOWN: Record<string, string> = {
   "/": `# Blode.md
 
-Docs your users love. And their AI understands.
+Docs that match the code you shipped.
 
-Write MDX, commit, push. blode.md ships a fast, beautiful docs site in one git push, wired up for the LLMs your users ask too.
+Write MDX in the repo. The pull request is the review. The merge publishes the site, including the Markdown files agents fetch from that commit.
 
 ## How it works
+
+Docs that live in a separate CMS lag the release. Then the agent answering your users cites the old API. Blode.md publishes from the same commit you merged.
 
 1. Install the GitHub app at github.com/apps/blodemd
 2. Pick a repo and a docs folder
@@ -20,14 +22,14 @@ blodemd new docs
 blodemd push docs
 \`\`\`
 
-## What you get
+## What the merge publishes
 
-- **GitHub auto-deploy**: install once. Every push to your branch deploys in seconds.
-- **Custom domains**: point a domain, get SSL. Or proxy docs at yourdomain.com/docs.
-- **MDX components**: 30+ components out of the box: callouts, tabs, code groups, API refs.
-- **Search**: full-text search across every page. No plugin, no config.
-- **Content types**: docs, blogs, changelogs, and courses in one project, one domain.
-- **API reference**: point at an OpenAPI spec, ship an interactive API reference.
+- **GitHub auto-deploy**: install the GitHub App. Every push to main publishes.
+- **Custom domains**: point a domain, get SSL. Or proxy /docs on the site you already run.
+- **MDX components**: 40 components: callouts, tabs, code groups, OpenAPI refs.
+- **Search**: one full-text index. Same results in the docs search box.
+- **Content types**: docs, blogs, changelogs, and courses on one domain, from one repo.
+- **API reference**: point docs.json at an OpenAPI spec. Ship the reference in the same deploy.
 
 ## Links
 

@@ -71,3 +71,6 @@ Additional context is available in the files below. Consult the relevant file wh
 - `.claude/knowledge/incident-troubleshooting.md` — Incident debugging and recovery. Known failure modes, debugging approaches, runbooks, recovery steps.
 - `.claude/knowledge/local-dev-setup.md` — Local Development Setup. Node 24 runtime, test commands, Drizzle push workflow.
 - `.claude/knowledge/architecture-boundaries.md` — Architecture & System Boundaries. Dual Tenant type, tenant header flow, edge-config sync site, analytics scope.
+- `.claude/knowledge/CAROL.md` — Ideal customer for marketing and product (git-native MDX writer). Working files sit beside it (`OBSERVATIONS.md`, `STRENGTHS-WEAKNESSES.md`, `KEYSTONES.md`, `DEALBREAKERS.md`, `INCITING-EVENTS.md`).
+- `.claude/knowledge/NEEDS-STACK.md` — Customer needs ladder: features at publish-from-git, promise is the current correct answer, brag about obviating a self-hosted docs stack.
+- `.claude/knowledge/POSITIONING.md` — Reusable homepage/ad statements. Pricing story is More for Less. Do not revive "knowledge layer" or "Get started free."

@@ -74,7 +74,7 @@ export const siteJsonLd = {
       applicationCategory: "DeveloperApplication",
       author: { "@id": PERSON_ID },
       description:
-        "A terminal-native documentation platform. Write MDX in your repo, push from the CLI, and deploy on every merge.",
+        "Write MDX in your repo. Merge to publish a docs site with search, custom domains, and Markdown exports for agents.",
       isAccessibleForFree: true,
       license: "https://opensource.org/licenses/MIT",
       name: SITE_NAME,

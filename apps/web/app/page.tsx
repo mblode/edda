@@ -41,17 +41,17 @@ export const metadata = pageMetadata({
 });
 
 /** Visible publish / last-updated date for freshness and AI citation signals. */
-const HOME_UPDATED_AT = "2026-08-11";
+const HOME_UPDATED_AT = "2026-08-12";
 
 const faqs = [
   {
     answer:
-      "Blode.md is a documentation platform for MDX projects. Keep docs in your git repo, deploy with the CLI or GitHub auto-deploy, and serve versioned, searchable docs that people and AI agents can both read.",
+      "Blode.md publishes MDX from your git repo. The pull request is the review. The merge is the deploy. You get a searchable site on your domain, plus llms.txt and per-page Markdown from that same commit.",
     question: "What is Blode.md?",
   },
   {
     answer:
-      "Hosted Blode.md is free: unlimited projects, pages, and team seats, with custom domains, search, MDX components, and API references included. The CLI and renderer are MIT-licensed if you prefer to self-host. See the pricing page for plan details.",
+      "Hosted Blode.md is $0: unlimited projects, pages, and team seats, with custom domains, search, MDX components, and API references included. The CLI and renderer are MIT-licensed if you prefer to self-host. See the pricing page for plan details.",
     question: "How much does Blode.md cost?",
   },
   {
@@ -61,8 +61,8 @@ const faqs = [
   },
   {
     answer:
-      "Yes. Sites get llms.txt, llms-full.txt, robots.txt, sitemaps, and per-page Markdown exports so agents can load concise docs without scraping HTML. Content is also structured for people browsing the same pages.",
-    question: "Is Blode.md built for AI agents?",
+      "On every deploy the site writes llms.txt, llms-full.txt, robots.txt, a sitemap, and per-page .md exports from the MDX. Agents fetch those files instead of scraping HTML. Humans still get the HTML site from the same commit.",
+    question: "Do agents get Markdown, or only the HTML site?",
   },
   {
     answer:
@@ -99,36 +99,36 @@ const homeJsonLd = {
 const features = [
   {
     Icon: GithubIcon,
-    description: "Every push rebuilds in seconds. No pipeline to maintain.",
+    description:
+      "Install the GitHub App. Every push to main publishes. No workflow file to keep.",
     title: "GitHub auto-deploy",
   },
   {
     Icon: WorldIcon,
     description:
-      "Point a domain, get SSL. Or proxy docs at yourdomain.com/docs.",
+      "Point a domain, get SSL. Or proxy /docs on the site you already run.",
     title: "Custom domains",
   },
   {
     Icon: CodeIcon,
-    description:
-      "30+ components out of the box. Content people skim and agents parse.",
+    description: "40 components: callouts, tabs, code groups, OpenAPI refs.",
     title: "MDX components",
   },
   {
     Icon: MagnifyingGlassIcon,
-    description: "One search index. Same results for people and agents.",
+    description: "One full-text index. Same results in the docs search box.",
     title: "Search",
   },
   {
     Icon: LayersTwoIcon,
     description:
-      "Docs, blogs, changelogs, and courses on one domain. One source of truth.",
+      "Docs, blogs, changelogs, and courses on one domain, from one repo.",
     title: "Content types",
   },
   {
     Icon: BookIcon,
     description:
-      "Point at an OpenAPI spec. Ship a reference developers and agents can follow.",
+      "Point docs.json at an OpenAPI spec. Ship the reference in the same deploy.",
     title: "API reference",
   },
 ];
@@ -176,7 +176,7 @@ export default function HomePage() {
       />
       <section className="pb-16 pt-[calc(var(--header-height)+4rem)] md:pb-24 md:pt-[calc(var(--header-height)+7rem)] lg:pt-[calc(var(--header-height)+9rem)]">
         <div className="container flex flex-col items-center text-center">
-          <h1 className="sr-only">The knowledge layer your AI runs on.</h1>
+          <h1 className="sr-only">Docs that match the code you shipped.</h1>
           <TextEffect
             aria-hidden="true"
             as="div"
@@ -185,7 +185,7 @@ export default function HomePage() {
             preset="fade-in-blur"
             speedSegment={0.3}
           >
-            The knowledge layer your AI runs on.
+            Docs that match the code you shipped.
           </TextEffect>
 
           <TextEffect
@@ -196,13 +196,14 @@ export default function HomePage() {
             preset="fade-in-blur"
             speedSegment={0.2}
           >
-            AI agents learn your product from your docs. Blode.md keeps them in
-            your repo, versioned with the code, readable by people and machines.
+            Write MDX in the repo. The pull request is the review. The merge
+            publishes the site, including the Markdown files agents fetch from
+            that commit.
           </TextEffect>
           <p className="mt-4 text-muted-foreground text-sm">
             {SITE_NAME}
             <span aria-hidden="true"> · </span>
-            Last updated <time dateTime={HOME_UPDATED_AT}>11 August 2026</time>
+            Last updated <time dateTime={HOME_UPDATED_AT}>12 August 2026</time>
           </p>
 
           <AnimatedGroup
@@ -220,7 +221,7 @@ export default function HomePage() {
             }}
           >
             <Button asChild className="rounded-full" size="lg">
-              <SignupLink location="home_hero">Get started free</SignupLink>
+              <SignupLink location="home_hero">Start shipping</SignupLink>
             </Button>
 
             <Button
@@ -253,9 +254,8 @@ export default function HomePage() {
 
       <section>
         <TextReveal>
-          A folder of MDX in your repo becomes fast docs on your domain.
-          Reviewed like code, rebuilt on every commit, read by people and agents
-          alike.
+          A folder of MDX in git becomes the docs on your domain. Reviewed in
+          the pull request. Rebuilt on the merge.
         </TextReveal>
       </section>
 
@@ -267,12 +267,12 @@ export default function HomePage() {
                 How it works
               </p>
               <h2 className="h-title text-balance text-3xl font-semibold md:text-4xl">
-                Docs that ship with the code
+                The merge is the deploy
               </h2>
               <p className="measure mt-4 text-muted-foreground">
-                Docs that drift from the code start telling agents the wrong
-                thing. Blode.md ships from the same commit. Same review, same
-                merge, same deploy.
+                Docs that live in a separate CMS lag the release. Then the agent
+                answering your users cites the old API. Blode.md publishes from
+                the same commit you merged.
               </p>
             </div>
             <Tabs className="min-w-0" defaultValue="cli">
@@ -382,16 +382,16 @@ export default function HomePage() {
               What you get
             </p>
             <h2 className="h-title text-balance text-3xl font-semibold md:text-4xl">
-              One MDX project, one domain, one price
+              What the merge publishes
             </h2>
             <p className="measure mt-4 text-muted-foreground">
               Components, hosting, search, and an API reference, all from the
-              same repo. Hosted Blode.md is free with unlimited projects, pages,
-              and seats — see{" "}
+              MDX you already write. Hosted Blode.md is $0 with unlimited
+              projects, pages, and seats — see{" "}
               <Link className="underline underline-offset-4" href="/pricing">
                 pricing
               </Link>
-              . Background on the Markdown index agents fetch is in our{" "}
+              . How agents find that Markdown on the open web is in our{" "}
               <Link
                 className="underline underline-offset-4"
                 href="/free-online-llms-txt-resources"
@@ -425,13 +425,12 @@ export default function HomePage() {
                 On your domain
               </p>
               <h2 className="h-title text-balance text-3xl font-semibold md:text-4xl">
-                Keep docs under the domain your users already trust
+                Keep docs on the domain they already trust
               </h2>
               <p className="measure mt-4 text-muted-foreground">
-                Proxy /docs through your marketing site. Blode.md never looks
-                like a detour, to your users or the agents they send. Ready-made
-                configs for Vercel, Cloudflare, Nginx and Caddy. Paste in, ship
-                it.
+                Proxy /docs through the marketing site. Paste-ready configs for
+                Vercel, Cloudflare, Nginx, and Caddy. The hostname already on
+                that site is the one that serves the commit you merged.
               </p>
               <div className="mt-6">
                 <Button asChild variant="outline">
@@ -480,8 +479,9 @@ export default function HomePage() {
                 Common questions
               </h2>
               <p className="measure mt-4 text-muted-foreground">
-                Short answers about the product, pricing, AI exports, and how to
-                reach the team. More detail lives in the{" "}
+                Short answers about git-native publish, pricing, Markdown
+                exports for agents, and how to reach the team. More detail lives
+                in the{" "}
                 <Link className="underline underline-offset-4" href="/docs">
                   docs
                 </Link>
@@ -514,17 +514,17 @@ export default function HomePage() {
           id="get-started"
         >
           <h2 className="h-display mx-auto max-w-4xl text-balance text-5xl font-semibold md:text-6xl lg:text-7xl">
-            Ship the knowledge layer your AI needs.
+            Push a docs folder. You&apos;re live.
           </h2>
           <p className="mx-auto mt-6 max-w-xl text-balance text-muted-foreground md:text-lg">
             Run{" "}
             <span className="font-mono text-foreground">blodemd new docs</span>,
-            push, and you&apos;re live. Or connect GitHub once you have a docs
-            folder. Every push ships itself from there.
+            push, and the site is up. Or connect GitHub once you have a docs
+            folder. Every push to main publishes from there.
           </p>
           <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
             <Button asChild className="rounded-full" size="lg">
-              <SignupLink location="home_cta">Get started free</SignupLink>
+              <SignupLink location="home_cta">Start shipping</SignupLink>
             </Button>
 
             <Button
