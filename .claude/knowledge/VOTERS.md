@@ -25,7 +25,7 @@ Energy: Matthew Blode wrote the product and the intro post around this refusal.
 
 ## Verdict
 
-One voter survives. The git-native _workflow_ is table stakes against Mintlify; the voter is the **refusal** to add a second editor or a marketplace. Homepage **H1** is that refusal ("No second editor. On purpose.") — not "most docs tools want you to leave your editor," which is false of Mintlify's git workflow. Do not pad a second voter.
+One voter survives. The git-native _workflow_ is table stakes against Mintlify; the voter is the **refusal** to add a second editor or a marketplace. Homepage **anti-market beat** is that refusal ("No second editor. On purpose.") — the shop slot for "You're not in the 5th grade." Do not put it in the H1; the shop leads with the promise. Do not frame it as "most docs tools want you to leave your editor," which is false of Mintlify's git workflow. Do not pad a second voter.
 
 The voter is still unproven by customers (nobody public has eaten the cost). Until that changes, the about page says it in the founder's first person rather than as a testimonial.
 

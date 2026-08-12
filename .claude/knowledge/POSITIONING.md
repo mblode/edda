@@ -6,17 +6,17 @@ Targets Carol (`.claude/knowledge/CAROL.md`) as a **hypothesis**; until onboardi
 
 These are real decisions. The opposite of each is also smart. Consequences are accepted.
 
-1. **Named enemy is Mintlify** (price/surface fork with a harder refusal), not GitBook and not Docusaurus. GitBook is D1 anti-market in the FAQ. Docusaurus is P10 (you do not stand up the app) — supporting, not the H1 war. Accepted: we cannot steal "git-native MDX" as the H1; we say we are the smaller, stricter Mintlify. We do not claim drop-in `docs.json` compatibility.
-2. **Price story is More for Less.** A real git-native host (custom domains, search, MDX, API refs, agent Markdown, unlimited seats) at `$0` hosted / MIT self-host, with **named** trade-offs: no WYSIWYG, no plugin marketplace, no SOC 2/SSO/SLA, founder support, pruned config surface. `$0` is a fact. "Get started free" and "What's the catch? None." are retired. Accepted: D3 buyers who need a paid viability story still bounce.
-3. **H1 is V1** (the refusal), not P1 (the shared promise). P1 closes the page. Accepted: mixed teams who want a web editor bounce on the first line.
-4. **Carol stays hypothesized.** Homepage says "you" to a git-native MDX writer. About is first-person. Hypothesized inciting events (P13) do not appear as commiseration until they are observed in onboarding.
+1. **Named enemy is Mintlify** (price/surface fork with a harder refusal), not GitBook and not Docusaurus. GitBook is D1 anti-market in the FAQ. Docusaurus is P10 (you do not stand up the app) — supporting, not the H1 war. Accepted: we cannot steal "git-native MDX" as the differentiator; the unstealable line is V1 in the anti-market beat. We do not claim drop-in `docs.json` compatibility.
+2. **Price story is More for Less.** A real git-native host (custom domains, search, MDX, API refs, agent Markdown, unlimited seats) at `$0` hosted / MIT self-host, with **named** trade-offs: no WYSIWYG, no plugin marketplace, no SOC 2/SSO/SLA, founder support, pruned config surface. `$0` is a fact. Editions are named for what you do not get ("No second editor", "Your Postgres"), same pattern as Hidden Multipliers' "No Dead Trees." "Get started free" and "What's the catch? None." are retired.
+3. **Shop structure, not V1-as-H1.** Hidden Multipliers leads with the promise ("My best ideas for how to grow"), then names the anti-reader ("You're not in the 5th grade"), then sells editions that name the missing thing. Homepage H1 is P1. TextReveal + following prose is V1. Editions sit on the homepage. Accepted: mixed teams still bounce, just one scroll later; Mintlify can paste the H1 and still cannot paste the anti-market beat.
+4. **Carol stays hypothesized.** Hero subhead and about are first-person. Hypothesized inciting events (P13) do not appear as commiseration until they are observed in onboarding.
 
 Statements are numbered in settle order. Homepage copy should reuse these, not invent a parallel story.
 
 ## What you promise (one level up)
 
 **P1.** The answer they read matches the commit you merged. [N4; K1]
-Reworked from: "Docs that match the code you shipped." Homepage role: **closing H2**, not the H1 (stealable vs Mintlify).
+Reworked from: "Docs that match the code you shipped." Homepage role: **H1** (shop: promise first).
 
 **P2.** A coding agent answering from your docs is answering from the commit you merged — `llms.txt` and `.md` pages come from that same deploy, not from scraped HTML. [N4; K3]
 Reworked from: "AI agents learn your product from your docs."
@@ -40,7 +40,7 @@ Homepage role: subhead + viability card. Not the button.
 ## Against the vendors above (bracket cites the level countered)
 
 **P8.** Mintlify's git workflow is MDX in the repo, plus a web editor that commits back, plus seats and a marketplace. Blode.md is that git path without the editor, the marketplace, or the seat tax. We do not claim drop-in compatibility with every Mintlify config key. [N1; V1; W6]
-Gap-fill: named enemy. Homepage role: FAQ H2 ("Is this Mintlify without the seats?").
+Gap-fill: named enemy. Homepage role: FAQ "How is this different from Mintlify?"
 
 **P8b.** A docs CMS (GitBook, Notion, Confluence) will take the writing out of the pull request. If that is the workflow you want, this is the wrong tool. [N4; K1; D1]
 Supporting anti-market. FAQ "Is there a visual editor?" — not the H1. Do not say "most docs tools want you to leave your editor"; that is false of Mintlify's git workflow.
@@ -69,7 +69,7 @@ Homepage role: TextReveal + How-it-works body. Not the named enemy.
 ## The H1 (voter)
 
 **P16.** No second editor. On purpose. [V1]
-Mintlify added a web editor. We will not. Opposite: ship a visual editor so mixed teams can write without a repo — that is a rational product (Mintlify picked it). Homepage role: **H1**. SEO title must say the same thing.
+Mintlify added a web editor. We will not. Opposite: ship a visual editor so mixed teams can write without a repo — that is a rational product (Mintlify picked it). Homepage role: **TextReveal + anti-market prose** (shop: "You're not in the 5th grade"), not the H1.
 
 ## Retired without a statement
 

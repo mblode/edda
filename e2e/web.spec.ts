@@ -4,19 +4,19 @@ test("landing page renders primary CTA", async ({ page }) => {
   await page.goto("/");
 
   await expect(
-    page.getByText("No second editor. On purpose.").first()
+    page.getByText("The answer matches the commit you merged.").first()
   ).toBeVisible();
 
   await expect(
     page.getByRole("link", { name: "Connect GitHub" }).first()
   ).toHaveAttribute("href", "/oauth/consent");
   await expect(
-    page.getByRole("link", { name: "Read the docs" })
+    page.getByRole("link", { name: "Read the docs" }).first()
   ).toHaveAttribute("href", "/docs");
   await expect(
     page.getByRole("heading", { name: "The merge is the deploy" })
   ).toBeVisible();
   await expect(
-    page.getByText("You do not stand up a docs app to get a URL.").first()
+    page.getByText("No second editor. On purpose.").first()
   ).toBeVisible();
 });

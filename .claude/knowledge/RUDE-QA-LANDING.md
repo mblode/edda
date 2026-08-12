@@ -135,7 +135,7 @@ P1 says the docs match the code. The close says a folder becomes a site. Those a
 
 1. **Named enemy is Mintlify** over GitBook and Docusaurus. Accepted: H1 cannot be "git-native MDX" (table stakes). GitBook is D1 in the FAQ. Docusaurus is P10 on the scroll beat.
 2. **More for Less** over Less for Less. Accepted: name the holes (no editor, no marketplace, no SOC 2/SSO, founder support, pruned schema). "What's the catch? None." is deleted.
-3. **H1 is V1** ("No second editor. On purpose.") over P1. P1 closes the page. Accepted: mixed teams bounce.
+3. **H1 is P1** (shop: promise first). V1 is the anti-market beat ("You're not in the 5th grade" slot). Accepted: mixed teams bounce one scroll later.
 4. **Carol stays hypothesized**; about is first-person. P13 stays off the homepage until observed.
 5. **About + pricing recant** to the same story.
 6. **Viability on the fold:** hosted price plus MIT if we disappear, in the subhead and a feature card.

@@ -1,13 +1,19 @@
 const MARKETING_MARKDOWN: Record<string, string> = {
   "/": `# Blode.md
 
-No second editor. On purpose.
+The answer matches the commit you merged.
 
-Write MDX in the repo. The pull request is the review. The merge publishes the site, including the Markdown agents fetch from that commit. Hosted is $0. MIT if you self-host.
+I built this for people who already write MDX in git. Hosted is $0. MIT if I disappear.
 
-## How it works
+## No second editor. On purpose.
 
-Sign in with GitHub and push. You do not run Docusaurus, a search index, or a custom-domain pipeline to get a public URL. The merge publishes the site from that commit.
+Git-native docs hosts added a web editor that commits back to the repo, plus seats and a marketplace. If you want a CMS, this is the wrong tool.
+
+Write MDX in the repo. The pull request is the review. The merge publishes the site.
+
+## What's inside
+
+Sign in with GitHub and push. You do not run Docusaurus to get a public URL.
 
 1. Install the GitHub app at github.com/apps/blodemd
 2. Pick a repo and a docs folder
@@ -22,16 +28,10 @@ blodemd new docs
 blodemd push docs
 \`\`\`
 
-## What the merge publishes
+## Choose your edition
 
-No plugin marketplace. No second editor. No SOC 2, no SSO, no logo wall. Support is the founder.
-
-- **GitHub auto-deploy**: install the GitHub App. Every push to main publishes.
-- **Custom domains**: point a domain, get SSL. Or proxy /docs on the site you already run.
-- **Search**: full-text search included. No separate Algolia project to bill.
-- **Content types**: docs, blogs, changelogs, and courses on one domain, from one repo.
-- **API reference**: point docs.json at an OpenAPI spec. Ship the reference in the same deploy.
-- **MIT if we disappear**: same CLI and renderer, your Postgres.
+- **No second editor**: $0 hosted. Sign in with GitHub and push.
+- **Your Postgres**: MIT. Clone the repo and run the same CLI.
 
 ## Links
 

@@ -45,4 +45,4 @@ All hypothesized until onboarding interviews exist:
 
 ## How to use this
 
-Marketing speaks V1 in the headline (the refusal Mintlify will not paste) and P10 as the supporting beat (you do not stand up Docusaurus). Do not put E1/E3 on the homepage until observed. Sales (when it exists) qualifies on git/MDX and disqualifies D1–D5. Product builds what thrills K1–K4 and does not build for D1.
+Marketing speaks P1 in the headline (shop: promise first) and V1 in the anti-market beat ("No second editor. On purpose." — shop: "You're not in the 5th grade"). Do not put E1/E3 on the homepage until observed. Sales (when it exists) qualifies on git/MDX and disqualifies D1–D5. Product builds what thrills K1–K4 and does not build for D1.

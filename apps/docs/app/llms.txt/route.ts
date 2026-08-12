@@ -5,7 +5,7 @@ import { MARKETING_CANONICAL_PATHS, marketingUrl } from "@/lib/marketing-site";
 const body = [
   "# Blode.md",
   "",
-  "> No second editor. On purpose.",
+  "> The answer matches the commit you merged.",
   "",
   "## Pages",
   ...MARKETING_CANONICAL_PATHS.map((path) => {

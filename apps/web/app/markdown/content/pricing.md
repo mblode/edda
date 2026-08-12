@@ -1,10 +1,10 @@
 # Pricing
 
-## Hosted is $0. MIT if you run it.
+## Choose your edition
 
-A git-native docs host: custom domains, search, MDX, API references, unlimited seats. What you do not get: a second editor, a plugin marketplace, SOC 2, SSO, or a logo wall. Support is the founder.
+Named for what you do not get.
 
-## Hosted by us (Recommended)
+## No second editor (Recommended)
 
 **$0 · Unlimited projects, pages, and seats**
 
@@ -18,7 +18,7 @@ Sign in with GitHub and push. Custom domains, search, MDX, and API references in
 
 [Connect GitHub](https://blode.md/oauth/consent)
 
-## Hosted by you
+## Your Postgres
 
 **MIT licensed · Deploy anywhere Node runs**
 

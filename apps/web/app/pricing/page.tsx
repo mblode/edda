@@ -47,7 +47,7 @@ const plans: Plan[] = [
     ],
     note: "$0 · Unlimited projects, pages, and seats",
     recommended: true,
-    title: "Hosted by us",
+    title: "No second editor",
   },
   {
     cta: {
@@ -66,7 +66,7 @@ const plans: Plan[] = [
       "No license keys, no telemetry",
     ],
     note: "MIT licensed · Deploy anywhere Node runs",
-    title: "Hosted by you",
+    title: "Your Postgres",
   },
 ];
 
@@ -175,12 +175,13 @@ export default function PricingPage() {
             Pricing
           </Badge>
           <h1 className="h-display max-w-3xl text-balance font-bold text-4xl md:text-6xl">
-            Hosted is $0. MIT if you run it.
+            Choose your edition
           </h1>
           <p className="measure mt-6 text-balance text-lg text-muted-foreground md:text-xl">
-            A git-native docs host: custom domains, search, MDX, API references,
-            unlimited seats. What you do not get: a second editor, a plugin
-            marketplace, SOC 2, SSO, or a logo wall. Support is the founder.
+            Named for what you do not get. A git-native docs host: custom
+            domains, search, MDX, API references, unlimited seats. No second
+            editor, no plugin marketplace, no SOC 2, no SSO, no logo wall.
+            Support is the founder.
           </p>
           <p className="measure mt-4 text-muted-foreground">
             Both paths include MDX rendering, full-text search, custom domains,
