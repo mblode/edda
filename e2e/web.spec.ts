@@ -16,4 +16,7 @@ test("landing page renders primary CTA", async ({ page }) => {
   await expect(
     page.getByRole("heading", { name: "The merge is the deploy" })
   ).toBeVisible();
+  await expect(
+    page.getByText("Most docs tools want you to leave your editor.").first()
+  ).toBeVisible();
 });

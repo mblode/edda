@@ -2,7 +2,7 @@
 
 > Docs that match the code you shipped.
 
-Write MDX in the repo. The pull request is the review. The merge publishes the site, including the Markdown files agents fetch from that commit.
+Write MDX in the repo. Most docs tools want you to leave your editor. The pull request is the review. The merge publishes the site, including the Markdown agents fetch from that commit.
 
 Last updated: 12 August 2026
 
@@ -42,7 +42,7 @@ Deployed to `acme.blode.md`.
 
 ## What the merge publishes
 
-Components, hosting, search, and an API reference, all from the MDX you already write. Hosted Blode.md is $0 with unlimited projects, pages, and seats — see [pricing](https://blode.md/pricing). How agents find that Markdown on the open web is in our [free online llms.txt resources](https://blode.md/free-online-llms-txt-resources).
+No plugin marketplace. No second editor. If a feature does not move docs closer to the code, it does not ship. Hosted Blode.md is $0 with unlimited projects, pages, and seats — see [pricing](https://blode.md/pricing). How agents find that Markdown on the open web is in our [free online llms.txt resources](https://blode.md/free-online-llms-txt-resources).
 
 - **GitHub auto-deploy**: install the GitHub App. Every push to main publishes. No workflow file to keep.
 - **Custom domains**: point a domain, get SSL. Or proxy `/docs` on the site you already run.
@@ -70,6 +70,9 @@ Install the CLI with `npm i -g blodemd`, run `blodemd login`, scaffold with `blo
 
 **Do agents get Markdown, or only the HTML site?**
 On every deploy the site writes `llms.txt`, `llms-full.txt`, robots.txt, a sitemap, and per-page `.md` exports from the MDX. Agents fetch those files instead of scraping HTML.
+
+**Is there a visual editor?**
+No. The pull request is the review. If your team writes docs in a CMS instead of git, this is the wrong tool.
 
 **Who builds Blode.md and how do I get support?**
 Blode.md is built by [Matthew Blode](https://blode.co). For support, email [m@blode.co](mailto:m@blode.co) or open an issue on [GitHub](https://github.com/mblode/blodemd). Background is on the [About](https://blode.md/about) page.

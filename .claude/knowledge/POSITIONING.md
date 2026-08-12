@@ -79,4 +79,4 @@ Gap-fill: far-above levels.
 
 ## Next steps
 
-Reuse these statements on the homepage, ads, and sales scripts. Land E1/E3 as OBSERVED before spending on commiseration ads. If a VOTERS.md is built later, lead future headlines with those voters and re-run the weakest lines (P5 is a spec, not a voter).
+Reuse these statements on the homepage, ads, and sales scripts. Lead with V1 in `.claude/knowledge/VOTERS.md` (the refusal to ship a second editor) — that is the shop-style commiseration beat. Land E1/E3 as OBSERVED before spending on commiseration ads.

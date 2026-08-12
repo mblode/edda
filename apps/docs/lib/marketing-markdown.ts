@@ -3,7 +3,7 @@ const MARKETING_MARKDOWN: Record<string, string> = {
 
 Docs that match the code you shipped.
 
-Write MDX in the repo. The pull request is the review. The merge publishes the site, including the Markdown files agents fetch from that commit.
+Write MDX in the repo. Most docs tools want you to leave your editor. The pull request is the review. The merge publishes the site, including the Markdown agents fetch from that commit.
 
 ## How it works
 
@@ -23,6 +23,8 @@ blodemd push docs
 \`\`\`
 
 ## What the merge publishes
+
+No plugin marketplace. No second editor. If a feature does not move docs closer to the code, it does not ship.
 
 - **GitHub auto-deploy**: install the GitHub App. Every push to main publishes.
 - **Custom domains**: point a domain, get SSL. Or proxy /docs on the site you already run.

@@ -66,6 +66,11 @@ const faqs = [
   },
   {
     answer:
+      "No. The pull request is the review. If your team writes docs in a CMS instead of git, this is the wrong tool.",
+    question: "Is there a visual editor?",
+  },
+  {
+    answer:
       "Blode.md is built by Matthew Blode. For support, email m@blode.co or open an issue on the GitHub repository at github.com/mblode/blodemd. Company background is on the About page at blode.md/about.",
     question: "Who builds Blode.md and how do I get support?",
   },
@@ -196,9 +201,9 @@ export default function HomePage() {
             preset="fade-in-blur"
             speedSegment={0.2}
           >
-            Write MDX in the repo. The pull request is the review. The merge
-            publishes the site, including the Markdown files agents fetch from
-            that commit.
+            Write MDX in the repo. Most docs tools want you to leave your
+            editor. The pull request is the review. The merge publishes the
+            site, including the Markdown agents fetch from that commit.
           </TextEffect>
           <p className="mt-4 text-muted-foreground text-sm">
             {SITE_NAME}
@@ -254,8 +259,7 @@ export default function HomePage() {
 
       <section>
         <TextReveal>
-          A folder of MDX in git becomes the docs on your domain. Reviewed in
-          the pull request. Rebuilt on the merge.
+          Most docs tools want you to leave your editor. Blode.md doesn&apos;t.
         </TextReveal>
       </section>
 
@@ -385,9 +389,9 @@ export default function HomePage() {
               What the merge publishes
             </h2>
             <p className="measure mt-4 text-muted-foreground">
-              Components, hosting, search, and an API reference, all from the
-              MDX you already write. Hosted Blode.md is $0 with unlimited
-              projects, pages, and seats — see{" "}
+              No plugin marketplace. No second editor. If a feature does not
+              move docs closer to the code, it does not ship. Hosted Blode.md is
+              $0 with unlimited projects, pages, and seats — see{" "}
               <Link className="underline underline-offset-4" href="/pricing">
                 pricing
               </Link>
@@ -519,8 +523,8 @@ export default function HomePage() {
           <p className="mx-auto mt-6 max-w-xl text-balance text-muted-foreground md:text-lg">
             Run{" "}
             <span className="font-mono text-foreground">blodemd new docs</span>,
-            push, and the site is up. Or connect GitHub once you have a docs
-            folder. Every push to main publishes from there.
+            push, and the site is up. No new editor. Or connect GitHub once you
+            have a docs folder. Every push to main publishes from there.
           </p>
           <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
             <Button asChild className="rounded-full" size="lg">
