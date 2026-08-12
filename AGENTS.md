@@ -75,3 +75,4 @@ Additional context is available in the files below. Consult the relevant file wh
 - `.claude/knowledge/NEEDS-STACK.md` — Customer needs ladder: features at publish-from-git, promise is the current correct answer, brag about obviating a self-hosted docs stack.
 - `.claude/knowledge/POSITIONING.md` — Reusable homepage/ad statements. Pricing story is More for Less. Do not revive "knowledge layer" or "Get started free."
 - `.claude/knowledge/VOTERS.md` — The one bet: docs stay in the customer's editor and git. Lead homepage commiseration with that refusal.
+- `.claude/knowledge/RUDE-QA-LANDING.md` — Adversarial review of the shipped homepage + Carol stack. Outcome: not yet ready. Do not rewrite homepage copy until the open questions are picked.
