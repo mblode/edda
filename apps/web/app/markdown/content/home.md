@@ -1,6 +1,6 @@
 # Blode.md
 
-> The answer matches the commit you merged.
+> The answer they read matches the commit you merged.
 
 I built this for people who already write MDX in git. Hosted is $0. MIT if I disappear.
 
@@ -60,11 +60,11 @@ Proxy `/docs` through the site you already run. See the [proxy guides](https://b
 
 ### MIT if I disappear
 
-Same CLI and renderer, your Postgres. Source on [GitHub](https://github.com/mblode/blodemd).
+Same CLI and renderer, your Postgres. Source on [GitHub](https://github.com/mblode/blodemd). If hosted goes away, you still have the source.
 
 ## Choose your edition
 
-Named for what you do not get. The catch is on [pricing](https://blode.md/pricing).
+Named for what you do not get. Hosted is $0: no visual editor, no marketplace, no SOC 2. Detail is on [pricing](https://blode.md/pricing).
 
 - **No second editor:** $0 hosted. [Connect GitHub](https://blode.md/oauth/consent)
 - **Your Postgres:** MIT. [View on GitHub](https://github.com/mblode/blodemd)
@@ -75,7 +75,7 @@ Named for what you do not get. The catch is on [pricing](https://blode.md/pricin
 People who already write MDX in git and review docs in a pull request. If you want a visual editor, a plugin marketplace, or a CMS, this is the wrong tool.
 
 **How is this different from Mintlify?**
-Mintlify Starter is also $0 and includes a web editor. We will not ship one. We do not claim drop-in compatibility with every Mintlify config key.
+Mintlify Starter is also $0 and includes a web editor. We will not ship one. The merge publishes the site plus `llms.txt` from that commit. We do not claim drop-in compatibility with every Mintlify config key.
 
 **How much does Blode.md cost?**
 Hosted is $0. What you do not get: a visual editor, a plugin marketplace, SOC 2, SSO, an SLA, or a logo wall. Support is the founder. The CLI and renderer are MIT. See [pricing](https://blode.md/pricing).

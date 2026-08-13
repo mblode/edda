@@ -5,7 +5,7 @@ import { MARKETING_CANONICAL_PATHS, marketingUrl } from "@/lib/marketing-site";
 const body = [
   "# Blode.md",
   "",
-  "> The answer matches the commit you merged.",
+  "> The answer they read matches the commit you merged.",
   "",
   "## Pages",
   ...MARKETING_CANONICAL_PATHS.map((path) => {

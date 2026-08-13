@@ -1,7 +1,7 @@
 const MARKETING_MARKDOWN: Record<string, string> = {
   "/": `# Blode.md
 
-The answer matches the commit you merged.
+The answer they read matches the commit you merged.
 
 I built this for people who already write MDX in git. Hosted is $0. MIT if I disappear.
 

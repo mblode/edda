@@ -44,7 +44,7 @@ const faqs = [
   },
   {
     answer:
-      "Mintlify Starter is also $0 and includes a web editor. We will not ship one. Write MDX in the repo. The pull request is the review. The merge publishes a searchable site on your domain, plus llms.txt and per-page Markdown from that same commit. MIT if we disappear. We do not claim drop-in compatibility with every Mintlify config key.",
+      "Mintlify Starter is also $0 and includes a web editor. We will not ship one. The merge publishes the site plus llms.txt from that commit. We do not claim drop-in compatibility with every Mintlify config key.",
     question: "How is this different from Mintlify?",
   },
   {
@@ -111,7 +111,7 @@ const insides: {
     title: "On the domain they already trust",
   },
   {
-    body: "Same CLI and renderer, your Postgres. No license keys. The bus-factor path is the source, not a promise that a $0 host lasts forever.",
+    body: "Same CLI and renderer, your Postgres. No license keys. If hosted goes away, you still have the source.",
     href: siteConfig.links.github,
     hrefLabel: "View on GitHub",
     title: "MIT if I disappear",
@@ -128,7 +128,9 @@ export default function HomePage() {
       />
       <section className="pb-16 pt-[calc(var(--header-height)+4rem)] md:pb-24 md:pt-[calc(var(--header-height)+7rem)] lg:pt-[calc(var(--header-height)+9rem)]">
         <div className="container flex flex-col items-center text-center">
-          <h1 className="sr-only">The answer matches the commit you merged.</h1>
+          <h1 className="sr-only">
+            The answer they read matches the commit you merged.
+          </h1>
           <TextEffect
             aria-hidden="true"
             as="div"
@@ -137,7 +139,7 @@ export default function HomePage() {
             preset="fade-in-blur"
             speedSegment={0.3}
           >
-            The answer matches the commit you merged.
+            The answer they read matches the commit you merged.
           </TextEffect>
 
           <TextEffect
@@ -389,8 +391,8 @@ export default function HomePage() {
             Named for what you do not get
           </h2>
           <p className="measure mt-4 text-muted-foreground">
-            Same renderer either way. The hosted plan is $0 because paid tiers
-            come later. The catch is on{" "}
+            Same renderer either way. Hosted is $0: no visual editor, no
+            marketplace, no SOC 2. What you do not get is on{" "}
             <Link className="underline underline-offset-4" href="/pricing">
               pricing
             </Link>
@@ -511,10 +513,11 @@ export default function HomePage() {
           id="get-started"
         >
           <h2 className="h-display mx-auto max-w-4xl text-balance text-5xl font-semibold md:text-6xl lg:text-7xl">
-            Write MDX in the repo.
+            Docs that match the code you shipped.
           </h2>
           <p className="mx-auto mt-6 max-w-xl text-balance text-muted-foreground md:text-lg">
-            Connect GitHub, or clone the MIT repo and run the same CLI.
+            Connect GitHub. Hosted is $0. Or clone the MIT repo and run the same
+            CLI.
           </p>
           <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
             <Button asChild className="rounded-full" size="lg">

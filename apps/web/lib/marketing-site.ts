@@ -5,7 +5,7 @@ export const MARKETING_ORIGIN = "https://blode.md";
 export const SITE_NAME = "Blode.md";
 
 /** `Product: what it does`, under 60 characters so the SERP does not clip it. */
-export const HOME_TITLE = "Blode.md: docs from the commit you merged";
+export const HOME_TITLE = "Blode.md: Docs from the commit you merged";
 
 /** Default meta description for the home page and root layout. */
 export const HOME_DESCRIPTION =

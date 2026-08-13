@@ -4,7 +4,9 @@ test("landing page renders primary CTA", async ({ page }) => {
   await page.goto("/");
 
   await expect(
-    page.getByText("The answer matches the commit you merged.").first()
+    page
+      .getByText("The answer they read matches the commit you merged.")
+      .first()
   ).toBeVisible();
 
   await expect(
