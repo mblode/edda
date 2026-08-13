@@ -34,7 +34,7 @@ export const metadata = pageMetadata({
 });
 
 /** Visible publish / last-updated date for freshness and AI citation signals. */
-const HOME_UPDATED_AT = "2026-08-12";
+const HOME_UPDATED_AT = "2026-08-13";
 
 const faqs = [
   {
@@ -64,7 +64,7 @@ const faqs = [
   },
   {
     answer:
-      "Blode.md is built by Matthew Blode. For support, email m@blode.co or open an issue on the GitHub repository at github.com/mblode/blodemd. The source is MIT. Company background is on the About page at blode.md/about.",
+      "Blode.md is built by Matthew Blode. Email m@blode.co or open an issue on GitHub at github.com/mblode/blodemd. The source is MIT.",
     question: "Who builds Blode.md and how do I get support?",
   },
 ];
@@ -105,7 +105,7 @@ const insides: {
     title: "Markdown from that commit",
   },
   {
-    body: "Proxy /docs through the site you already run. Paste-ready configs for Vercel, Cloudflare, Nginx, and Caddy live in the guides — not as a second product.",
+    body: "Proxy /docs through the site you already run. Paste-ready configs for Vercel, Cloudflare, Nginx, and Caddy live in the guides, not as a second product.",
     href: "/docs/guides/proxy-vercel",
     hrefLabel: "Read the proxy guides",
     title: "On the domain they already trust",
@@ -154,7 +154,7 @@ export default function HomePage() {
           <p className="mt-4 text-muted-foreground text-sm">
             {SITE_NAME}
             <span aria-hidden="true"> · </span>
-            Last updated <time dateTime={HOME_UPDATED_AT}>12 August 2026</time>
+            Last updated <time dateTime={HOME_UPDATED_AT}>13 August 2026</time>
           </p>
 
           <AnimatedGroup
@@ -489,19 +489,8 @@ export default function HomePage() {
                 Who this is for
               </h2>
               <p className="measure mt-4 text-muted-foreground">
-                And who it is not. More detail lives in the{" "}
-                <Link className="underline underline-offset-4" href="/docs">
-                  docs
-                </Link>
-                ,{" "}
-                <Link className="underline underline-offset-4" href="/pricing">
-                  pricing
-                </Link>
-                , and{" "}
-                <Link className="underline underline-offset-4" href="/about">
-                  about
-                </Link>{" "}
-                pages.
+                And who it is not. Hosted is $0. The CLI is MIT if you want to
+                run it yourself.
               </p>
             </div>
             <dl className="flex flex-col divide-y divide-border">

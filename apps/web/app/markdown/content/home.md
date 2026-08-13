@@ -4,7 +4,7 @@
 
 I built this for people who already write MDX in git. Hosted is $0. MIT if I disappear.
 
-Last updated: 12 August 2026
+Last updated: 13 August 2026
 
 ## Get started
 
@@ -66,8 +66,8 @@ Same CLI and renderer, your Postgres. Source on [GitHub](https://github.com/mblo
 
 Named for what you do not get. The catch is on [pricing](https://blode.md/pricing).
 
-- **No second editor** — $0 hosted. [Connect GitHub](https://blode.md/oauth/consent)
-- **Your Postgres** — MIT. [View on GitHub](https://github.com/mblode/blodemd)
+- **No second editor:** $0 hosted. [Connect GitHub](https://blode.md/oauth/consent)
+- **Your Postgres:** MIT. [View on GitHub](https://github.com/mblode/blodemd)
 
 ## FAQ
 
