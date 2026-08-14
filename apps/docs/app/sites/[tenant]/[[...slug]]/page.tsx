@@ -4,7 +4,6 @@ import { cacheLife, cacheTag } from "next/cache";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 
-import { ArticlePathGuard } from "@/components/docs/article-path-guard";
 import { DocArticle } from "@/components/docs/doc-article";
 import { DocArticleSkeleton } from "@/components/docs/doc-article-skeleton";
 import {
@@ -426,25 +425,23 @@ const CachedDocPage = async ({
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         type="application/ld+json"
       />
-      <ArticlePathGuard basePath={basePath} currentPath={shell.currentPath}>
-        <DocArticle
-          basePath={basePath}
-          breadcrumbs={shell.breadcrumbs}
-          config={shell.config}
-          content={content}
-          currentPath={shell.currentPath}
-          deprecated={shell.deprecated}
-          hideFooterPagination={shell.hideFooterPagination}
-          markdownHref={markdownHref}
-          mode={shell.mode}
-          nextPage={shell.nextPage}
-          pageDescription={shell.pageDescription}
-          pageTitle={shell.pageTitle}
-          prevPage={shell.prevPage}
-          rawContent={rawContent}
-          toc={toc}
-        />
-      </ArticlePathGuard>
+      <DocArticle
+        basePath={basePath}
+        breadcrumbs={shell.breadcrumbs}
+        config={shell.config}
+        content={content}
+        currentPath={shell.currentPath}
+        deprecated={shell.deprecated}
+        hideFooterPagination={shell.hideFooterPagination}
+        markdownHref={markdownHref}
+        mode={shell.mode}
+        nextPage={shell.nextPage}
+        pageDescription={shell.pageDescription}
+        pageTitle={shell.pageTitle}
+        prevPage={shell.prevPage}
+        rawContent={rawContent}
+        toc={toc}
+      />
     </>
   );
 };
