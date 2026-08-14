@@ -46,7 +46,10 @@ const Breadcrumbs = ({
                   <BreadcrumbPage>{crumb.label}</BreadcrumbPage>
                 ) : (
                   <BreadcrumbLink asChild>
-                    <Link href={toDocHref(crumb.path, basePath)}>
+                    <Link
+                      href={toDocHref(crumb.path, basePath)}
+                      prefetch={true}
+                    >
                       {crumb.label}
                     </Link>
                   </BreadcrumbLink>
@@ -210,6 +213,7 @@ export const DocArticle = ({
                     <Link
                       className="group flex items-center justify-between gap-1.5 pl-3 pr-6"
                       href={toDocHref(prevPage.path, basePath)}
+                      prefetch={true}
                     >
                       <ChevronLeftIcon
                         aria-hidden="true"
@@ -224,6 +228,7 @@ export const DocArticle = ({
                     <Link
                       className="group ml-auto flex w-full min-w-0 flex-1"
                       href={toDocHref(nextPage.path, basePath)}
+                      prefetch={true}
                     >
                       <div className="flex flex-1 items-center justify-end rounded-xl bg-background hover:ring-1 hover:ring-border sm:h-16">
                         <div className="flex min-w-0 flex-col items-end justify-center px-5">

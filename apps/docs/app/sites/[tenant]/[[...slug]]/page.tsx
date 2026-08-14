@@ -1,10 +1,11 @@
 import { CloudUploadIcon, TriangleExclamationIcon } from "blode-icons-react";
 import type { Metadata } from "next";
+import { cacheLife, cacheTag } from "next/cache";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 
 import { DocArticle } from "@/components/docs/doc-article";
-import { DocArticleBodySkeleton } from "@/components/docs/doc-article-skeleton";
+import { DocArticleSkeleton } from "@/components/docs/doc-article-skeleton";
 import {
   Card,
   CardAction,
@@ -15,7 +16,11 @@ import {
 } from "@/components/ui/card";
 import { CopyButton } from "@/components/ui/copy-button";
 import { defaultOgImageUrl } from "@/lib/default-og-image";
-import { getDocPageContent, getDocShellData } from "@/lib/docs-runtime";
+import {
+  getDocChromeData,
+  getDocPageContent,
+  getDocShellData,
+} from "@/lib/docs-runtime";
 import { toMarkdownDocHref } from "@/lib/routes";
 import { buildDocsSeoTitle } from "@/lib/seo-title";
 import {
@@ -23,32 +28,52 @@ import {
   getCanonicalOrigin,
   getStaticTenantRequestContext,
 } from "@/lib/tenant-static";
+import { getProjectTag } from "@/lib/tenants";
+import type { TocItem } from "@/lib/toc";
 
-const DocContent = async ({
-  basePath,
-  rawContent,
-  slugKey,
-  tenantSlug,
-  toc,
-}: {
-  basePath: string;
-  rawContent?: string;
-  slugKey: string;
-  tenantSlug: string;
-  toc: { id: string; title: string; level: number }[];
-}) => {
-  const rendered = await getDocPageContent(
+const getCachedDocShellData = async (tenantSlug: string, slugKey: string) => {
+  "use cache";
+  cacheLife("hours");
+  cacheTag(getProjectTag(tenantSlug), "tenants");
+  return await getDocShellData(tenantSlug, slugKey);
+};
+
+const getCachedCanonicals = async (tenantSlug: string) => {
+  "use cache";
+  cacheLife("hours");
+  cacheTag(getProjectTag(tenantSlug), "tenants");
+
+  const chrome = await getDocChromeData(tenantSlug);
+  if (!chrome || "configErrors" in chrome || "emptyState" in chrome) {
+    return null;
+  }
+
+  const requestContext = getStaticTenantRequestContext(chrome.tenant);
+  const [basePath, origin] = await Promise.all([
+    getCanonicalDocBasePath(chrome.tenant, requestContext),
+    getCanonicalOrigin(chrome.tenant, requestContext),
+  ]);
+
+  return { basePath, origin };
+};
+
+const getCachedDocPageContent = async (
+  tenantSlug: string,
+  slugKey: string,
+  basePath = "",
+  rawContent?: string,
+  toc?: TocItem[]
+) => {
+  "use cache";
+  cacheLife("hours");
+  cacheTag(getProjectTag(tenantSlug), "tenants");
+  return await getDocPageContent(
     tenantSlug,
     slugKey,
     basePath,
     rawContent,
     toc
   );
-  if (!rendered) {
-    notFound();
-  }
-
-  return rendered.content ?? null;
 };
 
 // oxlint-disable-next-line eslint/complexity
@@ -59,7 +84,7 @@ export const generateMetadata = async ({
 }): Promise<Metadata> => {
   const { slug = [], tenant: tenantSlug } = await params;
   const slugKey = slug.join("/");
-  const data = await getDocShellData(tenantSlug, slugKey);
+  const data = await getCachedDocShellData(tenantSlug, slugKey);
   if (!data) {
     // Unknown slug: throw so the response is a real 404, not title "Docs".
     notFound();
@@ -83,7 +108,6 @@ export const generateMetadata = async ({
     noindex: pageNoindex,
     pageTitle,
     pageDescription,
-    tenant,
   } = data;
 
   const baseTitle = config?.name ?? "Docs";
@@ -96,12 +120,8 @@ export const generateMetadata = async ({
     pageTitle,
     titleTemplate: config?.metadata?.titleTemplate,
   });
-  const requestContext = getStaticTenantRequestContext(tenant);
-
-  const canonicalBasePath = await getCanonicalDocBasePath(
-    tenant,
-    requestContext
-  );
+  const canonicals = await getCachedCanonicals(tenantSlug);
+  const canonicalBasePath = canonicals?.basePath ?? "";
   const canonicalPath = slugKey ? `/${slugKey}` : "";
   // Collapse duplicate slashes and drop any trailing slash so the canonical
   // points at the final URL (the platform 308-redirects `/docs/` -> `/docs`).
@@ -109,7 +129,7 @@ export const generateMetadata = async ({
     `${canonicalBasePath}${canonicalPath}`
       .replaceAll(/\/+/g, "/")
       .replace(/\/$/, "") || "/";
-  const canonicalOrigin = await getCanonicalOrigin(tenant, requestContext);
+  const canonicalOrigin = canonicals?.origin ?? "https://blode.md";
   const canonicalUrl = `${canonicalOrigin}${fullCanonical}`;
   const favicon = config?.favicon;
   // Always emit a complete Open Graph + Twitter card. Fall back to the docs
@@ -153,19 +173,20 @@ export const generateMetadata = async ({
 };
 
 // oxlint-disable-next-line eslint/complexity
-const DocPage = async ({
+const CachedDocPage = async ({
   params,
 }: {
   params: Promise<{ tenant: string; slug?: string[] }>;
 }) => {
   const { slug = [], tenant: tenantSlug } = await params;
   const slugKey = slug.join("/");
-  const shell = await getDocShellData(tenantSlug, slugKey);
+  const [shell, canonicals] = await Promise.all([
+    getCachedDocShellData(tenantSlug, slugKey),
+    getCachedCanonicals(tenantSlug),
+  ]);
   if (!shell) {
     return notFound();
   }
-
-  const requestContext = getStaticTenantRequestContext(shell.tenant);
 
   if ("emptyState" in shell) {
     if (slugKey) {
@@ -315,7 +336,7 @@ const DocPage = async ({
     );
   }
 
-  const basePath = await getCanonicalDocBasePath(shell.tenant, requestContext);
+  const basePath = canonicals?.basePath ?? "";
 
   let content: React.ReactNode;
   let rawContent: string | undefined;
@@ -347,23 +368,20 @@ const DocPage = async ({
   } else {
     ({ rawContent } = shell);
     ({ toc } = shell);
-    content = (
-      <Suspense fallback={<DocArticleBodySkeleton />}>
-        <DocContent
-          basePath={basePath}
-          rawContent={rawContent}
-          slugKey={slugKey}
-          tenantSlug={tenantSlug}
-          toc={toc}
-        />
-      </Suspense>
+    const rendered = await getCachedDocPageContent(
+      tenantSlug,
+      slugKey,
+      basePath,
+      rawContent,
+      toc
     );
+    if (!rendered) {
+      notFound();
+    }
+    content = rendered.content ?? null;
   }
 
-  const canonicalOrigin = await getCanonicalOrigin(
-    shell.tenant,
-    requestContext
-  );
+  const canonicalOrigin = canonicals?.origin ?? "";
   const canonicalPath =
     `${basePath}${slugKey ? `/${slugKey}` : ""}`
       .replaceAll(/\/+/g, "/")
@@ -427,5 +445,15 @@ const DocPage = async ({
     </>
   );
 };
+
+const DocPage = ({
+  params,
+}: {
+  params: Promise<{ tenant: string; slug?: string[] }>;
+}) => (
+  <Suspense fallback={<DocArticleSkeleton />}>
+    <CachedDocPage params={params} />
+  </Suspense>
+);
 
 export default DocPage;

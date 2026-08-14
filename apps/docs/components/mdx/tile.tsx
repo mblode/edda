@@ -51,7 +51,12 @@ export const Tile = ({ href, title, description, children }: TileProps) => {
   }
 
   return (
-    <Link className={linkClassName} data-typeset-block="" href={href}>
+    <Link
+      className={linkClassName}
+      data-typeset-block=""
+      href={href}
+      prefetch={true}
+    >
       {inner}
     </Link>
   );

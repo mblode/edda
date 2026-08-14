@@ -114,7 +114,12 @@ export const Card = (props: CardProps) => {
       );
     }
     return (
-      <Link className={linkClassName} data-typeset-block="" href={props.href}>
+      <Link
+        className={linkClassName}
+        data-typeset-block=""
+        href={props.href}
+        prefetch={true}
+      >
         <CardInner {...props} />
       </Link>
     );

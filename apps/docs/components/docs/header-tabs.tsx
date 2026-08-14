@@ -45,6 +45,7 @@ export const HeaderTabs = ({
             )}
             href={href}
             key={tab.label}
+            prefetch={true}
             rel={isExternal ? "noopener noreferrer" : undefined}
             target={isExternal ? "_blank" : undefined}
           >

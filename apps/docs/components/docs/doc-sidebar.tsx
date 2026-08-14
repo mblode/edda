@@ -97,6 +97,7 @@ const NavPageLink = ({
       data-path={item.path}
       data-sidebar-link=""
       href={href}
+      prefetch={true}
     >
       {linkContent}
     </Link>

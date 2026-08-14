@@ -1,9 +1,18 @@
+import { cacheLife, cacheTag } from "next/cache";
 import type { ReactNode } from "react";
 import { Suspense } from "react";
 
 import { DocChrome } from "@/components/docs/doc-chrome";
 import { TenantAnalytics } from "@/components/tenant-analytics";
 import { getDocChromeData, isDocChromeReady } from "@/lib/docs-runtime";
+import { getProjectTag } from "@/lib/tenants";
+
+const getCachedDocChromeData = async (tenantSlug: string) => {
+  "use cache";
+  cacheLife("hours");
+  cacheTag(getProjectTag(tenantSlug), "tenants");
+  return await getDocChromeData(tenantSlug);
+};
 
 // Unknown slugs 404 in `proxy.ts` (`lookupTenantDocSlug`) before this layout
 // renders, so the page can stream a loading shell without committing a soft-200.
@@ -16,7 +25,7 @@ export default async function TenantLayout({
   params: Promise<{ tenant: string }>;
 }) {
   const { tenant } = await params;
-  const chrome = await getDocChromeData(tenant);
+  const chrome = await getCachedDocChromeData(tenant);
 
   return (
     <>

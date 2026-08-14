@@ -61,7 +61,11 @@ const createMdxLink = (basePath: string, currentPath: string) => {
       );
     }
     return (
-      <Link href={resolveHref(href, basePath, currentPath)} {...props}>
+      <Link
+        href={resolveHref(href, basePath, currentPath)}
+        prefetch={true}
+        {...props}
+      >
         {children}
       </Link>
     );
