@@ -5,7 +5,6 @@ import { notFound } from "next/navigation";
 import { Suspense } from "react";
 
 import { DocArticle } from "@/components/docs/doc-article";
-import { DocArticleSkeleton } from "@/components/docs/doc-article-skeleton";
 import {
   Card,
   CardAction,
@@ -451,7 +450,7 @@ const DocPage = ({
 }: {
   params: Promise<{ tenant: string; slug?: string[] }>;
 }) => (
-  <Suspense fallback={<DocArticleSkeleton />}>
+  <Suspense fallback={null}>
     <CachedDocPage params={params} />
   </Suspense>
 );
