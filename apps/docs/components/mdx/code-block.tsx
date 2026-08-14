@@ -1,12 +1,8 @@
-"use client";
-
-import { CheckIcon, ClipboardIcon } from "blode-icons-react";
-import { useCallback, useEffect, useMemo, useState } from "react";
 import type { ComponentPropsWithoutRef, ReactNode } from "react";
 
-import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
+import { CopyCodeButton } from "./copy-code-button";
 import { getTextContent } from "./get-text-content";
 
 export const CodeBlock = ({
@@ -18,24 +14,7 @@ export const CodeBlock = ({
 }: ComponentPropsWithoutRef<"pre"> & {
   children: ReactNode;
 }) => {
-  const [copied, setCopied] = useState(false);
-  const code = useMemo(() => getTextContent(children), [children]);
-
-  useEffect(() => {
-    if (copied) {
-      const timer = setTimeout(() => setCopied(false), 2000);
-      return () => clearTimeout(timer);
-    }
-  }, [copied]);
-
-  const handleCopy = useCallback(async () => {
-    if (!code) {
-      return;
-    }
-    await navigator.clipboard.writeText(code);
-    setCopied(true);
-  }, [code]);
-
+  const code = getTextContent(children);
   const preStyle = style ? { ...style } : undefined;
   if (preStyle) {
     delete preStyle.backgroundColor;
@@ -45,7 +24,7 @@ export const CodeBlock = ({
     <figure data-rehype-pretty-code-figure="">
       <pre
         className={cn(
-          "no-scrollbar min-w-0 overflow-x-auto overflow-y-auto overscroll-y-auto overscroll-x-contain pl-4 pr-14 py-3.5 outline-none has-[[data-slot=tabs]]:p-0 has-[[data-highlighted-line]]:pl-0 has-[[data-line-numbers]]:pl-0",
+          "no-scrollbar min-w-0 overflow-x-auto overflow-y-auto overscroll-y-auto overscroll-x-contain py-3.5 pr-14 pl-4 outline-none has-[[data-highlighted-line]]:pl-0 has-[[data-line-numbers]]:pl-0 has-[[data-slot=tabs]]:p-0",
           className
         )}
         style={preStyle}
@@ -57,22 +36,7 @@ export const CodeBlock = ({
           className="pointer-events-none absolute top-0 right-0 bottom-0 z-[9] w-16 bg-gradient-to-r from-transparent to-code print:hidden"
           data-slot="fade-overlay"
         />
-        <Button
-          className="absolute top-3 right-2 z-10 size-7 bg-code hover:opacity-100 focus-visible:opacity-100"
-          data-copied={copied}
-          data-slot="copy-button"
-          onClick={handleCopy}
-          size="icon"
-          type="button"
-          variant="ghost"
-        >
-          <span className="sr-only">{copied ? "Copied" : "Copy"}</span>
-          {copied ? (
-            <CheckIcon aria-hidden="true" />
-          ) : (
-            <ClipboardIcon aria-hidden="true" />
-          )}
-        </Button>
+        <CopyCodeButton code={code} />
         {children}
       </pre>
     </figure>

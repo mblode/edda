@@ -3,11 +3,8 @@ import { Suspense } from "react";
 
 import { TenantAnalytics } from "@/components/tenant-analytics";
 
-// Do not wrap `{children}` in Suspense. With Cache Components, a Suspense
-// fallback streams first and commits HTTP 200 before the page can call
-// `notFound()`, which produced soft-404s for unknown slugs. The page segment
-// opts out of instant rendering (`instant = false`) so the existence check can
-// block and return a real 404. Analytics stays in its own boundary.
+// Unknown slugs 404 in `proxy.ts` (`lookupTenantDocSlug`) before this layout
+// renders, so the page can stream a loading shell without committing a soft-200.
 export default function TenantLayout({ children }: { children: ReactNode }) {
   return (
     <>

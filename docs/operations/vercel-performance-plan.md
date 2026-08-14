@@ -59,6 +59,7 @@ Make the public docs surface behave like a Vercel-native static product:
 - [ ] Hot host resolution still starts in [`apps/docs/lib/tenancy.ts](/Users/mblode/Code/mblode/blodemd/apps/docs/lib/tenancy.ts) via `DOCS_API_URL/tenants/resolve`
 - [ ] Root host-routed utility routes still depend on request-time tenant resolution through [`apps/docs/lib/request-tenant.ts](/Users/mblode/Code/mblode/blodemd/apps/docs/lib/request-tenant.ts)
 - [ ] Runtime artifact assembly in [`apps/docs/lib/docs-runtime.tsx](/Users/mblode/Code/mblode/blodemd/apps/docs/lib/docs-runtime.tsx) still builds nav, search items, TOC, and OpenAPI structures on demand
+- [x] Tenant docs page no longer calls `headers()` or sets `instant = false`; 404s stay in `proxy.ts`
 - [ ] Global theme and command-search UI still keep client JavaScript in the shell
 
 ## Workstreams

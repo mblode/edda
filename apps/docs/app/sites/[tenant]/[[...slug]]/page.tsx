@@ -1,6 +1,5 @@
 import { CloudUploadIcon, TriangleExclamationIcon } from "blode-icons-react";
 import type { Metadata } from "next";
-import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 
 import { DocShell } from "@/components/docs/doc-shell";
@@ -17,29 +16,11 @@ import { defaultOgImageUrl } from "@/lib/default-og-image";
 import { getDocPageContent, getDocShellData } from "@/lib/docs-runtime";
 import { toMarkdownDocHref } from "@/lib/routes";
 import { buildDocsSeoTitle } from "@/lib/seo-title";
-import { TENANT_HEADERS } from "@/lib/tenant-headers";
 import {
   getCanonicalDocBasePath,
   getCanonicalOrigin,
-  getTenantRequestContextFromHeaders,
+  getStaticTenantRequestContext,
 } from "@/lib/tenant-static";
-
-// Allow this segment to block on the existence check so `notFound()` can set a
-// real HTTP 404. With Cache Components the layout used to stream a Suspense
-// shell first, which committed 200 before the page could 404 (soft-404s).
-export const instant = false;
-
-const getTenantRequestContext = async (
-  tenantSlug: string,
-  tenant: Parameters<typeof getTenantRequestContextFromHeaders>[0]
-) => {
-  const headerStore = await headers();
-  if (headerStore.get(TENANT_HEADERS.SLUG) !== tenantSlug) {
-    return null;
-  }
-
-  return getTenantRequestContextFromHeaders(tenant, headerStore);
-};
 
 const DocContent = async ({
   basePath,
@@ -113,10 +94,7 @@ export const generateMetadata = async ({
     pageTitle,
     titleTemplate: config?.metadata?.titleTemplate,
   });
-  const requestContext = await getTenantRequestContext(tenantSlug, tenant);
-  if (!requestContext) {
-    notFound();
-  }
+  const requestContext = getStaticTenantRequestContext(tenant);
 
   const canonicalBasePath = await getCanonicalDocBasePath(
     tenant,
@@ -185,13 +163,7 @@ const DocPage = async ({
     return notFound();
   }
 
-  const requestContext = await getTenantRequestContext(
-    tenantSlug,
-    shell.tenant
-  );
-  if (!requestContext) {
-    return notFound();
-  }
+  const requestContext = getStaticTenantRequestContext(shell.tenant);
 
   if ("emptyState" in shell) {
     if (slugKey) {
