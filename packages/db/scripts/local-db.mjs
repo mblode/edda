@@ -8,7 +8,7 @@ const scriptDir = dirname(fileURLToPath(import.meta.url));
 const packageRoot = resolve(scriptDir, "..");
 
 const DEFAULT_LOCAL_URL =
-  "postgresql://postgres:postgres@127.0.0.1:54322/postgres";
+  "postgresql://postgres:postgres@127.0.0.1:54332/postgres";
 
 const getLocalDatabaseUrl = () =>
   process.env.LOCAL_DATABASE_URL ?? DEFAULT_LOCAL_URL;

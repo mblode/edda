@@ -107,7 +107,7 @@ vi.mock("./lib/revalidate", () => ({
 
 process.env.DATABASE_URL =
   process.env.DATABASE_URL ??
-  "postgresql://postgres:postgres@127.0.0.1:54322/blode_docs_drizzle_test";
+  "postgresql://postgres:postgres@127.0.0.1:54332/blode_docs_drizzle_test";
 process.env.NODE_ENV = "test";
 
 let request: (input: string, init?: RequestInit) => Promise<Response>;
