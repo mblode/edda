@@ -30,6 +30,8 @@ import {
 import { getProjectTag } from "@/lib/tenants";
 import type { TocItem } from "@/lib/toc";
 
+import DocPageLoading from "./loading";
+
 const getCachedDocShellData = async (tenantSlug: string, slugKey: string) => {
   "use cache";
   cacheLife("hours");
@@ -450,7 +452,7 @@ const DocPage = ({
 }: {
   params: Promise<{ tenant: string; slug?: string[] }>;
 }) => (
-  <Suspense fallback={null}>
+  <Suspense fallback={<DocPageLoading />}>
     <CachedDocPage params={params} />
   </Suspense>
 );

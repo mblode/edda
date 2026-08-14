@@ -88,9 +88,6 @@ const ChromeBodyScripts = async ({
   return ready ? <DocChromeBodyScripts config={ready.chrome.config} /> : null;
 };
 
-// Article (`children`) stays outside every chrome Suspense. Awaiting tenant
-// params in a wrapper that also owns the page lets Instant Navigations keep a
-// previous article in the shared `[[...slug]]` shell.
 export default function TenantLayout({
   children,
   params,
