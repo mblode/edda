@@ -56,7 +56,7 @@ type DbModule = typeof RepoDb;
 
 const databaseUrl =
   process.env.DATABASE_URL ??
-  "postgresql://postgres:postgres@127.0.0.1:54322/blode_docs_drizzle_test";
+  "postgresql://postgres:postgres@127.0.0.1:54332/blode_docs_drizzle_test";
 process.env.DATABASE_URL = databaseUrl;
 process.env.NODE_ENV = "test";
 process.env.PLATFORM_ROOT_DOMAIN = "blode.md\n";
