@@ -35,6 +35,25 @@ const tabPathIndexScript = (basePath: string, tabs: NavTab[]) => {
   return `(function(){var base=${JSON.stringify(basePath)};var map=${JSON.stringify(pathIndex)};var path=location.pathname;if(base&&path.indexOf(base)===0)path=path.slice(base.length);path=path.replace(/^\\/+|\\/+$/g,"")||"index";var i=map[path]||0;document.querySelectorAll("[data-sidebar-tab]").forEach(function(el){el.hidden=Number(el.getAttribute("data-sidebar-tab"))!==i;});})();`;
 };
 
+export const DocChromeFallback = ({ children }: { children: ReactNode }) => (
+  <div className="doc-chrome min-h-screen font-sans">
+    <div className="h-(--header-height) shrink-0 border-b border-border" />
+    <div className="container-wrapper flex flex-1 flex-col">
+      <div
+        className="min-h-min flex-1 items-start px-0 [--top-spacing:0] lg:grid lg:grid-cols-[var(--sidebar-width)_minmax(0,1fr)] lg:[--top-spacing:calc(var(--spacing)*4)]"
+        style={
+          {
+            "--sidebar-width": "calc(var(--spacing) * 72)",
+          } as React.CSSProperties
+        }
+      >
+        <div className="min-w-0 lg:col-start-2 lg:row-start-1">{children}</div>
+        <div className="hidden self-stretch lg:col-start-1 lg:row-start-1 lg:block" />
+      </div>
+    </div>
+  </div>
+);
+
 export const DocChrome = ({
   anchors,
   basePath,
