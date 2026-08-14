@@ -1,8 +1,10 @@
 import { CloudUploadIcon, TriangleExclamationIcon } from "blode-icons-react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { Suspense } from "react";
 
-import { DocShell } from "@/components/docs/doc-shell";
+import { DocArticle } from "@/components/docs/doc-article";
+import { DocArticleBodySkeleton } from "@/components/docs/doc-article-skeleton";
 import {
   Card,
   CardAction,
@@ -345,13 +347,17 @@ const DocPage = async ({
   } else {
     ({ rawContent } = shell);
     ({ toc } = shell);
-    content = await DocContent({
-      basePath,
-      rawContent,
-      slugKey,
-      tenantSlug,
-      toc,
-    });
+    content = (
+      <Suspense fallback={<DocArticleBodySkeleton />}>
+        <DocContent
+          basePath={basePath}
+          rawContent={rawContent}
+          slugKey={slugKey}
+          tenantSlug={tenantSlug}
+          toc={toc}
+        />
+      </Suspense>
+    );
   }
 
   const canonicalOrigin = await getCanonicalOrigin(
@@ -401,9 +407,7 @@ const DocPage = async ({
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         type="application/ld+json"
       />
-      <DocShell
-        activeTabIndex={shell.activeTabIndex}
-        anchors={shell.anchors}
+      <DocArticle
         basePath={basePath}
         breadcrumbs={shell.breadcrumbs}
         config={shell.config}
@@ -413,14 +417,11 @@ const DocPage = async ({
         hideFooterPagination={shell.hideFooterPagination}
         markdownHref={markdownHref}
         mode={shell.mode}
-        nav={shell.nav}
         nextPage={shell.nextPage}
         pageDescription={shell.pageDescription}
         pageTitle={shell.pageTitle}
         prevPage={shell.prevPage}
         rawContent={rawContent}
-        tabs={shell.tabs}
-        tenantSlug={tenantSlug}
         toc={toc}
       />
     </>

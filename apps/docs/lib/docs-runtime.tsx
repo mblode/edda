@@ -45,6 +45,10 @@ import type { NavEntry, NavPage, NavTab } from "@/lib/navigation";
 import { loadOpenApiRegistry } from "@/lib/openapi";
 import type { OpenApiRegistry } from "@/lib/openapi";
 import { createTimedPromiseCache } from "@/lib/server-cache";
+import {
+  getCanonicalDocBasePath,
+  getStaticTenantRequestContext,
+} from "@/lib/tenant-static";
 import { getTenantBySlug } from "@/lib/tenants";
 import { extractToc } from "@/lib/toc";
 
@@ -286,6 +290,20 @@ export interface TenantSidebarData {
   entries: NavEntry[];
 }
 
+export interface DocChromeData {
+  anchors: { label: string; href: string }[];
+  basePath: string;
+  config: TenantArtifacts["config"];
+  tabs: NavTab[] | null;
+  tenant: Tenant;
+  visibleNav: NavEntry[];
+}
+
+export const isDocChromeReady = (
+  value: DocChromeData | TenantArtifactsResult
+): value is DocChromeData =>
+  Boolean(value && !("configErrors" in value) && !("emptyState" in value));
+
 export const getTenantSidebarData = cache(
   async (
     tenantSlug: string,
@@ -307,6 +325,40 @@ export const getTenantSidebarData = cache(
     return {
       anchors: artifacts.anchors,
       entries: tabEntries ?? artifacts.visibleNav,
+    };
+  }
+);
+
+/**
+ * Tenant-stable chrome (header, sidebar tree, theme). No slug, no file reads.
+ * Lives in the tenant layout so client navigations keep the chrome mounted.
+ */
+export const getDocChromeData = cache(
+  async (
+    tenantSlug: string
+  ): Promise<DocChromeData | TenantArtifactsResult> => {
+    const artifacts = await getTenantArtifacts(tenantSlug);
+    if (
+      !artifacts ||
+      isConfigErrorResult(artifacts) ||
+      isUnpublishedTenantResult(artifacts)
+    ) {
+      return artifacts;
+    }
+
+    const requestContext = getStaticTenantRequestContext(artifacts.tenant);
+    const basePath = await getCanonicalDocBasePath(
+      artifacts.tenant,
+      requestContext
+    );
+
+    return {
+      anchors: artifacts.anchors,
+      basePath,
+      config: artifacts.config,
+      tabs: artifacts.tabs,
+      tenant: artifacts.tenant,
+      visibleNav: artifacts.visibleNav,
     };
   }
 );

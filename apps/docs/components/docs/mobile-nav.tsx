@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useCallback, useState } from "react";
 import type { ReactNode } from "react";
 
+import { useCurrentDocPath } from "@/components/docs/use-current-doc-path";
 import { Button } from "@/components/ui/button";
 import { MorphIcon } from "@/components/ui/morph-icon";
 import {
@@ -11,7 +12,12 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { getNavPageHref, getNavPageTitle } from "@/lib/navigation";
+import {
+  findActiveTabIndex,
+  getNavPageHref,
+  getNavPageTitle,
+  getVisibleNavigation,
+} from "@/lib/navigation";
 import type { NavEntry, NavPage, NavTab } from "@/lib/navigation";
 import { isExternalHref, resolveHref, toDocHref } from "@/lib/routes";
 import { cn } from "@/lib/utils";
@@ -53,17 +59,22 @@ export const MobileNav = ({
   globalLinks,
   basePath,
   tabs,
-  activeTabIndex,
   className,
 }: {
   entries: NavEntry[];
   globalLinks: { label: string; href: string }[];
   basePath: string;
   tabs?: NavTab[] | null;
-  activeTabIndex?: number;
   className?: string;
 }) => {
   const [open, setOpen] = useState(false);
+  const currentPath = useCurrentDocPath(basePath);
+  const activeTabIndex = tabs?.length
+    ? findActiveTabIndex(tabs, currentPath)
+    : 0;
+  const resolvedEntries = tabs?.length
+    ? getVisibleNavigation(tabs[activeTabIndex]?.entries ?? [])
+    : entries;
 
   const renderPageLink = (page: NavPage) => {
     const href = getNavPageHref(page, basePath);
@@ -171,7 +182,7 @@ export const MobileNav = ({
                 </div>
               </div>
             ) : null}
-            {entries.map((entry) => {
+            {resolvedEntries.map((entry) => {
               if (entry.type === "page") {
                 return renderPageLink(entry);
               }

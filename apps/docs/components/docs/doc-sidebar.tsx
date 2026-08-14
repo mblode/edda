@@ -5,8 +5,12 @@ import Link from "next/link";
 import { SidebarActiveHighlight } from "@/components/docs/sidebar-active-highlight";
 import { DocIcon } from "@/components/icons/doc-icon";
 import { getTenantSidebarData } from "@/lib/docs-runtime";
-import { getNavPageHref, getNavPageTitle } from "@/lib/navigation";
-import type { NavEntry, NavPage } from "@/lib/navigation";
+import {
+  getNavPageHref,
+  getNavPageTitle,
+  getVisibleNavigation,
+} from "@/lib/navigation";
+import type { NavEntry, NavPage, NavTab } from "@/lib/navigation";
 import { isExternalHref, toDocHref } from "@/lib/routes";
 import { cn } from "@/lib/utils";
 
@@ -221,16 +225,16 @@ const CachedSidebarTree = async ({
 };
 
 export const DocSidebar = ({
-  activeTabIndex,
   anchors,
   basePath,
   nav,
+  tabs,
   tenantSlug,
 }: {
-  activeTabIndex: number;
   anchors?: { label: string; href: string }[];
   basePath: string;
   nav?: NavEntry[];
+  tabs?: NavTab[] | null;
   tenantSlug?: string;
 }) => (
   <aside
@@ -242,13 +246,29 @@ export const DocSidebar = ({
     <div className="absolute top-8 z-10 h-8 w-full shrink-0 bg-gradient-to-b from-background via-background/80 to-background/50 blur-xs" />
     <div className="absolute top-12 right-2 bottom-0 hidden h-full w-px bg-gradient-to-b from-transparent via-border to-transparent lg:flex" />
     <SidebarScrollArea className="no-scrollbar mx-auto flex min-h-0 w-full flex-1 flex-col gap-2 overflow-y-auto overflow-x-hidden px-2">
-      <CachedSidebarTree
-        activeTabIndex={activeTabIndex}
-        anchors={anchors}
-        basePath={basePath}
-        entries={nav}
-        tenantSlug={tenantSlug}
-      />
+      {tabs?.length ? (
+        tabs.map((tab, index) => (
+          <div
+            data-sidebar-tab={String(index)}
+            hidden={index !== 0}
+            key={tab.label}
+          >
+            {renderSidebarTree({
+              anchors: anchors ?? [],
+              basePath,
+              entries: getVisibleNavigation(tab.entries),
+            })}
+          </div>
+        ))
+      ) : (
+        <CachedSidebarTree
+          activeTabIndex={0}
+          anchors={anchors}
+          basePath={basePath}
+          entries={nav}
+          tenantSlug={tenantSlug}
+        />
+      )}
       <div className="sticky -bottom-1 z-10 h-16 shrink-0 bg-gradient-to-t from-background via-background/80 to-background/50 blur-xs" />
     </SidebarScrollArea>
     <SidebarActiveHighlight basePath={basePath} />

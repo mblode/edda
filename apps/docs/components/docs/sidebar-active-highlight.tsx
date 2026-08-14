@@ -1,8 +1,9 @@
 "use client";
 
-import { normalizePath } from "@repo/common";
 import { usePathname } from "next/navigation";
 import { useEffect } from "react";
+
+import { currentDocPathFromPathname } from "@/lib/current-doc-path";
 
 const ACTIVE_CLASSES = ["border-accent", "bg-accent", "text-foreground"];
 
@@ -10,10 +11,7 @@ export const SidebarActiveHighlight = ({ basePath }: { basePath: string }) => {
   const pathname = usePathname();
 
   useEffect(() => {
-    const stripped = basePath
-      ? pathname.replace(new RegExp(`^${basePath}`), "")
-      : pathname;
-    const target = normalizePath(stripped) || "index";
+    const target = currentDocPathFromPathname(pathname, basePath);
 
     const links = document.querySelectorAll<HTMLElement>(
       "[data-sidebar-link][data-path]"
