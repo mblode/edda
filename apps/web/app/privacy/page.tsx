@@ -1,20 +1,38 @@
 import Link from "next/link";
 
+import { JsonLd } from "@/components/json-ld";
 import { Badge } from "@/components/ui/badge";
 import { MarketingShell } from "@/components/ui/marketing-shell";
 import { siteConfig } from "@/lib/config";
 import { pageMetadata } from "@/lib/marketing-site";
+import { breadcrumbNode, pageJsonLd, webPageNode } from "@/lib/structured-data";
+
+const privacyDescription =
+  "Privacy policy for Blode.md: what we collect when you sign in or publish docs, how we use it, third parties we rely on, and how to contact us.";
+const privacyTitle = "Privacy policy and data practices";
 
 export const metadata = pageMetadata({
-  description:
-    "Privacy policy for Blode.md: what we collect when you sign in or publish docs, how we use it, third parties we rely on, and how to contact us.",
+  description: privacyDescription,
   path: "/privacy",
-  title: "Privacy policy and data practices",
+  title: privacyTitle,
 });
+
+const privacyJsonLd = pageJsonLd(
+  webPageNode({
+    description: privacyDescription,
+    name: privacyTitle,
+    path: "/privacy",
+  }),
+  breadcrumbNode([
+    { name: "Home", path: "/" },
+    { name: "Privacy", path: "/privacy" },
+  ])
+);
 
 export default function PrivacyPage() {
   return (
     <MarketingShell>
+      <JsonLd data={privacyJsonLd} />
       <section className="pt-20 pb-16 md:pt-28 md:pb-24">
         <div className="container">
           <Badge className="mb-4" variant="outline">
@@ -61,6 +79,14 @@ export default function PrivacyPage() {
               Docs you publish are public by default on your chosen domain.
               Treat anything sensitive accordingly, and use your repo
               permissions the same way you would for application code.
+            </p>
+
+            <h2>Third parties</h2>
+            <p>
+              Sign-in and repository access go through GitHub. The hosted
+              service runs on Vercel. Product analytics, when enabled, go to
+              PostHog on our own proxy. We do not pass your docs to ad networks
+              or model-training vendors.
             </p>
 
             <h2>Your data</h2>

@@ -1,6 +1,7 @@
 import { ArrowRightIcon, CodeIcon, GithubIcon } from "blode-icons-react";
 import Link from "next/link";
 
+import { JsonLd } from "@/components/json-ld";
 import { AnimatedGroup } from "@/components/ui/animated-group";
 import { Button } from "@/components/ui/button";
 import {
@@ -24,6 +25,7 @@ import {
   pageMetadata,
   SITE_NAME,
 } from "@/lib/marketing-site";
+import { faqPageNode, pageJsonLd, webPageNode } from "@/lib/structured-data";
 
 // Repeats the root layout's title and description so the home page carries its
 // own canonical and og:url without changing what it already advertises.
@@ -69,30 +71,19 @@ const faqs = [
   },
 ];
 
-const homeJsonLd = {
-  "@context": "https://schema.org",
-  "@graph": [
-    {
-      "@type": "WebPage",
+const homeJsonLd = pageJsonLd(
+  webPageNode({
+    description: HOME_DESCRIPTION,
+    extra: {
       dateModified: HOME_UPDATED_AT,
       datePublished: "2025-01-01",
-      description: HOME_DESCRIPTION,
-      name: HOME_TITLE,
-      url: marketingUrl("/"),
+      mainEntity: { "@id": `${marketingUrl("/")}#faq` },
     },
-    {
-      "@type": "FAQPage",
-      mainEntity: faqs.map((faq) => ({
-        "@type": "Question",
-        acceptedAnswer: {
-          "@type": "Answer",
-          text: faq.answer,
-        },
-        name: faq.question,
-      })),
-    },
-  ],
-};
+    name: HOME_TITLE,
+    path: "/",
+  }),
+  faqPageNode("/", faqs)
+);
 
 const insides: {
   body: string;
@@ -121,11 +112,7 @@ const insides: {
 export default function HomePage() {
   return (
     <MarketingShell>
-      <script
-        // oxlint-disable-next-line no-danger -- page-level WebPage + FAQPage JSON-LD
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(homeJsonLd) }}
-        type="application/ld+json"
-      />
+      <JsonLd data={homeJsonLd} />
       <section className="pb-16 pt-[calc(var(--header-height)+4rem)] md:pb-24 md:pt-[calc(var(--header-height)+7rem)] lg:pt-[calc(var(--header-height)+9rem)]">
         <div className="container flex flex-col items-center text-center">
           <h1 className="sr-only">

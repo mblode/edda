@@ -20,7 +20,7 @@ import {
   getDocPageContent,
   getDocShellData,
 } from "@/lib/docs-runtime";
-import { toMarkdownDocHref } from "@/lib/routes";
+import { toDocHref, toMarkdownDocHref } from "@/lib/routes";
 import { buildDocsSeoTitle } from "@/lib/seo-title";
 import {
   getCanonicalDocBasePath,
@@ -391,26 +391,42 @@ const CachedDocPage = async ({
   const markdownHrefAbsolute = markdownHref
     ? `${canonicalOrigin}${markdownHref}`
     : undefined;
-  const jsonLd: Record<string, unknown> = {
-    "@context": "https://schema.org",
+  const webpage: Record<string, unknown> = {
+    "@id": `${canonicalUrl}#webpage`,
     "@type": "WebPage",
     url: canonicalUrl,
   };
   if (shell.pageTitle) {
-    jsonLd.headline = shell.pageTitle;
-    jsonLd.name = shell.pageTitle;
+    webpage.headline = shell.pageTitle;
+    webpage.name = shell.pageTitle;
   }
   const jsonLdDescription = shell.metaDescription ?? shell.pageDescription;
   if (jsonLdDescription) {
-    jsonLd.description = jsonLdDescription;
+    webpage.description = jsonLdDescription;
   }
   if (markdownHref) {
-    jsonLd.encoding = {
+    webpage.encoding = {
       "@type": "MediaObject",
       contentUrl: `${canonicalOrigin}${markdownHref}`,
       encodingFormat: "text/markdown",
     };
   }
+  const graph: Record<string, unknown>[] = [webpage];
+  if (shell.breadcrumbs.length > 0) {
+    graph.push({
+      "@type": "BreadcrumbList",
+      itemListElement: shell.breadcrumbs.map((crumb, index) => ({
+        "@type": "ListItem",
+        item: `${canonicalOrigin}${toDocHref(crumb.path, basePath)}`,
+        name: crumb.label,
+        position: index + 1,
+      })),
+    });
+  }
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@graph": graph,
+  };
 
   return (
     <>

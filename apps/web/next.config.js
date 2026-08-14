@@ -37,6 +37,12 @@ const baseSecurityHeaders = [
     key: "Permissions-Policy",
     value: "camera=(), microphone=(), geolocation=(), payment=()",
   },
+  // Not a robots.txt field. Agents that implement Content-Signal read this
+  // header; Semrush treats the same line in robots.txt as invalid syntax.
+  {
+    key: "Content-Signal",
+    value: "search=yes, ai-input=yes, ai-train=yes",
+  },
 ];
 
 // PostHog runs through the `s.blode.md` reverse proxy, so one origin covers the

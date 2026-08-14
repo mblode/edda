@@ -40,8 +40,9 @@ export const GET = async (
   const canonicalUrl = `${origin}${toDocHref(slugKey, basePath)}`;
   const blockquote =
     `> ## Documentation Index\n` +
-    `> Fetch the complete documentation index at: ${llmsTxtUrl}\n` +
-    `> Use this file to discover all available pages before exploring further.\n\n`;
+    `> [HTML page](${canonicalUrl})\n` +
+    `> [Documentation index](${llmsTxtUrl})\n` +
+    `> Use the index to discover all available pages before exploring further.\n\n`;
 
   const body = blockquote + content;
   const etag = computeETag(body);

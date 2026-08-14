@@ -1,22 +1,50 @@
 import { ArrowRightIcon } from "blode-icons-react";
 import Link from "next/link";
 
+import { JsonLd } from "@/components/json-ld";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { MarketingShell } from "@/components/ui/marketing-shell";
 import { siteConfig } from "@/lib/config";
 import { pageMetadata } from "@/lib/marketing-site";
+import {
+  breadcrumbNode,
+  pageJsonLd,
+  PERSON_ID,
+  webPageNode,
+} from "@/lib/structured-data";
+
+const aboutDescription =
+  "Matthew Blode built Blode.md to keep docs in git. No second editor, no marketplace. Hosted is $0. MIT if you run it yourself.";
+const aboutTitle = "About the Blode.md docs platform";
 
 export const metadata = pageMetadata({
-  description:
-    "Matthew Blode built Blode.md to keep docs in git. No second editor, no marketplace. Hosted is $0. MIT if you run it yourself.",
+  description: aboutDescription,
   path: "/about",
-  title: "About the Blode.md docs platform",
+  title: aboutTitle,
 });
+
+const aboutJsonLd = pageJsonLd(
+  webPageNode({
+    description: aboutDescription,
+    extra: {
+      about: { "@id": PERSON_ID },
+      mainEntity: { "@id": PERSON_ID },
+    },
+    name: aboutTitle,
+    path: "/about",
+    type: "ProfilePage",
+  }),
+  breadcrumbNode([
+    { name: "Home", path: "/" },
+    { name: "About", path: "/about" },
+  ])
+);
 
 export default function AboutPage() {
   return (
     <MarketingShell>
+      <JsonLd data={aboutJsonLd} />
       <section className="pt-20 pb-16 md:pt-28 md:pb-24">
         <div className="container">
           <Badge className="mb-4" variant="outline">

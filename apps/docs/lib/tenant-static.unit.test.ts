@@ -136,7 +136,7 @@ describe("tenant static LLM helpers", () => {
     );
     expect(robots).toContain("Sitemap: https://blode.md/example/sitemap.xml");
     expect(robots).toContain(
-      "Content-Signal: search=yes, ai-input=yes, ai-train=yes"
+      "# Content-Signal: search=yes, ai-input=yes, ai-train=yes"
     );
     expect(robots).toContain("# https://blode.md/example/llms.txt");
     expect(robots.match(/^User-agent: \*$/gm)).toHaveLength(1);
@@ -169,7 +169,7 @@ describe("tenant static LLM helpers", () => {
     );
     expect(robots).toContain("Sitemap: https://donebear.com/docs/sitemap.xml");
     expect(robots).toContain(
-      "Content-Signal: search=yes, ai-input=yes, ai-train=yes"
+      "# Content-Signal: search=yes, ai-input=yes, ai-train=yes"
     );
     expect(robots).toContain("# https://donebear.com/docs/llms.txt");
     expect(robots.match(/^User-agent: \*$/gm)).toHaveLength(1);

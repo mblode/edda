@@ -440,7 +440,8 @@ export const buildTenantRobotsTxt = async (
   const basePath = await getCanonicalDocBasePath(tenant, context);
   return `User-agent: *
 Allow: /
-Content-Signal: search=yes, ai-input=yes, ai-train=yes
+
+# Content-Signal: search=yes, ai-input=yes, ai-train=yes
 
 # LLM-friendly content
 # Append .md to any page URL for raw markdown

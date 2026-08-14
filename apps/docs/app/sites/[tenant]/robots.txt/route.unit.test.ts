@@ -34,7 +34,8 @@ describe("tenant robots.txt route", () => {
   it("returns the tenant robots body exactly once", async () => {
     buildTenantRobotsTxt.mockResolvedValue(`User-agent: *
 Allow: /
-Content-Signal: search=yes, ai-input=yes, ai-train=yes
+
+# Content-Signal: search=yes, ai-input=yes, ai-train=yes
 
 Sitemap: https://blode.md/docs/sitemap.xml
 `);
@@ -50,7 +51,10 @@ Sitemap: https://blode.md/docs/sitemap.xml
     const body = await response.text();
 
     expect(response.status).toBe(200);
-    expect(body).toContain("Content-Signal:");
+    expect(body).toContain("# Content-Signal:");
+    expect(response.headers.get("Content-Signal")).toBe(
+      "search=yes, ai-input=yes, ai-train=yes"
+    );
     expect(body.match(/^User-agent: \*$/gm)).toHaveLength(1);
     expect(buildTenantRobotsTxt).toHaveBeenCalledTimes(1);
   });

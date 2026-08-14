@@ -1,6 +1,7 @@
 import { ArrowRightIcon, CheckIcon } from "blode-icons-react";
 import Link from "next/link";
 
+import { JsonLd } from "@/components/json-ld";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -14,12 +15,21 @@ import { MarketingShell } from "@/components/ui/marketing-shell";
 import { SignupLink } from "@/components/ui/signup-link";
 import { siteConfig } from "@/lib/config";
 import { marketingUrl, pageMetadata } from "@/lib/marketing-site";
+import {
+  breadcrumbNode,
+  faqPageNode,
+  pageJsonLd,
+  webPageNode,
+} from "@/lib/structured-data";
+
+const pricingDescription =
+  "Blode.md pricing: hosted is $0 with unlimited seats. No visual editor, no marketplace, no SOC 2. MIT CLI and renderer if you self-host.";
+const pricingTitle = "Pricing for hosted and self-hosted docs";
 
 export const metadata = pageMetadata({
-  description:
-    "Blode.md pricing: hosted is $0 with unlimited seats. No visual editor, no marketplace, no SOC 2. MIT CLI and renderer if you self-host.",
+  description: pricingDescription,
   path: "/pricing",
-  title: "Pricing for hosted and self-hosted docs",
+  title: pricingTitle,
 });
 
 interface Plan {
@@ -88,19 +98,19 @@ const faqs = [
   },
 ];
 
-const pricingJsonLd = {
-  "@context": "https://schema.org",
-  "@type": "FAQPage",
-  mainEntity: faqs.map((faq) => ({
-    "@type": "Question",
-    acceptedAnswer: {
-      "@type": "Answer",
-      text: faq.answer,
-    },
-    name: faq.question,
-  })),
-  url: marketingUrl("/pricing"),
-};
+const pricingJsonLd = pageJsonLd(
+  webPageNode({
+    description: pricingDescription,
+    extra: { mainEntity: { "@id": `${marketingUrl("/pricing")}#faq` } },
+    name: pricingTitle,
+    path: "/pricing",
+  }),
+  faqPageNode("/pricing", faqs),
+  breadcrumbNode([
+    { name: "Home", path: "/" },
+    { name: "Pricing", path: "/pricing" },
+  ])
+);
 
 const PlanCard = ({ plan }: { plan: Plan }) => (
   <Card className="h-full justify-start gap-6 py-6">
@@ -164,11 +174,7 @@ const PlanCard = ({ plan }: { plan: Plan }) => (
 export default function PricingPage() {
   return (
     <MarketingShell>
-      <script
-        // oxlint-disable-next-line no-danger -- page-level FAQPage JSON-LD
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(pricingJsonLd) }}
-        type="application/ld+json"
-      />
+      <JsonLd data={pricingJsonLd} />
       <section className="pt-20 pb-16 md:pt-28 md:pb-24">
         <div className="container">
           <Badge className="mb-4" variant="outline">

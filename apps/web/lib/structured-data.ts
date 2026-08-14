@@ -13,74 +13,141 @@ import {
  * properties: a second `#person` on this domain publishes a second Matthew
  * Blode instead.
  */
-const PERSON_ID = "https://blode.co/#person";
-const ORGANIZATION_ID = `${MARKETING_ORIGIN}/#organization`;
-const WEBSITE_ID = `${MARKETING_ORIGIN}/#website`;
-const SOFTWARE_ID = `${MARKETING_ORIGIN}/#software`;
+export const PERSON_ID = "https://blode.co/#person";
+export const ORGANIZATION_ID = `${MARKETING_ORIGIN}/#organization`;
+export const WEBSITE_ID = `${MARKETING_ORIGIN}/#website`;
 
-const person = {
+const LOGO_URL = marketingUrl("/web-app-manifest-512x512.png");
+
+export interface FaqItem {
+  answer: string;
+  question: string;
+}
+
+export type SchemaNode = Record<string, unknown>;
+
+const person: SchemaNode = {
   "@id": PERSON_ID,
   "@type": "Person",
   name: "Matthew Blode",
   url: "https://blode.co/",
 };
 
-/**
- * One script, one `@graph`. Disconnected `ld+json` blocks describe unrelated
- * things and cannot be merged into a single entity, so every node the marketing
- * site publishes lives here.
- *
- * Emitted from the root layout, which is why there is no `WebPage` node: a
- * fixed `#webpage` id would claim every inner page is the home page.
- */
-export const siteJsonLd = {
-  "@context": "https://schema.org",
-  "@graph": [
-    {
-      "@id": ORGANIZATION_ID,
-      "@type": "Organization",
-      contactPoint: {
-        "@type": "ContactPoint",
-        contactType: "customer support",
-        email: "m@blode.co",
-      },
-      email: "m@blode.co",
-      founder: person,
-      logo: {
-        "@type": "ImageObject",
-        url: marketingUrl("/web-app-manifest-512x512.png"),
-      },
-      name: SITE_NAME,
-      sameAs: ["https://github.com/mblode/blodemd", "https://blode.co"],
-      url: `${MARKETING_ORIGIN}/`,
-    },
-    {
-      "@id": WEBSITE_ID,
-      "@type": "WebSite",
-      inLanguage: "en-US",
-      name: SITE_NAME,
-      publisher: { "@id": ORGANIZATION_ID },
-      url: `${MARKETING_ORIGIN}/`,
-    },
-    {
-      /**
-       * `SoftwareApplication` / `WebApplication` for the hosted product.
-       * We omit `offers` until real reviews or an aggregateRating exist;
-       * an Offer without ratings fails Semrush / rich-result validation for
-       * Software Application across every page that emits this graph.
-       */
-      "@id": SOFTWARE_ID,
-      "@type": ["SoftwareApplication", "WebApplication"],
-      applicationCategory: "DeveloperApplication",
-      author: { "@id": PERSON_ID },
-      description:
-        "Write MDX in your repo. Merge to publish a docs site with search, custom domains, and Markdown exports for agents.",
-      isAccessibleForFree: true,
-      license: "https://opensource.org/licenses/MIT",
-      name: SITE_NAME,
-      operatingSystem: "Web",
-      publisher: { "@id": ORGANIZATION_ID },
-      url: `${MARKETING_ORIGIN}/`,
-    },
-  ],
+const organization: SchemaNode = {
+  "@id": ORGANIZATION_ID,
+  "@type": "Organization",
+  contactPoint: {
+    "@type": "ContactPoint",
+    contactType: "customer support",
+    email: "m@blode.co",
+  },
+  email: "m@blode.co",
+  founder: { "@id": PERSON_ID },
+  image: LOGO_URL,
+  logo: {
+    "@type": "ImageObject",
+    height: 512,
+    url: LOGO_URL,
+    width: 512,
+  },
+  name: SITE_NAME,
+  sameAs: ["https://github.com/mblode/blodemd", "https://blode.co"],
+  url: `${MARKETING_ORIGIN}/`,
 };
+
+const website: SchemaNode = {
+  "@id": WEBSITE_ID,
+  "@type": "WebSite",
+  inLanguage: "en-US",
+  name: SITE_NAME,
+  publisher: { "@id": ORGANIZATION_ID },
+  url: `${MARKETING_ORIGIN}/`,
+};
+
+/** Shared entities. Page-level nodes append to this graph in one script. */
+export const siteGraph: SchemaNode[] = [person, organization, website];
+
+export const pageJsonLd = (...nodes: SchemaNode[]) => ({
+  "@context": "https://schema.org",
+  "@graph": [...siteGraph, ...nodes],
+});
+
+export const webPageNode = ({
+  description,
+  extra,
+  name,
+  path,
+  type = "WebPage",
+}: {
+  description: string;
+  extra?: SchemaNode;
+  name: string;
+  path: string;
+  type?: string | string[];
+}): SchemaNode => ({
+  "@id": `${marketingUrl(path)}#webpage`,
+  "@type": type,
+  description,
+  isPartOf: { "@id": WEBSITE_ID },
+  name,
+  publisher: { "@id": ORGANIZATION_ID },
+  url: marketingUrl(path),
+  ...extra,
+});
+
+export const faqPageNode = (
+  path: string,
+  faqs: readonly FaqItem[]
+): SchemaNode => ({
+  "@id": `${marketingUrl(path)}#faq`,
+  "@type": "FAQPage",
+  isPartOf: { "@id": WEBSITE_ID },
+  mainEntity: faqs.map((faq, index) => ({
+    "@id": `${marketingUrl(path)}#faq-${index + 1}`,
+    "@type": "Question",
+    acceptedAnswer: {
+      "@type": "Answer",
+      text: faq.answer,
+    },
+    name: faq.question,
+  })),
+  url: marketingUrl(path),
+});
+
+export const articleNode = ({
+  dateModified,
+  datePublished,
+  description,
+  headline,
+  path,
+}: {
+  dateModified: string;
+  datePublished: string;
+  description: string;
+  headline: string;
+  path: string;
+}): SchemaNode => ({
+  "@id": `${marketingUrl(path)}#article`,
+  "@type": "Article",
+  author: { "@id": PERSON_ID },
+  dateModified,
+  datePublished,
+  description,
+  headline,
+  image: LOGO_URL,
+  mainEntityOfPage: { "@id": `${marketingUrl(path)}#webpage` },
+  publisher: { "@id": ORGANIZATION_ID },
+  url: marketingUrl(path),
+});
+
+export const breadcrumbNode = (
+  items: readonly { name: string; path: string }[]
+): SchemaNode => ({
+  "@type": "BreadcrumbList",
+  itemListElement: items.map((item, index) => ({
+    "@type": "ListItem",
+    item: marketingUrl(item.path),
+    name: item.name,
+    position: index + 1,
+  })),
+});

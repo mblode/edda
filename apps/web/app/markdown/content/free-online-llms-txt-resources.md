@@ -85,7 +85,7 @@ Live references worth reading: the FastHTML docs index linked from [llmstxt.org]
 **Short answer:** Use a docs platform that emits the files, or a framework plugin; use `llms_txt2ctx` when you need a single context blob.
 
 - [llms_txt2ctx](https://github.com/AnswerDotAI/llms-txt): CLI/Python helper that expands an llms.txt index into context files (as described on llmstxt.org).
-- [vitepress-plugin-llms](https://www.npmjs.com/package/vitepress-plugin-llms) and [docusaurus-plugin-llms](https://www.npmjs.com/package/docusaurus-plugin-llms): generators listed on the proposal site for common docs frameworks.
+- Framework generators such as vitepress-plugin-llms and docusaurus-plugin-llms are listed on [llmstxt.org](https://llmstxt.org/). Use those listings rather than package-registry pages that block crawlers.
 - [Blode.md](https://blode.md/): terminal-native docs. Write MDX, push from the CLI, and ship sites that already expose `llms.txt` / `llms-full.txt` / `.md` alternates. See [pricing](https://blode.md/pricing).
 
 ## Related docs on Blode.md

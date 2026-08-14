@@ -52,6 +52,10 @@ const baseSecurityHeaders = [
     key: "Permissions-Policy",
     value: "camera=(), microphone=(), geolocation=(), payment=()",
   },
+  {
+    key: "Content-Signal",
+    value: "search=yes, ai-input=yes, ai-train=yes",
+  },
 ];
 
 /** @type {import('next').NextConfig} */

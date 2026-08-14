@@ -89,10 +89,12 @@ const getCopyIcon = (copyStatus: CopyStatus) =>
 const MenuItem = ({
   children,
   href,
+  nofollow,
   onSelect,
 }: {
   children: React.ReactNode;
   href?: string;
+  nofollow?: boolean;
   onSelect?: () => Promise<void> | void;
 }) =>
   href ? (
@@ -100,7 +102,7 @@ const MenuItem = ({
       className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors hover:bg-secondary/25 focus-visible:bg-secondary/25 focus-visible:outline-none"
       href={href}
       onClick={onSelect}
-      rel="noopener noreferrer"
+      rel={nofollow ? "nofollow noopener noreferrer" : "noopener noreferrer"}
       target="_blank"
     >
       {children}
@@ -299,7 +301,7 @@ export const CopyPageMenu = ({
 
       <PopoverContent align="end" className="w-[280px] rounded-xl p-1">
         {contentUrl ? (
-          <MenuItem href={contentUrl} onSelect={closeMenu}>
+          <MenuItem href={contentUrl} nofollow onSelect={closeMenu}>
             <MenuIcon>
               <FileTextIcon aria-hidden="true" className="size-[18px]" />
             </MenuIcon>

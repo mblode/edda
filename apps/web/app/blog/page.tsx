@@ -1,22 +1,48 @@
 import { ArrowRightIcon } from "blode-icons-react";
 import Link from "next/link";
 
+import { JsonLd } from "@/components/json-ld";
 import { Badge } from "@/components/ui/badge";
 import { MarketingShell } from "@/components/ui/marketing-shell";
 import { RelativeTime } from "@/components/ui/relative-time";
 import { blogPosts } from "@/lib/blog";
-import { pageMetadata } from "@/lib/marketing-site";
+import { marketingUrl, pageMetadata } from "@/lib/marketing-site";
+import { breadcrumbNode, pageJsonLd, webPageNode } from "@/lib/structured-data";
+
+const blogDescription =
+  "Notes, deep dives, and product updates from the Blode.md team. The terminal-native docs platform that ships documentation from your git repo.";
+const blogTitle = "Blog, updates, and product notes";
 
 export const metadata = pageMetadata({
-  description:
-    "Notes, deep dives, and product updates from the Blode.md team. The terminal-native docs platform that ships documentation from your git repo.",
+  description: blogDescription,
   path: "/blog",
-  title: "Blog, updates, and product notes",
+  title: blogTitle,
 });
+
+const blogJsonLd = pageJsonLd(
+  webPageNode({
+    description: blogDescription,
+    extra: {
+      hasPart: blogPosts.map((post) => ({
+        "@type": "BlogPosting",
+        headline: post.title,
+        url: marketingUrl(`/blog/${post.slug}`),
+      })),
+    },
+    name: blogTitle,
+    path: "/blog",
+    type: "CollectionPage",
+  }),
+  breadcrumbNode([
+    { name: "Home", path: "/" },
+    { name: "Blog", path: "/blog" },
+  ])
+);
 
 export default function BlogPage() {
   return (
     <MarketingShell>
+      <JsonLd data={blogJsonLd} />
       <section className="pt-20 pb-16 md:pt-28 md:pb-24">
         <div className="container flex flex-col items-center text-center">
           <Badge className="mb-4" variant="outline">
@@ -63,7 +89,9 @@ export default function BlogPage() {
               >
                 free online llms.txt resources
               </Link>{" "}
-              for background on agent-readable docs.
+              for background on agent-readable docs. Pricing, the changelog, and
+              the docs stay linked from here so a post is never the only path
+              into the product.
             </p>
           </div>
         </div>

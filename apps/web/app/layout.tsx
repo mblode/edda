@@ -9,7 +9,6 @@ import {
   SITE_NAME,
   TITLE_TEMPLATE,
 } from "@/lib/marketing-site";
-import { siteJsonLd } from "@/lib/structured-data";
 
 import "./globals.css";
 
@@ -73,11 +72,6 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <body className="relative flex w-full flex-col justify-center scroll-smooth bg-background font-sans antialiased [--header-height:calc(var(--spacing)*16)]">
-        <script
-          // oxlint-disable-next-line no-danger -- JSON-LD for SEO
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(siteJsonLd) }}
-          type="application/ld+json"
-        />
         <Providers>
           <WebMcpTools />
           {children}

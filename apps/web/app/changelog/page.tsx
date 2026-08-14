@@ -1,15 +1,20 @@
 import Link from "next/link";
 
+import { JsonLd } from "@/components/json-ld";
 import { Badge } from "@/components/ui/badge";
 import { MarketingShell } from "@/components/ui/marketing-shell";
 import { RelativeTime } from "@/components/ui/relative-time";
-import { pageMetadata } from "@/lib/marketing-site";
+import { marketingUrl, pageMetadata } from "@/lib/marketing-site";
+import { breadcrumbNode, pageJsonLd, webPageNode } from "@/lib/structured-data";
+
+const changelogDescription =
+  "Every release, fix, and improvement to Blode.md. See what shipped across the CLI, renderer, hosting, and agent-readable exports.";
+const changelogTitle = "Changelog and release notes";
 
 export const metadata = pageMetadata({
-  description:
-    "Every release, fix, and improvement to Blode.md. See what shipped across the CLI, renderer, hosting, and agent-readable exports.",
+  description: changelogDescription,
   path: "/changelog",
-  title: "Changelog and release notes",
+  title: changelogTitle,
 });
 
 const updates = [
@@ -24,9 +29,33 @@ const updates = [
   },
 ];
 
+const changelogJsonLd = pageJsonLd(
+  webPageNode({
+    description: changelogDescription,
+    extra: {
+      mainEntity: {
+        "@type": "ItemList",
+        itemListElement: updates.map((update, index) => ({
+          "@type": "ListItem",
+          name: update.title,
+          position: index + 1,
+          url: marketingUrl("/changelog"),
+        })),
+      },
+    },
+    name: changelogTitle,
+    path: "/changelog",
+  }),
+  breadcrumbNode([
+    { name: "Home", path: "/" },
+    { name: "Changelog", path: "/changelog" },
+  ])
+);
+
 export default function ChangelogPage() {
   return (
     <MarketingShell>
+      <JsonLd data={changelogJsonLd} />
       <section className="pt-20 pb-16 md:pt-28 md:pb-24">
         <div className="container">
           <Badge className="mb-4" variant="outline">

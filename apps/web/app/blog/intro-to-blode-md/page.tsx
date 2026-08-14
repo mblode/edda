@@ -1,6 +1,7 @@
 import { ArrowRightIcon, ChevronLeftIcon } from "blode-icons-react";
 import Link from "next/link";
 
+import { JsonLd } from "@/components/json-ld";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { CopyButton } from "@/components/ui/copy-button";
@@ -8,15 +9,46 @@ import { MarketingShell } from "@/components/ui/marketing-shell";
 import { RelativeTime } from "@/components/ui/relative-time";
 import { SignupLink } from "@/components/ui/signup-link";
 import { siteConfig } from "@/lib/config";
-import { pageMetadata } from "@/lib/marketing-site";
+import { marketingUrl, pageMetadata } from "@/lib/marketing-site";
+import {
+  articleNode,
+  breadcrumbNode,
+  pageJsonLd,
+  webPageNode,
+} from "@/lib/structured-data";
+
+const introDescription =
+  "Why we built Blode.md, a docs-as-code platform that publishes from GitHub in three commands. Free, open source, and designed to keep docs next to your code.";
+const introTitle = "Introducing the Blode.md docs platform";
+const introPath = "/blog/intro-to-blode-md";
 
 export const metadata = pageMetadata({
-  description:
-    "Why we built Blode.md, a docs-as-code platform that publishes from GitHub in three commands. Free, open source, and designed to keep docs next to your code.",
-  path: "/blog/intro-to-blode-md",
-  title: "Introducing the Blode.md docs platform",
+  description: introDescription,
+  path: introPath,
+  title: introTitle,
   type: "article",
 });
+
+const introJsonLd = pageJsonLd(
+  webPageNode({
+    description: introDescription,
+    extra: { mainEntity: { "@id": `${marketingUrl(introPath)}#article` } },
+    name: introTitle,
+    path: introPath,
+  }),
+  articleNode({
+    dateModified: "2026-04-20",
+    datePublished: "2026-04-20",
+    description: introDescription,
+    headline: "Hello, Blode.md",
+    path: introPath,
+  }),
+  breadcrumbNode([
+    { name: "Home", path: "/" },
+    { name: "Blog", path: "/blog" },
+    { name: "Hello, Blode.md", path: introPath },
+  ])
+);
 
 const installSnippet = `npm i -g blodemd
 blodemd login
@@ -26,6 +58,7 @@ blodemd push docs`;
 export default function IntroPostPage() {
   return (
     <MarketingShell>
+      <JsonLd data={introJsonLd} />
       <article>
         <section className="pt-20 pb-12 md:pt-28 md:pb-16">
           <div className="container flex flex-col items-center text-center">

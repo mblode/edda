@@ -1,20 +1,38 @@
 import Link from "next/link";
 
+import { JsonLd } from "@/components/json-ld";
 import { Badge } from "@/components/ui/badge";
 import { MarketingShell } from "@/components/ui/marketing-shell";
 import { siteConfig } from "@/lib/config";
 import { pageMetadata } from "@/lib/marketing-site";
+import { breadcrumbNode, pageJsonLd, webPageNode } from "@/lib/structured-data";
+
+const termsDescription =
+  "Terms of service for Blode.md: ground rules for the hosted docs platform, including your content, acceptable use, account responsibilities, and updates.";
+const termsTitle = "Terms of service for Blode.md";
 
 export const metadata = pageMetadata({
-  description:
-    "Terms of service for Blode.md: ground rules for the hosted docs platform, including your content, acceptable use, account responsibilities, and updates.",
+  description: termsDescription,
   path: "/terms",
-  title: "Terms of service for Blode.md",
+  title: termsTitle,
 });
+
+const termsJsonLd = pageJsonLd(
+  webPageNode({
+    description: termsDescription,
+    name: termsTitle,
+    path: "/terms",
+  }),
+  breadcrumbNode([
+    { name: "Home", path: "/" },
+    { name: "Terms", path: "/terms" },
+  ])
+);
 
 export default function TermsPage() {
   return (
     <MarketingShell>
+      <JsonLd data={termsJsonLd} />
       <section className="pt-20 pb-16 md:pt-28 md:pb-24">
         <div className="container">
           <Badge className="mb-4" variant="outline">

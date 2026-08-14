@@ -28,6 +28,7 @@ export const GET = async (
       "CDN-Cache-Control":
         "public, s-maxage=3600, stale-while-revalidate=86400",
       "Cache-Control": "public, max-age=3600",
+      "Content-Signal": "search=yes, ai-input=yes, ai-train=yes",
       "Content-Type": "text/plain; charset=utf-8",
       "Vercel-CDN-Cache-Control":
         "public, s-maxage=3600, stale-while-revalidate=86400",

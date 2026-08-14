@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { JsonLd } from "@/components/json-ld";
 import { Badge } from "@/components/ui/badge";
 import {
   Card,
@@ -10,13 +11,29 @@ import {
 import { MarketingShell } from "@/components/ui/marketing-shell";
 import { siteConfig } from "@/lib/config";
 import { pageMetadata } from "@/lib/marketing-site";
+import { breadcrumbNode, pageJsonLd, webPageNode } from "@/lib/structured-data";
+
+const securityDescription =
+  "How Blode.md handles security today: HTTPS by default, GitHub OAuth for sign-in, open source code you can audit, and a clear path to report vulnerabilities.";
+const securityTitle = "Security practices and reporting";
 
 export const metadata = pageMetadata({
-  description:
-    "How Blode.md handles security today: HTTPS by default, GitHub OAuth for sign-in, open source code you can audit, and a clear path to report vulnerabilities.",
+  description: securityDescription,
   path: "/security",
-  title: "Security practices and reporting",
+  title: securityTitle,
 });
+
+const securityJsonLd = pageJsonLd(
+  webPageNode({
+    description: securityDescription,
+    name: securityTitle,
+    path: "/security",
+  }),
+  breadcrumbNode([
+    { name: "Home", path: "/" },
+    { name: "Security", path: "/security" },
+  ])
+);
 
 const controls = [
   {
@@ -37,6 +54,7 @@ const controls = [
 export default function SecurityPage() {
   return (
     <MarketingShell>
+      <JsonLd data={securityJsonLd} />
       <section className="pt-20 pb-16 md:pt-28 md:pb-24">
         <div className="container">
           <Badge className="mb-4" variant="outline">
@@ -109,7 +127,10 @@ export default function SecurityPage() {
               >
                 {siteConfig.links.email}
               </a>{" "}
-              with steps to reproduce. We will take it from there.
+              with steps to reproduce. Do not file a public GitHub issue for a
+              vulnerability. This page covers the hosted platform and the
+              open-source CLI; customer-published docs stay the publisher&apos;s
+              responsibility. We will take a report from there.
             </p>
           </div>
         </div>

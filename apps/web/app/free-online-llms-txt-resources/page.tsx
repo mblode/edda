@@ -1,6 +1,7 @@
 import { ArrowRightIcon } from "blode-icons-react";
 import Link from "next/link";
 
+import { JsonLd } from "@/components/json-ld";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { MarketingShell } from "@/components/ui/marketing-shell";
@@ -8,6 +9,13 @@ import { SignupLink } from "@/components/ui/signup-link";
 import { siteConfig } from "@/lib/config";
 import { getEducationalResource } from "@/lib/educational-resources";
 import { marketingUrl, pageMetadata, SITE_NAME } from "@/lib/marketing-site";
+import {
+  articleNode,
+  breadcrumbNode,
+  faqPageNode,
+  pageJsonLd,
+  webPageNode,
+} from "@/lib/structured-data";
 
 const resource = getEducationalResource("free-online-llms-txt-resources");
 
@@ -73,41 +81,26 @@ const formatDate = (iso: string) =>
     year: "numeric",
   });
 
-const jsonLd = {
-  "@context": "https://schema.org",
-  "@graph": [
-    {
-      "@type": "Article",
-      author: {
-        "@type": "Person",
-        name: "Matthew Blode",
-        url: siteConfig.links.author,
-      },
-      dateModified: updatedAt,
-      datePublished: publishedAt,
-      description,
-      headline: title,
-      mainEntityOfPage: marketingUrl(path),
-      publisher: {
-        "@type": "Organization",
-        name: SITE_NAME,
-        url: marketingUrl("/"),
-      },
-      url: marketingUrl(path),
-    },
-    {
-      "@type": "FAQPage",
-      mainEntity: faqs.map((faq) => ({
-        "@type": "Question",
-        acceptedAnswer: {
-          "@type": "Answer",
-          text: faq.answer,
-        },
-        name: faq.question,
-      })),
-    },
-  ],
-};
+const jsonLd = pageJsonLd(
+  webPageNode({
+    description,
+    extra: { mainEntity: { "@id": `${marketingUrl(path)}#article` } },
+    name: title,
+    path,
+  }),
+  articleNode({
+    dateModified: updatedAt,
+    datePublished: publishedAt,
+    description,
+    headline: title,
+    path,
+  }),
+  faqPageNode(path, faqs),
+  breadcrumbNode([
+    { name: "Home", path: "/" },
+    { name: title, path },
+  ])
+);
 
 const exampleLlmsTxt = `# Acme Docs
 > Acme is an API for invoicing. This index lists the pages agents should read first.
@@ -122,11 +115,7 @@ const exampleLlmsTxt = `# Acme Docs
 export default function FreeOnlineLlmsTxtResourcesPage() {
   return (
     <MarketingShell>
-      <script
-        // oxlint-disable-next-line no-danger -- page-level Article + FAQPage JSON-LD
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-        type="application/ld+json"
-      />
+      <JsonLd data={jsonLd} />
       <article>
         <section className="pt-20 pb-16 md:pt-28 md:pb-24">
           <div className="container">
@@ -468,25 +457,18 @@ export default function FreeOnlineLlmsTxtResourcesPage() {
                   context files (as described on llmstxt.org).
                 </li>
                 <li>
+                  Framework generators such as vitepress-plugin-llms and
+                  docusaurus-plugin-llms are listed on{" "}
                   <a
                     className="underline underline-offset-4"
-                    href="https://www.npmjs.com/package/vitepress-plugin-llms"
+                    href="https://llmstxt.org/"
                     rel="noopener noreferrer"
                     target="_blank"
                   >
-                    vitepress-plugin-llms
-                  </a>{" "}
-                  and{" "}
-                  <a
-                    className="underline underline-offset-4"
-                    href="https://www.npmjs.com/package/docusaurus-plugin-llms"
-                    rel="noopener noreferrer"
-                    target="_blank"
-                  >
-                    docusaurus-plugin-llms
+                    llmstxt.org
                   </a>
-                  : generators listed on the proposal site for common docs
-                  frameworks.
+                  . Use those listings rather than package-registry pages that
+                  block crawlers.
                 </li>
                 <li>
                   <Link className="underline underline-offset-4" href="/">
