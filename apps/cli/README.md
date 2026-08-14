@@ -74,7 +74,9 @@ blodemd logout            Remove stored credentials
 blodemd whoami            Show current authentication
 blodemd validate [dir]    Validate docs.json
 blodemd push [dir]        Deploy docs
-blodemd dev [dir]         Start the local docs preview server
+blodemd projects          List projects on your account
+blodemd analytics         Manage PostHog (`get`, `set posthog`, `unset`)
+blodemd dev               Start the local docs preview server
 ```
 
 ### `push` Options
@@ -85,16 +87,19 @@ blodemd dev [dir]         Start the local docs preview server
 --api-url <url>     API URL (env: BLODEMD_API_URL)
 --branch <name>     Git branch (env: BLODEMD_BRANCH)
 --message <msg>     Deploy message (env: BLODEMD_COMMIT_MESSAGE)
+--json              Print machine-readable JSON
 ```
+
+`validate` and `projects` also accept `--json`. `dev` takes `--dir`, not a positional directory.
 
 The CLI reads the project slug from the `slug` field in `docs.json` when `--project` is not set.
 
 ### `dev` Options
 
 ```bash
---dir <dir>       Docs directory
---port <port>     Local preview port (default: 3030)
---no-open         Don't open the browser automatically
+-d, --dir <dir>     Docs directory
+-p, --port <port>   Local preview port (default: 3030)
+--no-open           Don't open the browser automatically
 ```
 
 ## Auto-deploy without the CLI

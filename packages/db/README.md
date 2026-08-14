@@ -54,17 +54,20 @@ not be tracked in the migration journal — always follow up with
 
 ```bash
 # from repo root
-npm run db:start                         # boot Supabase locally
-npm run db:local:migrate -w @repo/db     # apply migrations to localhost:54322
-DATABASE_URL=postgresql://postgres:postgres@127.0.0.1:54322/postgres \
-  tsx packages/db/seed.ts                # seed sample data
+npm run db:start                         # boot Supabase locally (Postgres on 54332)
+LOCAL_DATABASE_URL=postgresql://postgres:postgres@127.0.0.1:54332/postgres \
+  npm run db:local:migrate -w @repo/db   # apply migrations
+LOCAL_DATABASE_URL=postgresql://postgres:postgres@127.0.0.1:54332/postgres \
+  npm run db:seed                        # seed sample data
 npm run db:stop                          # tear it down
 ```
 
-For integration tests, set `LOCAL_DATABASE_URL` to a separate database:
+`db:local:migrate` / `db:local:seed` default to `127.0.0.1:54322` unless `LOCAL_DATABASE_URL` is set. Local Supabase in this repo listens on **54332** (`supabase/config.toml` and root `.env.example`), so pass the 54332 URL after `db:start`.
+
+For integration tests, set `LOCAL_DATABASE_URL` to a separate database on the same host port you are actually running:
 
 ```bash
-LOCAL_DATABASE_URL=postgresql://postgres:postgres@127.0.0.1:54322/blode_docs_drizzle_test \
+LOCAL_DATABASE_URL=postgresql://postgres:postgres@127.0.0.1:54332/blode_docs_drizzle_test \
   npm run db:local:migrate -w @repo/db
 ```
 

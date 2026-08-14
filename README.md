@@ -61,7 +61,7 @@ Your site is live on its own `blode.md` subdomain, taking its name, navigation, 
 | `blodemd validate`   | Check `docs.json` before you deploy                            |
 | `blodemd push [dir]` | Deploy a docs directory to its project                         |
 | `blodemd projects`   | List the projects on your account                              |
-| `blodemd analytics`  | Point a project at your own PostHog                            |
+| `blodemd analytics`  | Manage PostHog: `get`, `set posthog <key>`, `unset posthog`    |
 
 ## Agent skill
 
