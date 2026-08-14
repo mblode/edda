@@ -9,3 +9,6 @@ export const currentDocPathFromPathname = (
     : pathname;
   return normalizePath(stripped) || "index";
 };
+
+export const articleMatchesUrlPath = (currentPath: string, urlPath: string) =>
+  currentPath === urlPath;

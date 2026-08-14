@@ -27,3 +27,8 @@ export const themeStylesFromConfig = (config: SiteConfig): CSSProperties => {
 
   return styles as CSSProperties;
 };
+
+export const themeCssFromConfig = (config: SiteConfig) =>
+  Object.entries(themeStylesFromConfig(config))
+    .map(([key, value]) => `${key}:${value}`)
+    .join(";");
