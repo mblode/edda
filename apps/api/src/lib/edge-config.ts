@@ -61,16 +61,95 @@ const buildVercelUrl = (pathname: string, config: VercelEdgeConfigConfig) => {
   return url;
 };
 
+// Key order is not guaranteed across a Zod re-parse or an Edge Config
+// round-trip, so compare structurally rather than on raw JSON text.
+const stableStringify = (value: unknown): string => {
+  if (value === null || typeof value !== "object") {
+    return JSON.stringify(value) ?? "null";
+  }
+  if (Array.isArray(value)) {
+    return `[${value.map(stableStringify).join(",")}]`;
+  }
+  const entries = Object.entries(value as Record<string, unknown>)
+    // `undefined` members vanish through JSON, so an object that only differs
+    // by one would otherwise look changed on every sync, forever.
+    .filter(([, member]) => member !== undefined)
+    // Sorts the fresh array from Object.entries/filter, so there is nothing
+    // shared to mutate; toSorted would need lib es2023, untargeted here.
+    // oxlint-disable-next-line unicorn/no-array-sort
+    .sort(([a], [b]) => (a < b ? -1 : 1));
+  return `{${entries
+    .map(([key, member]) => `${JSON.stringify(key)}:${stableStringify(member)}`)
+    .join(",")}}`;
+};
+
+// Reads the whole config so one request can settle every key in the batch.
+// Returns null when the read fails, which the caller treats as "unknown" and
+// writes anyway — a stale skip would silently break edge routing, so this
+// optimisation must only ever be able to cost money, never correctness.
+const readEdgeConfigValues = async (
+  config: VercelEdgeConfigConfig
+): Promise<Map<string, unknown> | null> => {
+  try {
+    const response = await fetch(
+      buildVercelUrl(`/v1/edge-config/${config.edgeConfigId}/items`, config),
+      { headers: { Authorization: `Bearer ${config.token}` } }
+    );
+    if (!response.ok) {
+      return null;
+    }
+    const payload = (await response.json()) as {
+      key: string;
+      value: unknown;
+    }[];
+    if (!Array.isArray(payload)) {
+      return null;
+    }
+    return new Map(payload.map((item) => [item.key, item.value]));
+  } catch {
+    return null;
+  }
+};
+
+// Writes are billed per item and reads are effectively free (the Aug 2026
+// invoice: $6.18 for 705 writes against $0.16 for 65k reads), and this runs on
+// every deploy and every GitHub webhook rather than only when tenant data moves
+// — so the overwhelmingly common batch is one that rewrites byte-identical
+// records. Dropping the no-ops usually empties the batch entirely.
+const pruneUnchangedItems = (
+  items: EdgeConfigItemOperation[],
+  current: Map<string, unknown>
+) =>
+  items.filter((item) => {
+    const exists = current.has(item.key);
+    if (item.operation === "delete") {
+      // Deletes are issued unconditionally for every non-configured domain,
+      // including hosts that were never in the config to begin with.
+      return exists;
+    }
+    return (
+      !exists ||
+      stableStringify(current.get(item.key)) !== stableStringify(item.value)
+    );
+  });
+
 const applyEdgeConfigItems = async (items: EdgeConfigItemOperation[]) => {
   const config = getVercelEdgeConfig();
   if (!(config && items.length)) {
     return;
   }
 
+  const current = await readEdgeConfigValues(config);
+  const pending =
+    current === null ? items : pruneUnchangedItems(items, current);
+  if (!pending.length) {
+    return;
+  }
+
   const response = await fetch(
     buildVercelUrl(`/v1/edge-config/${config.edgeConfigId}/items`, config),
     {
-      body: JSON.stringify({ items }),
+      body: JSON.stringify({ items: pending }),
       headers: {
         Authorization: `Bearer ${config.token}`,
         "Content-Type": "application/json",

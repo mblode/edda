@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 process.env.DATABASE_URL ??=
   "postgresql://postgres:postgres@127.0.0.1:54332/blode_docs_drizzle_test";
@@ -141,5 +141,104 @@ describe("edge config key safety", () => {
     for (const item of items) {
       expect(item.key).toMatch(/^[A-Za-z0-9_-]{1,256}$/);
     }
+  });
+});
+
+const GUARD_ENV = { id: "ecfg_test", token: "token_test" };
+
+const loadEdgeConfigModule = async () => {
+  process.env.VERCEL_EDGE_CONFIG_ID = GUARD_ENV.id;
+  process.env.VERCEL_TOKEN = GUARD_ENV.token;
+  vi.resetModules();
+  return await import("./edge-config");
+};
+
+const stubEdgeConfigFetch = (listing: {
+  items?: { key: string; value: unknown }[];
+  ok: boolean;
+}) => {
+  const fetchMock = vi.fn((_url: unknown, init?: { method?: string }) => {
+    if (init?.method === "PATCH") {
+      return Promise.resolve({
+        ok: true,
+        text: () => Promise.resolve(""),
+      } as unknown as Response);
+    }
+    return Promise.resolve({
+      json: () => Promise.resolve(listing.items ?? []),
+      ok: listing.ok,
+      text: () => Promise.resolve(""),
+    } as unknown as Response);
+  });
+  vi.stubGlobal("fetch", fetchMock);
+  return fetchMock;
+};
+
+const patchedItems = (fetchMock: ReturnType<typeof stubEdgeConfigFetch>) =>
+  fetchMock.mock.calls
+    .filter(([, init]) => (init as { method?: string })?.method === "PATCH")
+    .map(
+      ([, init]) =>
+        JSON.parse((init as { body: string }).body) as {
+          items: { key: string }[];
+        }
+    );
+
+// The write guard exists because this path runs on every deploy and every
+// GitHub webhook, not only when tenant data changes. It must be able to cost
+// money, never correctness — so the "read failed" case has to still write.
+describe("applyEdgeConfigItems write guard", () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  it("issues no write when every delete targets a key that is absent", async () => {
+    const fetchMock = stubEdgeConfigFetch({ items: [], ok: true });
+    const { removeProjectTenantEdgeConfig } = await loadEdgeConfigModule();
+
+    await removeProjectTenantEdgeConfig({
+      hosts: ["docs.example.com"],
+      slug: "example",
+    });
+
+    expect(patchedItems(fetchMock)).toHaveLength(0);
+  });
+
+  it("writes only the keys that actually exist", async () => {
+    const { getTenantEdgeSlugKey } = await import("@repo/contracts");
+    const presentKey = getTenantEdgeSlugKey("example");
+    const fetchMock = stubEdgeConfigFetch({
+      items: [{ key: presentKey, value: { version: 1 } }],
+      ok: true,
+    });
+    const { removeProjectTenantEdgeConfig } = await loadEdgeConfigModule();
+
+    await removeProjectTenantEdgeConfig({
+      hosts: ["docs.example.com"],
+      slug: "example",
+    });
+
+    const bodies = patchedItems(fetchMock);
+    expect(bodies).toHaveLength(1);
+    expect(bodies[0].items.map((item) => item.key)).toEqual([presentKey]);
+  });
+
+  it("falls back to writing everything when the read fails", async () => {
+    const fetchMock = stubEdgeConfigFetch({ ok: false });
+    const { buildTenantEdgeConfigRemovalItems, removeProjectTenantEdgeConfig } =
+      await loadEdgeConfigModule();
+
+    await removeProjectTenantEdgeConfig({
+      hosts: ["docs.example.com"],
+      slug: "example",
+    });
+
+    const expected = buildTenantEdgeConfigRemovalItems({
+      hosts: ["example.blode.md", "docs.example.com"],
+      slug: "example",
+    });
+    const bodies = patchedItems(fetchMock);
+    expect(bodies).toHaveLength(1);
+    expect(bodies[0].items).toHaveLength(expected.length);
   });
 });
