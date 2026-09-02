@@ -18,7 +18,7 @@
     "check-types": "tsc --noEmit"
   },
   "dependencies": {
-    "@hono/node-server": "^2.0.8",
+    "@hono/node-server": "^2.0.10",
     "@hono/zod-validator": "^0.8.0",
     "@octokit/auth-app": "^8.2.0",
     "@octokit/rest": "^22.0.1",
@@ -30,14 +30,14 @@
     "@repo/prebuild": "*",
     "@repo/previewing": "^0.0.0",
     "@vercel/blob": "^2.6.1",
-    "hono": "^4.12.29",
+    "hono": "^4.13.5",
     "jose": "^6.2.3",
     "zod": "^4.4.3"
   },
   "devDependencies": {
     "@repo/typescript-config": "*",
     "@types/node": "^26.1.1",
-    "drizzle-orm": "^1.0.0-beta.19",
+    "drizzle-orm": "^1.0.0-rc.1-929a083",
     "oxfmt": "^0.58.0",
     "oxlint": "^1.73.0",
     "tsx": "^4.23.0",

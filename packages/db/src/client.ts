@@ -1,8 +1,6 @@
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 
-import * as schema from "./schema.js";
-
 // DATABASE_URL is absent during `next build` page-data collection. We keep
 // the throw for runtime so misconfigured deploys fail loudly, but accept a
 // placeholder during build so importing this module doesn't crash. The
@@ -29,4 +27,7 @@ const client = postgres(
   }
 );
 
-export const db = drizzle({ client, schema });
+// drizzle-orm 1.0 RC dropped the `schema` constructor option (relational
+// queries now take a `relations` object). This package uses the SQL query
+// builder only, so the client does not need either.
+export const db = drizzle({ client });
