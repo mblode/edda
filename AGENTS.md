@@ -9,8 +9,8 @@
   - `apps/dashboard` (Next.js, port 3002) — product dashboard (`/app`) and auth (`/oauth`). Served via internal rewrite from `apps/web` or from a dedicated dashboard deployment.
   - `apps/api` (Hono, port 4000).
   - `apps/cli` (CLI tool).
-- `packages/` — shared libraries (`@repo/contracts`, `@repo/db`, `@repo/models`, `@repo/common`, `@repo/validation`, `@repo/ui`, `@repo/api-client`, `@repo/prebuild`, `@repo/previewing`) and config packages (`@repo/typescript-config`).
-- Root config: `turbo.json`, `.oxlintrc.json`, `.oxfmtrc.jsonc`.
+- `packages/` — shared libraries (`@repo/contracts`, `@repo/db`, `@repo/models`, `@repo/common`, `@repo/validation`, `@repo/ui`, `@repo/api-client`, `@repo/mdx-compiler`, `@repo/prebuild`, `@repo/previewing`) and config packages (`@repo/typescript-config`).
+- Root config: `turbo.json`, `oxlint.config.ts`, `.oxfmtrc.jsonc`.
 
 ## Commands
 
@@ -40,7 +40,13 @@ npm run test:component    # Vitest component tests
 npm run test:integration  # Vitest integration tests
 npm run test:smoke        # Vitest smoke tests
 npm run test:e2e          # Playwright end-to-end tests
+npm run db:start          # local Supabase; integration tests need it running
 ```
+
+Integration tests talk to a local Supabase on port 54332. Without it they fail
+with `ECONNREFUSED 127.0.0.1:54332` while every other project still passes — a
+connection error, not a regression. Run `npm run db:start` first, or treat those
+failures as expected and compare against a baseline before blaming a change.
 
 ## Environment Setup
 
@@ -54,7 +60,7 @@ Copy `.env.example` to `.env.local` before running the API. Required variables i
 - **Multi-tenant routing** uses Next.js 16's `proxy.ts` convention (`apps/docs/proxy.ts`), not `middleware.ts`. Never create a `middleware.ts` — it conflicts with `proxy.ts` and breaks the build. `DEFAULT_RESERVED_PATHS` in `apps/docs/lib/tenancy.ts` must keep `/app` and `/oauth` reserved so tenant resolution cannot consume dashboard/auth paths when apex traffic reaches the docs app. Changes to domain/tenant logic require updating both the docs proxy and the API tenant resolution in `apps/api/src/index.ts`.
 - **apps/web ↔ apps/docs ↔ apps/dashboard split.** Marketing lives in `apps/web`; tenant docs live in `apps/docs`; auth/dashboard lives in `apps/dashboard`. `apps/web/next.config.js` rewrites `/docs/*`, `/api/*`, `/sites/*`, `/.well-known/*`, `/llms*.txt` to `DOCS_APP_URL` (default `http://127.0.0.1:3001`) and `/app/*`, `/oauth/*` to `DASHBOARD_APP_URL` (default `http://127.0.0.1:3002`, or `https://app.<PLATFORM_ROOT_DOMAIN>` on Vercel). `apps/docs/next.config.js` also proxies `/app/*`, `/oauth/*`, and matching `/_next/*` assets to `DASHBOARD_APP_URL` as a compatibility layer when apex traffic lands on docs or an upstream rewrite misroutes dashboard traffic. The original host rides along as `x-forwarded-host`; only `apps/docs/proxy.ts` reads it via `getRequestHost` in `apps/docs/lib/tenancy.ts`. In production set both `DOCS_APP_URL` and `DASHBOARD_APP_URL` to their deployment URLs; locally set `DOCS_APP_URL=https://docs.localhost` and `DASHBOARD_APP_URL=http://127.0.0.1:3002` in `apps/web/.env.local` and run `npm run dev --workspace=docs` plus `npm run dev --workspace=dashboard` alongside.
 - **Marketing-page components are intentionally duplicated** in `apps/web/components/ui/` (button, card, badge, sheet, tabs, morph-icon, theme-toggle, hero-media, text-effect, animated-group, marketing-header, marketing-shell, site-footer). Do not add Supabase or `@repo/*` deps to `apps/web` — it stays auth-free and light.
-- **Pre-commit hook** runs `ultracite fix` on staged files via Lefthook. If it fails, run `npm run fix` and re-stage.
+- **Pre-commit hook** runs `oxfmt --write` and `oxlint --fix` on staged files via Lefthook, then `turbo check-types` across the repo. It re-stages only the files a fixer rewrote. If it fails, run `npm run fix` and re-stage.
 
 ## Conventions
 
@@ -77,5 +83,5 @@ Additional context is available in the files below. Consult the relevant file wh
 - `.claude/knowledge/VOTERS.md` — The one bet: docs stay in the customer's editor and git. That refusal is the anti-market beat, not the H1. Do not frame it as "most docs tools want you to leave your editor" (false of Mintlify git).
 - `.claude/knowledge/RUDE-QA-LANDING.md` — Adversarial review. Decisions locked 2026-08-12; homepage/about/pricing must tell that one story.
 - `.claude/knowledge/PROBLEM-SCORE.md` — Good Market? score. $0 hosted is not a viable business as scored. Weak links: Lucrative and identity. Mintlify Starter is $0 with a web editor.
-- `.claude/knowledge/GOALS.md` — Interview goals for the next signups. Hypotheses and questions sit beside it (`HYPOTHESES.md`, `QUESTIONS.md`). Find Yourself step 1 (`WHO-ME.md`) is blocked on the founder.
+- `.claude/knowledge/GOALS.md` — Interview goals for the next signups. Hypotheses and questions sit beside it (`HYPOTHESES.md`, `QUESTIONS.md`). Find Yourself step 1 (`WHO-ME.md`) is not written yet and is blocked on the founder.
 - `.claude/knowledge/SKILLS.md` — Live [skills.asmartbear.com](https://skills.asmartbear.com/) catalog mapped to files in this folder. Who, Me? and interview debriefs are the remaining steps; do not invent them.

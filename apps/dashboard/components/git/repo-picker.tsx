@@ -334,10 +334,27 @@ export const RepoPicker = ({
     installations.some((i) => i.id === initialInstallationId)
       ? initialInstallationId
       : (installations[0]?.id ?? null);
-  const [selectedInstallationId, setSelectedInstallationId] = useState<
-    number | null
-  >(preselected);
-  const [repos, setRepos] = useState<RepoSummary[] | null>(null);
+  const [installationChoice, setInstallationChoice] = useState<number | null>(
+    preselected
+  );
+  // An installation the user picked can disappear when the account list
+  // refreshes, so the live selection is derived rather than corrected from an
+  // effect after a render has already gone out with the stale id.
+  const selectedInstallationId = installations.some(
+    (i) => i.id === installationChoice
+  )
+    ? installationChoice
+    : (installations[0]?.id ?? null);
+  // Repos are stored with the installation they were fetched for, so switching
+  // accounts derives an empty list during render instead of clearing state.
+  const [loadedRepos, setLoadedRepos] = useState<{
+    installationId: number;
+    repos: RepoSummary[];
+  } | null>(null);
+  const repos =
+    loadedRepos && loadedRepos.installationId === selectedInstallationId
+      ? loadedRepos.repos
+      : null;
   const [formError, setError] = useState<string | null>(null);
   const [selected, setSelected] = useState<RepoSummary | null>(null);
   const [branch, setBranch] = useState("main");
@@ -345,21 +362,17 @@ export const RepoPicker = ({
   const [submitting, setSubmitting] = useState(false);
   const [search, setSearch] = useState("");
 
-  useEffect(() => {
-    if (!installations.some((i) => i.id === selectedInstallationId)) {
-      setSelectedInstallationId(installations[0]?.id ?? null);
-    }
-  }, [installations, selectedInstallationId]);
+  const handleSelectInstallation = (id: number) => {
+    setInstallationChoice(id);
+    setSelected(null);
+    setError(null);
+  };
 
   useEffect(() => {
     if (selectedInstallationId === null) {
-      setRepos(null);
       return;
     }
     let cancelled = false;
-    setRepos(null);
-    setSelected(null);
-    setError(null);
     const run = async () => {
       try {
         const reposResult = await apiFetch<{ repos: RepoSummary[] }>(
@@ -367,7 +380,10 @@ export const RepoPicker = ({
           { accessToken }
         );
         if (!cancelled) {
-          setRepos(reposResult.repos);
+          setLoadedRepos({
+            installationId: selectedInstallationId,
+            repos: reposResult.repos,
+          });
         }
       } catch (error) {
         const message =
@@ -469,7 +485,7 @@ export const RepoPicker = ({
               addAccountPending={addAccountPending}
               installations={installations}
               onAddAccount={onAddAccount}
-              onSelect={setSelectedInstallationId}
+              onSelect={handleSelectInstallation}
               selectedId={selectedInstallationId}
             />
           </div>

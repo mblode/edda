@@ -16,6 +16,7 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useId,
   useMemo,
   useState,
 } from "react";
@@ -630,6 +631,16 @@ const SidebarMenuBadge = ({
   />
 );
 
+const HASH_MODULUS = 100_000;
+
+const hashToUnit = (value: string): number => {
+  let hash = 0;
+  for (const char of value) {
+    hash = (hash * 31 + (char.codePointAt(0) ?? 0)) % HASH_MODULUS;
+  }
+  return hash;
+};
+
 const SidebarMenuSkeleton = ({
   className,
   showIcon = false,
@@ -637,8 +648,11 @@ const SidebarMenuSkeleton = ({
 }: React.ComponentProps<"div"> & {
   showIcon?: boolean;
 }) => {
-  // Random width between 50 to 90%.
-  const width = useMemo(() => `${Math.floor(Math.random() * 40) + 50}%`, []);
+  // Width varies between 50% and 90% so a column of skeletons looks like text
+  // rather than a stack of identical bars. It is derived from the instance's
+  // `useId` instead of `Math.random` so the server and client agree on it.
+  const id = useId();
+  const width = `${(hashToUnit(id) % 41) + 50}%`;
 
   return (
     <div

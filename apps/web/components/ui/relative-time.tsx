@@ -56,7 +56,9 @@ export const RelativeTime = ({ className, date }: RelativeTimeProps) => {
   useEffect(() => {
     // Intentional: the server renders the absolute date so markup is stable,
     // then the client swaps in the relative label after mount. Deriving this
-    // during render instead would produce a hydration mismatch.
+    // during render instead would produce a hydration mismatch, because
+    // "3 hours ago" is computed from a clock the server and client do not share.
+    // oxlint-disable-next-line react/set-state-in-effect
     setLabel(formatRelative(new Date(date)));
   }, [date]);
 

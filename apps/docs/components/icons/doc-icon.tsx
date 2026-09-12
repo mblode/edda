@@ -1,3 +1,7 @@
+// oxlint-disable react/static-components
+// `IconComponent` is selected from the module-level DOC_ICON_MAP, not created
+// during render, so its identity is stable for a given icon name. The React
+// Compiler cannot see through the lookup table and reports it anyway.
 import ArrowRightIcon from "blode-icons-react/icons/arrow-right";
 import ArrowUpRightIcon from "blode-icons-react/icons/arrow-up-right";
 import CheckIcon from "blode-icons-react/icons/check";

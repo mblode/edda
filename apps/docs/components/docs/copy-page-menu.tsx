@@ -280,6 +280,8 @@ export const CopyPageMenu = ({
           onClick={handleCopy}
           type="button"
         >
+          {/* `CopyIcon` comes from getCopyIcon's static pair, not from render. */}
+          {/* oxlint-disable-next-line react/static-components */}
           <CopyIcon aria-hidden="true" className="size-[18px]" />
           <span>{copyLabel}</span>
         </button>
@@ -319,6 +321,7 @@ export const CopyPageMenu = ({
 
         <MenuItem onSelect={handleCopy}>
           <MenuIcon>
+            {/* oxlint-disable-next-line react/static-components */}
             <CopyIcon aria-hidden="true" className="size-[18px]" />
           </MenuIcon>
           <div>

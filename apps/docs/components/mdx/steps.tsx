@@ -72,22 +72,26 @@ export const Steps = ({ children, titleSize }: StepsProps) => {
     );
   }
 
+  // Built with a plain loop rather than `map` over a closure: the counter only
+  // advances for real `Step` children, and keeping it out of a callback keeps
+  // the numbering readable as a straight pass down the list.
+  const numberedChildren: ReactNode[] = [];
   let counter = 0;
-  const numberedChildren = items.map((child) => {
+  for (const child of items) {
     if (isValidElement<StepProps>(child) && child.type === Step) {
       counter += 1;
-      const stepNumber = child.props.stepNumber ?? counter;
-      return (
+      numberedChildren.push(
         <Step
           key={child.props.id ?? child.props.title}
           {...child.props}
-          stepNumber={stepNumber}
+          stepNumber={child.props.stepNumber ?? counter}
           titleSize={child.props.titleSize ?? titleSize}
         />
       );
+      continue;
     }
-    return child;
-  });
+    numberedChildren.push(child);
+  }
 
   return (
     <div data-typeset-block="" className="border-l border-border pl-2">

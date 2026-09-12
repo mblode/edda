@@ -24,15 +24,12 @@ export default defineConfig({
     // Next.js App Router route files are function declarations by convention.
     "react/function-component-definition": "off",
     "react/iframe-missing-sandbox": "off",
-    // oxlint 1.82 split the single `react-compiler` switch this repo used into
-    // individually named React Compiler rules. These six restore that setting.
-    // Re-enabling them is a deliberate call: ~13 existing sites would need
-    // review, several of which are intentional mount-effect patterns.
-    "react/exhaustive-effect-dependencies": "off",
-    "react/immutability": "off",
-    "react/purity": "off",
-    "react/set-state-in-effect": "off",
-    "react/static-components": "off",
+    // `react/todo` is not a correctness rule: it reports syntax the React
+    // Compiler cannot lower yet (try/finally, computed keys in a destructuring
+    // pattern, dynamic `import()`). The code it names is valid and correct, so
+    // the only way to satisfy it is to rewrite working code around a compiler
+    // limitation. The other React Compiler rules below are on and do catch real
+    // bugs; this one stays off deliberately.
     "react/todo": "off",
     "require-unicode-regexp": "off",
     "sort-keys": "off",

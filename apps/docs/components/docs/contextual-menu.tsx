@@ -19,7 +19,14 @@ import {
   SparkleIcon,
   WindIcon,
 } from "blode-icons-react";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  useSyncExternalStore,
+} from "react";
 import type { ComponentType, ReactNode, SVGProps } from "react";
 
 import {
@@ -233,16 +240,25 @@ const useContextualActions = (content: string | undefined, title: string) => {
   return { feedback, handleAction };
 };
 
+// `location` has no subscription to offer, so the store never notifies; the
+// snapshot is simply re-read on each render, which picks up client navigation
+// without an effect. The server has no location, so it renders an empty URL.
+const subscribeToLocation = () => () => {
+  // no-op
+};
+const getLocationHref = () => window.location.href;
+const getServerLocationHref = () => "";
+
 const usePageContext = (
   content: string | undefined,
   title: string,
   pagePath: string
 ): ContextualContext => {
-  const [pageUrl, setPageUrl] = useState("");
-
-  useEffect(() => {
-    setPageUrl(window.location.href);
-  }, [pagePath]);
+  const pageUrl = useSyncExternalStore(
+    subscribeToLocation,
+    getLocationHref,
+    getServerLocationHref
+  );
 
   return useMemo(
     () => ({
@@ -384,6 +400,8 @@ export const ContextualMenu = ({
       onClick={handlePrimaryAction}
       type="button"
     >
+      {/* `PrimaryIcon` comes from getFeedbackIcon's static set, not from render. */}
+      {/* oxlint-disable-next-line react/static-components */}
       <PrimaryIcon aria-hidden="true" className="size-[18px]" />
       <span>{primaryLabel}</span>
     </button>
