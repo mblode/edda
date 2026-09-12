@@ -1,8 +1,7 @@
 {
-  "$schema": "https://unpkg.com/knip@latest/schema.json",
+  "$schema": "https://unpkg.com/knip@6.35.1/schema.json",
   "workspaces": {
     ".": {
-      "ignoreBinaries": ["knip", "supabase"],
       "ignoreDependencies": ["ultracite"]
     },
     "apps/api": {
@@ -25,14 +24,12 @@
       "project": ["src/**/*.ts"],
       "ignoreDependencies": [
         "@base-ui/react",
-        "@mdx-js/mdx",
         "@shikijs/rehype",
         "@tailwindcss/postcss",
         "blode-icons-react",
         "class-variance-authority",
         "clsx",
         "cmdk",
-        "geist",
         "merge-refs",
         "motion",
         "next-mdx-remote",
@@ -57,19 +54,13 @@
         "lib/**/*.{ts,tsx}"
       ],
       "project": [
-        "app/**/*.{ts,tsx}",
+        "app/**/*.{ts,tsx,css,mdx}",
         "components/**/*.{ts,tsx}",
         "hooks/**/*.{ts,tsx}",
         "lib/**/*.{ts,tsx}"
       ],
       "ignoreBinaries": ["portless"],
-      "ignoreDependencies": [
-        "postcss",
-        "shadcn",
-        "sharp",
-        "tailwindcss",
-        "tw-animate-css"
-      ]
+      "ignoreDependencies": ["sharp"]
     },
     "apps/dashboard": {
       "entry": [
@@ -80,18 +71,12 @@
         "lib/**/*.{ts,tsx}"
       ],
       "project": [
-        "app/**/*.{ts,tsx}",
+        "app/**/*.{ts,tsx,css}",
         "components/**/*.{ts,tsx}",
         "hooks/**/*.{ts,tsx}",
         "lib/**/*.{ts,tsx}"
       ],
-      "ignoreDependencies": [
-        "postcss",
-        "shadcn",
-        "sharp",
-        "tailwindcss",
-        "tw-animate-css"
-      ]
+      "ignoreDependencies": ["sharp"]
     },
     "apps/web": {
       "entry": [
@@ -102,12 +87,12 @@
         "lib/**/*.{ts,tsx}"
       ],
       "project": [
-        "app/**/*.{ts,tsx}",
+        "app/**/*.{ts,tsx,css}",
         "components/**/*.{ts,tsx}",
         "hooks/**/*.{ts,tsx}",
         "lib/**/*.{ts,tsx}"
       ],
-      "ignoreDependencies": ["shadcn", "sharp", "tailwindcss", "tw-animate-css"]
+      "ignoreDependencies": ["sharp"]
     },
     "apps/dev-server": {
       "entry": [
@@ -115,13 +100,12 @@
         "next.config.{js,mjs,ts}"
       ],
       "project": [
-        "app/**/*.{ts,tsx}",
+        "app/**/*.{ts,tsx,css,mdx}",
         "components/**/*.{ts,tsx}",
         "lib/**/*.{ts,tsx}"
       ],
       "ignoreDependencies": [
         "@base-ui/react",
-        "@mdx-js/mdx",
         "@repo/contracts",
         "@repo/prebuild",
         "@shikijs/rehype",

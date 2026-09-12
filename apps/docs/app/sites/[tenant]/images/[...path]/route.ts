@@ -21,5 +21,3 @@ export const GET = async (
 
   return NextResponse.redirect(resolved, 307);
 };
-
-export const HEAD = GET;

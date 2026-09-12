@@ -33,13 +33,14 @@
     "db:stop": "npx supabase stop",
     "db:push": "npm run db:local:push --workspace=packages/db",
     "db:seed": "npm run db:local:seed --workspace=packages/db",
-    "knip": "DATABASE_URL=postgresql://localhost/dummy npx knip"
+    "knip": "DATABASE_URL=postgresql://localhost/dummy knip"
   },
   "devDependencies": {
     "@changesets/cli": "^3.0.2",
     "@playwright/test": "^1.63.0",
     "@testing-library/jest-dom": "^7.0.1",
     "jsdom": "^30.0.1",
+    "knip": "6.35.1",
     "lefthook": "^2.1.12",
     "oxfmt": "^0.67.0",
     "oxlint": "^1.82.0",

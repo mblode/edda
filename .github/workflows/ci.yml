@@ -31,7 +31,7 @@ jobs:
       - run: npx turbo lint format:check check-types
 
       - name: Knip
-        run: DATABASE_URL=postgresql://localhost/dummy npx knip
+        run: npm run knip
 
   test:
     name: Vitest
