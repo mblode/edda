@@ -1,6 +1,6 @@
 {
   "name": "blodemd",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Blode.md CLI: git-native docs, published on merge",
   "repository": {
     "type": "git",
