@@ -15,15 +15,15 @@
     "format:check": "oxfmt ."
   },
   "dependencies": {
-    "@repo/contracts": "*",
-    "zod": "^4.4.3"
+    "@repo/contracts": "^0.0.0",
+    "zod": "^4.6.2"
   },
   "devDependencies": {
-    "@repo/typescript-config": "*",
-    "@types/node": "^26.1.1",
-    "oxfmt": "^0.58.0",
-    "oxlint": "^1.73.0",
-    "typescript": "6.0.3",
-    "ultracite": "7.9.3"
+    "@repo/typescript-config": "^0.0.0",
+    "@types/node": "^26.5.1",
+    "oxfmt": "^0.67.0",
+    "oxlint": "^1.82.0",
+    "typescript": "^7.0.2",
+    "ultracite": "7.11.1"
   }
 }

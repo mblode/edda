@@ -57,6 +57,9 @@ export const AnimatedGroup = ({
       variants={container}
       {...rest}
     >
+      {/* `toArray` flattens fragments and assigns stable keys; there is no
+          modern equivalent for that, so the Children API is the right tool. */}
+      {/* oxlint-disable-next-line no-react-children */}
       {ReactChildren.toArray(children).map((child, index) => (
         <motion.div
           // oxlint-disable-next-line no-array-index-key

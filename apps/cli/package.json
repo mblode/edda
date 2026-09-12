@@ -33,25 +33,25 @@
     "test:unit": "sh -c 'cd ../.. && vitest run --config vitest.config.ts --project unit apps/cli/src'"
   },
   "dependencies": {
-    "@clack/prompts": "^1.7.0",
-    "chalk": "^5.6.2",
+    "@clack/prompts": "^1.8.0",
+    "chalk": "^6.0.0",
     "chokidar": "^5.0.0",
     "commander": "^15.0.0",
-    "open": "^11.0.0",
-    "yaml": "^2.9.0",
-    "zod": "^4.4.3"
+    "open": "^11.0.3",
+    "yaml": "^2.9.1",
+    "zod": "^4.6.2"
   },
   "devDependencies": {
-    "@repo/common": "*",
-    "@repo/contracts": "*",
-    "@repo/models": "*",
-    "@repo/previewing": "*",
-    "@repo/typescript-config": "*",
-    "@types/node": "^26.1.1",
-    "oxfmt": "^0.58.0",
-    "oxlint": "^1.73.0",
-    "tsdown": "^0.22.5",
-    "ultracite": "7.9.3"
+    "@repo/common": "^0.0.0",
+    "@repo/contracts": "^0.0.0",
+    "@repo/models": "^0.0.0",
+    "@repo/previewing": "^0.0.0",
+    "@repo/typescript-config": "^0.0.0",
+    "@types/node": "^26.5.1",
+    "oxfmt": "^0.67.0",
+    "oxlint": "^1.82.0",
+    "tsdown": "^0.23.0",
+    "ultracite": "7.11.1"
   },
   "engines": {
     "node": "24.x"

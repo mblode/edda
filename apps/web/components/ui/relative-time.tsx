@@ -54,6 +54,9 @@ export const RelativeTime = ({ className, date }: RelativeTimeProps) => {
   const [label, setLabel] = useState(absolute);
 
   useEffect(() => {
+    // Intentional: the server renders the absolute date so markup is stable,
+    // then the client swaps in the relative label after mount. Deriving this
+    // during render instead would produce a hydration mismatch.
     setLabel(formatRelative(new Date(date)));
   }, [date]);
 

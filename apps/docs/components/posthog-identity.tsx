@@ -2,7 +2,7 @@
 
 import { createBrowserClient } from "@supabase/ssr";
 import type { User } from "@supabase/supabase-js";
-import posthog from "posthog-js";
+import { posthog } from "posthog-js";
 import { useEffect, useRef } from "react";
 
 import { shouldInitPlatformPostHog } from "@/lib/platform-analytics";

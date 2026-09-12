@@ -1,4 +1,4 @@
-import posthog from "posthog-js";
+import { posthog } from "posthog-js";
 
 import { shouldInitPlatformPostHog } from "./lib/platform-analytics";
 

@@ -1,4 +1,4 @@
-import { confirm, intro, isCancel } from "@clack/prompts";
+import { confirm, intro } from "@clack/prompts";
 import chalk from "chalk";
 import type { Command } from "commander";
 
@@ -26,6 +26,7 @@ import {
   LEGACY_PROJECT_NAME_FALLBACK_WARNING,
   resolveProjectTarget,
 } from "../project-config.js";
+import { isCancel } from "../prompts.js";
 import { loadValidatedSiteConfig } from "../site-config.js";
 import type { DeploymentResponse } from "../types.js";
 import { createUploadBatches } from "../upload.js";

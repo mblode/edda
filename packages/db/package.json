@@ -34,17 +34,17 @@
     "db:local:url": "node ./scripts/local-db.mjs print-url"
   },
   "dependencies": {
-    "@repo/contracts": "*",
-    "drizzle-orm": "^1.0.0-rc.1-929a083",
+    "@repo/contracts": "^0.0.0",
+    "drizzle-orm": "^1.0.0-rc.5-ab785fc",
     "postgres": "^3.4.9"
   },
   "devDependencies": {
-    "@repo/typescript-config": "*",
-    "@types/node": "^26.1.1",
-    "drizzle-kit": "^1.0.0-beta.19",
-    "oxfmt": "^0.58.0",
-    "oxlint": "^1.73.0",
-    "typescript": "6.0.3",
-    "ultracite": "7.9.3"
+    "@repo/typescript-config": "^0.0.0",
+    "@types/node": "^26.5.1",
+    "drizzle-kit": "^1.0.0-rc.5-ab785fc",
+    "oxfmt": "^0.67.0",
+    "oxlint": "^1.82.0",
+    "typescript": "^7.0.2",
+    "ultracite": "7.11.1"
   }
 }

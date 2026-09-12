@@ -1,5 +1,5 @@
 import { LOCAL_ROOT_HOSTS, normalizeHost } from "@repo/common";
-import posthog from "posthog-js";
+import { posthog } from "posthog-js";
 
 const PLATFORM_ROOT_DOMAIN =
   process.env.NEXT_PUBLIC_PLATFORM_ROOT_DOMAIN?.trim() || "blode.md";

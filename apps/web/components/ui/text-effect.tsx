@@ -55,6 +55,9 @@ type Segment =
 
 const toSegments = (children: ReactNode, per: Per): Segment[] => {
   const segments: Segment[] = [];
+  // `toArray` flattens fragments and assigns stable keys; there is no modern
+  // equivalent for that, so the Children API is the right tool.
+  // oxlint-disable-next-line no-react-children
   for (const child of ReactChildren.toArray(children)) {
     if (typeof child === "string" || typeof child === "number") {
       for (const part of splitString(String(child), per)) {

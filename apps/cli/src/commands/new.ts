@@ -1,7 +1,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 
-import { confirm, intro, isCancel, log, select, text } from "@clack/prompts";
+import { confirm, intro, log, select, text } from "@clack/prompts";
 import chalk from "chalk";
 import type { Command } from "commander";
 
@@ -28,6 +28,7 @@ import {
   deriveDisplayNameFromProjectSlug,
   validateProjectSlug,
 } from "../project-config.js";
+import { isCancel } from "../prompts.js";
 import {
   DEFAULT_SCAFFOLD_DIRECTORY,
   deriveDefaultProjectSlug,
