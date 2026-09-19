@@ -414,7 +414,7 @@ describe("toAgentMarkdown", () => {
     expect(output).toContain("Every project gets a `*.blode.md` subdomain");
     expect(output).toContain("Drop in an OpenAPI spec");
     expect(output).toContain("Full-text search with Cmd+K");
-    expect(output).toContain("Auto-generated sitemaps, robots.txt");
+    expect(output).toContain("a Markdown twin of every page");
   });
 
   it("preserves inline code spans that mention MDX component tags", () => {

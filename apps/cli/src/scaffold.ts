@@ -138,6 +138,7 @@ const claudeInstructions = [
   "## Workflow reminders",
   "",
   "- Content lives in MDX files next to `docs.json`.",
+  "- Give every page a one-sentence `description`: it becomes the page's line in `llms.txt`, which is how coding agents choose which page to read.",
   "- Update `docs.json` when navigation or branding changes.",
   "- Prefer concise, task-oriented documentation.",
   "- Run `blodemd validate` before publishing.",

@@ -457,6 +457,20 @@ export default function FreeOnlineLlmsTxtResourcesPage() {
                   context files (as described on llmstxt.org).
                 </li>
                 <li>
+                  <a
+                    className="underline underline-offset-4"
+                    href="https://github.com/mintlify/url-discovery-bench"
+                    rel="noopener noreferrer"
+                    target="_blank"
+                  >
+                    url-discovery-bench
+                  </a>
+                  : Mintlify&apos;s open-source benchmark that drives Claude and
+                  Codex through your docs and counts failed requests per task.
+                  Its 2026 run put HTML at 2.23, Markdown at 1.42, and Markdown
+                  with a link to llms.txt at 0.11.
+                </li>
+                <li>
                   Framework generators such as vitepress-plugin-llms and
                   docusaurus-plugin-llms are listed on{" "}
                   <a

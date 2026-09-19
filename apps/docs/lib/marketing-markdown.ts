@@ -59,7 +59,7 @@ Latest updates to the blode.md platform.
 `,
   "/free-online-llms-txt-resources": `# Free online llms.txt resources
 
-Educational resource by [Matthew Blode](https://blode.co) / Blode.md. Last updated 10 August 2026.
+Educational resource by [Matthew Blode](https://blode.co) / Blode.md. Last updated 19 September 2026.
 
 llms.txt is a proposed Markdown file served at \`/llms.txt\` that gives language models a curated, LLM-friendly index of a website. It starts with an H1 title, a short summary, and lists of linked Markdown resources so agents can load concise documentation without scraping noisy HTML. The informal standard is documented at [llmstxt.org](https://llmstxt.org/).
 

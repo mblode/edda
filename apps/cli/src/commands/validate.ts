@@ -6,6 +6,7 @@ import { reportCommandError } from "../command-utils.js";
 import { resolveDocsRoot } from "../dev/resolve-root.js";
 import { CliError, EXIT_CODES } from "../errors.js";
 import { createReporter } from "../output.js";
+import { collectPageDescriptionWarnings } from "../page-descriptions.js";
 import { loadValidatedSiteConfig } from "../site-config.js";
 
 const CONFIG_FILE = "docs.json";
@@ -24,7 +25,12 @@ export const registerValidateCommand = (program: Command): void => {
 
       try {
         const root = await resolveDocsRoot(dir);
-        const { warnings } = await loadValidatedSiteConfig(root);
+        const { config, warnings: configWarnings } =
+          await loadValidatedSiteConfig(root);
+        const warnings = [
+          ...configWarnings,
+          ...(await collectPageDescriptionWarnings(root, config)),
+        ];
         for (const warning of warnings) {
           reporter.warn(warning);
         }

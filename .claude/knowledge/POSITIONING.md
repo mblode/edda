@@ -56,6 +56,17 @@ Homepage role: TextReveal + How-it-works body. Not the named enemy.
 
 **P12.** You do not hand-author `llms.txt` on every release. The deploy writes `llms.txt`, `llms-full.txt`, and per-page `.md` from the MDX. [N2; K3]
 
+## Evidence for P2 and P12 (added 2026-09-19)
+
+Source: Mintlify, _The 2026 State of Knowledge Report_ (mintlify.com/state-of-knowledge/2026), traffic Feb 1 to Aug 31 2026 on Mintlify-hosted docs plus a 329-respondent survey. It is the named enemy's own data, which is why it is usable: it argues for the git path regardless of host.
+
+- Agents were 66% of docs traffic in August 2026 (257M agent requests, 131M human page loads); 83% of agent traffic came through `.md`, `llms.txt`, or skills. Agents fetch those only when they know they exist. Supports P2 and P12; do not turn it into a "knowledge layer" line (retired).
+- Benchmark, 2,400 tasks, 20 sites, Claude and Codex: accuracy 94 to 99% in every format; failed requests per task 2.23 HTML, 1.42 Markdown, 0.11 Markdown with a link to `llms.txt`; 26 to 60% fewer tokens. Blode.md's `.md` twins already open with that link. Usable as a homepage FAQ sentence and in the docs; not a stat to build the H1 on.
+- Freshness: 24% of teams get product changes into docs the same day, 54% within a week, 22% a month or longer. Supports P3/P4 (publish from the merge). It is a survey stat, not an observed inciting event: P13 stays hypothesized.
+- 47% of Mintlify customers have not measured whether discoverability moved growth. Consistent with PROBLEM-SCORE: no adoption promise (N5).
+
+Not usable: their MCP call counts and doc-assistant channel (we have no equivalent), their "knowledge engineer" framing (recreates the retired line).
+
 ## Commiseration (inciting events — provenance marked in the bracket)
 
 **P13.** Docs that live in a separate CMS lag the release. Then the agent answering your users cites the old API. [E1, E3] — HYPOTHESIZED. **Do not use on the homepage** until observed in onboarding. The about page may state the founder's reason for building; it may not impersonate a customer quote.

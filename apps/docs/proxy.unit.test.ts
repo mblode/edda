@@ -108,6 +108,39 @@ describe("docs proxy", () => {
     await expect(response.text()).resolves.toBe("# Home\n\nWelcome.");
   });
 
+  it("advertises llms.txt, llms-full.txt, skills, and the markdown twin with one rel set on doc HTML", async () => {
+    resolveTenant.mockResolvedValue({
+      basePath: "/docs",
+      host: "acme.blode.md",
+      rewrittenPath: "/sites/acme/quickstart",
+      strategy: "subdomain",
+      tenant,
+    });
+    lookupTenantDocSlug.mockResolvedValue("hit");
+
+    const { proxy } = await import("./proxy");
+    const response = await proxy(
+      new NextRequest("https://acme.blode.md/docs/quickstart", {
+        headers: { host: "acme.blode.md" },
+      })
+    );
+
+    const link = response.headers.get("Link") ?? "";
+    expect(link).toContain('</docs/llms.txt>; rel="describedby"');
+    expect(link).toContain(
+      '</docs/llms.txt>; rel="https://llmstxt.org/rel/llms-txt"; type="text/plain"'
+    );
+    expect(link).toContain(
+      '</docs/llms-full.txt>; rel="alternate"; type="text/plain"; title="llms-full.txt"'
+    );
+    expect(link).toContain(
+      '</docs/.well-known/skills/index.json>; rel="https://agentskills.io/rel/skills-index"; type="application/json"'
+    );
+    expect(link).toContain('rel="alternate"; type="text/markdown"');
+    expect(link).not.toContain('rel="llms-txt"');
+    expect(response.headers.get("X-Llms-Txt")).toBe("/docs/llms.txt");
+  });
+
   it("rewrites /docs/robots.txt to the tenant robots route only", async () => {
     isRootRuntimeHost.mockReturnValue(true);
     resolveTenant.mockResolvedValue({

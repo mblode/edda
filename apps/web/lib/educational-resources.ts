@@ -19,7 +19,7 @@ export const educationalResources: EducationalResource[] = [
     publishedAt: "2026-08-10",
     slug: "free-online-llms-txt-resources",
     title: "Free online llms.txt resources",
-    updatedAt: "2026-08-10",
+    updatedAt: "2026-09-19",
   },
 ];
 

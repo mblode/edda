@@ -377,12 +377,18 @@ export const proxy = async (request: NextRequest) => {
   // Multi-tenant: same path may serve different content per Host or Accept header
   response.headers.set("Vary", "Accept, Host");
 
-  // Advertise the llms.txt index and skills to AI agents via standard HTTP headers
+  // Advertise the llms.txt index and skills to AI agents via standard HTTP
+  // headers. One rel set for the whole platform: `describedby` is what the
+  // AFDocs and isitagentready scanners probe, the llmstxt.org and agentskills.io
+  // rels match apps/web's homepage Link header, and the docs layout's <link>
+  // tags mirror the same values. Emitting a private rel here and a different
+  // one there left scanners reading whichever layer won on a given response.
   const llmsBasePath = resolution.basePath || "";
   const linkParts = [
-    `<${llmsBasePath}/llms.txt>; rel="llms-txt"`,
-    `<${llmsBasePath}/llms-full.txt>; rel="llms-full-txt"`,
-    `<${llmsBasePath}/.well-known/skills/index.json>; rel="skills"`,
+    `<${llmsBasePath}/llms.txt>; rel="describedby"`,
+    `<${llmsBasePath}/llms.txt>; rel="https://llmstxt.org/rel/llms-txt"; type="text/plain"`,
+    `<${llmsBasePath}/llms-full.txt>; rel="alternate"; type="text/plain"; title="llms-full.txt"`,
+    `<${llmsBasePath}/.well-known/skills/index.json>; rel="https://agentskills.io/rel/skills-index"; type="application/json"`,
   ];
 
   if (isDocHtmlBranch) {

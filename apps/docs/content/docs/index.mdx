@@ -10,7 +10,9 @@ Blode.md publishes git-native docs on merge. Write MDX in the repo, review it in
   limits, no signed URLs. Programmatic clients can fetch
   [`/llms-full.txt`](https://docs.blode.md/llms-full.txt) for the complete
   corpus, [`/llms.txt`](https://docs.blode.md/llms.txt) for the page index, or
-  append `.md` to any page URL for the raw markdown.
+  append `.md` to any page URL for the raw markdown. Start with the index: every
+  `.md` page links back to it. See [Docs for
+  agents](/features/agent-readable-docs).
 </Callout>
 
 ## How it works
@@ -52,9 +54,13 @@ Blode.md publishes git-native docs on merge. Write MDX in the repo, review it in
     Full-text search with Cmd+K. Auto-indexed from your content, no
     configuration needed.
   </Card>
-  <Card title="SEO and LLM-ready" icon="sparkles" href="/features/seo">
-    Auto-generated sitemaps, robots.txt, and llms.txt for AI-friendly
-    documentation.
+  <Card
+    title="Docs for agents"
+    icon="sparkles"
+    href="/features/agent-readable-docs"
+  >
+    llms.txt, llms-full.txt, and a Markdown twin of every page, written by the
+    same deploy as the HTML. Sitemaps and robots.txt too.
   </Card>
 </Columns>
 

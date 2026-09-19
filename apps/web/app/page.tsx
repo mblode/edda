@@ -36,7 +36,7 @@ export const metadata = pageMetadata({
 });
 
 /** Visible publish / last-updated date for freshness and AI citation signals. */
-const HOME_UPDATED_AT = "2026-08-13";
+const HOME_UPDATED_AT = "2026-09-19";
 
 const faqs = [
   {
@@ -61,7 +61,7 @@ const faqs = [
   },
   {
     answer:
-      "On every deploy the site writes llms.txt, llms-full.txt, robots.txt, a sitemap, and per-page .md exports from the MDX. Agents fetch those files instead of scraping HTML. Humans still get the HTML site from the same commit.",
+      "On every deploy the site writes llms.txt, llms-full.txt, robots.txt, a sitemap, and per-page .md exports from the MDX. Each .md page opens with a link back to llms.txt, the shape Mintlify's 2026 benchmark measured at 0.11 failed requests per task against 2.23 for HTML. Humans still get the HTML site from the same commit.",
     question: "Do agents get Markdown, or only the HTML site?",
   },
   {
@@ -143,7 +143,8 @@ export default function HomePage() {
           <p className="mt-4 text-muted-foreground text-sm">
             {SITE_NAME}
             <span aria-hidden="true"> · </span>
-            Last updated <time dateTime={HOME_UPDATED_AT}>13 August 2026</time>
+            Last updated{" "}
+            <time dateTime={HOME_UPDATED_AT}>19 September 2026</time>
           </p>
 
           <AnimatedGroup

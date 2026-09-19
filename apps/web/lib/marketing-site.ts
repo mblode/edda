@@ -21,13 +21,13 @@ export const TITLE_TEMPLATE = `%s | ${SITE_NAME}`;
  * every deploy.
  */
 export const CANONICAL_PAGES = {
-  "/": "2026-09-06",
+  "/": "2026-09-19",
   "/about": "2026-08-14",
-  "/blog": "2026-08-14",
-  "/changelog": "2026-08-14",
+  "/blog": "2026-09-19",
+  "/changelog": "2026-09-19",
   "/compare/mintlify": "2026-09-06",
   "/docs-as-code": "2026-09-06",
-  "/free-online-llms-txt-resources": "2026-08-14",
+  "/free-online-llms-txt-resources": "2026-09-19",
   "/pricing": "2026-08-14",
   "/privacy": "2026-08-14",
   "/security": "2026-08-14",

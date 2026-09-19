@@ -1,0 +1,94 @@
+---
+title: Docs for agents
+sidebarTitle: Docs for agents
+description: What Blode.md publishes for AI agents on every deploy (llms.txt, llms-full.txt, per-page Markdown, discovery headers) and what to write so an agent finds the right page first time.
+---
+
+In 2026, agents became the majority reader of documentation. Mintlify's [2026 State of Knowledge Report](https://www.mintlify.com/state-of-knowledge/2026) counted 257 million agent requests against 131 million human page loads across its hosted docs in August 2026, and 83% of that agent traffic arrived through machine-friendly routes: a `.md` version of a page, an `llms.txt` index, or an agent skill. Agents request those routes only when they know they exist.
+
+Blode.md publishes every one of them from the same deploy as the HTML, so what an agent reads is what you merged. This page lists what ships, why the index matters more than the Markdown, and the few things you control from `docs.json` and frontmatter.
+
+## What every deploy publishes
+
+| Path                             | What it is                                                                                                                                                                           | You control                                                                      |
+| -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------- |
+| `/llms.txt`                      | Index of every visible page as a `.md` link with the page description, plus `Sitemap:`, `Full content:` and `Skills:` lines and one `/llms/<group>.txt` segment per navigation group | `name` and `description` in `docs.json`; each page's `description`; hidden pages |
+| `/llms-full.txt`                 | Every visible page as Markdown in one file                                                                                                                                           | Same                                                                             |
+| `/{page}.md`                     | The page as Markdown. Also returned when a client sends `Accept: text/markdown` to the HTML URL                                                                                      | Frontmatter and body                                                             |
+| `Link` header on every HTML page | `llms.txt`, `llms-full.txt`, the skills index, and the page's own Markdown alternate                                                                                                 | Nothing; always on                                                               |
+| `X-Llms-Txt` header              | The `llms.txt` path, for clients that read headers before bodies                                                                                                                     | Nothing; always on                                                               |
+| `/.well-known/skills/index.json` | A generated skill describing your docs for agents that install skills                                                                                                                | `name` and `description` in `docs.json`                                          |
+| `/robots.txt`, `/sitemap.xml`    | Crawler files with the same page set; `robots.txt` also names the agent routes in comments                                                                                           | `seo.indexing`                                                                   |
+
+Do not hand-author copies of these in your docs folder. They are regenerated on every deploy and a committed copy would drift.
+
+## Why the index matters more than the Markdown
+
+Mintlify's report ran 2,400 controlled tasks across 20 documentation sites with Claude and Codex, serving the same docs four ways. Answer accuracy held at 94 to 99% in every format. What changed was navigation:
+
+| Format                             | Failed requests per task |
+| ---------------------------------- | ------------------------ |
+| HTML                               | 2.23                     |
+| Markdown                           | 1.42                     |
+| Markdown with a link to `llms.txt` | 0.11                     |
+
+Converting a page to Markdown strips the sidebar along with the chrome, so an agent that lands on a bare `.md` file guesses sibling URLs that do not exist. A single link to the index removed most of those guesses, and the same runs used 26 to 60% fewer tokens than HTML.
+
+Every Blode.md Markdown twin therefore opens with a blockquote that names the HTML page and the index before the content starts:
+
+```md
+> ## Documentation Index
+>
+> [HTML page](https://docs.example.com/quickstart)
+> [Documentation index](https://docs.example.com/llms.txt)
+> Use the index to discover all available pages before exploring further.
+```
+
+You do not write this. The route emits it for every page, so no page can miss it.
+
+## What you control
+
+### Give every page a description
+
+Each page's line in `llms.txt` is `[title](url.md): description`. Agents choose which page to fetch from that line, so a page without a `description` in its frontmatter lists as a bare title and is skipped or guessed at. Write one sentence that says which question the page answers:
+
+```mdx
+---
+title: Rate limits
+description: Quotas per API key, the RateLimit headers on every response, and how to back off on 429.
+---
+```
+
+`blodemd validate` warns when pages are missing a description.
+
+### Name and describe the site
+
+`name` and `description` in `docs.json` become the H1 and summary at the top of `llms.txt` and the description of the generated skill. The summary is the first thing an agent reads about your product, so say what it is and who it is for.
+
+### Hide what agents should not read
+
+A page outside `navigation` in `docs.json` still publishes and still appears in `llms.txt` and `llms-full.txt`. To keep a page out of the index, list it under `navigation.hidden`, mark its group `hidden: true`, or set `hidden: true` in the page's frontmatter. Do not delete pages to hide them.
+
+### Keep the changelog in the docs
+
+Agents act on what they fetch without checking whether it is current. The report found that only 24% of teams get product changes into docs the same day. A changelog or migration guide inside the docs folder lands in `llms.txt` with everything else, which is where an agent looks when a parameter it was told about no longer exists. Publishing from the merge that changed the product, through the [GitHub App or CI](/deployment/ci), closes the rest of the gap.
+
+### Declare the public URL when proxied
+
+If the docs are served under your own host, for example `yourdomain.com/docs`, set `seo.siteUrl` so every link in `llms.txt` and every Markdown twin points at the URL agents actually fetch. Without it the links point at the `blode.md` host, which agents then fetch cross-host. See [SEO and sitemaps](/features/seo#public-url).
+
+## Verify after a deploy
+
+```bash
+SITE=https://your-slug.blode.md
+curl -sSI "$SITE/llms.txt"
+curl -sS "$SITE/llms.txt" | head -20
+curl -sSI "$SITE/quickstart.md"
+curl -sSI "$SITE/quickstart" -H "Accept: text/markdown"
+```
+
+Expect `200` on each, `Content-Type: text/markdown; charset=utf-8` on the `.md` twin and on the `Accept` request, and a `Link` header on the HTML page that names `llms.txt`. The `## Docs` list in `llms.txt` should show a description after every title.
+
+## Measuring agent readership
+
+Client-side analytics cannot see agents. They fetch server-side and run no JavaScript, so [PostHog](/features/analytics) reports humans only, and a dashboard with no agent traffic proves nothing. Blode.md does not yet report agent fetches per site. If you need the number today, put a proxy you can log in front of the docs ([Vercel](/guides/proxy-vercel), [Cloudflare](/guides/proxy-cloudflare), [Nginx](/guides/proxy-nginx)) and count requests for `.md` URLs, `llms.txt`, and known AI user agents. Repeated 404s from those agents on plausible-looking paths are the navigation failure the report describes.

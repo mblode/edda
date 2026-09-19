@@ -15,7 +15,8 @@ Every MDX page starts with YAML frontmatter between `---` delimiters. The `title
       required: true,
     },
     description: {
-      description: "Summary used in meta tags and search results.",
+      description:
+        "One-sentence summary used in meta tags, search results, and as the page's line in llms.txt, which is how agents choose which page to fetch. See Docs for agents.",
       type: "string",
     },
     sidebarTitle: {

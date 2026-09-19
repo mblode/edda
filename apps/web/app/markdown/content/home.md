@@ -84,7 +84,7 @@ Hosted is $0. What you do not get: a visual editor, a plugin marketplace, SOC 2,
 No. The pull request is the review.
 
 **Do agents get Markdown, or only the HTML site?**
-On every deploy the site writes `llms.txt`, `llms-full.txt`, robots.txt, a sitemap, and per-page `.md` exports from the MDX.
+On every deploy the site writes `llms.txt`, `llms-full.txt`, robots.txt, a sitemap, and per-page `.md` exports from the MDX. Each `.md` page opens with a link back to `llms.txt`, the shape Mintlify's 2026 benchmark measured at 0.11 failed requests per task against 2.23 for HTML.
 
 **Who builds Blode.md and how do I get support?**
 Blode.md is built by [Matthew Blode](https://blode.co). Email [m@blode.co](mailto:m@blode.co) or open an issue on [GitHub](https://github.com/mblode/blodemd).

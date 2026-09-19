@@ -1,6 +1,6 @@
 # Free online llms.txt resources
 
-Educational resource by [Matthew Blode](https://blode.co) / Blode.md. Last updated 10 August 2026.
+Educational resource by [Matthew Blode](https://blode.co) / Blode.md. Last updated 19 September 2026.
 
 llms.txt is a proposed Markdown file served at `/llms.txt` that gives language models a curated, LLM-friendly index of a website. It starts with an H1 title, a short summary, and lists of linked Markdown resources so agents can load concise documentation without scraping noisy HTML. The informal standard is documented at [llmstxt.org](https://llmstxt.org/).
 
@@ -85,6 +85,7 @@ Live references worth reading: the FastHTML docs index linked from [llmstxt.org]
 **Short answer:** Use a docs platform that emits the files, or a framework plugin; use `llms_txt2ctx` when you need a single context blob.
 
 - [llms_txt2ctx](https://github.com/AnswerDotAI/llms-txt): CLI/Python helper that expands an llms.txt index into context files (as described on llmstxt.org).
+- [url-discovery-bench](https://github.com/mintlify/url-discovery-bench): Mintlify's open-source benchmark that drives Claude and Codex through your docs and counts failed requests per task. Its 2026 run put HTML at 2.23, Markdown at 1.42, and Markdown with a link to llms.txt at 0.11.
 - Framework generators such as vitepress-plugin-llms and docusaurus-plugin-llms are listed on [llmstxt.org](https://llmstxt.org/). Use those listings rather than package-registry pages that block crawlers.
 - [Blode.md](https://blode.md/): git-native docs, published on merge. Sites ship `llms.txt` / `llms-full.txt` / `.md` alternates from the same deploy. See [pricing](https://blode.md/pricing).
 

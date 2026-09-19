@@ -66,6 +66,7 @@
           {
             "group": "Features",
             "pages": [
+              "features/agent-readable-docs",
               "features/custom-domains",
               "features/search",
               "features/seo",

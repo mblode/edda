@@ -53,6 +53,17 @@ $ blodemd validate
 i Done
 ```
 
+### Warnings
+
+Validate also reports warnings that do not block a deploy. The one most worth acting on: pages without a frontmatter `description`. Each page's line in `llms.txt` is `[title](url.md): description`, and that line is how coding agents choose which page to fetch, so a page without one lists as a bare title. See [Docs for agents](/features/agent-readable-docs).
+
+```bash
+$ blodemd validate
+! 2 pages have no frontmatter description (guides/auth, quickstart). Agents choose pages from the description line in llms.txt, so add one sentence to each.
+~ docs.json is valid.
+i Done
+```
+
 <Callout type="info">
   Running `blodemd push` also validates `docs.json` as its first step. A
   standalone validate step is useful when you want to fail fast without needing
