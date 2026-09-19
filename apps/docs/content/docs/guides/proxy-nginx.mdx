@@ -72,6 +72,18 @@ curl -I https://yourdomain.com/docs/
 You should see a 200 OK and `server: vercel` in the response headers,
 indicating the request reached Blode.md upstream.
 
+If you add `proxy_cache`, include the `Accept` header in `proxy_cache_key` (or
+`proxy_no_cache` requests whose `Accept` contains `text/markdown`). Blode.md
+returns Markdown for `Accept: text/markdown` on every page URL, and a cache
+keyed on the URL alone would serve the stored HTML to coding agents that send
+that header.
+
+```bash
+curl -sI -H "Accept: text/markdown" https://yourdomain.com/docs/quickstart | grep -i content-type
+```
+
+Expect `text/markdown; charset=utf-8`.
+
 ## TLS
 
 Make sure your Nginx server has a valid TLS cert for `yourdomain.com`. The

@@ -440,6 +440,55 @@ describe("toAgentMarkdown", () => {
     expect(output).toContain("`sed 's/a/$&/g'`");
   });
 
+  it("dedents step bodies so fences close and prose stays prose", () => {
+    const output = toAgentMarkdown(
+      [
+        "<Steps>",
+        '  <Step title="Authenticate">',
+        "    ```bash",
+        "    blodemd login",
+        "    ```",
+        "",
+        "    This opens your browser.",
+        "  </Step>",
+        '  <Step title="Deploy">',
+        "    Run the push:",
+        "",
+        "    ```bash",
+        "    blodemd push",
+        "    ```",
+        "  </Step>",
+        "</Steps>",
+      ].join("\n")
+    );
+
+    const fenceLines = output
+      .split("\n")
+      .filter((line) => /^\s*```/.test(line));
+    expect(fenceLines).toHaveLength(4);
+    expect(fenceLines.every((line) => line.startsWith("```"))).toBe(true);
+    expect(output).toContain("```bash\nblodemd login\n```");
+    expect(output).toContain("\nThis opens your browser.");
+    expect(output).not.toContain("    This opens your browser.");
+    expect(output).toContain("1. **Deploy**\n\nRun the push:");
+  });
+
+  it("keeps relative indentation inside an indented fence", () => {
+    const output = toAgentMarkdown(
+      [
+        '<Tab title="Config">',
+        "  ```json",
+        "  {",
+        '    "slug": "acme"',
+        "  }",
+        "  ```",
+        "</Tab>",
+      ].join("\n")
+    );
+
+    expect(output).toContain('```json\n{\n  "slug": "acme"\n}\n```');
+  });
+
   it("renders accordion titles and bodies", () => {
     const output = toAgentMarkdown(`
 <AccordionGroup>

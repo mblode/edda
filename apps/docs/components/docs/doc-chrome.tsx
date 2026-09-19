@@ -7,6 +7,7 @@ import { DocSidebar } from "@/components/docs/doc-sidebar";
 import { SidebarTabSync } from "@/components/docs/sidebar-tab-sync";
 import { flattenNav } from "@/lib/navigation";
 import type { NavEntry, NavTab } from "@/lib/navigation";
+import { toDocHref } from "@/lib/routes";
 import { themeCssFromConfig, themeStylesFromConfig } from "@/lib/theme";
 
 const chromeBodyStyle = {
@@ -126,8 +127,26 @@ export const DocChromeBodyScripts = ({ config }: { config: SiteConfig }) => (
   <DocScripts scripts={config.scripts?.body} strategy="lazyOnload" />
 );
 
+/**
+ * Visually hidden pointer to the agent-readable representations. It sits first
+ * in the body so an agent reading the HTML meets it before the navigation,
+ * and it opens with "For AI agents:" because the AFDocs parity check ignores
+ * lines that start that way when it diffs HTML against the Markdown twin.
+ */
+export const DocChromeAgentDirective = ({ basePath }: { basePath: string }) => {
+  const llmsTxtHref = toDocHref("llms.txt", basePath);
+  return (
+    <p className="sr-only" data-agent-directive="" data-markdown-ignore="">
+      For AI agents: the documentation index is at{" "}
+      <a href={llmsTxtHref}>{llmsTxtHref}</a>. Append .md to any page URL, or
+      send Accept: text/markdown, for the Markdown version of that page.
+    </p>
+  );
+};
+
 export const DocChromeFrame = ({
   children,
+  directive,
   header,
   sidebar,
   style,
@@ -136,6 +155,7 @@ export const DocChromeFrame = ({
   hasDarkLogo = false,
 }: {
   children: ReactNode;
+  directive?: ReactNode;
   header: ReactNode;
   sidebar?: ReactNode;
   style?: CSSProperties;
@@ -156,6 +176,7 @@ export const DocChromeFrame = ({
     >
       Skip to content
     </a>
+    {directive}
     {header}
     <div className="container-wrapper flex flex-1 flex-col">
       <div

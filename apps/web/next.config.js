@@ -200,6 +200,11 @@ const nextConfig = {
           source: "/oauth/:path*",
         },
         { destination: `${docsAppUrl}/api/:path*`, source: "/api/:path*" },
+        // The MCP server card at /.well-known/mcp/server-card.json advertises
+        // a relative `/mcp`, so the apex has to answer it. The docs app serves
+        // the platform docs tenant's server there.
+        { destination: `${docsAppUrl}/mcp`, source: "/mcp" },
+        { destination: `${docsAppUrl}/mcp/:path*`, source: "/mcp/:path*" },
         { destination: `${docsAppUrl}/docs.json`, source: "/docs.json" },
         { destination: `${docsAppUrl}/sites/:path*`, source: "/sites/:path*" },
         {

@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import { Suspense } from "react";
 
 import {
+  DocChromeAgentDirective,
   DocChromeBodyScripts,
   DocChromeFrame,
   DocChromeHeader,
@@ -36,6 +37,17 @@ const ChromeTheme = async ({
 }) => {
   const ready = await getReadyChrome(params);
   return ready ? <DocChromeThemeStyle config={ready.chrome.config} /> : null;
+};
+
+const ChromeDirective = async ({
+  params,
+}: {
+  params: Promise<{ tenant: string }>;
+}) => {
+  const ready = await getReadyChrome(params);
+  return ready ? (
+    <DocChromeAgentDirective basePath={ready.chrome.basePath} />
+  ) : null;
 };
 
 const ChromeHeader = async ({
@@ -98,6 +110,11 @@ export default function TenantLayout({
   return (
     <>
       <DocChromeFrame
+        directive={
+          <Suspense fallback={null}>
+            <ChromeDirective params={params} />
+          </Suspense>
+        }
         header={
           <Suspense
             fallback={<div className="h-(--header-height) shrink-0 border-b" />}

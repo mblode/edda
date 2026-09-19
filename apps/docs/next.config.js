@@ -62,6 +62,13 @@ const baseSecurityHeaders = [
 const nextConfig = {
   assetPrefix,
   cacheComponents: true,
+  // Streaming metadata puts <title>, canonical and Open Graph tags in the body
+  // for any client not on this list, trusting it to run JavaScript that hoists
+  // them into <head>. Next's default list is social previewers only. Search
+  // and AI fetchers read the raw HTML, so they get the blocking render too;
+  // the metadata comes from a cached tenant read and costs little to wait for.
+  htmlLimitedBots:
+    /[\w-]+-Google|Google-[\w-]+|Googlebot|Storebot-Google|Chrome-Lighthouse|Slurp|DuckDuckBot|DuckAssistBot|baiduspider|yandex|sogou|bitlybot|tumblr|vkShare|quora link preview|redditbot|ia_archiver|Bingbot|BingPreview|applebot|facebookexternalhit|facebookcatalog|Twitterbot|LinkedInBot|Slackbot|Discordbot|WhatsApp|SkypeUriPreview|Yeti|googleweblight|GPTBot|ChatGPT-User|OAI-SearchBot|ClaudeBot|Claude-User|Claude-SearchBot|anthropic-ai|PerplexityBot|Perplexity-User|Bytespider|Amazonbot|CCBot|meta-externalagent|cohere-ai|MistralAI-User|YouBot|afdocs|is-agentic/i,
   // The marketing sitemap stamps `lastmod`, and a prerender cannot read the
   // clock. next.config runs in Node at build time, outside any prerender.
   env: { BUILD_DATE: new Date().toISOString().slice(0, 10) },

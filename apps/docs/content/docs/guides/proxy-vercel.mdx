@@ -92,3 +92,11 @@ tab to confirm requests are 200 OK and being proxied.
   conflicting custom domain configured for the same hostname.
 - **Stale content**: Vercel caches rewrites at the edge; redeploy after
   changes to `next.config.js`.
+- **Agents get HTML when they ask for Markdown**: Blode.md answers
+  `Accept: text/markdown` on every page URL, but Vercel caches the proxied
+  HTML under the page URL without `Accept` in the cache key, so once a page is
+  cached the negotiated request returns that HTML. Coding agents that send the
+  header (Claude Code, Cursor) then read your HTML shell. Either point them at
+  the explicit `.md` URL, or add a `proxy.ts` that rewrites `/docs/*` requests
+  with `text/markdown` in `Accept` to `/docs/*.md` before the cache is
+  consulted. The `.md` twin is its own URL and therefore its own cache entry.

@@ -4,11 +4,13 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 const resolveTenant = vi.fn();
 const lookupTenantDocSlug = vi.fn();
 const isRootRuntimeHost = vi.fn(() => false);
+const isReservedPath = vi.fn((_pathname: string) => false);
 const getMarketingMarkdown = vi.fn(() => null as string | null);
 
 vi.mock("./lib/tenancy", () => ({
   getRequestHost: (headers: Headers) => headers.get("host"),
-  isReservedPath: () => false,
+  isReservedPath: ((...args: unknown[]) =>
+    Reflect.apply(isReservedPath, undefined, args)) as typeof isReservedPath,
   isRootRuntimeHost: ((...args: unknown[]) =>
     Reflect.apply(
       isRootRuntimeHost,
@@ -59,6 +61,8 @@ describe("docs proxy", () => {
     lookupTenantDocSlug.mockReset();
     isRootRuntimeHost.mockReset();
     isRootRuntimeHost.mockReturnValue(false);
+    isReservedPath.mockReset();
+    isReservedPath.mockReturnValue(false);
     getMarketingMarkdown.mockReset();
     getMarketingMarkdown.mockReturnValue(null);
   });
@@ -139,6 +143,31 @@ describe("docs proxy", () => {
     expect(link).toContain('rel="alternate"; type="text/markdown"');
     expect(link).not.toContain('rel="llms-txt"');
     expect(response.headers.get("X-Llms-Txt")).toBe("/docs/llms.txt");
+  });
+
+  it("passes platform API routes through on tenant hosts instead of treating them as docs pages", async () => {
+    // The real helper reserves every /api path; the proxy's own platform
+    // route list is what decides they are not tenant OpenAPI pages.
+    isReservedPath.mockImplementation((pathname: string) =>
+      pathname.startsWith("/api")
+    );
+    const { proxy } = await import("./proxy");
+    for (const pathname of [
+      "/api/openapi.json",
+      "/api/health",
+      "/api/revalidate",
+    ]) {
+      const response = await proxy(
+        new NextRequest(`https://docs.blode.md${pathname}`, {
+          headers: { host: "docs.blode.md" },
+        })
+      );
+
+      expect(response.status).toBe(200);
+      expect(response.headers.get("x-middleware-rewrite")).toBeNull();
+      expect(response.headers.get("x-middleware-next")).toBe("1");
+    }
+    expect(resolveTenant).not.toHaveBeenCalled();
   });
 
   it("rewrites /docs/robots.txt to the tenant robots route only", async () => {

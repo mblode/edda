@@ -52,6 +52,12 @@ Use Cloudflare&apos;s default cache behavior, or wrap the response with
 `new Response(response.body, response)` and set custom `cache-control` headers
 if you need fine control.
 
+If you enable caching in the Worker, keep the `Accept` header in the cache key
+or bypass the cache when it contains `text/markdown`. Blode.md returns Markdown
+for `Accept: text/markdown` on every page URL; a cache keyed on the URL alone
+hands that request the HTML it stored for a browser. Coding agents that send
+the header would then read your HTML shell instead of the page.
+
 ## Strip the prefix in Blode.md
 
 Set the default subdomain path prefix to `/docs` in **Dashboard → Project →

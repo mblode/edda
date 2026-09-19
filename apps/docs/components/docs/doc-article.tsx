@@ -157,7 +157,7 @@ export const DocArticle = ({
                   data-agent-directive=""
                   data-markdown-ignore=""
                 >
-                  AI agents: fetch the documentation index at{" "}
+                  For AI agents: the documentation index is at{" "}
                   <Link href={toDocHref("llms.txt", basePath)}>llms.txt</Link>.
                   Markdown versions are available by appending .md to any page
                   URL

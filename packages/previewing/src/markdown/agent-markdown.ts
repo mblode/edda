@@ -1,8 +1,37 @@
 import { NEWLINE_REGEX } from "../constants.js";
 import { absolutiseInternalLinks, sanitizePlaceholderUrls } from "./links.js";
 
+// Fences may sit inside an indented MDX component body (`<Step>`, `<Tab>`),
+// so the opening line carries the component's indentation. The closing line
+// may be indented too. Capture the indent so the block can be dedented as one
+// unit: an opening fence at column 0 with a closing fence at column 4 is an
+// unclosed fence to every CommonMark reader.
 const FENCED_CODE_BLOCK_REGEX =
-  /(^|\n)(`{3,}|~{3,})[^\n]*\n[\s\S]*?\n\2(?=\n|$)/g;
+  /(^|\n)([ \t]*)(`{3,}|~{3,})[^\n]*\n[\s\S]*?\n[ \t]*\3(?=\n|$)/g;
+
+/** Remove the longest common leading whitespace from every non-blank line. */
+export const dedent = (source: string): string => {
+  const lines = source.split("\n");
+  let common: string | null = null;
+  for (const line of lines) {
+    if (line.trim() === "") {
+      continue;
+    }
+    const indent = /^[ \t]*/.exec(line)?.[0] ?? "";
+    if (common === null || indent.length < common.length) {
+      common = indent;
+    }
+    if (common === "") {
+      break;
+    }
+  }
+  if (!common) {
+    return source;
+  }
+  return lines
+    .map((line) => (line.startsWith(common) ? line.slice(common.length) : line))
+    .join("\n");
+};
 const TYPE_TABLE_REGEX = /<TypeTable\s+type=\{\{([\s\S]*?)\}\}\s*\/>/g;
 const TYPE_TABLE_ROW_HEADER_REGEX =
   /^\s*(["']?[\w$./<>|{}\-\s]+["']?)\s*:\s*\{\s*$/;
@@ -21,8 +50,23 @@ const getStringProp = (attributes: string, name: string) => {
 const protectFencedCodeBlocks = (source: string) => {
   const blocks: string[] = [];
   const text = source.replace(FENCED_CODE_BLOCK_REGEX, (match) => {
-    const placeholder = `\n@@BLODEMD_CODE_BLOCK_${blocks.length}@@\n`;
-    blocks.push(match.trim());
+    // Dedent by the opening fence's indent, not the block's common indent:
+    // code inside the fence keeps its own relative indentation. The
+    // placeholder keeps that indent so a component body that contains the
+    // fence still dedents as one unit.
+    const openIndent = /^\n?([ \t]*)/.exec(match)?.[1] ?? "";
+    const placeholder = `\n${openIndent}@@BLODEMD_CODE_BLOCK_${blocks.length}@@\n`;
+    const block = match
+      .replace(/^\n/, "")
+      .split("\n")
+      .map((line) =>
+        openIndent && line.startsWith(openIndent)
+          ? line.slice(openIndent.length)
+          : line
+      )
+      .join("\n")
+      .trim();
+    blocks.push(block);
     return placeholder;
   });
   return { blocks, text };
@@ -186,7 +230,7 @@ const transformMdxComponents = (source: string) => {
     /<Accordion(?=[\s>])\s*([^>]*)>([\s\S]*?)<\/Accordion>/g,
     (_match, attributes: string, children: string) => {
       const title = getStringProp(attributes, "title") ?? "Details";
-      return `### ${title}\n\n${children.trim()}`;
+      return `### ${title}\n\n${dedent(children).trim()}`;
     }
   );
   output = output.replaceAll(
@@ -196,21 +240,24 @@ const transformMdxComponents = (source: string) => {
         getStringProp(attributes, "title") ??
         getStringProp(attributes, "label") ??
         "Tab";
-      return `### ${title}\n\n${children.trim()}`;
+      return `### ${title}\n\n${dedent(children).trim()}`;
     }
   );
   output = output.replaceAll(
     /<Step\s+([^>]*)>([\s\S]*?)<\/Step>/g,
     (_match, attributes: string, children: string) => {
       const title = getStringProp(attributes, "title") ?? "Step";
-      return `1. **${title}**\n\n${children.trim()}`;
+      // Step bodies are indented under the component in MDX. Left as is, that
+      // indentation turns every paragraph into an indented code block and
+      // splits fences from their closing line once the first line is trimmed.
+      return `1. **${title}**\n\n${dedent(children).trim()}`;
     }
   );
   output = output.replaceAll(
     /<Expandable(?=[\s>])\s*([^>]*)>([\s\S]*?)<\/Expandable>/g,
     (_match, attributes: string, children: string) => {
       const title = getStringProp(attributes, "title") ?? "Details";
-      return `### ${title}\n\n${children.trim()}`;
+      return `### ${title}\n\n${dedent(children).trim()}`;
     }
   );
   output = output.replaceAll(
@@ -222,7 +269,7 @@ const transformMdxComponents = (source: string) => {
         ? `### ${href ? `[${title}](${href})` : title}`
         : "";
       return compactMarkdown(
-        [heading, children.trim()].filter(Boolean).join("\n\n")
+        [heading, dedent(children).trim()].filter(Boolean).join("\n\n")
       );
     }
   );

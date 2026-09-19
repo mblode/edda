@@ -76,8 +76,20 @@ const TENANT_HTML_CACHE_CONTROL =
   "public, s-maxage=3600, stale-while-revalidate=60";
 const TENANT_ERROR_CACHE_CONTROL = "private, no-store";
 
+// Platform routes under app/api. They answer on every host, so they must not
+// be mistaken for a tenant's OpenAPI pages, which also live under /api on
+// tenant hosts. Without this, /api/openapi.json (advertised in the API
+// catalog and Link headers) and /api/revalidate (called after every publish)
+// fell into tenant resolution and returned 404.
+const PLATFORM_API_PATHS = new Set([
+  "/api/health",
+  "/api/openapi.json",
+  "/api/revalidate",
+]);
+
 const isApiPath = (pathname: string) =>
-  pathname === "/api" || pathname.startsWith("/api/");
+  (pathname === "/api" || pathname.startsWith("/api/")) &&
+  !PLATFORM_API_PATHS.has(pathname);
 
 const ROOT_METADATA_IMAGE_PATHS = new Set([
   "/opengraph-image",
