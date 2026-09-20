@@ -52,14 +52,32 @@ const isDocsPageUrl = (pathname: string): boolean => {
   return !lastSegment.includes(".");
 };
 
+// Headers that describe the upstream transfer, not the document. `fetch`
+// hands back a body that no longer matches them: it may have decoded a
+// compressed body while leaving `content-encoding` and `content-length` in
+// place, and copying those onto a new Response makes clients decode plain
+// text as brotli, or the CDN store a length that no longer fits.
+const TRANSFER_HEADERS = [
+  "connection",
+  "content-encoding",
+  "content-length",
+  "transfer-encoding",
+];
+
 const withVaryAccept = async (url: URL, request: NextRequest) => {
   // Fetched and returned as a constructed Response rather than rewritten:
   // Next replaces `Vary` on a rewrite with its RSC list, so the CDN would
   // serve this Markdown to the next HTML request for the same URL.
   const upstream = await fetch(url, {
-    headers: { "user-agent": request.headers.get("user-agent") ?? "" },
+    headers: {
+      "accept-encoding": "identity",
+      "user-agent": request.headers.get("user-agent") ?? "",
+    },
   });
   const headers = new Headers(upstream.headers);
+  for (const name of TRANSFER_HEADERS) {
+    headers.delete(name);
+  }
   headers.set("Vary", "Accept");
   return new NextResponse(upstream.body, {
     headers,

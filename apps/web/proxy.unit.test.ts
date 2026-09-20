@@ -5,7 +5,11 @@ import { proxy } from "./proxy";
 
 const markdownResponse = () =>
   new Response("# Quickstart\n", {
-    headers: { "Content-Type": "text/markdown; charset=utf-8" },
+    headers: {
+      "Content-Encoding": "br",
+      "Content-Length": "9",
+      "Content-Type": "text/markdown; charset=utf-8",
+    },
     status: 200,
   });
 
@@ -25,9 +29,17 @@ describe("web proxy markdown negotiation", () => {
     );
 
     expect(fetchMock).toHaveBeenCalledTimes(1);
-    const [url] = fetchMock.mock.calls[0] as unknown as [URL];
+    const [url, init] = fetchMock.mock.calls[0] as unknown as [
+      URL,
+      RequestInit,
+    ];
     expect(url.pathname).toBe("/docs/quickstart.md");
+    expect(new Headers(init.headers).get("accept-encoding")).toBe("identity");
     expect(response.headers.get("Vary")).toBe("Accept");
+    // The upstream body arrives decoded; the encoding and length headers
+    // describe bytes that no longer exist and must not reach the client.
+    expect(response.headers.get("Content-Encoding")).toBeNull();
+    expect(response.headers.get("Content-Length")).toBeNull();
     expect(response.headers.get("Content-Type")).toBe(
       "text/markdown; charset=utf-8"
     );
