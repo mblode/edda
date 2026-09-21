@@ -23,6 +23,7 @@ import {
   HOME_TITLE,
   marketingUrl,
   pageMetadata,
+  PRODUCT_ONE_LINER,
   SITE_NAME,
 } from "@/lib/marketing-site";
 import { faqPageNode, pageJsonLd, webPageNode } from "@/lib/structured-data";
@@ -115,7 +116,7 @@ export default function HomePage() {
       <JsonLd data={homeJsonLd} />
       <section className="pb-16 pt-[calc(var(--header-height)+4rem)] md:pb-24 md:pt-[calc(var(--header-height)+7rem)] lg:pt-[calc(var(--header-height)+9rem)]">
         <div className="container flex flex-col items-center text-center">
-          <h1 className="sr-only">{HOME_TITLE}</h1>
+          <h1 className="sr-only">{PRODUCT_ONE_LINER}</h1>
           <TextEffect
             aria-hidden="true"
             as="div"
@@ -124,7 +125,7 @@ export default function HomePage() {
             preset="fade-in-blur"
             speedSegment={0.3}
           >
-            {HOME_TITLE}
+            {PRODUCT_ONE_LINER}
           </TextEffect>
 
           <TextEffect
@@ -135,7 +136,7 @@ export default function HomePage() {
             preset="fade-in-blur"
             speedSegment={0.2}
           >
-            Hosted is $0. MIT if I disappear.
+            {HOME_DESCRIPTION}
           </TextEffect>
           <p className="mt-4 text-muted-foreground text-sm">
             {SITE_NAME}

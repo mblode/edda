@@ -5,7 +5,7 @@ Use this when recreating the split frontend topology from scratch.
 ## 1. Web Frontend
 
 1. Go to `https://vercel.com/new`.
-2. Import `mblode/blodemd`.
+2. Import `mblode/edda`.
 3. Configure:
    - **Project Name**: `blodemd-web`
    - **Root Directory**: `.`
@@ -14,12 +14,12 @@ Use this when recreating the split frontend topology from scratch.
    - **Output Directory**: `apps/web/.next`
 4. Add `blode.md` and `www.blode.md` as production domains.
 5. Set `DOCS_APP_URL` to the docs deployment URL and `DASHBOARD_APP_URL` to the dashboard deployment URL.
-6. Keep the project build settings in sync with [apps/web/vercel.json](/Users/mblode/Code/mblode/blodemd/apps/web/vercel.json).
+6. Keep the project build settings in sync with [apps/web/vercel.json](/Users/mblode/Code/mblode/edda/apps/web/vercel.json).
 
 ## 2. Docs Frontend
 
 1. Go to `https://vercel.com/new`.
-2. Import `mblode/blodemd`.
+2. Import `mblode/edda`.
 3. Configure:
    - **Project Name**: `blodemd-docs`
    - **Root Directory**: `.`
@@ -28,12 +28,12 @@ Use this when recreating the split frontend topology from scratch.
    - **Output Directory**: `apps/docs/.next`
 4. Add `docs.blode.md` as a production domain.
 5. After the domain is verified, add the wildcard entry `.blode.md`.
-6. Keep the project build settings in sync with [apps/docs/vercel.json](/Users/mblode/Code/mblode/blodemd/apps/docs/vercel.json).
+6. Keep the project build settings in sync with [apps/docs/vercel.json](/Users/mblode/Code/mblode/edda/apps/docs/vercel.json).
 
 ## 3. Dashboard Frontend
 
 1. Go to `https://vercel.com/new`.
-2. Import `mblode/blodemd`.
+2. Import `mblode/edda`.
 3. Configure:
    - **Project Name**: `blodemd-dashboard`
    - **Root Directory**: `apps/dashboard`
@@ -41,12 +41,12 @@ Use this when recreating the split frontend topology from scratch.
    - **Build Command**: `bash ./scripts/vercel-build.sh`
    - **Output Directory**: `.next`
 4. Add `app.blode.md` as a production domain.
-5. Keep the project build settings in sync with [apps/dashboard/vercel.json](/Users/mblode/Code/mblode/blodemd/apps/dashboard/vercel.json).
+5. Keep the project build settings in sync with [apps/dashboard/vercel.json](/Users/mblode/Code/mblode/edda/apps/dashboard/vercel.json).
 
 ## 4. API
 
 1. Go to `https://vercel.com/new`.
-2. Import `mblode/blodemd`.
+2. Import `mblode/edda`.
 3. Configure:
    - **Project Name**: `blodemd-api`
    - **Root Directory**: `apps/api`

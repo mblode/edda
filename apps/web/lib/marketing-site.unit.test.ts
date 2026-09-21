@@ -41,7 +41,9 @@ describe("Designer-locked product one-liner", () => {
     expect(PRODUCT_ONE_LINER).toBe(
       "Knowledge docs for agents. Git-native MDX. Publish on merge."
     );
-    expect(HOME_TITLE).toBe(PRODUCT_ONE_LINER);
+    expect(HOME_TITLE).toBe(
+      "Edda | Knowledge docs for agents. Git-native MDX. Publish on merge."
+    );
     expect(HOME_DESCRIPTION.startsWith(PRODUCT_ONE_LINER)).toBe(true);
     expect(PRODUCT_ONE_LINER).not.toMatch(/published on merge/);
     expect(PRODUCT_ONE_LINER).not.toMatch(/—/);
