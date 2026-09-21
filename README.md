@@ -2,9 +2,7 @@
 
 # [Edda](https://blode.co/edda)
 
-**Knowledge docs for agents, published on merge**
-
-Write your docs as MDX files next to your code, then push them live with one command.
+**Knowledge docs for agents. Git-native MDX. Publish on merge.**
 
 <p align="center">
   <a href="https://www.npmjs.com/package/edda-docs">
