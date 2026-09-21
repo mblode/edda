@@ -9,7 +9,7 @@ describe("GET /indexnow/key/[key]", () => {
 
   it("returns 404 when INDEXNOW_KEY is unset", async () => {
     vi.stubEnv("INDEXNOW_KEY", "");
-    const response = await GET(new Request("https://blode.md/x.txt"), {
+    const response = await GET(new Request("https://blode.co/edda"), {
       params: Promise.resolve({ key: "x" }),
     });
     expect(response.status).toBe(404);
@@ -17,7 +17,7 @@ describe("GET /indexnow/key/[key]", () => {
 
   it("returns 404 when the path key does not match", async () => {
     vi.stubEnv("INDEXNOW_KEY", "correct-key");
-    const response = await GET(new Request("https://blode.md/wrong.txt"), {
+    const response = await GET(new Request("https://blode.co/edda"), {
       params: Promise.resolve({ key: "wrong" }),
     });
     expect(response.status).toBe(404);
@@ -25,12 +25,9 @@ describe("GET /indexnow/key/[key]", () => {
 
   it("returns the key as plain text when it matches", async () => {
     vi.stubEnv("INDEXNOW_KEY", "correct-key");
-    const response = await GET(
-      new Request("https://blode.md/correct-key.txt"),
-      {
-        params: Promise.resolve({ key: "correct-key" }),
-      }
-    );
+    const response = await GET(new Request("https://blode.co/edda"), {
+      params: Promise.resolve({ key: "correct-key" }),
+    });
     expect(response.status).toBe(200);
     expect(response.headers.get("Content-Type")).toBe(
       "text/plain; charset=utf-8"

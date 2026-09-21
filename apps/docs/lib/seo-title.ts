@@ -29,7 +29,7 @@ const truncateAtWordBoundary = (text: string, maxLength: number): string => {
  *
  * The page title stands alone. An earlier version appended the description when
  * the title was short, which produced clipped mash-ups like
- * `Quickstart: Install the Blode.md CLI,... · Blode.md` on nearly every page.
+ * `Quickstart: Install the Edda CLI,... · Edda` on nearly every page.
  * The description already has its own tag; the title's job is the page name.
  */
 export const buildDocsSeoTitle = ({

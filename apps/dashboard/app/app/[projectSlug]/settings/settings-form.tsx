@@ -464,7 +464,7 @@ const DeployKeysCard = ({
         <p className="text-muted-foreground text-sm">
           Project-scoped API keys let CI (for example GitHub Actions) run{" "}
           <code className="rounded-md bg-foreground/10 px-1.5 py-0.5 font-mono text-xs text-foreground">
-            blodemd push
+            edda push
           </code>{" "}
           without your account credentials. Keys are shown once at creation.
         </p>

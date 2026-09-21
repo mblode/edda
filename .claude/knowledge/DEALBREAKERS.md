@@ -1,4 +1,4 @@
-# Deal-breakers — Blode.md
+# Deal-breakers — Edda
 
 Works from `.claude/knowledge/STRENGTHS-WEAKNESSES.md` and `.claude/knowledge/KEYSTONES.md`. Deal-breakers disqualify outright and trump keystones. Friction items cost points but disqualify no one.
 

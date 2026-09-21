@@ -2,7 +2,7 @@
 
 ## I will not ship a second editor.
 
-I built Blode.md so docs stay in the repo, in the editor I already use. The pull request is the review. The merge publishes the site.
+I built Edda so docs stay in the repo, in the editor I already use. The pull request is the review. The merge publishes the site.
 
 ## Git-native MDX, without the extras
 
@@ -14,7 +14,7 @@ Hosted is $0. The CLI and renderer are MIT — same binary on your Postgres if y
 
 ## Who built it
 
-Blode.md is built by [Matthew Blode](https://blode.co).
+Edda is built by [Matthew Blode](https://blode.co).
 
 ## Open source
 

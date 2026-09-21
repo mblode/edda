@@ -1,26 +1,26 @@
 ---
 title: Migrate from Mintlify
-description: Move a Mintlify docs repo to Blode.md. Copy the MDX, rewrite docs.json to the smaller schema, validate, preview, push, and keep your domain.
+description: Move a Mintlify docs repo to Edda. Copy the MDX, rewrite docs.json to the smaller schema, validate, preview, push, and keep your domain.
 ---
 
 Mintlify's git workflow is MDX in the repo, a `docs.json` beside it, a web
-editor that commits back, and a marketplace. Blode.md is the git path without
+editor that commits back, and a marketplace. Edda is the git path without
 the editor or the marketplace: the same MDX files, a smaller `docs.json`, and
 one command to publish.
 
 <Callout type="warning" title="Not drop-in compatible">
-  Blode.md's `docs.json` is deliberately smaller than Mintlify's. Top-level keys
+  Edda's `docs.json` is deliberately smaller than Mintlify's. Top-level keys
   such as `name`, `navigation`, `navbar`, and `logo` exist in both, but `theme`,
   `colors`, `fonts`, `icons`, `background`, and `styling` are not supported, and
-  `blodemd validate` reports every key it does not recognise as an error. Expect
-  to edit the file, not just copy it.
+  `edda validate` reports every key it does not recognise as an error. Expect to
+  edit the file, not just copy it.
 </Callout>
 
 ## Prerequisites
 
 - [Node.js](https://nodejs.org) 24.x
-- The CLI: `npm i -g blodemd`
-- A Blode.md account: run `blodemd login` once (it opens GitHub OAuth)
+- The CLI: `npm i -g edda-docs`
+- A Edda account: run `edda login` once (it opens GitHub OAuth)
 
 ## Steps
 
@@ -41,7 +41,7 @@ one command to publish.
 
   </Step>
   <Step title="Write docs.json">
-    Start from the two required keys and add only what Blode.md supports:
+    Start from the two required keys and add only what Edda supports:
 
     ```json title="docs.json"
     {
@@ -65,7 +65,7 @@ one command to publish.
     }
     ```
 
-    Map your navigation groups across one at a time. Blode.md `navigation`
+    Map your navigation groups across one at a time. Edda `navigation`
     accepts `pages`, `groups`, `tabs`, `anchors`, `dropdowns`, `versions`,
     `languages`, and `products`, and groups can nest. See
     [Navigation](/configuration/navigation) for each shape.
@@ -74,13 +74,13 @@ one command to publish.
     top-level keys are `description`, `appearance`, `api`, `contextual`,
     `search`, `seo`, and `metadata`; everything else is documented in the
     [docs.json reference](/configuration/docs-json). If you want a scaffold to
-    edit instead of a blank file, `blodemd new` writes a minimal `docs.json`
+    edit instead of a blank file, `edda new` writes a minimal `docs.json`
     and `index.mdx` into a `docs/` folder.
 
   </Step>
   <Step title="Validate">
     ```bash
-    blodemd validate
+    edda validate
     ```
 
     Validation is strict and needs no login. Every unrecognised key is listed
@@ -92,7 +92,7 @@ one command to publish.
   </Step>
   <Step title="Preview">
     ```bash
-    blodemd dev
+    edda dev
     ```
 
     This runs the production renderer locally on port 3030 and opens a
@@ -103,13 +103,13 @@ one command to publish.
   </Step>
   <Step title="Push">
     ```bash
-    blodemd push
+    edda push
     ```
 
     The CLI validates again, uploads the directory, and promotes the deploy.
     If the slug has no project yet, it offers to create one. Your docs are
     live at `your-slug.blode.md`. For automatic deploys on every commit,
-    install the Blode.md GitHub App from the project's **Git** tab in the
+    install the Edda GitHub App from the project's **Git** tab in the
     dashboard, or see [Continuous deployment](/deployment/ci).
 
   </Step>
@@ -120,7 +120,7 @@ one command to publish.
       domain in the dashboard and point a CNAME at `cname.vercel-dns.com`. See
       [Custom domains](/features/custom-domains).
     - **Docs under a path** (for example `example.com/docs`): keep DNS as is
-      and rewrite `/docs` and `/_docs` to your Blode.md site from the server
+      and rewrite `/docs` and `/_docs` to your Edda site from the server
       you already run. Paste-ready configs:
       [Vercel](/guides/proxy-vercel), [Cloudflare](/guides/proxy-cloudflare),
       and [Nginx](/guides/proxy-nginx). Set `seo.siteUrl` to the public URL so
@@ -141,15 +141,15 @@ one command to publish.
 
 ## What does not carry over
 
-- **The web editor.** Blode.md has no browser editor that commits back. Writing
+- **The web editor.** Edda has no browser editor that commits back. Writing
   stays in your editor and in git; that is the product, not a gap to fill.
 - **Marketplace integrations.** There is no integrations catalog. Analytics is
-  a single PostHog key set in the dashboard (or `blodemd analytics set`); see
+  a single PostHog key set in the dashboard (or `edda analytics set`); see
   [PostHog analytics](/features/analytics). It is not a `docs.json` key.
 - **Theme, color, and font config.** `theme`, `colors`, `fonts`, `icons`,
   `background`, and `styling` are rejected. Branding is `logo`, `favicon`, and
   `appearance` only; see [Appearance and branding](/configuration/theming).
-- **Components outside Blode.md's set.** The supported components are
+- **Components outside Edda's set.** The supported components are
   Accordion, Callout, Card, CodeGroup, Columns, Expandable, Frame, Installer,
   Steps, Tabs, Tree, and TypeTable. Any other JSX tag in your MDX will fail
   to render, so grep for component names and replace or remove the ones that
@@ -158,7 +158,7 @@ one command to publish.
 
 ## Troubleshooting
 
-- **`blodemd validate` lists keys you never wrote**: nested Mintlify-only
+- **`edda validate` lists keys you never wrote**: nested Mintlify-only
   options are reported with their full dotted path. Delete the parent object
   if it has no supported equivalent.
 - **A page 404s after push**: the `pages` entry must match the file path

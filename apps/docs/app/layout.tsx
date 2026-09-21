@@ -25,14 +25,14 @@ const glideMono = localFont({
 
 export const metadata: Metadata = {
   description:
-    "Blode.md: git-native docs, published on merge. Write MDX in the repo, review it in the pull request, and the merge publishes the site.",
+    "Edda: git-native docs, published on merge. Write MDX in the repo, review it in the pull request, and the merge publishes the site.",
   metadataBase: new URL("https://blode.md"),
   openGraph: {
-    siteName: "Blode.md",
+    siteName: "Edda",
     type: "website",
   },
   other: {
-    "apple-mobile-web-app-title": "Blode.md",
+    "apple-mobile-web-app-title": "Edda",
   },
   robots: {
     googleBot: {
@@ -41,7 +41,7 @@ export const metadata: Metadata = {
       "max-video-preview": -1,
     },
   },
-  title: "Blode.md",
+  title: "Edda",
   twitter: {
     card: "summary_large_image",
   },

@@ -1,4 +1,4 @@
-# Voters — Blode.md
+# Voters — Edda
 
 Distilled from `.claude/knowledge/STRENGTHS-WEAKNESSES.md` and `.claude/knowledge/CAROL.md`. No self-portrait (`asb-who-me`) file exists; candidates come from the product record. Positioning should lead with V1.
 
@@ -6,7 +6,7 @@ Distilled from `.claude/knowledge/STRENGTHS-WEAKNESSES.md` and `.claude/knowledg
 
 **V1.** Docs stay in the customer's editor and git. A feature that would pull writing into a CMS, a WYSIWYG, or a plugin marketplace does not ship. [S1, S7]
 Extremity: the about page states this as a hard constraint, not a preference — "If a feature does not move docs closer to the code that produced them, it does not ship."
-Rare among peers: GitBook's product _is_ the second editor. Mintlify has been adding visual editing. Blode.md's intro post exists to refuse that.
+Rare among peers: GitBook's product _is_ the second editor. Mintlify has been adding visual editing. Edda's intro post exists to refuse that.
 Overpowers: no WYSIWYG, no marketplace, no mixed-team CMS, founder-scale support, pruned `docs.json`. Carol reads those gaps as proof the PR stays the review.
 Reverberates: publish paths are git-only; hosted is `$0` because the surface is small; support is the founder; schema is pruned Mintlify, not a plugin platform.
 Energy: Matthew Blode wrote the product and the intro post around this refusal.

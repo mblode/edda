@@ -1,6 +1,6 @@
 ---
 title: Proxy /docs through Nginx
-description: Add Nginx location blocks to reverse-proxy /docs and /_docs on your domain to a Blode.md site while keeping the rest of your site on your server.
+description: Add Nginx location blocks to reverse-proxy /docs and /_docs on your domain to an Edda site while keeping the rest of your site on your server.
 ---
 
 Drop this block into your Nginx server config to host docs under
@@ -40,7 +40,7 @@ Shared CSS, JavaScript and fonts are served from `/_docs/` at the root of your
 domain, not under `/docs`, so they need their own location block: and this one
 keeps the prefix instead of stripping it.
 
-## Strip the prefix in Blode.md
+## Strip the prefix in Edda
 
 Set the default subdomain path prefix to `/docs` in **Dashboard → Project →
 Domains**, or pass `pathPrefix: "/docs"` when creating the domain via the API.
@@ -70,10 +70,10 @@ curl -I https://yourdomain.com/docs/
 ```
 
 You should see a 200 OK and `server: vercel` in the response headers,
-indicating the request reached Blode.md upstream.
+indicating the request reached Edda upstream.
 
 If you add `proxy_cache`, include the `Accept` header in `proxy_cache_key` (or
-`proxy_no_cache` requests whose `Accept` contains `text/markdown`). Blode.md
+`proxy_no_cache` requests whose `Accept` contains `text/markdown`). Edda
 returns Markdown for `Accept: text/markdown` on every page URL, and a cache
 keyed on the URL alone would serve the stored HTML to coding agents that send
 that header.

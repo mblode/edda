@@ -2,7 +2,7 @@
 
 ## Scope
 
-This policy covers Blode.md, the docs platform at blode.md, and the CLI that publishes to it.
+This policy covers Edda, the docs platform at blode.md, and the CLI that publishes to it.
 
 ## What we collect
 

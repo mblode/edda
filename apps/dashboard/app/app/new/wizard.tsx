@@ -48,7 +48,7 @@ const PATH_OPTIONS: readonly {
   {
     badge: "Recommended",
     description:
-      "Scaffold with blodemd new docs, then push — the fastest path to a live site.",
+      "Scaffold with edda new docs, then push — the fastest path to a live site.",
     title: "Start from the CLI",
     value: "cli",
   },

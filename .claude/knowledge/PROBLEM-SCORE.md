@@ -1,4 +1,4 @@
-# Problem Score — Blode.md hosted docs for git-native Carol
+# Problem Score — Edda hosted docs for git-native Carol
 
 Scored 2026-08-12 from the public product record and page-one research. The founder has not picked these values; they are agent-scored. Dissent lines mark where a more optimistic founder-score would change the verdict.
 
@@ -8,7 +8,7 @@ Live skill: [asb-problem](https://skills.asmartbear.com/skills/asb-problem/). Ca
 
 Buyer: DX engineer or founder who already writes MDX in git for a developer-facing product, reviews docs in a pull request, will not use a CMS, will not file an RFP. (Carol in `.claude/knowledge/CAROL.md`.) · Problem: the public docs must match the commit that shipped, without standing up a docs app · Trade-offs: no visual editor, no marketplace, no SOC 2/SSO, founder support, pruned `docs.json` · Price: **$0 hosted** / MIT self-host · Ambition: indie (one founder, no revenue yet) · Evidence: 1 GitHub star, 0 public customers, pricing page “We don’t make money, yet.”
 
-Named examples of the _category_ (git-native docs), not of Blode.md buyers: every Mintlify customer (they claim 20,000+), every Docusaurus/VitePress repo. No named Blode.md customer exists. The market is observed as a category; Blode.md’s share of it is not.
+Named examples of the _category_ (git-native docs), not of Edda buyers: every Mintlify customer (they claim 20,000+), every Docusaurus/VitePress repo. No named Edda customer exists. The market is observed as a category; Edda’s share of it is not.
 
 ## Scores (Scenario A)
 

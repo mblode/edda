@@ -79,6 +79,6 @@ describe("getProjectSlugError", () => {
   });
 
   it("returns a validation message for invalid slugs", () => {
-    expect(getProjectSlugError("Blode.md")).toMatch(/lowercase letters/);
+    expect(getProjectSlugError("Edda")).toMatch(/lowercase letters/);
   });
 });

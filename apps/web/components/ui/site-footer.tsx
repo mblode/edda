@@ -32,13 +32,13 @@ export const SiteFooter = () => (
     <div className="mx-auto w-full max-w-[1436px] px-4 py-14 lg:px-[46px]">
       <div className="grid grid-cols-2 gap-x-4 gap-y-10 lg:grid-cols-5 lg:gap-0">
         <div className="col-span-2 hidden lg:col-span-1 lg:ml-8 lg:block">
-          <Link
-            aria-label="Blode.md home"
+          <a
+            aria-label="Edda home"
             className="flex items-center text-foreground transition-opacity hover:opacity-70"
-            href="/"
+            href={siteConfig.links.marketing}
           >
             <FileTextIcon className="size-6" />
-          </Link>
+          </a>
         </div>
 
         {siteConfig.footerNav.map((group) => (

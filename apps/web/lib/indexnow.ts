@@ -1,15 +1,13 @@
 import { timingSafeEqual } from "node:crypto";
 
-import { blogPosts } from "@/lib/blog";
-import { educationalResources } from "@/lib/educational-resources";
 import {
-  CANONICAL_PATHS,
-  MARKETING_ORIGIN,
-  marketingUrl,
+  PLATFORM_ORIGIN,
+  PLATFORM_PATHS,
+  platformUrl,
 } from "@/lib/marketing-site";
 
 const INDEXNOW_ENDPOINT = "https://api.indexnow.org/indexnow";
-const INDEXNOW_HOST = new URL(MARKETING_ORIGIN).host;
+const INDEXNOW_HOST = new URL(PLATFORM_ORIGIN).host;
 
 /** IndexNow allows at most 10,000 URLs per request. */
 export const INDEXNOW_MAX_URLS = 10_000;
@@ -28,16 +26,12 @@ export const getIndexNowKey = (): string | null => {
 };
 
 export const getIndexNowKeyLocation = (key: string): string =>
-  marketingUrl(`/${key}.txt`);
+  platformUrl(`/${key}.txt`);
 
-/** Absolute marketing URLs eligible for IndexNow / sitemap-style discovery. */
+/** Absolute blode.md URLs still eligible for IndexNow after the marketing move. */
 export const getMarketingIndexableUrls = (): string[] => {
-  const paths = [
-    ...CANONICAL_PATHS,
-    ...blogPosts.map((post) => `/blog/${post.slug}`),
-    ...educationalResources.map((resource) => resource.path),
-  ];
-  return [...new Set(paths.map((path) => marketingUrl(path)))];
+  const paths = [...PLATFORM_PATHS];
+  return [...new Set(paths.map((path) => platformUrl(path)))];
 };
 
 export const getIndexNowUrls = (): string[] => getMarketingIndexableUrls();

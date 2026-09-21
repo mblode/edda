@@ -1,6 +1,6 @@
 # Free online llms.txt resources
 
-Educational resource by [Matthew Blode](https://blode.co) / Blode.md. Last updated 19 September 2026.
+Educational resource by [Matthew Blode](https://blode.co) / Edda. Last updated 19 September 2026.
 
 llms.txt is a proposed Markdown file served at `/llms.txt` that gives language models a curated, LLM-friendly index of a website. It starts with an H1 title, a short summary, and lists of linked Markdown resources so agents can load concise documentation without scraping noisy HTML. The informal standard is documented at [llmstxt.org](https://llmstxt.org/).
 
@@ -12,7 +12,7 @@ llms.txt is a proposed Markdown file served at `/llms.txt` that gives language m
 4. [Examples](#examples)
 5. [Specs & standards](#specs-and-standards)
 6. [Tools & generators](#tools-and-generators)
-7. [Related docs on Blode.md](#related-docs-on-blode-md)
+7. [Related docs on Edda](#related-docs-on-blode-md)
 8. [FAQ](#faq)
 
 ## What is llms.txt
@@ -49,7 +49,7 @@ Coding assistants, chatbots with web tools, and internal RAG pipelines already p
 | 4    | Put secondary material under `## Optional` so tools can skip it for short context.         |
 | 5    | Fetch the file, expand a few links, and ask an LLM product questions against that context. |
 
-If you host docs on Blode.md, you do not hand-author the index for every deploy: the platform generates tenant-aware `llms.txt`, `llms-full.txt`, and `.md` page exports from your MDX. Configure the public URL with `seo.siteUrl` when a proxy sits in front. Details in [SEO and sitemaps](https://blode.md/docs/features/seo).
+If you host docs on Edda, you do not hand-author the index for every deploy: the platform generates tenant-aware `llms.txt`, `llms-full.txt`, and `.md` page exports from your MDX. Configure the public URL with `seo.siteUrl` when a proxy sits in front. Details in [SEO and sitemaps](https://blode.md/docs/features/seo).
 
 ## Examples
 
@@ -70,7 +70,7 @@ If you host docs on Blode.md, you do not hand-author the index for every deploy:
 - [Changelog](https://docs.example.com/changelog.md): Release notes
 ```
 
-Live references worth reading: the FastHTML docs index linked from [llmstxt.org](https://llmstxt.org/), and Blode.md's own [/llms.txt](https://blode.md/llms.txt).
+Live references worth reading: the FastHTML docs index linked from [llmstxt.org](https://llmstxt.org/), and Edda's own [/llms.txt](https://blode.md/llms.txt).
 
 ## Specs & standards
 
@@ -87,16 +87,16 @@ Live references worth reading: the FastHTML docs index linked from [llmstxt.org]
 - [llms_txt2ctx](https://github.com/AnswerDotAI/llms-txt): CLI/Python helper that expands an llms.txt index into context files (as described on llmstxt.org).
 - [url-discovery-bench](https://github.com/mintlify/url-discovery-bench): Mintlify's open-source benchmark that drives Claude and Codex through your docs and counts failed requests per task. Its 2026 run put HTML at 2.23, Markdown at 1.42, and Markdown with a link to llms.txt at 0.11.
 - Framework generators such as vitepress-plugin-llms and docusaurus-plugin-llms are listed on [llmstxt.org](https://llmstxt.org/). Use those listings rather than package-registry pages that block crawlers.
-- [Blode.md](https://blode.md/): git-native docs, published on merge. Sites ship `llms.txt` / `llms-full.txt` / `.md` alternates from the same deploy. See [pricing](https://blode.md/pricing).
+- [Edda](https://blode.co/edda): git-native docs, published on merge. Sites ship `llms.txt` / `llms-full.txt` / `.md` alternates from the same deploy. See [pricing](https://blode.co/edda).
 
-## Related docs on Blode.md
+## Related docs on Edda
 
 **Short answer:** Platform docs cover SEO exports; the marketing site also serves an llms.txt for agents.
 
-- [Blode.md docs](https://blode.md/docs)
+- [Edda docs](https://blode.md/docs)
 - [SEO and sitemaps](https://blode.md/docs/features/seo): robots, sitemap, llms.txt, llms-full.txt, and `.md` exports
 - [blode.md/llms.txt](https://blode.md/llms.txt)
-- [About Blode.md](https://blode.md/about)
+- [About Edda](https://blode.co/edda)
 
 ## FAQ
 
@@ -116,12 +116,12 @@ sitemap.xml lists indexable URLs for crawlers. llms.txt is a short, curated over
 
 llms.txt is the index. Some sites also ship llms-full.txt (or generated context files) with expanded page content for larger windows. Start with llms.txt and `.md` page alternates; add a full dump only if your readers need it.
 
-### Does Blode.md generate llms.txt automatically?
+### Does Edda generate llms.txt automatically?
 
-Yes. Blode.md sites get tenant-aware `/llms.txt`, `/llms-full.txt`, robots.txt, sitemap.xml, and per-page `.md` exports automatically. See [/docs/features/seo](https://blode.md/docs/features/seo) for the full list.
+Yes. Edda sites get tenant-aware `/llms.txt`, `/llms-full.txt`, robots.txt, sitemap.xml, and per-page `.md` exports automatically. See [/docs/features/seo](https://blode.md/docs/features/seo) for the full list.
 
 ## Ship docs that already expose llms.txt
 
-If you want the educational path above without maintaining generators yourself, Blode.md turns a folder of MDX into a docs site that includes the AI-facing exports. Write locally, push from the CLI, review in a pull request. Same loop as code.
+If you want the educational path above without maintaining generators yourself, Edda turns a folder of MDX into a docs site that includes the AI-facing exports. Write locally, push from the CLI, review in a pull request. Same loop as code.
 
 [Connect GitHub](https://blode.md/oauth/consent) · [Read SEO docs](https://blode.md/docs/features/seo)

@@ -74,7 +74,7 @@ vi.mock("../command-utils.js", async (importOriginal) => ({
   readGitValue: readGitValueMock,
 }));
 
-const DOCS_ROOT = "/tmp/blodemd-unit-docs";
+const DOCS_ROOT = "/tmp/edda-unit-docs";
 
 const OWNED_ENV = [
   "BLODEMD_API_KEY",

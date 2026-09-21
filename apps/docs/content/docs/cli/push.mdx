@@ -1,15 +1,15 @@
 ---
-title: blodemd push
-description: Deploy your local MDX docs to Blode.md with blodemd push, using a browser session locally or a project deploy key in CI pipelines.
+title: edda push
+description: Deploy your local MDX docs to Edda with edda push, using a browser session locally or a project deploy key in CI pipelines.
 ---
 
-Upload your documentation files and publish them to Blode.md in a single command.
+Upload your documentation files and publish them to Edda in a single command.
 
 ```bash
-blodemd push [dir]
+edda push [dir]
 ```
 
-Authenticate once with `blodemd login` first. The CLI uses your browser GitHub session for local deploys. For CI, use a project deploy key in `BLODEMD_API_KEY`: see [Continuous deployment](/deployment/ci).
+Authenticate once with `edda login` first. The CLI uses your browser GitHub session for local deploys. For CI, use a project deploy key in `BLODEMD_API_KEY`: see [Continuous deployment](/deployment/ci).
 
 ## Directory resolution
 
@@ -36,7 +36,7 @@ If none contain a `docs.json`, the current directory is used.
     },
     "--api-key <token>": {
       description:
-        "Project deploy key for CI. Falls back to the BLODEMD_API_KEY environment variable, then stored credentials from `blodemd login`.",
+        "Project deploy key for CI. Falls back to the BLODEMD_API_KEY environment variable, then stored credentials from `edda login`.",
       type: "string",
     },
     "--api-url <url>": {
@@ -60,7 +60,7 @@ If none contain a `docs.json`, the current directory is used.
 
 ## Deployment flow
 
-When you run `blodemd push`, the CLI executes these steps:
+When you run `edda push`, the CLI executes these steps:
 
 <Steps>
   <Step title="Validate configuration">
@@ -71,8 +71,8 @@ When you run `blodemd push`, the CLI executes these steps:
     are skipped automatically.
   </Step>
   <Step title="Create deployment">
-    Sends a request to the Blode.md API to create a new deployment record with
-    the branch and commit message.
+    Sends a request to the Edda API to create a new deployment record with the
+    branch and commit message.
   </Step>
   <Step title="Upload files">
     Uploads files in batches of up to 4 MB each. Large documentation sets are
@@ -92,22 +92,22 @@ If the project slug does not match an existing project, the CLI prompts you to c
 
 <CodeGroup>
 ```bash title="Push from default location"
-blodemd push
+edda push
 ```
 
 ```bash title="Push a specific directory"
-blodemd push ./my-docs
+edda push ./my-docs
 ```
 
 ```bash title="Push with explicit project and branch"
-blodemd push --project my-project --branch staging
+edda push --project my-project --branch staging
 ```
 
 </CodeGroup>
 
 ## Deploying from CI
 
-Prefer not to run the CLI at all? Install the **Blode.md GitHub App** from the project Git tab in the dashboard. Pushes to your configured branch deploy automatically: no CLI, no tokens, no workflows. This is the recommended default.
+Prefer not to run the CLI at all? Install the **Edda GitHub App** from the project Git tab in the dashboard. Pushes to your configured branch deploy automatically: no CLI, no tokens, no workflows. This is the recommended default.
 
 To run the deploy yourself from GitHub Actions or another CI provider, use a project deploy key in `BLODEMD_API_KEY`. See [Continuous deployment](/deployment/ci).
 
@@ -120,6 +120,6 @@ The CLI skips the following entries during file collection:
 
 ## Related pages
 
-- [blodemd login](/cli/login) -- authenticate before your first push
-- [blodemd validate](/cli/validate) -- fail fast on config errors
+- [edda login](/cli/login) -- authenticate before your first push
+- [edda validate](/cli/validate) -- fail fast on config errors
 - [Continuous deployment](/deployment/ci) -- deploy from CI with a project key

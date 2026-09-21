@@ -3222,7 +3222,7 @@
       "$ref": "#/definitions/anchorSchema/anyOf/1/properties/languages/items/anyOf/1/properties/versions"
     }
   },
-  "description": "Schema for Blode.md docs.json configuration files. Derived from the vendored Mintlify schema and pruned to the supported Blode.md surface.",
+  "description": "Schema for Edda docs.json configuration files. Derived from the vendored Mintlify schema and pruned to the supported Edda surface.",
   "properties": {
     "$schema": {
       "type": "string",

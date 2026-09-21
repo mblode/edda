@@ -1,10 +1,10 @@
 ---
 title: Proxy /docs through Vercel
-description: Host Blode.md docs at yourdomain.com/docs by adding rewrites for /docs and /_docs to your Next.js next.config.js on an existing Vercel marketing site.
+description: Host Edda docs at yourdomain.com/docs by adding rewrites for /docs and /_docs to your Next.js next.config.js on an existing Vercel marketing site.
 ---
 
 If your marketing site already lives on Vercel, you can host docs at
-`yourdomain.com/docs` without a custom domain on Blode.md. One rewrite, two
+`yourdomain.com/docs` without a custom domain on Edda. One rewrite, two
 minutes.
 
 ## next.config.js
@@ -34,7 +34,7 @@ export default nextConfig;
 ```
 
 Replace `acme` with your project slug. The first two rewrites forward every
-request under `/docs` to your Blode.md site, so search and navigation keep
+request under `/docs` to your Edda site, so search and navigation keep
 working.
 
 The third one is easy to miss and the page renders unstyled without it. Shared
@@ -42,9 +42,9 @@ CSS, JavaScript and fonts are served from `/_docs/*` at the root of your domain
 , not under `/docs`: because they are the same files for every page, so they
 need their own rewrite.
 
-## Strip the prefix in Blode.md
+## Strip the prefix in Edda
 
-Blode.md serves content at the root by default. If you serve at `/docs`, set
+Edda serves content at the root by default. If you serve at `/docs`, set
 the path prefix on your default subdomain in **Dashboard → Project →
 Domains** (the path prefix field on the default subdomain row), or pass
 `pathPrefix: "/docs"` when creating the domain via the API.
@@ -67,13 +67,13 @@ Include the path prefix if you use one. Canonical tags, `og:url`, JSON-LD, the
 sitemap, `llms.txt` and the `.md` alternates are all built from this value.
 
 Skip it and every page canonicalises to `acme.blode.md`, which tells search
-engines the Blode.md subdomain is the real home of your content and leaves your
+engines the Edda subdomain is the real home of your content and leaves your
 own domain out of the index.
 
 ## Verifying the proxy
 
 After deploying, hit `https://yourdomain.com/docs`: you should see the
-homepage of your Blode.md site rendered under your domain. View the network
+homepage of your Edda site rendered under your domain. View the network
 tab to confirm requests are 200 OK and being proxied.
 
 ## Why proxy?
@@ -88,11 +88,11 @@ tab to confirm requests are 200 OK and being proxied.
   Every stylesheet and script 404s without it.
 - **404 on assets**: double-check the path prefix matches what you set in the
   domain config.
-- **Redirect loops**: make sure your Blode.md project doesn&apos;t have a
+- **Redirect loops**: make sure your Edda project doesn&apos;t have a
   conflicting custom domain configured for the same hostname.
 - **Stale content**: Vercel caches rewrites at the edge; redeploy after
   changes to `next.config.js`.
-- **Agents get HTML when they ask for Markdown**: Blode.md answers
+- **Agents get HTML when they ask for Markdown**: Edda answers
   `Accept: text/markdown` on every page URL, but Vercel caches the proxied
   HTML under the page URL without `Accept` in the cache key, so once a page is
   cached the negotiated request returns that HTML. Coding agents that send the

@@ -446,7 +446,7 @@ describe("toAgentMarkdown", () => {
         "<Steps>",
         '  <Step title="Authenticate">',
         "    ```bash",
-        "    blodemd login",
+        "    edda login",
         "    ```",
         "",
         "    This opens your browser.",
@@ -455,7 +455,7 @@ describe("toAgentMarkdown", () => {
         "    Run the push:",
         "",
         "    ```bash",
-        "    blodemd push",
+        "    edda push",
         "    ```",
         "  </Step>",
         "</Steps>",
@@ -467,7 +467,7 @@ describe("toAgentMarkdown", () => {
       .filter((line) => /^\s*```/.test(line));
     expect(fenceLines).toHaveLength(4);
     expect(fenceLines.every((line) => line.startsWith("```"))).toBe(true);
-    expect(output).toContain("```bash\nblodemd login\n```");
+    expect(output).toContain("```bash\nedda login\n```");
     expect(output).toContain("\nThis opens your browser.");
     expect(output).not.toContain("    This opens your browser.");
     expect(output).toContain("1. **Deploy**\n\nRun the push:");

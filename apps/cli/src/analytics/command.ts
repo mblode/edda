@@ -5,9 +5,10 @@ import type { Command } from "commander";
 import { resolveAuthToken } from "../auth-session.js";
 import { parseProjectSlug, reportCommandError } from "../command-utils.js";
 import {
-  BLODE_API_URL_ENV,
-  BLODE_PROJECT_ENV,
   DEFAULT_API_URL,
+  readApiUrlEnv,
+  readProjectEnv,
+  resolveProjectEnvName,
 } from "../constants.js";
 import { resolveDocsRoot } from "../dev/resolve-root.js";
 import { CliError, EXIT_CODES } from "../errors.js";
@@ -39,13 +40,13 @@ interface CommonOptions {
 }
 
 const apiBase = (options: CommonOptions): string =>
-  options.apiUrl ?? process.env[BLODE_API_URL_ENV] ?? DEFAULT_API_URL;
+  options.apiUrl ?? readApiUrlEnv() ?? DEFAULT_API_URL;
 
 const resolveAuthorization = async (): Promise<string> => {
   const resolved = await resolveAuthToken();
   if (!resolved?.token) {
     throw new CliError(
-      'Not logged in. Run "blodemd login" to authenticate.',
+      'Not logged in. Run "edda login" to authenticate.',
       EXIT_CODES.AUTH_REQUIRED
     );
   }
@@ -80,9 +81,9 @@ const resolveSlug = async (options: CommonOptions): Promise<string> => {
   if (options.project) {
     return assertValidSlug(options.project, "--project");
   }
-  const envSlug = process.env[BLODE_PROJECT_ENV];
+  const envSlug = readProjectEnv();
   if (envSlug) {
-    return assertValidSlug(envSlug, BLODE_PROJECT_ENV);
+    return assertValidSlug(envSlug, resolveProjectEnvName() ?? "EDDA_PROJECT");
   }
   const docsSlug = await tryLoadDocsSlug();
   const { project } = resolveProjectTarget({
@@ -92,7 +93,7 @@ const resolveSlug = async (options: CommonOptions): Promise<string> => {
   });
   if (!project) {
     throw new CliError(
-      "Could not resolve project. Pass --project <slug>, set BLODEMD_PROJECT, or run from a directory with docs.json.",
+      "Could not resolve project. Pass --project <slug>, set EDDA_PROJECT, or run from a directory with docs.json.",
       EXIT_CODES.VALIDATION
     );
   }
@@ -247,8 +248,10 @@ const runAction = async (
 
 const JSON_OPTION_DESCRIPTION =
   "output machine-readable JSON (implies non-interactive)";
-const PROJECT_OPTION_DESCRIPTION = "project slug (env: BLODEMD_PROJECT)";
-const API_URL_OPTION_DESCRIPTION = "API URL (env: BLODEMD_API_URL)";
+const PROJECT_OPTION_DESCRIPTION =
+  "project slug (env: EDDA_PROJECT or BLODEMD_PROJECT)";
+const API_URL_OPTION_DESCRIPTION =
+  "API URL (env: EDDA_API_URL or BLODEMD_API_URL)";
 
 export const registerAnalyticsCommand = (program: Command): void => {
   const analytics = program

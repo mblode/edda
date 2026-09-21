@@ -1,10 +1,10 @@
-# Interview goals — Blode.md
+# Interview goals — Edda
 
 The interview questions are two steps after this file (hypotheses, then questions). Goals are the things we need answered and cannot ask directly. Stage: launched, pre-revenue, hypothesized Carol. Decisions on the table: keep $0 vs charge, whether V1 is real, whether to keep punching Mintlify.
 
 ## Context
 
-Blode.md is a git-native MDX docs host. Hosted is $0. MIT self-host. One founder. No public customers. Carol is hypothesized. Mintlify Starter is also $0 (2026-08-12) and includes a web editor.
+Edda is a git-native MDX docs host. Hosted is $0. MIT self-host. One founder. No public customers. Carol is hypothesized. Mintlify Starter is also $0 (2026-08-12) and includes a web editor.
 
 ## Goal questions
 
@@ -14,7 +14,7 @@ Blode.md is a git-native MDX docs host. Hosted is $0. MIT self-host. One founder
 
 **G3.** What event made her look for a docs host _this week_ — not the generic pain, the trigger?
 
-**G4.** How much has she actually paid anyone for docs hosting, from whose budget, and what would make her pay Blode.md (or refuse forever)?
+**G4.** How much has she actually paid anyone for docs hosting, from whose budget, and what would make her pay Edda (or refuse forever)?
 
 **G5.** Is the missing visual editor a reason she would choose us, a reason she would leave, or something she does not notice?
 

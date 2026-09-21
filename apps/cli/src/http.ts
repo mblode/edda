@@ -14,9 +14,9 @@ const readJson = async (response: Response): Promise<unknown> => {
 };
 
 const HINT_BY_STATUS: Record<number, string> = {
-  401: 'Run "blodemd login", or set BLODEMD_API_KEY.',
+  401: 'Run "edda login", or set EDDA_API_KEY.',
   403: "This account cannot access that project.",
-  404: 'Check the project slug, or run "blodemd projects" to list them.',
+  404: 'Check the project slug, or run "edda projects" to list them.',
   429: "Rate limited. Wait a moment and try again.",
 };
 

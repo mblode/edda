@@ -28,7 +28,7 @@ if (!shouldPackage && !isGlobalInstall) {
   process.exit(0);
 }
 
-console.log("Preparing blodemd-dev standalone package...");
+console.log("Preparing edda-docs-dev standalone package...");
 
 // Build @repo/* workspace packages first so the copied dist/ output is
 // available for the vendored Next.js dev server.

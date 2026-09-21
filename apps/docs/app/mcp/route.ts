@@ -87,7 +87,7 @@ const resolveTenantFromRequest = async (
 const createMcpServer = (request: Request, tenant: Tenant): Server => {
   const server = new Server(
     {
-      name: `blodemd-${tenant.slug}`,
+      name: `edda-${tenant.slug}`,
       version: siteConfig.version,
     },
     {

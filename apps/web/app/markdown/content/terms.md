@@ -2,7 +2,7 @@
 
 ## Agreement
 
-By using Blode.md, you agree to these terms.
+By using Edda, you agree to these terms.
 
 ## Your content
 
@@ -10,7 +10,7 @@ You own the content you publish. You grant us the license we need to host, build
 
 ## Acceptable use
 
-Do not use Blode.md for content that is illegal, abusive, or that violates someone else's rights. Do not use it to attack or scrape other services.
+Do not use Edda for content that is illegal, abusive, or that violates someone else's rights. Do not use it to attack or scrape other services.
 
 ## Termination
 

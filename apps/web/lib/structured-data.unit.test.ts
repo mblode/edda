@@ -16,7 +16,7 @@ describe("structured data graph", () => {
     const data = pageJsonLd(
       webPageNode({
         description: "Hosted docs from git.",
-        name: "Blode.md",
+        name: "Edda",
         path: "/",
       })
     );
@@ -41,7 +41,7 @@ describe("structured data graph", () => {
       dateModified: "2026-08-13",
       datePublished: "2026-04-20",
       description: "Intro",
-      headline: "Hello, Blode.md",
+      headline: "Hello, Edda",
       path: "/blog/intro-to-blode-md",
     });
 

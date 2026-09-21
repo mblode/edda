@@ -8,7 +8,7 @@ import { marketingUrl, pageMetadata } from "@/lib/marketing-site";
 import { breadcrumbNode, pageJsonLd, webPageNode } from "@/lib/structured-data";
 
 const changelogDescription =
-  "Every release, fix, and improvement to Blode.md. See what shipped across the CLI, renderer, hosting, and agent-readable exports.";
+  "Every release, fix, and improvement to Edda. See what shipped across the CLI, renderer, hosting, and agent-readable exports.";
 const changelogTitle = "Changelog and release notes";
 
 export const metadata = pageMetadata({
@@ -22,9 +22,9 @@ const updates = [
     date: "2026-09-19",
     items: [
       "Published Docs for agents: what every deploy writes for agents, why the llms.txt link in each Markdown twin matters, and what to put in page descriptions.",
-      "blodemd validate now warns when pages have no description, since that line is how agents pick pages from llms.txt.",
+      "edda validate now warns when pages have no description, since that line is how agents pick pages from llms.txt.",
       "Consolidated the Link header on tenant docs to the rels scanners probe: describedby and the llmstxt.org rel for llms.txt, a text/markdown alternate per page, and the agentskills.io rel for the skills index.",
-      "Updated the blodemd agent skill to verify llms.txt and the .md exports on the live site after a push.",
+      "Updated the edda agent skill to verify llms.txt and the .md exports on the live site after a push.",
     ],
     title: "Docs for agents",
   },

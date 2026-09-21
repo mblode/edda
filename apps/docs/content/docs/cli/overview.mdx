@@ -1,13 +1,13 @@
 ---
 title: CLI overview
-description: Install the blodemd CLI, authenticate with GitHub, and use login, new, validate, dev, push, and analytics commands from your terminal.
+description: Install the edda CLI, authenticate with GitHub, and use login, new, validate, dev, push, and analytics commands from your terminal.
 ---
 
-The blodemd CLI lets you authenticate, create, validate, preview, and deploy documentation from your terminal.
+The edda CLI lets you authenticate, create, validate, preview, and deploy documentation from your terminal.
 
 ## Installation
 
-<Installer command="npm i -g blodemd" />
+<Installer command="npm i -g edda-docs" />
 
 Requires Node.js 24.x. The current version is **0.0.8**.
 
@@ -16,7 +16,7 @@ Requires Node.js 24.x. The current version is **0.0.8**.
 <TypeTable
   type={{
     login: {
-      description: "Authenticate with Blode.md via GitHub in your browser.",
+      description: "Authenticate with Edda via GitHub in your browser.",
       type: "command",
     },
     logout: {
@@ -38,7 +38,7 @@ Requires Node.js 24.x. The current version is **0.0.8**.
       type: "command",
     },
     push: {
-      description: "Deploy documentation to Blode.md.",
+      description: "Deploy documentation to Edda.",
       type: "command",
     },
     dev: {
@@ -51,19 +51,19 @@ Requires Node.js 24.x. The current version is **0.0.8**.
 ## Command reference
 
 <Columns cols={2}>
-  <Card title="blodemd login" icon="key" href="/cli/login">
+  <Card title="edda login" icon="key" href="/cli/login">
     Sign in with GitHub in your browser.
   </Card>
-  <Card title="blodemd new" icon="folder-plus" href="/cli/new">
+  <Card title="edda new" icon="folder-plus" href="/cli/new">
     Create a docs directory with starter files.
   </Card>
-  <Card title="blodemd push" icon="rocket" href="/cli/push">
-    Deploy your documentation to Blode.md.
+  <Card title="edda push" icon="rocket" href="/cli/push">
+    Deploy your documentation to Edda.
   </Card>
-  <Card title="blodemd dev" icon="monitor" href="/cli/dev">
+  <Card title="edda dev" icon="monitor" href="/cli/dev">
     Run a local dev server with live reload.
   </Card>
-  <Card title="blodemd validate" icon="check" href="/cli/validate">
+  <Card title="edda validate" icon="check" href="/cli/validate">
     Validate your docs.json before deploying.
   </Card>
 </Columns>
@@ -102,6 +102,6 @@ You can configure the CLI with environment variables instead of flags.
 
 ## Related pages
 
-- [blodemd login](/cli/login) -- authenticate with GitHub
-- [blodemd new](/cli/new) -- scaffold a new docs site
+- [edda login](/cli/login) -- authenticate with GitHub
+- [edda new](/cli/new) -- scaffold a new docs site
 - [Continuous deployment](/deployment/ci) -- automate deploys from GitHub Actions

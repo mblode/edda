@@ -4,7 +4,7 @@ const body = {
   $schema:
     "https://raw.githubusercontent.com/modelcontextprotocol/modelcontextprotocol/main/schema/server-card.schema.json",
   authentication: { type: "none" },
-  name: "blodemd",
+  name: "edda",
   serverCard: "/.well-known/mcp/server-card.json",
   transport: {
     type: "streamable-http",

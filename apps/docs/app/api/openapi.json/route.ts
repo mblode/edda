@@ -4,7 +4,7 @@ import { marketingUrl } from "@/lib/marketing-site";
 
 const spec = {
   info: {
-    title: "Blode.md Public API",
+    title: "Edda Public API",
     version: "1.0.0",
   },
   openapi: "3.1.0",

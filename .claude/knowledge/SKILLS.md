@@ -1,4 +1,4 @@
-# Live skills catalog — Blode.md
+# Live skills catalog — Edda
 
 Checked 2026-08-12 against [skills.asmartbear.com](https://skills.asmartbear.com/). Snapshot ZIP: [asb-skills.zip](https://skills.asmartbear.com/asb-skills.zip). Source: [github.com/asmartbear/asb-skills](https://github.com/asmartbear/asb-skills).
 

@@ -18,8 +18,8 @@ import {
 } from "@/lib/structured-data";
 
 const introDescription =
-  "Why we built Blode.md: git-native docs, published on merge. Free, MIT licensed, and designed to keep docs next to the code they describe.";
-const introTitle = "Introducing the Blode.md docs platform";
+  "Why we built Edda: git-native docs, published on merge. Free, MIT licensed, and designed to keep docs next to the code they describe.";
+const introTitle = "Introducing the Edda docs platform";
 const introPath = "/blog/intro-to-blode-md";
 
 export const metadata = pageMetadata({
@@ -40,20 +40,20 @@ const introJsonLd = pageJsonLd(
     dateModified: "2026-04-20",
     datePublished: "2026-04-20",
     description: introDescription,
-    headline: "Hello, Blode.md",
+    headline: "Hello, Edda",
     path: introPath,
   }),
   breadcrumbNode([
     { name: "Home", path: "/" },
     { name: "Blog", path: "/blog" },
-    { name: "Hello, Blode.md", path: introPath },
+    { name: "Hello, Edda", path: introPath },
   ])
 );
 
-const installSnippet = `npm i -g blodemd
-blodemd login
-blodemd new docs
-blodemd push docs`;
+const installSnippet = `npm i -g edda-docs
+edda login
+edda new docs
+edda push docs`;
 
 export default function IntroPostPage() {
   return (
@@ -73,11 +73,10 @@ export default function IntroPostPage() {
               Intro
             </Badge>
             <h1 className="h-display max-w-3xl text-balance font-bold text-4xl md:text-6xl">
-              Hello, Blode.md
+              Hello, Edda
             </h1>
             <p className="measure mt-6 text-balance text-lg text-muted-foreground md:text-xl">
-              Most docs tools want you to leave your editor. Blode.md
-              doesn&apos;t.
+              Most docs tools want you to leave your editor. Edda doesn&apos;t.
             </p>
             <p className="mt-6 flex flex-wrap items-center justify-center gap-x-2 text-muted-foreground text-sm">
               <RelativeTime date="2026-04-20" />
@@ -99,8 +98,8 @@ export default function IntroPostPage() {
                 wanted Markdown in a repo and a URL.
               </p>
               <p>
-                Blode.md keeps the surface small on purpose. The pull request is
-                the review. The merge is the deploy. Docs use the same path your
+                Edda keeps the surface small on purpose. The pull request is the
+                review. The merge is the deploy. Docs use the same path your
                 code already does.
               </p>
               <p>

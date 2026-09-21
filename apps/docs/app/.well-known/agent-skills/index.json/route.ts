@@ -13,6 +13,13 @@ const index = {
   skills: [
     {
       description: BLODEMD_SKILL_DESCRIPTION,
+      name: "edda",
+      sha256: sha256Hex(BLODEMD_SKILL_CONTENT),
+      type: "skill.md",
+      url: marketingUrl("/.well-known/agent-skills/edda/SKILL.md"),
+    },
+    {
+      description: BLODEMD_SKILL_DESCRIPTION,
       name: "blodemd",
       sha256: sha256Hex(BLODEMD_SKILL_CONTENT),
       type: "skill.md",

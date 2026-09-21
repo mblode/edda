@@ -39,5 +39,5 @@ export const approveOrRedirect = async (authorizationId: string) => {
 
 export const formatAuthorizationError = (message: string): string =>
   message.includes("authorization not found")
-    ? "This authorization link has expired. Please run `blodemd login` again in your terminal."
+    ? "This authorization link has expired. Please run `edda login` again in your terminal."
     : message;

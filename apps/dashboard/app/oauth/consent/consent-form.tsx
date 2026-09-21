@@ -157,7 +157,7 @@ export const ConsentForm = ({
     <div className="flex min-h-screen items-center justify-center p-4">
       <Card className="w-full max-w-[400px]">
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl">Blode.md</CardTitle>
+          <CardTitle className="text-2xl">Edda</CardTitle>
           <CardDescription>{description}</CardDescription>
         </CardHeader>
 
@@ -201,7 +201,7 @@ export const ConsentForm = ({
                 {isSigningIn ? "Redirecting..." : "Continue with GitHub"}
               </Button>
               <p className="text-center text-xs text-muted-foreground">
-                We use GitHub for sign-in so you can install the Blode.md app on
+                We use GitHub for sign-in so you can install the Edda app on
                 your docs repo from the same account.
               </p>
             </FieldGroup>

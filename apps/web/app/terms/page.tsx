@@ -8,8 +8,8 @@ import { pageMetadata } from "@/lib/marketing-site";
 import { breadcrumbNode, pageJsonLd, webPageNode } from "@/lib/structured-data";
 
 const termsDescription =
-  "Terms of service for Blode.md: ground rules for the hosted docs platform, including your content, acceptable use, account responsibilities, and updates.";
-const termsTitle = "Terms of service for Blode.md";
+  "Terms of service for Edda: ground rules for the hosted docs platform, including your content, acceptable use, account responsibilities, and updates.";
+const termsTitle = "Terms of service for Edda";
 
 export const metadata = pageMetadata({
   description: termsDescription,
@@ -42,7 +42,7 @@ export default function TermsPage() {
             Terms of service
           </h1>
           <p className="measure mt-6 text-balance text-lg text-muted-foreground md:text-xl">
-            The ground rules for using the hosted Blode.md service, publishing
+            The ground rules for using the hosted Edda service, publishing
             content, and keeping accounts in good standing.
           </p>
         </div>
@@ -53,9 +53,9 @@ export default function TermsPage() {
           <div className="typeset measure text-muted-foreground">
             <h2>Agreement</h2>
             <p>
-              By using Blode.md, you agree to these terms. They apply to the
-              hosted service at blode.md and to accounts you create through
-              GitHub sign-in. For how we handle personal data, see our{" "}
+              By using Edda, you agree to these terms. They apply to the hosted
+              service at blode.md and to accounts you create through GitHub
+              sign-in. For how we handle personal data, see our{" "}
               <Link className="underline underline-offset-4" href="/privacy">
                 privacy policy
               </Link>
@@ -71,7 +71,7 @@ export default function TermsPage() {
 
             <h2>Acceptable use</h2>
             <p>
-              Do not use Blode.md for content that is illegal, abusive, or that
+              Do not use Edda for content that is illegal, abusive, or that
               violates someone else&apos;s rights. Do not use it to attack or
               scrape other services.
             </p>

@@ -316,11 +316,11 @@ const scaffoldDocsSite = async (
     yes?: boolean;
   }
 ) => {
-  intro(chalk.bold("blodemd new"));
+  intro(chalk.bold("edda new"));
 
   if (options?.deprecatedCommand) {
     log.warn(
-      `"${options.deprecatedCommand}" is deprecated. Use ${chalk.cyan("blodemd new")} instead.`
+      `"${options.deprecatedCommand}" is deprecated. Use ${chalk.cyan("edda new")} instead.`
     );
   }
   if (options?.name && !options.slug) {
@@ -396,7 +396,7 @@ const scaffoldDocsSite = async (
 export const registerNewCommand = (program: Command): void => {
   program
     .command("new")
-    .description("Create a new blode.md documentation site")
+    .description("Create a new Edda documentation site")
     .argument("[directory]", "target directory")
     .option("--slug <slug>", "project slug for docs.json", parseProjectSlug)
     .option("--name <slug>", "deprecated alias for --slug", parseProjectSlug)

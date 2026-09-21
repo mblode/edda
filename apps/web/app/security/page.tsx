@@ -14,7 +14,7 @@ import { pageMetadata } from "@/lib/marketing-site";
 import { breadcrumbNode, pageJsonLd, webPageNode } from "@/lib/structured-data";
 
 const securityDescription =
-  "How Blode.md handles security today: HTTPS by default, GitHub OAuth for sign-in, open source code you can audit, and a clear path to report vulnerabilities.";
+  "How Edda handles security today: HTTPS by default, GitHub OAuth for sign-in, open source code you can audit, and a clear path to report vulnerabilities.";
 const securityTitle = "Security practices and reporting";
 
 export const metadata = pageMetadata({
@@ -37,7 +37,7 @@ const securityJsonLd = pageJsonLd(
 
 const controls = [
   {
-    description: "Every site on Blode.md is served over HTTPS.",
+    description: "Every site on Edda is served over HTTPS.",
     title: "HTTPS by default",
   },
   {

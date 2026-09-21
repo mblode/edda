@@ -20,7 +20,7 @@ export const registerValidateCommand = (program: Command): void => {
     .action(async (dir: string | undefined, options: { json?: boolean }) => {
       const reporter = createReporter({ json: options.json });
       if (reporter.interactive) {
-        intro(chalk.bold("blodemd validate"));
+        intro(chalk.bold("edda validate"));
       }
 
       try {

@@ -1,5 +1,5 @@
 /**
- * Seed script for Blode.md.
+ * Seed script for Edda.
  * Creates a seed user and sample projects.
  *
  * Usage:
@@ -40,12 +40,12 @@ const PROJECTS = [
     slug: "dnd-grid",
   },
   {
-    description: "Example documentation site showcasing blode.md features.",
+    description: "Example documentation site showcasing Edda features.",
     name: "Example",
     slug: "example",
   },
   {
-    description: "Blode.md product documentation.",
+    description: "Edda product documentation.",
     name: "Docs",
     slug: "docs",
   },
@@ -60,7 +60,7 @@ const userDao = new UserDao();
 const projectDao = new ProjectDao();
 const domainDao = new DomainDao();
 
-console.log("Seeding Blode.md...\n");
+console.log("Seeding Edda...\n");
 
 const user = await userDao.upsertByAuthId(SEED_USER);
 console.log(`  [user] ${user.email} (id: ${user.id})\n`);

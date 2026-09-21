@@ -130,7 +130,7 @@ export const generateMetadata = async ({
     `${canonicalBasePath}${canonicalPath}`
       .replaceAll(/\/+/g, "/")
       .replace(/\/$/, "") || "/";
-  const canonicalOrigin = canonicals?.origin ?? "https://blode.md";
+  const canonicalOrigin = canonicals?.origin ?? "https://blode.co/edda";
   const canonicalUrl = `${canonicalOrigin}${fullCanonical}`;
   const favicon = config?.favicon;
   // Always emit a complete Open Graph + Twitter card. Fall back to the docs
@@ -197,7 +197,7 @@ const CachedDocPage = async ({
       return notFound();
     }
 
-    const pushCommands = "blodemd login\nblodemd push";
+    const pushCommands = "edda login\nedda push";
     const docsPath = shell.tenant.docsPath ?? "";
 
     return (
@@ -217,7 +217,7 @@ const CachedDocPage = async ({
               {shell.tenant.name} has no docs deployment yet.
             </h1>
             <p className="text-base leading-7 text-muted-foreground">
-              This project exists, but Blode.md couldn&apos;t find a published
+              This project exists, but Edda couldn&apos;t find a published
               deployment or a local docs root.
             </p>
           </div>
@@ -247,9 +247,9 @@ const CachedDocPage = async ({
           <div className="relative overflow-hidden rounded-xl bg-code ring-1 ring-foreground/10">
             <pre className="no-scrollbar overflow-x-auto py-3 pr-14 pl-4 font-mono text-sm leading-6 text-code-foreground">
               <span className="select-none text-muted-foreground">$ </span>
-              blodemd login{"\n"}
+              edda login{"\n"}
               <span className="select-none text-muted-foreground">$ </span>
-              blodemd push
+              edda push
             </pre>
             <div className="absolute top-2 right-2">
               <CopyButton

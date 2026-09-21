@@ -8,7 +8,7 @@ import { pageMetadata } from "@/lib/marketing-site";
 import { breadcrumbNode, pageJsonLd, webPageNode } from "@/lib/structured-data";
 
 const privacyDescription =
-  "Privacy policy for Blode.md: what we collect when you sign in or publish docs, how we use it, third parties we rely on, and how to contact us.";
+  "Privacy policy for Edda: what we collect when you sign in or publish docs, how we use it, third parties we rely on, and how to contact us.";
 const privacyTitle = "Privacy policy and data practices";
 
 export const metadata = pageMetadata({
@@ -53,10 +53,10 @@ export default function PrivacyPage() {
           <div className="typeset measure text-muted-foreground">
             <h2>Scope</h2>
             <p>
-              This policy covers Blode.md, the docs platform at blode.md, and
-              the CLI that publishes to it. It applies when you sign in with
-              GitHub, connect a repository, or use the hosted service. For how
-              we protect the platform itself, see our{" "}
+              This policy covers Edda, the docs platform at blode.md, and the
+              CLI that publishes to it. It applies when you sign in with GitHub,
+              connect a repository, or use the hosted service. For how we
+              protect the platform itself, see our{" "}
               <Link className="underline underline-offset-4" href="/security">
                 security page
               </Link>

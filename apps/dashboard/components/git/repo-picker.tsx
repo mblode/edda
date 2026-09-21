@@ -159,7 +159,7 @@ const ConfigureRepoCard = ({
           />
           <FieldDescription>
             Must contain <code>docs.json</code>. Create one with{" "}
-            <code>blodemd new docs</code>.
+            <code>edda new docs</code>.
           </FieldDescription>
         </Field>
       </FieldGroup>
@@ -519,8 +519,8 @@ export const RepoPicker = ({
 
         {repos?.length === 0 && (
           <p className="text-sm text-muted-foreground">
-            The Blode.md app isn&apos;t installed on any repos in this account
-            yet. Add at least one in GitHub and refresh.
+            The Edda app isn&apos;t installed on any repos in this account yet.
+            Add at least one in GitHub and refresh.
           </p>
         )}
 

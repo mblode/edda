@@ -76,7 +76,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
               href="/app"
               className="text-base font-semibold tracking-tight"
             >
-              blode.md
+              Edda
             </Link>
             <nav className="flex items-center gap-4 text-sm text-muted-foreground">
               <Link href="/app" className="hover:text-foreground">

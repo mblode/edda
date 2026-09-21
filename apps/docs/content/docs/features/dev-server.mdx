@@ -1,14 +1,14 @@
 ---
 title: Local development
-description: Run blodemd dev to preview your documentation locally at localhost with hot reload, matching the deployed site as you edit MDX and docs.json.
+description: Run edda dev to preview your documentation locally at localhost with hot reload, matching the deployed site as you edit MDX and docs.json.
 ---
 
-The `blodemd dev` command starts a local preview server that renders your documentation exactly as it appears when deployed. Changes to your content and configuration are reflected in real time.
+The `edda dev` command starts a local preview server that renders your documentation exactly as it appears when deployed. Changes to your content and configuration are reflected in real time.
 
 ## Start the dev server
 
 ```bash
-blodemd dev
+edda dev
 ```
 
 This starts the server at `http://localhost:3030` and opens it in your default browser.
@@ -39,15 +39,15 @@ This starts the server at `http://localhost:3030` and opens it in your default b
 
 <CodeGroup>
 ```bash title="Custom port"
-blodemd dev -p 4000
+edda dev -p 4000
 ```
 
 ```bash title="Specific directory"
-blodemd dev -d ./my-docs
+edda dev -d ./my-docs
 ```
 
 ```bash title="No browser"
-blodemd dev --no-open
+edda dev --no-open
 ```
 
 </CodeGroup>

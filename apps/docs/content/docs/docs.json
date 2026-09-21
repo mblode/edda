@@ -1,8 +1,8 @@
 {
   "$schema": "https://blode.md/docs.json",
-  "name": "Blode.md",
+  "name": "Edda",
   "slug": "docs",
-  "description": "Blode.md: git-native docs, published on merge. Write MDX in the repo, review it in the pull request, and the merge publishes the site.",
+  "description": "Edda: git-native docs, published on merge. Write MDX in the repo, review it in the pull request, and the merge publishes the site.",
   "favicon": "icon0.svg",
   "seo": {
     "siteUrl": "https://blode.md/docs"
@@ -22,11 +22,11 @@
     "links": [
       {
         "label": "Website",
-        "href": "https://blode.md"
+        "href": "https://blode.co/edda"
       },
       {
         "label": "Pricing",
-        "href": "https://blode.md/pricing"
+        "href": "https://blode.co/edda"
       },
       {
         "label": "GitHub",

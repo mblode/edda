@@ -5,9 +5,9 @@ import type { Command } from "commander";
 import { resolveApiKeyCredential, resolveAuthToken } from "../auth-session.js";
 import { reportCommandError } from "../command-utils.js";
 import {
-  BLODE_API_KEY_ENV,
-  BLODE_API_URL_ENV,
   DEFAULT_API_URL,
+  readApiUrlEnv,
+  resolveApiKeyEnvName,
 } from "../constants.js";
 import { CliError, ERROR_CODES, EXIT_CODES } from "../errors.js";
 import { requestJson } from "../http.js";
@@ -36,7 +36,7 @@ const listProjects = async (
       throw new CliError(
         "Your stored session was rejected.",
         EXIT_CODES.AUTH_REQUIRED,
-        'Run "blodemd login" to re-authenticate.',
+        'Run "edda login" to re-authenticate.',
         { code: ERROR_CODES.AUTH_REQUIRED, status: error.status }
       );
     }
@@ -48,14 +48,17 @@ export const registerProjectsCommand = (program: Command): void => {
   program
     .command("projects")
     .description("List your projects")
-    .option("--api-key <token>", "API key (env: BLODEMD_API_KEY)")
-    .option("--api-url <url>", "API URL (env: BLODEMD_API_URL)")
+    .option(
+      "--api-key <token>",
+      "API key (env: EDDA_API_KEY or BLODEMD_API_KEY)"
+    )
+    .option("--api-url <url>", "API URL (env: EDDA_API_URL or BLODEMD_API_URL)")
     .option("--json", "output machine-readable JSON (implies non-interactive)")
     .action(
       async (options: { apiKey?: string; apiUrl?: string; json?: boolean }) => {
         const reporter = createReporter({ json: options.json });
         if (reporter.interactive) {
-          intro(chalk.bold("blodemd projects"));
+          intro(chalk.bold("edda projects"));
         }
 
         try {
@@ -64,11 +67,13 @@ export const registerProjectsCommand = (program: Command): void => {
           // API key wins we say so instead of quietly listing the session's
           // projects as if the key were in use.
           if (resolveApiKeyCredential(options.apiKey)) {
-            const origin = options.apiKey ? "--api-key" : BLODE_API_KEY_ENV;
+            const origin = options.apiKey
+              ? "--api-key"
+              : (resolveApiKeyEnvName() ?? "EDDA_API_KEY");
             throw new CliError(
               `An API key from ${origin} takes precedence here, and project-scoped API keys cannot list projects.`,
               EXIT_CODES.AUTH_REQUIRED,
-              `Unset ${BLODE_API_KEY_ENV} (or drop --api-key) and run "blodemd login" to list projects.`,
+              `Unset ${origin} (or drop --api-key) and run "edda login" to list projects.`,
               { code: ERROR_CODES.PERMISSION_DENIED }
             );
           }
@@ -76,14 +81,13 @@ export const registerProjectsCommand = (program: Command): void => {
           const resolved = await resolveAuthToken();
           if (!resolved?.token) {
             throw new CliError(
-              'Run "blodemd login" to list your projects. API keys cannot list projects.',
+              'Run "edda login" to list your projects. API keys cannot list projects.',
               EXIT_CODES.AUTH_REQUIRED,
-              'Run "blodemd login" to authenticate.'
+              'Run "edda login" to authenticate.'
             );
           }
 
-          const apiUrl =
-            options.apiUrl ?? process.env[BLODE_API_URL_ENV] ?? DEFAULT_API_URL;
+          const apiUrl = options.apiUrl ?? readApiUrlEnv() ?? DEFAULT_API_URL;
 
           const projects = await listProjects(apiUrl, resolved.token);
 

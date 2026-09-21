@@ -184,7 +184,7 @@ describe("projects", () => {
       new CliError(
         "Failed to list projects: 401 {}",
         EXIT_CODES.AUTH_REQUIRED,
-        'Run "blodemd login", or set BLODEMD_API_KEY.',
+        'Run "edda login", or set EDDA_API_KEY.',
         { code: ERROR_CODES.AUTH_REQUIRED, status: 401 }
       )
     );
@@ -195,7 +195,7 @@ describe("projects", () => {
     expect(payload.code).toBe(ERROR_CODES.AUTH_REQUIRED);
     expect(payload.status).toBe(401);
     expect(payload.message).toBe("Your stored session was rejected.");
-    expect(payload.hint).toBe('Run "blodemd login" to re-authenticate.');
+    expect(payload.hint).toBe('Run "edda login" to re-authenticate.');
     expect(exitCode).toBe(EXIT_CODES.AUTH_REQUIRED);
   });
 });

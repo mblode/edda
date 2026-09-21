@@ -149,7 +149,7 @@ const main = async () => {
     additionalProperties: false,
     definitions: source.definitions,
     description:
-      "Schema for Blode.md docs.json configuration files. Derived from the vendored Mintlify schema and pruned to the supported Blode.md surface.",
+      "Schema for Edda docs.json configuration files. Derived from the vendored Mintlify schema and pruned to the supported Edda surface.",
     properties,
     required: ["name", "navigation"],
     type: "object",

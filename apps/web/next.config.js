@@ -160,6 +160,33 @@ const nextConfig = {
   },
   partialPrefetching: true,
   reactCompiler: true,
+  // Production apex marketing → https://blode.co/edda. Host-conditional so
+  // localhost and preview deployments still render the pages. Product paths
+  // (/docs, /app, /oauth, /api, /sites, /.well-known, /llms*, /mcp, legal)
+  // stay on blode.md.
+  redirects() {
+    const marketingHome = "https://blode.co/edda";
+    const sources = [
+      "/",
+      "/about",
+      "/blog",
+      "/blog/:path*",
+      "/changelog",
+      "/compare/mintlify",
+      "/docs-as-code",
+      "/free-online-llms-txt-resources",
+      "/pricing",
+    ];
+    const hosts = ["blode.md", "www.blode.md"];
+    return hosts.flatMap((host) =>
+      sources.map((source) => ({
+        destination: marketingHome,
+        has: [{ type: "host", value: host }],
+        source,
+        statusCode: 301,
+      }))
+    );
+  },
   rewrites() {
     return {
       // afterFiles: filesystem routes like /robots.txt win first. IndexNow

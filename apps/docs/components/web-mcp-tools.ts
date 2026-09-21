@@ -22,13 +22,13 @@ interface NavigatorModelContext {
 const buildTools = (): WebMCPTool[] => [
   {
     description:
-      "Return the shell command that scaffolds a new Blode.md docs site with the given project slug.",
+      "Return the shell command that scaffolds a new Edda docs site with the given project slug.",
     execute: async ({ slug, template }) => {
       const projectSlug = typeof slug === "string" && slug ? slug : "my-docs";
       const variant =
         template === "starter" || template === "minimal" ? template : "minimal";
       return {
-        command: `npx blodemd new docs --slug ${projectSlug} --template ${variant} -y`,
+        command: `npx edda-docs new docs --slug ${projectSlug} --template ${variant} -y`,
       };
     },
     inputSchema: {
@@ -46,18 +46,18 @@ const buildTools = (): WebMCPTool[] => [
       required: ["slug"],
       type: "object",
     },
-    name: "blodemd_scaffold_command",
+    name: "edda_scaffold_command",
   },
   {
     description:
-      "Return the shell command that deploys a local Blode.md docs directory to the given project.",
+      "Return the shell command that deploys a local Edda docs directory to the given project.",
     execute: async ({ directory, project }) => {
       const dir =
         typeof directory === "string" && directory ? directory : "docs";
       const projectSlug =
         typeof project === "string" && project ? project : "my-docs";
       return {
-        command: `npx blodemd push ${dir} --project ${projectSlug}`,
+        command: `npx edda-docs push ${dir} --project ${projectSlug}`,
       };
     },
     inputSchema: {
@@ -68,17 +68,17 @@ const buildTools = (): WebMCPTool[] => [
           type: "string",
         },
         project: {
-          description: "Target Blode.md project slug.",
+          description: "Target Edda project slug.",
           type: "string",
         },
       },
       required: ["project"],
       type: "object",
     },
-    name: "blodemd_deploy_command",
+    name: "edda_deploy_command",
   },
   {
-    description: "Open the Blode.md dashboard in the current tab.",
+    description: "Open the Edda dashboard in the current tab.",
     execute: async () => {
       if (typeof window !== "undefined") {
         window.location.assign("/app");
@@ -90,7 +90,7 @@ const buildTools = (): WebMCPTool[] => [
       properties: {},
       type: "object",
     },
-    name: "blodemd_open_dashboard",
+    name: "edda_open_dashboard",
   },
 ];
 

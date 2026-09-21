@@ -4,7 +4,7 @@ sidebarTitle: Analytics
 description: Connect your own PostHog project key in the dashboard to load analytics on every tenant docs page, with an optional EU host and no content wiring.
 ---
 
-Blode.md does not ship a proprietary analytics tool. Instead, we inject the analytics you already trust: PostHog: into every page of your tenant docs. Paste your key into the dashboard, and the script loads on the next request. There is nothing to wire up in your content.
+Edda does not ship a proprietary analytics tool. Instead, we inject the analytics you already trust: PostHog: into every page of your tenant docs. Paste your key into the dashboard, and the script loads on the next request. There is nothing to wire up in your content.
 
 ## Add PostHog
 
@@ -24,18 +24,18 @@ PostHog only loads when `VERCEL_ENV === "production"`, so local dev previews and
 
 <Callout type="info">
   PostHog project keys are public client-side tokens: they are designed to be
-  shipped to the browser. Blode.md treats them as tenant configuration, not
-  secrets, and surfaces them in the dashboard as-is.
+  shipped to the browser. Edda treats them as tenant configuration, not secrets,
+  and surfaces them in the dashboard as-is.
 </Callout>
 
 ## Managing from the CLI
 
-The same config is available through `blodemd analytics`:
+The same config is available through `edda analytics`:
 
 ```bash
-blodemd analytics get --project my-docs
-blodemd analytics set posthog phc_abc... --host https://eu.i.posthog.com --project my-docs
-blodemd analytics unset posthog --project my-docs
+edda analytics get --project my-docs
+edda analytics set posthog phc_abc... --host https://eu.i.posthog.com --project my-docs
+edda analytics unset posthog --project my-docs
 ```
 
 See the [CLI reference](/cli/analytics) for all options.

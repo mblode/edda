@@ -21,7 +21,7 @@ Job of the page: decide.
 | Title                   | Docs as code: MDX in git, published on merge                                                                                                                                                                                         |
 | H1                      | Docs as code, hosted                                                                                                                                                                                                                 |
 | Meta description        | Keep docs as MDX in the repo, review them in the pull request, and let the merge publish the site plus the Markdown agents read.                                                                                                     |
-| Canonical               | https://blode.md/docs-as-code                                                                                                                                                                                                        |
+| Canonical               | https://blode.co/edda                                                                                                                                                                                                                |
 
 ## North star
 
@@ -58,7 +58,7 @@ Evaluator questions first, product-specific after.
 - https://llmstxt.org/
 - https://developers.google.com/search/docs/crawling-indexing/robots/robots_txt
 - https://blode.md/docs/how-it-works
-- https://blode.md/compare/mintlify
+- https://blode.co/edda
 
 ## Evidence
 

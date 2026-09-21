@@ -28,12 +28,12 @@ if (!shouldPackage && !isGlobalInstall) {
   process.exit(0);
 }
 
-console.log("Preparing blodemd package...");
+console.log("Preparing edda-docs package...");
 
 // Build @repo/* workspace packages first so tsdown can inline their dist/
 // output into the CLI bundle. Without this, tsdown falls back to treating
 // `@repo/common` etc. as external imports and the published tarball ships
-// unresolved imports that break `npx blodemd`.
+// unresolved imports that break `npx edda-docs`.
 console.log("Building @repo packages...");
 for (const pkg of REPO_PACKAGES) {
   execSync("npm run build", {

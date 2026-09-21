@@ -9,12 +9,11 @@ import {
   reportCommandError,
 } from "../command-utils.js";
 import {
-  BLODE_API_KEY_ENV,
-  BLODE_API_URL_ENV,
-  BLODE_BRANCH_ENV,
-  BLODE_COMMIT_MESSAGE_ENV,
-  BLODE_PROJECT_ENV,
   DEFAULT_API_URL,
+  readApiUrlEnv,
+  readBranchEnv,
+  readCommitMessageEnv,
+  readProjectEnv,
 } from "../constants.js";
 import { resolveDocsRoot } from "../dev/resolve-root.js";
 import { CliError, EXIT_CODES } from "../errors.js";
@@ -98,7 +97,7 @@ export const buildDryRunPayload = (input: {
 });
 
 // Resolve auth in the documented order: --api-key flag, BLODEMD_API_KEY env,
-// then stored `blodemd login` credentials. A project-scoped deploy key and a
+// then stored `edda login` credentials. A project-scoped deploy key and a
 // stored session both authenticate via a bearer token; only sessions may
 // auto-create projects.
 const resolveAuthHeaders = async (
@@ -115,7 +114,7 @@ const resolveAuthHeaders = async (
   const resolved = await resolveAuthToken();
   if (!resolved?.token) {
     throw new Error(
-      'Not logged in. Run "blodemd login" to authenticate, pass --api-key, or set BLODEMD_API_KEY (see https://blode.md/docs/deployment/ci).'
+      'Not logged in. Run "edda login" to authenticate, pass --api-key, or set EDDA_API_KEY (see https://blode.md/docs/deployment/ci).'
     );
   }
 
@@ -134,25 +133,24 @@ const resolvePushTarget = (
   const { project, usedLegacyNameFallback } = resolveProjectTarget({
     cliProject: options.project,
     config,
-    envProject: process.env[BLODE_PROJECT_ENV],
+    envProject: readProjectEnv(),
   });
-  const apiUrl =
-    options.apiUrl ?? process.env[BLODE_API_URL_ENV] ?? DEFAULT_API_URL;
+  const apiUrl = options.apiUrl ?? readApiUrlEnv() ?? DEFAULT_API_URL;
 
   const branch =
     options.branch ??
-    process.env[BLODE_BRANCH_ENV] ??
+    readBranchEnv() ??
     process.env.GITHUB_REF_NAME ??
     readGitValue(["rev-parse", "--abbrev-ref", "HEAD"]) ??
     "main";
   const commitMessage =
     options.message ??
-    process.env[BLODE_COMMIT_MESSAGE_ENV] ??
+    readCommitMessageEnv() ??
     readGitValue(["log", "-1", "--pretty=%s"]);
 
   if (!project) {
     throw new Error(
-      'Missing project slug. Set "slug" in docs.json, pass --project, or set BLODEMD_PROJECT.'
+      'Missing project slug. Set "slug" in docs.json, pass --project, or set EDDA_PROJECT.'
     );
   }
 
@@ -160,7 +158,7 @@ const resolvePushTarget = (
   if (projectSlugError) {
     if (usedLegacyNameFallback) {
       throw new Error(
-        `docs.json.name is not a valid deployment slug. Add "slug" to docs.json, pass --project, or set BLODEMD_PROJECT. ${projectSlugError}`
+        `docs.json.name is not a valid deployment slug. Add "slug" to docs.json, pass --project, or set EDDA_PROJECT. ${projectSlugError}`
       );
     }
 
@@ -190,7 +188,7 @@ const autoCreateProject = async (params: {
 
   if (!canAutoCreate) {
     throw new Error(
-      `Project "${project}" not found. Create it at blode.md or login with "blodemd login" to auto-create.`
+      `Project "${project}" not found. Create it at blode.md or login with "edda login" to auto-create.`
     );
   }
 
@@ -199,7 +197,7 @@ const autoCreateProject = async (params: {
   // terminal on stdin and stdout. Otherwise fail deterministically.
   if (!(yes || canPromptForConfirmation(reporter.interactive))) {
     throw new Error(
-      `Project "${project}" not found. Create it in the dashboard, re-run with --yes to create it automatically, or run \`blodemd push\` in an interactive terminal.`
+      `Project "${project}" not found. Create it in the dashboard, re-run with --yes to create it automatically, or run \`edda push\` in an interactive terminal.`
     );
   }
 
@@ -241,7 +239,7 @@ const autoCreateProject = async (params: {
   );
 
   reporter.info(
-    `Deploy key created (save this — shown once, use as ${BLODE_API_KEY_ENV} in CI): ${chalk.cyan(keyResult.key)}`
+    `Deploy key created (save this — shown once, use as EDDA_API_KEY in CI): ${chalk.cyan(keyResult.key)}`
   );
   return true;
 };
@@ -456,11 +454,23 @@ export const registerPushCommand = (program: Command): void => {
     .command("push")
     .description("Deploy docs")
     .argument("[dir]", "docs directory")
-    .option("--project <slug>", "project slug (env: BLODEMD_PROJECT)")
-    .option("--api-key <token>", "API key (env: BLODEMD_API_KEY)")
-    .option("--api-url <url>", "API URL (env: BLODEMD_API_URL)")
-    .option("--branch <name>", "git branch (env: BLODEMD_BRANCH)")
-    .option("--message <msg>", "deploy message (env: BLODEMD_COMMIT_MESSAGE)")
+    .option(
+      "--project <slug>",
+      "project slug (env: EDDA_PROJECT or BLODEMD_PROJECT)"
+    )
+    .option(
+      "--api-key <token>",
+      "API key (env: EDDA_API_KEY or BLODEMD_API_KEY)"
+    )
+    .option("--api-url <url>", "API URL (env: EDDA_API_URL or BLODEMD_API_URL)")
+    .option(
+      "--branch <name>",
+      "git branch (env: EDDA_BRANCH or BLODEMD_BRANCH)"
+    )
+    .option(
+      "--message <msg>",
+      "deploy message (env: EDDA_COMMIT_MESSAGE or BLODEMD_COMMIT_MESSAGE)"
+    )
     .option(
       "--dry-run",
       "preview only: report the target project, branch, and file count, then exit without writing anything"
@@ -474,7 +484,7 @@ export const registerPushCommand = (program: Command): void => {
     .action(async (dir: string | undefined, options: PushOptions) => {
       const reporter = createReporter({ json: options.json });
       if (reporter.interactive) {
-        intro(chalk.bold("blodemd push"));
+        intro(chalk.bold("edda push"));
       }
 
       try {

@@ -1,6 +1,6 @@
-# Carol — Blode.md
+# Carol — Edda
 
-Carol is the **hypothesized** ideal customer for Blode.md. Definition first. Keystones, deal-breakers, and inciting events below are the working files this synthesizes. Evidence is the public product record plus hypothesized triggers; no customer interviews yet. Until those exist, the about page speaks first-person as the founder (the first Carol), and the homepage does not treat hypothesized inciting events as observed commiseration.
+Carol is the **hypothesized** ideal customer for Edda. Definition first. Keystones, deal-breakers, and inciting events below are the working files this synthesizes. Evidence is the public product record plus hypothesized triggers; no customer interviews yet. Until those exist, the about page speaks first-person as the founder (the first Carol), and the homepage does not treat hypothesized inciting events as observed commiseration.
 
 This file is whose stack `NEEDS-STACK.md` belongs to, and whose language `POSITIONING.md` must speak.
 

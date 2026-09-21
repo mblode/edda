@@ -23,11 +23,11 @@ const glideMono = localFont({
 });
 
 export const metadata: Metadata = {
-  description: "Blode.md dashboard and authentication.",
+  description: "Edda dashboard and authentication.",
   other: {
-    "apple-mobile-web-app-title": "Blode.md",
+    "apple-mobile-web-app-title": "Edda",
   },
-  title: "Blode.md",
+  title: "Edda",
 };
 
 export const viewport: Viewport = {

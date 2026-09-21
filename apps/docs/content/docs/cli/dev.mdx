@@ -1,16 +1,16 @@
 ---
-title: blodemd dev
-description: Start a local Blode.md preview server with hot reload so you can write MDX and see production-quality docs update as you save.
+title: edda dev
+description: Start a local Edda preview server with hot reload so you can write MDX and see production-quality docs update as you save.
 ---
 
-Run the full Blode.md rendering engine locally so you can preview your documentation as you write.
+Run the full Edda rendering engine locally so you can preview your documentation as you write.
 
-Start `blodemd dev` while editing MDX so you see the same components, navigation, and search behavior as production. The file watcher reloads content changes automatically, and updates to `docs.json` trigger a full reload so sidebar and branding changes show up immediately.
+Start `edda dev` while editing MDX so you see the same components, navigation, and search behavior as production. The file watcher reloads content changes automatically, and updates to `docs.json` trigger a full reload so sidebar and branding changes show up immediately.
 
-A common loop: run `blodemd validate` once after editing config, then `blodemd dev` and keep the preview open while you write. When pages look right locally, deploy with `blodemd push`. If the server fails to start, check that `docs.json` exists (run `blodemd new` if you are starting from scratch).
+A common loop: run `edda validate` once after editing config, then `edda dev` and keep the preview open while you write. When pages look right locally, deploy with `edda push`. If the server fails to start, check that `docs.json` exists (run `edda new` if you are starting from scratch).
 
 ```bash
-blodemd dev
+edda dev
 ```
 
 ## How it works
@@ -28,7 +28,7 @@ The dev server starts a local Next.js instance that renders your documentation w
     },
     "-d, --dir <dir>": {
       description:
-        "Path to the docs directory containing docs.json. Uses the same resolution logic as blodemd push if omitted.",
+        "Path to the docs directory containing docs.json. Uses the same resolution logic as edda push if omitted.",
       type: "string",
     },
     "--no-open": {
@@ -44,15 +44,15 @@ The dev server starts a local Next.js instance that renders your documentation w
 
 <CodeGroup>
 ```bash title="Start with defaults"
-blodemd dev
+edda dev
 ```
 
 ```bash title="Custom port"
-blodemd dev --port 4000
+edda dev --port 4000
 ```
 
 ```bash title="Specific directory, no browser"
-blodemd dev --dir ./my-docs --no-open
+edda dev --dir ./my-docs --no-open
 ```
 
 </CodeGroup>
@@ -65,12 +65,12 @@ The dev server watches all files in your docs directory for changes:
 - **Config changes** (`docs.json`) trigger a full server reload to pick up navigation, branding, and API config updates.
 
 <Callout type="info">
-  The dev server requires a valid `docs.json` in your docs directory. Run
-  `blodemd new` first if you are starting from scratch.
+  The dev server requires a valid `docs.json` in your docs directory. Run `edda
+  new` first if you are starting from scratch.
 </Callout>
 
 ## Related pages
 
-- [blodemd validate](/cli/validate) -- check docs.json before starting the dev server
-- [blodemd push](/cli/push) -- publish after local preview looks correct
-- [blodemd new](/cli/new) -- scaffold the docs directory dev expects
+- [edda validate](/cli/validate) -- check docs.json before starting the dev server
+- [edda push](/cli/push) -- publish after local preview looks correct
+- [edda new](/cli/new) -- scaffold the docs directory dev expects

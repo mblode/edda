@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { marketingUrl } from "@/lib/marketing-site";
+import { platformUrl } from "@/lib/marketing-site";
 
 import { CONTENT_SIGNAL, GET } from "./route";
 
@@ -19,8 +19,8 @@ describe("marketing robots.txt", () => {
     expect(body).toContain("Disallow: /oauth");
     expect(body).toContain(`# Content-Signal: ${CONTENT_SIGNAL}`);
     expect(body).not.toMatch(/^Content-Signal:/m);
-    expect(body).toContain(`Sitemap: ${marketingUrl("/sitemap.xml")}`);
-    expect(body).toContain(`Sitemap: ${marketingUrl("/docs/sitemap.xml")}`);
+    expect(body).toContain(`Sitemap: ${platformUrl("/sitemap.xml")}`);
+    expect(body).toContain(`Sitemap: ${platformUrl("/docs/sitemap.xml")}`);
     expect(body).not.toContain("User-agent: GPTBot");
     expect(body.match(/^User-agent: \*$/gm)).toHaveLength(1);
   });

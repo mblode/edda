@@ -7,7 +7,7 @@ const metadata = {
   bearer_methods_supported: ["header"],
   resource: marketingUrl("/api"),
   resource_documentation: marketingUrl("/docs/api/overview"),
-  resource_name: "Blode.md API",
+  resource_name: "Edda API",
   scopes_supported: [
     "projects:read",
     "projects:write",

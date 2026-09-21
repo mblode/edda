@@ -15,8 +15,8 @@ import {
 } from "@/lib/structured-data";
 
 const aboutDescription =
-  "Matthew Blode built Blode.md to keep docs in git. No second editor, no marketplace. Hosted is $0. MIT if you run it yourself.";
-const aboutTitle = "About the Blode.md docs platform";
+  "Matthew Blode built Edda to keep docs in git. No second editor, no marketplace. Hosted is $0. MIT if you run it yourself.";
+const aboutTitle = "About the Edda docs platform";
 
 export const metadata = pageMetadata({
   description: aboutDescription,
@@ -54,9 +54,9 @@ export default function AboutPage() {
             I will not ship a second editor.
           </h1>
           <p className="measure mt-6 text-balance text-lg text-muted-foreground md:text-xl">
-            I built Blode.md so docs stay in the repo, in the editor I already
-            use. The pull request is the review. The merge publishes the site.
-            How agents find that Markdown on the open web is covered in our{" "}
+            I built Edda so docs stay in the repo, in the editor I already use.
+            The pull request is the review. The merge publishes the site. How
+            agents find that Markdown on the open web is covered in our{" "}
             <Link
               className="underline underline-offset-4"
               href="/free-online-llms-txt-resources"
@@ -109,7 +109,7 @@ export default function AboutPage() {
                   className="underline underline-offset-4"
                   href="/blog/intro-to-blode-md"
                 >
-                  Hello, Blode.md
+                  Hello, Edda
                 </Link>
                 .
               </p>
@@ -124,7 +124,7 @@ export default function AboutPage() {
             <div>
               <h3 className="h-display font-bold text-xl">Who built it</h3>
               <p className="mt-3 text-muted-foreground">
-                Blode.md is built by{" "}
+                Edda is built by{" "}
                 <a
                   className="underline underline-offset-4"
                   href={siteConfig.links.author}

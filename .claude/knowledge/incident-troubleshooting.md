@@ -30,19 +30,19 @@ If steps 1–3 are healthy but the canonical URL is stale: step 4 is broken.
    ```bash
    cd apps/api
    vercel env rm DOCS_REVALIDATE_URL production --yes
-   echo "https://blode.md" | vercel env add DOCS_REVALIDATE_URL production
+   echo "https://blode.co/edda" | vercel env add DOCS_REVALIDATE_URL production
    ```
 2. **Redeploy the API** so the new value is live: `vercel --prod --yes`.
 3. **Bust the stale HTML** without waiting 1h:
-   - Either re-run `blodemd push --project <slug>` (easiest; exercises the full path),
+   - Either re-run `edda push --project <slug>` (easiest; exercises the full path),
    - Or POST directly to `https://blode.md/api/revalidate` with `{"secret": "$REVALIDATE_SECRET", "paths": ["/sites/<slug>"], "tags": ["project:<slug>"]}`.
 4. Verify: `curl -s https://<slug>.blode.md | grep -oE 'Welcome|Unpublished'`.
 
 ### Gotchas when redeploying via the CLI from this monorepo
 
 - `vercel` CLI deployed from `apps/docs/` uploads only that subtree, so workspace packages (`@repo/*`) fail to resolve during build. Always deploy via `git push` (triggers Vercel's git integration from the repo root) unless you have a specific reason not to.
-- The `blodemd-docs` project at one point had `installCommand` set to `null` (vs `npm install --ignore-scripts` at the repo `vercel.json`) — CLI deploys from `apps/docs` lose the repo-root `vercel.json`. If a CLI deploy fails with `Missing \`packageManager\` field`, this is why.
-- `REVALIDATE_SECRET` is stored as a **Sensitive** env var — it's never returned by `vercel env pull` or the Vercel API. If you lose it, you must rotate it on both `blodemd-api` and `blodemd-docs` together and redeploy both in lock-step.
+- The `edda-docs` project at one point had `installCommand` set to `null` (vs `npm install --ignore-scripts` at the repo `vercel.json`) — CLI deploys from `apps/docs` lose the repo-root `vercel.json`. If a CLI deploy fails with `Missing \`packageManager\` field`, this is why.
+- `REVALIDATE_SECRET` is stored as a **Sensitive** env var — it's never returned by `vercel env pull` or the Vercel API. If you lose it, you must rotate it on both `edda-api` and `edda-docs` together and redeploy both in lock-step.
 
 ### Related code
 

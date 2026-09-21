@@ -1,13 +1,14 @@
 {
-  "name": "blodemd",
+  "name": "edda-docs",
   "version": "0.2.2",
-  "description": "Blode.md CLI: git-native docs, published on merge",
+  "description": "Edda CLI: git-native docs, published on merge",
   "repository": {
     "type": "git",
     "url": "https://github.com/mblode/blodemd"
   },
   "bin": {
-    "blodemd": "./dist/cli.mjs"
+    "blodemd": "./dist/cli.mjs",
+    "edda": "./dist/cli.mjs"
   },
   "files": [
     "dist"

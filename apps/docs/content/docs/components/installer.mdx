@@ -7,27 +7,27 @@ Use the `Installer` component to show a copyable installation command in a style
 
 Place an `Installer` near the top of quickstart and onboarding pages so readers can install the CLI before they run other commands. The built-in copy button means they do not need to select text from a plain code block. If your docs cover multiple package managers, pass a custom `command` prop or pair this component with [Code group](/components/code-group) for npm, pnpm, and yarn variants on the same page.
 
-A typical getting started flow: show the install command, link to [CLI overview](/cli/overview), then walk through `blodemd new` and `blodemd dev`. On the CLI overview page itself, `Installer` renders the global install command with one line of MDX.
+A typical getting started flow: show the install command, link to [CLI overview](/cli/overview), then walk through `edda new` and `edda dev`. On the CLI overview page itself, `Installer` renders the global install command with one line of MDX.
 
 ## Basic usage
 
 Pass a `command` prop with the full install command:
 
 ```mdx
-<Installer path="blodemd" command="npm install blodemd" />
+<Installer path="edda-docs" command="npm install edda-docs" />
 ```
 
-<Installer path="blodemd" command="npm install blodemd" />
+<Installer path="edda-docs" command="npm install edda-docs" />
 
 ## Default command
 
 If you omit the `command` prop, a default command is generated from the `path` value:
 
 ```mdx
-<Installer path="blodemd" />
+<Installer path="edda-docs" />
 ```
 
-<Installer path="blodemd" />
+<Installer path="edda-docs" />
 
 ## Props
 

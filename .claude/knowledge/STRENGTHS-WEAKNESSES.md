@@ -1,4 +1,4 @@
-# Strengths & Weaknesses — Blode.md
+# Strengths & Weaknesses — Edda
 
 Distilled from `.claude/knowledge/OBSERVATIONS.md`. Attributes classified with the two-question rubric. Evidence is the public product record; there are no customer-interview citations.
 
@@ -18,7 +18,7 @@ Rubric: 1b — some buyers will only run software they can inspect and host; the
 **S4.** On every deploy the site emits `llms.txt`, `llms-full.txt`, and per-page `.md` from the same MDX humans browse. [O5, O25]
 Rubric: 1b — the product treats agent-readable Markdown as a publish output, not a hand-maintained extra file.
 
-**S5.** Two publish paths: `blodemd push` after GitHub browser login, and a GitHub App that deploys on push to `main`. CI uses a project-scoped deploy key. [O4]
+**S5.** Two publish paths: `edda push` after GitHub browser login, and a GitHub App that deploys on push to `main`. CI uses a project-scoped deploy key. [O4]
 Rubric: 1a — git-native teams already expect this shape; the CLI is the path that does not require a workflow file for local deploys.
 
 **S6.** `/docs` can be proxied onto the customer's existing domain. Homepage ships paste-ready Vercel, Cloudflare, Nginx, and Caddy configs. [O6]

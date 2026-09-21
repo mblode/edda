@@ -1,12 +1,12 @@
 ---
 title: Docs for agents
 sidebarTitle: Docs for agents
-description: What Blode.md publishes for AI agents on every deploy (llms.txt, llms-full.txt, per-page Markdown, discovery headers) and what to write so an agent finds the right page first time.
+description: What Edda publishes for AI agents on every deploy (llms.txt, llms-full.txt, per-page Markdown, discovery headers) and what to write so an agent finds the right page first time.
 ---
 
 In 2026, agents became the majority reader of documentation. Mintlify's [2026 State of Knowledge Report](https://www.mintlify.com/state-of-knowledge/2026) counted 257 million agent requests against 131 million human page loads across its hosted docs in August 2026, and 83% of that agent traffic arrived through machine-friendly routes: a `.md` version of a page, an `llms.txt` index, or an agent skill. Agents request those routes only when they know they exist.
 
-Blode.md publishes every one of them from the same deploy as the HTML, so what an agent reads is what you merged. This page lists what ships, why the index matters more than the Markdown, and the few things you control from `docs.json` and frontmatter.
+Edda publishes every one of them from the same deploy as the HTML, so what an agent reads is what you merged. This page lists what ships, why the index matters more than the Markdown, and the few things you control from `docs.json` and frontmatter.
 
 ## What every deploy publishes
 
@@ -34,7 +34,7 @@ Mintlify's report ran 2,400 controlled tasks across 20 documentation sites with 
 
 Converting a page to Markdown strips the sidebar along with the chrome, so an agent that lands on a bare `.md` file guesses sibling URLs that do not exist. A single link to the index removed most of those guesses, and the same runs used 26 to 60% fewer tokens than HTML.
 
-Every Blode.md Markdown twin therefore opens with a blockquote that names the HTML page and the index before the content starts:
+Every Edda Markdown twin therefore opens with a blockquote that names the HTML page and the index before the content starts:
 
 ```md
 > ## Documentation Index
@@ -59,7 +59,7 @@ description: Quotas per API key, the RateLimit headers on every response, and ho
 ---
 ```
 
-`blodemd validate` warns when pages are missing a description.
+`edda validate` warns when pages are missing a description.
 
 ### Name and describe the site
 
@@ -91,4 +91,4 @@ Expect `200` on each, `Content-Type: text/markdown; charset=utf-8` on the `.md` 
 
 ## Measuring agent readership
 
-Client-side analytics cannot see agents. They fetch server-side and run no JavaScript, so [PostHog](/features/analytics) reports humans only, and a dashboard with no agent traffic proves nothing. Blode.md does not yet report agent fetches per site. If you need the number today, put a proxy you can log in front of the docs ([Vercel](/guides/proxy-vercel), [Cloudflare](/guides/proxy-cloudflare), [Nginx](/guides/proxy-nginx)) and count requests for `.md` URLs, `llms.txt`, and known AI user agents. Repeated 404s from those agents on plausible-looking paths are the navigation failure the report describes.
+Client-side analytics cannot see agents. They fetch server-side and run no JavaScript, so [PostHog](/features/analytics) reports humans only, and a dashboard with no agent traffic proves nothing. Edda does not yet report agent fetches per site. If you need the number today, put a proxy you can log in front of the docs ([Vercel](/guides/proxy-vercel), [Cloudflare](/guides/proxy-cloudflare), [Nginx](/guides/proxy-nginx)) and count requests for `.md` URLs, `llms.txt`, and known AI user agents. Repeated 404s from those agents on plausible-looking paths are the navigation failure the report describes.

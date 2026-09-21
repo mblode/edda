@@ -7,7 +7,7 @@ Use the `CodeGroup` component to show multiple related code blocks in a single t
 
 Use `CodeGroup` whenever readers need the same instruction in more than one form: package managers, programming languages, or shell variants. It keeps the page shorter than stacking separate code blocks and lets readers pick their stack without scrolling past irrelevant commands. Tab labels come from each fence's `title` attribute, so name tabs explicitly when two blocks share a language.
 
-On quickstart pages, a common pattern is a `CodeGroup` with npm, pnpm, and yarn install commands followed by `blodemd new`. For API reference pages, group Node.js, Python, and cURL examples so integrators can copy the sample that matches their backend.
+On quickstart pages, a common pattern is a `CodeGroup` with npm, pnpm, and yarn install commands followed by `edda new`. For API reference pages, group Node.js, Python, and cURL examples so integrators can copy the sample that matches their backend.
 
 ## Basic usage
 
@@ -16,15 +16,15 @@ Wrap two or more fenced code blocks inside `<CodeGroup>`. Each tab is labeled fr
 ```text
 <CodeGroup>
 &#96;&#96;&#96;bash title="npm"
-npm install blodemd
+npm install edda-docs
 &#96;&#96;&#96;
 
 &#96;&#96;&#96;bash title="pnpm"
-pnpm add blodemd
+pnpm add edda-docs
 &#96;&#96;&#96;
 
 &#96;&#96;&#96;bash title="yarn"
-yarn add blodemd
+yarn add edda-docs
 &#96;&#96;&#96;
 
 </CodeGroup>
@@ -32,15 +32,15 @@ yarn add blodemd
 
 <CodeGroup>
 ```bash title="npm"
-npm install blodemd
+npm install edda-docs
 ```
 
 ```bash title="pnpm"
-pnpm add blodemd
+pnpm add edda-docs
 ```
 
 ```bash title="yarn"
-yarn add blodemd
+yarn add edda-docs
 ```
 
 </CodeGroup>

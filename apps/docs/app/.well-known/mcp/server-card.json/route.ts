@@ -15,10 +15,10 @@ const serverCard = {
   documentation: marketingUrl("/docs/api/overview"),
   serverInfo: {
     description:
-      "Blode.md MCP server exposes docs content, site search, and deploy tooling to AI agents.",
-    name: "blodemd",
-    title: "Blode.md",
-    vendor: "Blode.md",
+      "Edda MCP server exposes docs content, site search, and deploy tooling to AI agents.",
+    name: "edda",
+    title: "Edda",
+    vendor: "Edda",
     version: siteConfig.version,
   },
   transport: {

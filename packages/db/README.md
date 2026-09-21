@@ -1,6 +1,6 @@
 # @repo/db
 
-Shared Drizzle ORM schema, migrations, and DAO layer for Blode.md.
+Shared Drizzle ORM schema, migrations, and DAO layer for Edda.
 
 ## Workflow
 

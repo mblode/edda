@@ -1,13 +1,64 @@
 import { homedir } from "node:os";
 import { join } from "node:path";
 
-const CLI_NAME = "blodemd";
+export const DEV_PACKAGE_NAME = "edda-docs-dev";
+const CONFIG_DIR_NAME = "blodemd";
 
-export const BLODE_API_URL_ENV = "BLODEMD_API_URL";
-export const BLODE_API_KEY_ENV = "BLODEMD_API_KEY";
-export const BLODE_PROJECT_ENV = "BLODEMD_PROJECT";
-export const BLODE_BRANCH_ENV = "BLODEMD_BRANCH";
-export const BLODE_COMMIT_MESSAGE_ENV = "BLODEMD_COMMIT_MESSAGE";
+const BLODE_API_URL_ENV = "BLODEMD_API_URL";
+const BLODE_API_KEY_ENV = "BLODEMD_API_KEY";
+const BLODE_PROJECT_ENV = "BLODEMD_PROJECT";
+const BLODE_BRANCH_ENV = "BLODEMD_BRANCH";
+const BLODE_COMMIT_MESSAGE_ENV = "BLODEMD_COMMIT_MESSAGE";
+const EDDA_API_URL_ENV = "EDDA_API_URL";
+const EDDA_API_KEY_ENV = "EDDA_API_KEY";
+const EDDA_PROJECT_ENV = "EDDA_PROJECT";
+const EDDA_BRANCH_ENV = "EDDA_BRANCH";
+const EDDA_COMMIT_MESSAGE_ENV = "EDDA_COMMIT_MESSAGE";
+
+const readFirstEnv = (...keys: string[]): string | undefined => {
+  for (const key of keys) {
+    const value = process.env[key]?.trim();
+    if (value) {
+      return value;
+    }
+  }
+  return undefined;
+};
+
+export const readApiUrlEnv = (): string | undefined =>
+  readFirstEnv(EDDA_API_URL_ENV, BLODE_API_URL_ENV);
+
+export const readApiKeyEnv = (): string | undefined =>
+  readFirstEnv(EDDA_API_KEY_ENV, BLODE_API_KEY_ENV);
+
+export const readProjectEnv = (): string | undefined =>
+  readFirstEnv(EDDA_PROJECT_ENV, BLODE_PROJECT_ENV);
+
+export const readBranchEnv = (): string | undefined =>
+  readFirstEnv(EDDA_BRANCH_ENV, BLODE_BRANCH_ENV);
+
+export const readCommitMessageEnv = (): string | undefined =>
+  readFirstEnv(EDDA_COMMIT_MESSAGE_ENV, BLODE_COMMIT_MESSAGE_ENV);
+
+export const resolveApiKeyEnvName = (): string | undefined => {
+  if (process.env[EDDA_API_KEY_ENV]?.trim()) {
+    return EDDA_API_KEY_ENV;
+  }
+  if (process.env[BLODE_API_KEY_ENV]?.trim()) {
+    return BLODE_API_KEY_ENV;
+  }
+  return undefined;
+};
+
+export const resolveProjectEnvName = (): string | undefined => {
+  if (process.env[EDDA_PROJECT_ENV]?.trim()) {
+    return EDDA_PROJECT_ENV;
+  }
+  if (process.env[BLODE_PROJECT_ENV]?.trim()) {
+    return BLODE_PROJECT_ENV;
+  }
+  return undefined;
+};
 
 export const DEFAULT_API_URL = "https://api.blode.md";
 export const DEFAULT_SUPABASE_URL = "https://bwnxwgkgyklzzmpbzuoz.supabase.co";
@@ -28,5 +79,5 @@ const getDefaultConfigBaseDir = (): string => {
 
 const configBaseDir = getDefaultConfigBaseDir();
 
-export const CONFIG_DIR = join(configBaseDir, CLI_NAME);
+export const CONFIG_DIR = join(configBaseDir, CONFIG_DIR_NAME);
 export const CREDENTIALS_FILE = join(CONFIG_DIR, "credentials.json");

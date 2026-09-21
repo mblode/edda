@@ -162,7 +162,7 @@ export default function AgentsMajorityReaderPostPage() {
               </p>
 
               <h2 className="h-display font-bold text-2xl md:text-3xl">
-                What a Blode.md deploy already does
+                What an Edda deploy already does
               </h2>
               <p>
                 Every deploy writes <code>llms.txt</code>,{" "}
@@ -198,9 +198,9 @@ export default function AgentsMajorityReaderPostPage() {
                 <code>description</code>. It becomes the page&apos;s line in{" "}
                 <code>llms.txt</code>, and that line is how an agent decides
                 which page to open. A page without one lists as a bare title.{" "}
-                <code>blodemd validate</code> now warns when pages are missing
-                it. Second, keep the changelog and migration notes inside the
-                docs folder, because the index is where an agent looks when a
+                <code>edda validate</code> now warns when pages are missing it.
+                Second, keep the changelog and migration notes inside the docs
+                folder, because the index is where an agent looks when a
                 parameter it was told about has gone.
               </p>
               <p>

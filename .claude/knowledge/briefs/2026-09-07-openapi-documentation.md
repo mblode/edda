@@ -21,7 +21,7 @@ Job of the page: decide.
 | Title                   | OpenAPI documentation: publish the API reference from your spec                                                                                                                                                  |
 | H1                      | Your OpenAPI spec, published as docs                                                                                                                                                                             |
 | Meta description        | Point docs.json at an OpenAPI spec and the API reference ships in the same deploy as the guides, from the same commit.                                                                                           |
-| Canonical               | https://blode.md/openapi-documentation                                                                                                                                                                           |
+| Canonical               | https://blode.co/edda                                                                                                                                                                                            |
 
 ## North star
 
@@ -57,7 +57,7 @@ Evaluator questions first, product-specific after.
 - https://www.openapis.org/
 - https://blode.md/docs/features/openapi
 - https://blode.md/docs/api/overview
-- https://blode.md/docs-as-code
+- https://blode.co/edda
 
 ## Evidence
 

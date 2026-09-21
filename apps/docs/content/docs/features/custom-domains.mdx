@@ -1,13 +1,13 @@
 ---
 title: Custom domains
-description: Point a custom domain or subdomain at your Blode.md docs site, configure DNS with CNAME records, and add the domain in your project dashboard.
+description: Point a custom domain or subdomain at your Edda docs site, configure DNS with CNAME records, and add the domain in your project dashboard.
 ---
 
 Every project deployed with blode.md gets a subdomain at `your-slug.blode.md` automatically. You can also point your own domain to your docs site for a fully branded experience.
 
 ## Default subdomain
 
-When you run `blodemd push`, your docs are published to `{slug}.blode.md`, where `slug` is the project slug resolved from `--project`, `BLODEMD_PROJECT`, or docs.json `slug`. No per-project DNS setup is required because the platform wildcard handles `*.blode.md`.
+When you run `edda push`, your docs are published to `{slug}.blode.md`, where `slug` is the project slug resolved from `--project`, `BLODEMD_PROJECT`, or docs.json `slug`. No per-project DNS setup is required because the platform wildcard handles `*.blode.md`.
 
 ## Add a custom domain
 
@@ -39,7 +39,7 @@ When you run `blodemd push`, your docs are published to `{slug}.blode.md`, where
 
   </Step>
   <Step title="Add the domain in your project settings">
-    Configure the custom domain through Blode.md's custom-domain workflow after
+    Configure the custom domain through Edda's custom-domain workflow after
     your project has been deployed. That control plane provisions the domain on
     Vercel and returns any verification records you need.
 

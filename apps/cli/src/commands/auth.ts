@@ -12,14 +12,14 @@ import {
 } from "../auth-session.js";
 import { reportCommandError } from "../command-utils.js";
 import {
-  BLODE_API_KEY_ENV,
-  BLODE_API_URL_ENV,
   CREDENTIALS_FILE,
   DEFAULT_API_URL,
   DEFAULT_OAUTH_CALLBACK_PATH,
   DEFAULT_OAUTH_CALLBACK_PORT,
   DEFAULT_OAUTH_TIMEOUT_SECONDS,
   OAUTH_CLIENT_ID,
+  readApiUrlEnv,
+  resolveApiKeyEnvName,
 } from "../constants.js";
 import { EXIT_CODES } from "../errors.js";
 import { requestJson } from "../http.js";
@@ -39,7 +39,7 @@ import {
 } from "../supabase.js";
 import { parsePort, parsePositiveInteger } from "../validation.js";
 
-/** Which credential `blodemd push` would actually authenticate with. */
+/** Which credential `edda push` would actually authenticate with. */
 export type CredentialSource = "api-key" | "session";
 
 /**
@@ -76,7 +76,7 @@ const fetchUserEmail = async (
 export const registerAuthCommands = (program: Command): void => {
   program
     .command("login")
-    .description("Authenticate with Blode.md via GitHub in your browser")
+    .description("Authenticate with Edda via GitHub in your browser")
     .option(
       "--port <port>",
       "Loopback callback port",
@@ -92,7 +92,7 @@ export const registerAuthCommands = (program: Command): void => {
       async (options: { port: string; timeout: string; open: boolean }) => {
         const reporter = createReporter();
         if (reporter.interactive) {
-          intro(chalk.bold("blodemd login"));
+          intro(chalk.bold("edda login"));
         }
 
         try {
@@ -157,7 +157,7 @@ export const registerAuthCommands = (program: Command): void => {
           const email =
             storedSession.user?.email ??
             (await fetchUserEmail(
-              process.env[BLODE_API_URL_ENV] ?? DEFAULT_API_URL,
+              readApiUrlEnv() ?? DEFAULT_API_URL,
               storedSession.accessToken
             ));
 
@@ -169,7 +169,7 @@ export const registerAuthCommands = (program: Command): void => {
 
           if (resolveApiKeyCredential()) {
             reporter.warn(
-              `${BLODE_API_KEY_ENV} is set, so "blodemd push" will keep using that API key instead of this session.`
+              `${resolveApiKeyEnvName() ?? "EDDA_API_KEY"} is set, so "edda push" will keep using that API key instead of this session.`
             );
           }
 
@@ -186,7 +186,7 @@ export const registerAuthCommands = (program: Command): void => {
     .action(async () => {
       const reporter = createReporter();
       if (reporter.interactive) {
-        intro(chalk.bold("blodemd logout"));
+        intro(chalk.bold("edda logout"));
       }
 
       try {
@@ -213,8 +213,11 @@ export const registerAuthCommands = (program: Command): void => {
 
   program
     .command("whoami")
-    .description("Show the credential blodemd would authenticate with")
-    .option("--api-key <token>", "API key (env: BLODEMD_API_KEY)")
+    .description("Show the credential edda would authenticate with")
+    .option(
+      "--api-key <token>",
+      "API key (env: EDDA_API_KEY or BLODEMD_API_KEY)"
+    )
     .option("--json", "output machine-readable JSON (implies non-interactive)")
     .action(async (options: { apiKey?: string; json?: boolean }) => {
       const reporter = createReporter({ json: options.json });
@@ -223,7 +226,9 @@ export const registerAuthCommands = (program: Command): void => {
         // Report the credential `push` would pick, not whichever one happens to
         // be stored on disk.
         if (resolveApiKeyCredential(options.apiKey)) {
-          const origin = options.apiKey ? "--api-key" : BLODE_API_KEY_ENV;
+          const origin = options.apiKey
+            ? "--api-key"
+            : (resolveApiKeyEnvName() ?? "EDDA_API_KEY");
           reporter.info(
             `Using the API key from ${origin}. A project-scoped key carries no user identity, and any stored session is ignored.`
           );
@@ -239,7 +244,7 @@ export const registerAuthCommands = (program: Command): void => {
         const resolved = await resolveAuthToken();
 
         if (!resolved) {
-          reporter.warn('Not logged in. Run "blodemd login" to authenticate.');
+          reporter.warn('Not logged in. Run "edda login" to authenticate.');
           reporter.json({
             email: null,
             expiresAt: null,
@@ -255,7 +260,7 @@ export const registerAuthCommands = (program: Command): void => {
         const email =
           resolved.user?.email ??
           (await fetchUserEmail(
-            process.env[BLODE_API_URL_ENV] ?? DEFAULT_API_URL,
+            readApiUrlEnv() ?? DEFAULT_API_URL,
             resolved.token
           ));
 
@@ -267,7 +272,7 @@ export const registerAuthCommands = (program: Command): void => {
 
         if (resolved.expiresAt && status.expired) {
           reporter.warn(
-            'Session has expired. Run "blodemd login" to re-authenticate.'
+            'Session has expired. Run "edda login" to re-authenticate.'
           );
         }
 

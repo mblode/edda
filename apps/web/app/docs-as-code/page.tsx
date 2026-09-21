@@ -29,12 +29,12 @@ const faqs = [
   {
     answer:
       "Yes. Unlimited projects, pages, and seats, with custom domains, search, MDX, and OpenAPI references included. What pays for it is what is left out: no web editor, no marketplace, no SOC 2, and support is the founder.",
-    question: "Is hosted Blode.md really $0?",
+    question: "Is hosted Edda really $0?",
   },
   {
     answer:
       "The CLI and renderer are MIT, so you can run the same thing on your own Postgres. Your docs are files in your repo either way, so nothing is locked in the host.",
-    question: "What if Blode.md shuts down?",
+    question: "What if Edda shuts down?",
   },
   {
     answer:
@@ -44,7 +44,7 @@ const faqs = [
   },
   {
     answer:
-      "Yes. blodemd push docs publishes from the terminal, which suits a preview or a repo without the GitHub App. The merge path is the one I recommend, because it ties every publish to a reviewed commit.",
+      "Yes. edda push docs publishes from the terminal, which suits a preview or a repo without the GitHub App. The merge path is the one I recommend, because it ties every publish to a reviewed commit.",
     question: "Can I publish without merging to main?",
   },
 ];
@@ -85,7 +85,7 @@ export default function DocsAsCodePage() {
             publish step to forget.
           </p>
           <p className="measure mt-4 text-muted-foreground">
-            Blode.md hosts that workflow and nothing else. I am the founder, and
+            Edda hosts that workflow and nothing else. I am the founder, and
             this page is how I would decide whether it fits your team.
           </p>
         </div>
@@ -199,8 +199,8 @@ export default function DocsAsCodePage() {
               Anything that publishes on save from a second editor reintroduces
               the drift the workflow was meant to remove, which is why there is
               no second editor here. If you would rather not install the App,{" "}
-              <code>blodemd push docs</code> from the terminal publishes the
-              same way. The build is described in{" "}
+              <code>edda push docs</code> from the terminal publishes the same
+              way. The build is described in{" "}
               <Link className={externalLink} href="/docs/how-it-works">
                 how it works
               </Link>
@@ -258,8 +258,8 @@ export default function DocsAsCodePage() {
               How do I move an existing Docusaurus or Mintlify site over?
             </h2>
             <p>
-              Files move as files. Run <code>blodemd new docs</code> to scaffold
-              a <code>docs.json</code>, move your <code>.md</code> and{" "}
+              Files move as files. Run <code>edda new docs</code> to scaffold a{" "}
+              <code>docs.json</code>, move your <code>.md</code> and{" "}
               <code>.mdx</code> in, and write the navigation in{" "}
               <code>docs.json</code>. Callouts, tabs, code groups, and OpenAPI
               references are built in. A component that came from a plugin is
@@ -285,7 +285,7 @@ export default function DocsAsCodePage() {
             <ol>
               <li>Sign in with GitHub.</li>
               <li>
-                Run <code>blodemd new docs</code> in the repo. It writes a{" "}
+                Run <code>edda new docs</code> in the repo. It writes a{" "}
                 <code>docs.json</code> and a folder.
               </li>
               <li>
@@ -315,7 +315,7 @@ export default function DocsAsCodePage() {
               names each edition by what it leaves out.
             </p>
             <p>
-              If the question is what happens when Blode.md is gone, the CLI and
+              If the question is what happens when Edda is gone, the CLI and
               renderer are MIT, which makes this an open source documentation
               platform in the narrow sense: the same binary on your own
               Postgres. That is the bus-factor answer, not a feature.

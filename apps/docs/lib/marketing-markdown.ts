@@ -1,5 +1,5 @@
 const MARKETING_MARKDOWN: Record<string, string> = {
-  "/": `# Blode.md
+  "/": `# Edda
 
 The answer they read matches the commit you merged.
 
@@ -22,10 +22,10 @@ Sign in with GitHub and push. You do not run Docusaurus to get a public URL.
 Or use the CLI:
 
 \`\`\`
-npm i -g blodemd
-blodemd login
-blodemd new docs
-blodemd push docs
+npm i -g edda-docs
+edda login
+edda new docs
+edda push docs
 \`\`\`
 
 ## Choose your edition
@@ -35,17 +35,17 @@ blodemd push docs
 
 ## Links
 
-- [About](https://blode.md/about)
-- [Blog](https://blode.md/blog)
-- [Changelog](https://blode.md/changelog)
-- [Free online llms.txt resources](https://blode.md/free-online-llms-txt-resources)
+- [About](https://blode.co/edda)
+- [Blog](https://blode.co/edda)
+- [Changelog](https://blode.co/edda)
+- [Free online llms.txt resources](https://blode.co/edda)
 - [Privacy](https://blode.md/privacy)
 - [Terms](https://blode.md/terms)
 - [Security](https://blode.md/security)
 - [Docs](https://blode.md/docs)
 - [GitHub](https://github.com/mblode/blodemd)
 `,
-  "/about": `# About Blode.md
+  "/about": `# About Edda
 
 I will not ship a second editor. Docs stay in the git repo. Hosted is $0. MIT if you run it yourself.
 `,
@@ -59,7 +59,7 @@ Latest updates to the blode.md platform.
 `,
   "/free-online-llms-txt-resources": `# Free online llms.txt resources
 
-Educational resource by [Matthew Blode](https://blode.co) / Blode.md. Last updated 19 September 2026.
+Educational resource by [Matthew Blode](https://blode.co) / Edda. Last updated 19 September 2026.
 
 llms.txt is a proposed Markdown file served at \`/llms.txt\` that gives language models a curated, LLM-friendly index of a website. It starts with an H1 title, a short summary, and lists of linked Markdown resources so agents can load concise documentation without scraping noisy HTML. The informal standard is documented at [llmstxt.org](https://llmstxt.org/).
 
@@ -71,7 +71,7 @@ llms.txt is a proposed Markdown file served at \`/llms.txt\` that gives language
 4. [Examples](#examples)
 5. [Specs & standards](#specs-and-standards)
 6. [Tools & generators](#tools-and-generators)
-7. [Related docs on Blode.md](#related-docs-on-blode-md)
+7. [Related docs on Edda](#related-docs-on-blode-md)
 8. [FAQ](#faq)
 
 ## What is llms.txt
@@ -94,7 +94,7 @@ HTML pages mix navigation, scripts, and chrome that waste context. The [llms.txt
 
 **Short answer:** Publish Markdown at \`/llms.txt\`, link \`.md\` versions of key pages, keep the file short, and test that an LLM can answer from it.
 
-If you host docs on Blode.md, the platform generates tenant-aware \`llms.txt\`, \`llms-full.txt\`, and \`.md\` page exports from your MDX. See [SEO and sitemaps](https://blode.md/docs/features/seo).
+If you host docs on Edda, the platform generates tenant-aware \`llms.txt\`, \`llms-full.txt\`, and \`.md\` page exports from your MDX. See [SEO and sitemaps](https://blode.md/docs/features/seo).
 
 ## Specs & standards
 
@@ -107,19 +107,19 @@ If you host docs on Blode.md, the platform generates tenant-aware \`llms.txt\`, 
 
 A Markdown file at \`/llms.txt\` that gives language models a curated title, summary, and links to LLM-friendly content. Informal proposal at llmstxt.org, not a W3C standard.
 
-### Does Blode.md generate llms.txt automatically?
+### Does Edda generate llms.txt automatically?
 
-Yes. Blode.md sites get tenant-aware \`/llms.txt\`, \`/llms-full.txt\`, robots.txt, sitemap.xml, and per-page \`.md\` exports. See [/docs/features/seo](https://blode.md/docs/features/seo).
+Yes. Edda sites get tenant-aware \`/llms.txt\`, \`/llms-full.txt\`, robots.txt, sitemap.xml, and per-page \`.md\` exports. See [/docs/features/seo](https://blode.md/docs/features/seo).
 
 ## Links
 
-- [Full HTML resource](https://blode.md/free-online-llms-txt-resources)
+- [Full HTML resource](https://blode.co/edda)
 - [blode.md/llms.txt](https://blode.md/llms.txt)
 - [Docs](https://blode.md/docs)
 `,
   "/pricing": `# Pricing
 
-Blode.md is currently free for hosted projects and MIT licensed for self-hosting.
+Edda is currently free for hosted projects and MIT licensed for self-hosting.
 `,
   "/privacy": `# Privacy Policy
 

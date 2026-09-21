@@ -4,7 +4,7 @@ A short summary of how we handle security today. The surface is small, and we wa
 
 ## Controls
 
-- **HTTPS by default**: every site on Blode.md is served over HTTPS.
+- **HTTPS by default**: every site on Edda is served over HTTPS.
 - **GitHub OAuth**: sign-in runs through GitHub OAuth. We request the minimum scopes needed.
 - **Open source**: the code is public on GitHub. You can read every line.
 

@@ -1,4 +1,4 @@
-# Blode.md
+# Edda
 
 > The answer they read matches the commit you merged.
 
@@ -10,7 +10,7 @@ Last updated: 13 August 2026
 
 - [Connect GitHub](https://blode.md/oauth/consent)
 - [Read the docs](https://blode.md/docs)
-- [Pricing](https://blode.md/pricing)
+- [Pricing](https://blode.co/edda)
 
 ## No second editor. On purpose.
 
@@ -30,23 +30,23 @@ Sign in with GitHub and push. You do not run Docusaurus, a search index, or a cu
 
 ```bash
 # install the CLI
-npm i -g blodemd
+npm i -g edda-docs
 
 # browser sign-in with GitHub
-blodemd login
+edda login
 
 # scaffold from your project root
-blodemd new docs
+edda new docs
 
 # ship it
-blodemd push docs
+edda push docs
 ```
 
 Deployed to `acme.blode.md`.
 
 #### GitHub
 
-1. Add a `docs/` folder first (or run `blodemd new docs`)
+1. Add a `docs/` folder first (or run `edda new docs`)
 2. Sign in with GitHub and pick the repo
 3. Point at the folder with `docs.json`, then push to `main`
 
@@ -64,21 +64,21 @@ Same CLI and renderer, your Postgres. Source on [GitHub](https://github.com/mblo
 
 ## Choose your edition
 
-Named for what you do not get. Hosted is $0: no visual editor, no marketplace, no SOC 2. Detail is on [pricing](https://blode.md/pricing).
+Named for what you do not get. Hosted is $0: no visual editor, no marketplace, no SOC 2. Detail is on [pricing](https://blode.co/edda).
 
 - **No second editor:** $0 hosted. [Connect GitHub](https://blode.md/oauth/consent)
 - **Your Postgres:** MIT. [View on GitHub](https://github.com/mblode/blodemd)
 
 ## FAQ
 
-**Who should use Blode.md?**
+**Who should use Edda?**
 People who already write MDX in git and review docs in a pull request. If you want a visual editor, a plugin marketplace, or a CMS, this is the wrong tool.
 
 **How is this different from Mintlify?**
 Mintlify Starter is also $0 and includes a web editor. We will not ship one. The merge publishes the site plus `llms.txt` from that commit. We do not claim drop-in compatibility with every Mintlify config key.
 
-**How much does Blode.md cost?**
-Hosted is $0. What you do not get: a visual editor, a plugin marketplace, SOC 2, SSO, an SLA, or a logo wall. Support is the founder. The CLI and renderer are MIT. See [pricing](https://blode.md/pricing).
+**How much does Edda cost?**
+Hosted is $0. What you do not get: a visual editor, a plugin marketplace, SOC 2, SSO, an SLA, or a logo wall. Support is the founder. The CLI and renderer are MIT. See [pricing](https://blode.co/edda).
 
 **Is there a visual editor?**
 No. The pull request is the review.
@@ -86,5 +86,5 @@ No. The pull request is the review.
 **Do agents get Markdown, or only the HTML site?**
 On every deploy the site writes `llms.txt`, `llms-full.txt`, robots.txt, a sitemap, and per-page `.md` exports from the MDX. Each `.md` page opens with a link back to `llms.txt`, the shape Mintlify's 2026 benchmark measured at 0.11 failed requests per task against 2.23 for HTML.
 
-**Who builds Blode.md and how do I get support?**
-Blode.md is built by [Matthew Blode](https://blode.co). Email [m@blode.co](mailto:m@blode.co) or open an issue on [GitHub](https://github.com/mblode/blodemd).
+**Who builds Edda and how do I get support?**
+Edda is built by [Matthew Blode](https://blode.co). Email [m@blode.co](mailto:m@blode.co) or open an issue on [GitHub](https://github.com/mblode/blodemd).

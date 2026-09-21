@@ -1,4 +1,4 @@
-# Needs Stack — Blode.md
+# Needs Stack — Edda
 
 Whose stack this is: Carol in `.claude/knowledge/CAROL.md` — the git-native MDX writer shipping a developer product, for whom the pull request is the docs review. No interview quotes; phrasing is inferred from the product record and Carol's scoreboard (correct answers from the version that shipped).
 
@@ -19,7 +19,7 @@ Role: **the promise** — the outcome claimed as a consequence of N1.
 Why your level still wins for Carol: she keeps git as source of truth. A hosted AI search box on stale CMS copy would obviate the _reading_ and still be wrong.
 
 **N1.** → Publish versioned MDX docs from the same git repo as the product. ← YOU ARE HERE
-Occupants: Blode.md; Mintlify; Docusaurus; VitePress; GitBook (git sync); ReadMe.
+Occupants: Edda; Mintlify; Docusaurus; VitePress; GitBook (git sync); ReadMe.
 Role: **what you do** — features live here; meet searchers where they are.
 
 **N2.** → Run a docs renderer, search index, SSL, and a custom domain (or `/docs` proxy) yourself.
@@ -28,7 +28,7 @@ Role: advancement — a step you make obsolete; brag about it.
 
 **N3.** → Buy servers, blobs, and a database so a docs app can run.
 Occupants: Vercel, Fly, Railway, AWS, a Postgres you already have (self-host plan).
-Role: advancement — hosted Blode.md makes this invisible; self-host still touches it, which is the trade-off that plan exists for.
+Role: advancement — hosted Edda makes this invisible; self-host still touches it, which is the trade-off that plan exists for.
 
 ## Uses beyond positioning
 

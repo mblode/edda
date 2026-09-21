@@ -111,7 +111,7 @@ const SiteUrlCard = ({ project }: { project: Project }) => (
 );
 
 const QuickStartCard = ({ project }: { project: Project }) => {
-  const cliSnippet = `blodemd push docs --project ${project.slug}`;
+  const cliSnippet = `edda push docs --project ${project.slug}`;
   return (
     <Card className="lg:col-span-2">
       <CardHeader>
@@ -130,7 +130,7 @@ const QuickStartCard = ({ project }: { project: Project }) => {
           </p>
         </div>
         <p className="mt-3 text-xs text-muted-foreground">
-          Make sure to run <code>blodemd login</code> first — the browser opens
+          Make sure to run <code>edda login</code> first — the browser opens
           GitHub directly.
         </p>
       </CardContent>

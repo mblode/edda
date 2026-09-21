@@ -53,21 +53,16 @@ export const MarketingHeader = () => {
         )}
       >
         <div className="flex items-center gap-1 pl-5">
-          <Link
-            aria-label="Blode.md home"
+          <a
+            aria-label="Edda home"
             className="flex items-center gap-1.5 rounded-full py-1 transition-opacity hover:opacity-70"
-            href="/"
+            href={siteConfig.links.marketing}
           >
             <FileTextIcon className="size-4" />
-            <span className="flex items-baseline">
-              <span className="font-semibold text-base leading-none tracking-tight">
-                Blode
-              </span>
-              <span className="font-semibold text-base leading-none tracking-tight">
-                .md
-              </span>
+            <span className="font-semibold text-base leading-none tracking-tight">
+              Edda
             </span>
-          </Link>
+          </a>
         </div>
         <nav
           aria-label="Primary"

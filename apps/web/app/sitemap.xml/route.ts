@@ -1,37 +1,23 @@
 import { NextResponse } from "next/server";
 
-import { blogPosts } from "@/lib/blog";
-import { educationalResources } from "@/lib/educational-resources";
 import {
-  CANONICAL_PAGES,
-  CANONICAL_PATHS,
-  marketingUrl,
+  PLATFORM_PAGES,
+  PLATFORM_PATHS,
+  platformUrl,
 } from "@/lib/marketing-site";
 
 export const GET = () => {
-  const canonicalSet = new Set<string>(CANONICAL_PATHS);
-  const entries = [
-    ...CANONICAL_PATHS.map((path) => ({
-      lastmod: CANONICAL_PAGES[path],
-      path,
-    })),
-    ...blogPosts.map((post) => ({
-      lastmod: post.date,
-      path: `/blog/${post.slug}`,
-    })),
-    ...educationalResources
-      .filter((resource) => !canonicalSet.has(resource.path))
-      .map((resource) => ({
-        lastmod: resource.updatedAt,
-        path: resource.path,
-      })),
-  ];
+  const entries = PLATFORM_PATHS.map((path) => ({
+    lastmod: PLATFORM_PAGES[path],
+    path,
+  }));
 
   // No `changefreq` or `priority`: Google ignores both.
+  // Marketing pages 301 off this host; only remaining blode.md pages are listed.
   const urls = entries
     .map(
       ({ lastmod, path }) => `  <url>
-    <loc>${marketingUrl(path)}</loc>
+    <loc>${platformUrl(path)}</loc>
     <lastmod>${lastmod}</lastmod>
   </url>`
     )

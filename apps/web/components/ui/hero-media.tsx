@@ -28,7 +28,7 @@ export const HeroMedia = ({ className }: HeroMediaProps) => (
       </div>
       <div className="relative aspect-[16/10] w-full overflow-hidden bg-background">
         <Image
-          alt="Preview of a Blode.md documentation site"
+          alt="Preview of an Edda documentation site"
           blurDataURL={placeholderShimmer(WIDTH, HEIGHT)}
           className="h-full w-full object-cover object-top"
           height={HEIGHT}

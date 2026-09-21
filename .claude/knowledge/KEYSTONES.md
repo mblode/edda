@@ -1,4 +1,4 @@
-# Keystones — Blode.md
+# Keystones — Edda
 
 Refines `.claude/knowledge/STRENGTHS-WEAKNESSES.md`. Keystones are customer circumstances that REQUIRE an extreme version of a strength. Segment lines below are honed — see change log.
 

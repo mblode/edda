@@ -6,8 +6,8 @@ import { getSearchParam } from "../search-params";
 import { ConsentForm } from "./consent-form";
 
 export const metadata: Metadata = {
-  description: "Sign in with GitHub to access Blode.md.",
-  title: "Sign in · Blode.md",
+  description: "Sign in with GitHub to access Edda.",
+  title: "Sign in · Edda",
 };
 
 // The three params only steer where sign-in returns to, so reading them behind

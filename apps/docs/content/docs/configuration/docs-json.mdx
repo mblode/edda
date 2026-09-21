@@ -1,12 +1,12 @@
 ---
 title: docs.json reference
-description: Reference every supported docs.json field for navigation, branding, collections, OpenAPI, analytics, and deployment settings in your Blode.md project.
+description: Reference every supported docs.json field for navigation, branding, collections, OpenAPI, analytics, and deployment settings in your Edda project.
 ---
 
-Every Blode.md project is configured through a single `docs.json` file at the root of your docs directory.
+Every Edda project is configured through a single `docs.json` file at the root of your docs directory.
 
 <Callout type="info">
-  If you are coming from Mintlify, Blode.md intentionally keeps this contract
+  If you are coming from Mintlify, Edda intentionally keeps this contract
   smaller. `theme`, `colors`, `fonts`, `icons`, `background`, and `styling` are
   not supported in `docs.json`.
 </Callout>
@@ -236,10 +236,10 @@ Built-in option presets: `copy`, `view`, `chatgpt`, `claude`, `perplexity`, `gro
 
 ## Validation
 
-Run `blodemd validate` to check your `docs.json` against the schema before deploying:
+Run `edda validate` to check your `docs.json` against the schema before deploying:
 
 ```bash
-blodemd validate
+edda validate
 ```
 
 Validation is strict: an unknown key is an error, so a typo like `nvaigation`

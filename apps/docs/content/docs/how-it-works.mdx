@@ -1,16 +1,16 @@
 ---
 title: How it works
-description: See how local MDX, the blodemd CLI, Hono API, Vercel Blob storage, and the Next.js renderer work together when you push documentation.
+description: See how local MDX, the edda CLI, Hono API, Vercel Blob storage, and the Next.js renderer work together when you push documentation.
 ---
 
-Blode.md turns local MDX files into a hosted documentation site. Here is how the pieces fit together.
+Edda turns local MDX files into a hosted documentation site. Here is how the pieces fit together.
 
 ## Architecture
 
 ```
 Your repo          CLI              API             CDN + Renderer
 ─────────       ─────────       ─────────         ───────────────
- docs/    ───►  blodemd   ───►  Hono API   ───►   Next.js app
+ docs/    ───►  edda   ───►  Hono API   ───►   Next.js app
  ├ docs.json    push            ├ validate         ├ tenant routing
  ├ index.mdx                    ├ store in         ├ MDX rendering
  └ *.mdx                        │ Vercel Blob      ├ Shiki highlighting

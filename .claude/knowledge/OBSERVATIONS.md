@@ -1,29 +1,29 @@
-# Observations — Blode.md
+# Observations — Edda
 
 These are RAW OBSERVATIONS, deliberately not yet classified as strengths or weaknesses. They are derived from public product artifacts (marketing pages, pricing, about, intro blog, README, GitHub, schema comments, architecture notes) rather than a live founder write-storm or customer interviews. No customer quotes exist in the public record. Categories that need private evidence are marked thin.
 
-Blode.md is a docs-as-code platform: MDX in a git repo, published via CLI (`blodemd login` / `new` / `push`) or a GitHub App, hosted at `$0` with unlimited projects, pages, and seats, or self-hosted under MIT. Built by Matthew Blode. GitHub repo `mblode/blodemd` (created 2025-12-30; 1 star, 0 forks as of 2026-08-12). Support is `m@blode.co` or GitHub issues.
+Edda is a docs-as-code platform: MDX in a git repo, published via CLI (`edda login` / `new` / `push`) or a GitHub App, hosted at `$0` with unlimited projects, pages, and seats, or self-hosted under MIT. Built by Matthew Blode. GitHub repo `mblode/blodemd` (created 2025-12-30; 1 star, 0 forks as of 2026-08-12). Support is `m@blode.co` or GitHub issues.
 
 ## External research (public sources — seed material, not yet confirmed)
 
-- **[GitHub / mblode/blodemd]** 1 star, 0 forks, MIT license, homepage https://blode.md. README: "Beautiful documentation sites from MDX, scaffolded and deployed from your terminal." Demo cited: captain.blode.md.
-- **[GitHub / npm]** CLI package `blodemd`; commands documented: login, new, dev, validate, push, projects, analytics. CI path uses project-scoped `bmd_` deploy keys.
+- **[GitHub / mblode/blodemd]** 1 star, 0 forks, MIT license, homepage https://blode.co/edda. README: "Beautiful documentation sites from MDX, scaffolded and deployed from your terminal." Demo cited: captain.blode.md.
+- **[GitHub / npm]** CLI package `edda`; commands documented: login, new, dev, validate, push, projects, analytics. CI path uses project-scoped `bmd_` deploy keys.
 - **[blode.md/pricing]** Hosted plan is `$0 · Unlimited projects, pages, and seats`. Self-host is MIT. FAQ: "What's the catch? None." "How do you make money? We don't, yet."
-- **[blode.md/blog/intro-to-blode-md]** "Most docs tools want you to leave your editor. Blode.md doesn't." "Existing docs platforms charge per seat or per page." "We wanted Markdown in a repo and a URL." Roadmap named: themes, analytics, team accounts.
+- **[blode.md/blog/intro-to-blode-md]** "Most docs tools want you to leave your editor. Edda doesn't." "Existing docs platforms charge per seat or per page." "We wanted Markdown in a repo and a URL." Roadmap named: themes, analytics, team accounts.
 - **[blode.md/about]** "No plugin marketplace, no deep config. If a feature does not move docs closer to the code that produced them, it does not ship."
-- **[packages/validation]** `docs.json` schema is "Derived from the vendored Mintlify schema and pruned to the supported Blode.md surface."
-- **[Public reviews / press / forums]** No G2, Capterra, Reddit, Hacker News, or comparison-roundup mentions of Blode.md found. Category chatter is Mintlify vs GitBook (git-first MDX vs WYSIWYG knowledge base; Mintlify pricing jumps past solo usage).
+- **[packages/validation]** `docs.json` schema is "Derived from the vendored Mintlify schema and pruned to the supported Edda surface."
+- **[Public reviews / press / forums]** No G2, Capterra, Reddit, Hacker News, or comparison-roundup mentions of Edda found. Category chatter is Mintlify vs GitBook (git-first MDX vs WYSIWYG knowledge base; Mintlify pricing jumps past solo usage).
 - **[GitHub issues]** Open issues: 0 on the public repo snapshot used for this file.
 
 ## 1. Undeniable comparative strength
 
-**O1.** Hosted Blode.md is priced at `$0` with unlimited projects, pages, and team seats, including custom domains with SSL, full-text search, MDX components, and API references. The pricing page states this in those words.
+**O1.** Hosted Edda is priced at `$0` with unlimited projects, pages, and team seats, including custom domains with SSL, full-text search, MDX components, and API references. The pricing page states this in those words.
 
 **O2.** The CLI, renderer, and API are MIT-licensed. The same CLI is used for hosted and self-hosted. Pricing copy: "Clone the repo, point it at a Postgres, and run the same CLI we do." "No license keys, no telemetry" on the self-host plan.
 
 **O3.** Docs are authored as MDX files in the customer's git repo. The about page and intro post both state: "The pull request is the review. The merge is the deploy."
 
-**O4.** Two first-party publish paths are documented: `blodemd login` → `blodemd new docs` → `blodemd push docs`, and a GitHub App that deploys on push to `main` once a folder with `docs.json` exists. CI can push with a project-scoped `bmd_` deploy key.
+**O4.** Two first-party publish paths are documented: `edda login` → `edda new docs` → `edda push docs`, and a GitHub App that deploys on push to `main` once a folder with `docs.json` exists. CI can push with a project-scoped `bmd_` deploy key.
 
 **O5.** Every hosted site generates tenant-aware `/llms.txt`, `/llms-full.txt`, `robots.txt`, `sitemap.xml`, and per-page `.md` exports from the MDX. This is documented on the SEO docs and the llms.txt resources page.
 
@@ -41,7 +41,7 @@ Blode.md is a docs-as-code platform: MDX in a git repo, published via CLI (`blod
 
 **O10.** Support is the founder: email `m@blode.co` or a GitHub issue. The about page names Matthew Blode as the builder.
 
-**O11.** The `docs.json` schema is vendored from Mintlify and pruned to the supported Blode.md surface (`packages/validation/src/blodemd-docs-schema.json`). That is an engineering artifact, not a homepage claim.
+**O11.** The `docs.json` schema is vendored from Mintlify and pruned to the supported Edda surface (`packages/validation/src/blodemd-docs-schema.json`). That is an engineering artifact, not a homepage claim.
 
 ## 4. Head/tail differential
 
@@ -53,7 +53,7 @@ Blode.md is a docs-as-code platform: MDX in a git repo, published via CLI (`blod
 
 **O14.** The current homepage hero is "The knowledge layer your AI runs on." The intro post and about page describe a git-native MDX publisher. Those are different products in language.
 
-**O15.** The intro post lists themes, analytics, and team accounts as "next on the list." The CLI already has `blodemd analytics` (BYO PostHog). Hosted copy already says "unlimited team seats." The gap is first-party themes / first-party analytics / a team-accounts product, not the words on the pricing card.
+**O15.** The intro post lists themes, analytics, and team accounts as "next on the list." The CLI already has `edda analytics` (BYO PostHog). Hosted copy already says "unlimited team seats." The gap is first-party themes / first-party analytics / a team-accounts product, not the words on the pricing card.
 
 **O16.** Pricing FAQ: "How do you make money? We don't, yet." Hosting is offered at `$0` while the company pays for it.
 
@@ -69,7 +69,7 @@ Blode.md is a docs-as-code platform: MDX in a git repo, published via CLI (`blod
 
 **O20.** Hosted is `$0` with no revenue. The pricing page says paid tiers are later. A 70%-likely disruption within a few years is running out of runway before a paid story exists — recorded as a public-statement fact, not a forecast of the bank account.
 
-**O21.** Category buyers comparing "docs platforms" are trained by Mintlify vs GitBook articles. Blode.md does not appear in those roundups.
+**O21.** Category buyers comparing "docs platforms" are trained by Mintlify vs GitBook articles. Edda does not appear in those roundups.
 
 ## 8. Organizational capabilities
 
@@ -85,19 +85,19 @@ Blode.md is a docs-as-code platform: MDX in a git repo, published via CLI (`blod
 
 **O26.** The MDX component map in `apps/docs/components/mdx/index.tsx` registers 40 named tags (Accordion through Warning, excluding the `a` and `pre` remaps). Homepage copy currently says "30+."
 
-**O27.** `docs.json` is a pruned Mintlify-shaped schema. Unsupported Mintlify surface is not in the Blode.md schema.
+**O27.** `docs.json` is a pruned Mintlify-shaped schema. Unsupported Mintlify surface is not in the Edda schema.
 
 ## 10. Envy of / constantly losing sales to competitors
 
 **O28.** No lost-deal log exists. The intro post names the competitors' weapons: per-seat/per-page pricing, and a new editor plus a new review flow.
 
-**O29.** Mintlify owns the "modern API-docs aesthetic" in 2026 comparison articles. GitBook owns mixed-team WYSIWYG. Blode.md is not in those articles.
+**O29.** Mintlify owns the "modern API-docs aesthetic" in 2026 comparison articles. GitBook owns mixed-team WYSIWYG. Edda is not in those articles.
 
 ## 11. Philosophy
 
 **O30.** Docs belong next to code. Stated as a constraint: features that widen the gap between code and docs do not ship.
 
-**O31.** The writing surface is the customer's editor and git, not a Blode.md CMS. Intro post: "Most docs tools want you to leave your editor. Blode.md doesn't."
+**O31.** The writing surface is the customer's editor and git, not an Edda CMS. Intro post: "Most docs tools want you to leave your editor. Edda doesn't."
 
 **O32.** Core renderer and CLI stay free (pricing FAQ). Hosted is currently `$0` to "earn trust now."
 

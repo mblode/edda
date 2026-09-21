@@ -15,7 +15,7 @@ describe("toCliError", () => {
 
     expect(cliError).toBeInstanceOf(CliError);
     expect(cliError.exitCode).toBe(EXIT_CODES.AUTH_REQUIRED);
-    expect(cliError.hint).toBe('Check your API key or run "blodemd login".');
+    expect(cliError.hint).toBe('Check your API key or run "edda login".');
     expect(cliError.message).toBe(error.message);
   });
 

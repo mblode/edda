@@ -1,12 +1,13 @@
 import {
-  MARKETING_ORIGIN,
+  MARKETING_HOME,
   marketingUrl,
+  platformUrl,
   SITE_NAME,
 } from "@/lib/marketing-site";
 
 /**
- * blode.md is a genuinely separate origin from blode.co, not one of the project
- * zones proxied under it, so it keeps its own `#organization` and `#website`.
+ * Marketing now lives at blode.co/edda. Product hosts stay on blode.md.
+ * Organization and website nodes follow the public marketing home.
  *
  * The one node it must not mint is the person. Reusing blode.co's `@id` across
  * domains is how schema.org entity linking consolidates one human across
@@ -14,10 +15,10 @@ import {
  * Blode instead.
  */
 export const PERSON_ID = "https://blode.co/#person";
-export const ORGANIZATION_ID = `${MARKETING_ORIGIN}/#organization`;
-export const WEBSITE_ID = `${MARKETING_ORIGIN}/#website`;
+export const ORGANIZATION_ID = `${MARKETING_HOME}/#organization`;
+export const WEBSITE_ID = `${MARKETING_HOME}/#website`;
 
-const LOGO_URL = marketingUrl("/web-app-manifest-512x512.png");
+const LOGO_URL = platformUrl("/web-app-manifest-512x512.png");
 
 export interface FaqItem {
   answer: string;
@@ -51,8 +52,12 @@ const organization: SchemaNode = {
     width: 512,
   },
   name: SITE_NAME,
-  sameAs: ["https://github.com/mblode/blodemd", "https://blode.co"],
-  url: `${MARKETING_ORIGIN}/`,
+  sameAs: [
+    "https://github.com/mblode/blodemd",
+    "https://blode.co",
+    MARKETING_HOME,
+  ],
+  url: MARKETING_HOME,
 };
 
 const website: SchemaNode = {
@@ -61,7 +66,7 @@ const website: SchemaNode = {
   inLanguage: "en-US",
   name: SITE_NAME,
   publisher: { "@id": ORGANIZATION_ID },
-  url: `${MARKETING_ORIGIN}/`,
+  url: MARKETING_HOME,
 };
 
 /** Shared entities. Page-level nodes append to this graph in one script. */

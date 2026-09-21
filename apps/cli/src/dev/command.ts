@@ -10,6 +10,7 @@ import { intro, log } from "@clack/prompts";
 import chalk from "chalk";
 import open from "open";
 
+import { DEV_PACKAGE_NAME } from "../constants.js";
 import { CliError, EXIT_CODES, toCliError } from "../errors.js";
 import { parsePort } from "../validation.js";
 import { resolveDocsRoot, validateDocsRoot } from "./resolve-root.js";
@@ -20,7 +21,6 @@ const DEV_READY_TIMEOUT_MS = 45_000;
 const DEV_PORT_SCAN_LIMIT = 10;
 const DEV_SHUTDOWN_TIMEOUT_MS = 5000;
 const LOCALHOST = "127.0.0.1";
-const DEV_PACKAGE_NAME = "blodemd-dev";
 
 type PortAvailabilityProbe = (port: number) => Promise<boolean>;
 
@@ -124,8 +124,8 @@ interface MonorepoServer {
 
 /**
  * When the CLI is installed from npm the heavy Next.js dev-server payload no
- * longer ships inside `blodemd`. Instead the CLI delegates to the companion
- * `blodemd-dev` package via `npx`, pinned to the CLI's own version so the two
+ * longer ships inside `edda`. Instead the CLI delegates to the companion
+ * `edda-dev` package via `npx`, pinned to the CLI's own version so the two
  * always run in lockstep.
  */
 interface DelegatedServer {
@@ -152,7 +152,7 @@ const resolveCliPackageRoot = (cliFilePath: string): string =>
   path.dirname(path.dirname(cliFilePath));
 
 /**
- * Read the CLI's own version so the delegated `blodemd-dev` invocation is
+ * Read the CLI's own version so the delegated `edda-dev` invocation is
  * pinned to the exact matching release (they version together via changesets).
  */
 const readCliPackageVersion = async (cliFilePath: string): Promise<string> => {
@@ -166,9 +166,9 @@ const readCliPackageVersion = async (cliFilePath: string): Promise<string> => {
 };
 
 /**
- * Walk up from the running CLI looking for the blodemd monorepo checkout.
+ * Walk up from the running CLI looking for the edda monorepo checkout.
  * Returns the repo root when found (development mode), otherwise `null`
- * (installed mode, which delegates to `blodemd-dev`).
+ * (installed mode, which delegates to `edda-dev`).
  */
 const findMonorepoRoot = async (start: string): Promise<string | null> => {
   let current = start;
@@ -228,7 +228,7 @@ export const buildDevServerLaunch = (
     const npxCommand = process.platform === "win32" ? "npx.cmd" : "npx";
 
     // The CLI owns readiness polling, the file watcher and opening the
-    // browser, so `blodemd-dev` runs with `--no-open` and only boots the
+    // browser, so `edda-dev` runs with `--no-open` and only boots the
     // Next.js server.
     return {
       args: [
@@ -369,7 +369,7 @@ export const devCommand = async (
 ) => {
   const cliLog = dependencies.getLog;
 
-  dependencies.getIntro(chalk.bold("blodemd dev"));
+  dependencies.getIntro(chalk.bold("edda dev"));
 
   try {
     const port = dependencies.parsePortValue(portValue);

@@ -3,45 +3,45 @@ import { createHash } from "node:crypto";
 // Mirror of skills/blodemd/SKILL.md, served at /.well-known/agent-skills/blodemd/SKILL.md.
 // agent-skills.unit.test.ts fails when the two drift; edit the file, then paste it here.
 export const BLODEMD_SKILL_CONTENT = `---
-name: blodemd
-description: Scaffolds, previews, and deploys MDX documentation sites with Blode.md, then verifies the llms.txt, llms-full.txt, and per-page .md exports the deploy publishes for AI agents. Use when the user wants to create a docs site, validate docs.json, preview locally, push or deploy docs to Blode.md, set up docs CI, or make Blode.md docs readable by agents. Triggers include "create docs", "deploy docs", "push docs", "preview docs", "scaffold a docs site", "validate docs.json", "set up docs deploys in CI".
+name: edda
+description: Scaffolds, previews, and deploys MDX documentation sites with Edda, then verifies the llms.txt, llms-full.txt, and per-page .md exports the deploy publishes for AI agents. Use when the user wants to create a docs site, validate docs.json, preview locally, push or deploy docs to Edda, set up docs CI, or make Edda docs readable by agents. Triggers include "create docs", "deploy docs", "push docs", "preview docs", "scaffold a docs site", "validate docs.json", "set up docs deploys in CI".
 user-invocable: true
 argument-hint: <command> [options]
-allowed-tools: Bash(npx blodemd *), Bash(blodemd *)
+allowed-tools: Bash(npx edda-docs *), Bash(edda *)
 ---
 
-# Blode.md
+# Edda
 
 Scaffold, preview, and deploy MDX documentation sites from the terminal. One deploy publishes the HTML and its agent-readable twins (\`llms.txt\`, \`llms-full.txt\`, per-page \`.md\`) from the same commit, so what an agent reads is what was merged.
 
-- **IS:** running the \`blodemd\` CLI end to end (auth, scaffold, validate, preview, push) and confirming the published site serves its agent-readable exports.
-- **IS NOT:** writing the docs prose, designing the site, or implementing agent-readiness on sites Blode.md does not host (that is the \`agent-ready\` skill where installed). Blode.md owns the machine-readable surfaces; the writer owns the content and \`docs.json\`.
+- **IS:** running the \`edda\` CLI end to end (auth, scaffold, validate, preview, push) and confirming the published site serves its agent-readable exports.
+- **IS NOT:** writing the docs prose, designing the site, or implementing agent-readiness on sites Edda does not host (that is the \`agent-ready\` skill where installed). Edda owns the machine-readable surfaces; the writer owns the content and \`docs.json\`.
 
 ## Auth
 
 Check before any deploy:
 
 \`\`\`bash
-npx blodemd whoami
+npx edda-docs whoami
 \`\`\`
 
 Three credential paths, in the order the CLI resolves them:
 
-- \`--api-key\` or \`BLODEMD_API_KEY\`: a project-scoped deploy key (\`bmd_...\`) for CI. Created in the dashboard under Settings, Deploy keys, or printed once when a logged-in \`blodemd push\` creates a new project. It belongs in a CI secret. Never ask the user to paste a key into the chat and never write one into the repo.
-- Stored session from \`npx blodemd login\`: browser GitHub sign-in, cached and auto-refreshed. An agent cannot finish the browser step, so when \`whoami\` says \`Not logged in\`, ask the user to run that one command in their own terminal, then rerun \`whoami\`.
+- \`--api-key\` or \`BLODEMD_API_KEY\`: a project-scoped deploy key (\`bmd_...\`) for CI. Created in the dashboard under Settings, Deploy keys, or printed once when a logged-in \`edda push\` creates a new project. It belongs in a CI secret. Never ask the user to paste a key into the chat and never write one into the repo.
+- Stored session from \`npx edda-docs login\`: browser GitHub sign-in, cached and auto-refreshed. An agent cannot finish the browser step, so when \`whoami\` says \`Not logged in\`, ask the user to run that one command in their own terminal, then rerun \`whoami\`.
 - GitHub App from \`/app/<project>/git\` in the dashboard: pushes to the configured branch deploy with no CLI at all. Recommend it whenever the docs live in a repo, because it removes the lag between merge and published docs.
 
-In non-interactive runs pass \`-y\` to \`new\` and \`--json\` to \`validate\`, \`push\`, \`whoami\`, and \`projects\`. \`npx blodemd schema\` prints the CLI contract as JSON when you need the exact options.
+In non-interactive runs pass \`-y\` to \`new\` and \`--json\` to \`validate\`, \`push\`, \`whoami\`, and \`projects\`. \`npx edda-docs schema\` prints the CLI contract as JSON when you need the exact options.
 
 ## Workflow
 
 \`\`\`text
 Docs progress:
-- [ ] Step 0: Verify auth with \`blodemd whoami\`
+- [ ] Step 0: Verify auth with \`edda whoami\`
 - [ ] Step 1: Scaffold or locate the docs directory
 - [ ] Step 2: Validate the configuration
 - [ ] Step 3: Preview locally
-- [ ] Step 4: Deploy to Blode.md
+- [ ] Step 4: Deploy to Edda
 - [ ] Step 5: Verify the agent-readable exports on the live site
 \`\`\`
 
@@ -52,7 +52,7 @@ Done when \`validate\` reports no errors, \`push\` reports \`Published\`, and St
 ### Step 1: Scaffold a new docs site
 
 \`\`\`bash
-npx blodemd new [directory] --slug <project-slug> --template <minimal|starter> -y
+npx edda-docs new [directory] --slug <project-slug> --template <minimal|starter> -y
 \`\`\`
 
 - \`minimal\` (default): \`docs.json\` and \`index.mdx\` only
@@ -63,7 +63,7 @@ Omit the directory to let the CLI prompt or default to \`docs/\`.
 ### Step 2: Validate the config
 
 \`\`\`bash
-npx blodemd validate [dir] --json
+npx edda-docs validate [dir] --json
 \`\`\`
 
 Checks \`docs.json\` against the schema and reports warnings. Run it before every push.
@@ -71,7 +71,7 @@ Checks \`docs.json\` against the schema and reports warnings. Run it before ever
 ### Step 3: Preview locally
 
 \`\`\`bash
-npx blodemd dev --dir <dir> --port 3030 --no-open
+npx edda-docs dev --dir <dir> --port 3030 --no-open
 \`\`\`
 
 Local Next.js dev server with hot reload.
@@ -79,7 +79,7 @@ Local Next.js dev server with hot reload.
 ### Step 4: Deploy
 
 \`\`\`bash
-npx blodemd push [dir] --project <slug> --json
+npx edda-docs push [dir] --project <slug> --json
 \`\`\`
 
 Uploads the docs directory and publishes it. The output names the deployment and manifest, not the site URL: the site is \`https://<slug>.blode.md\`, the project's custom domain, or \`seo.siteUrl\` from \`docs.json\` when the docs are proxied under another host.
@@ -98,7 +98,7 @@ Expect \`200\` on each, \`text/markdown; charset=utf-8\` on the \`.md\` twin and
 
 ## What the deploy publishes for agents
 
-Blode.md generates these from the MDX and \`docs.json\`; do not hand-author copies of them in the docs folder.
+Edda generates these from the MDX and \`docs.json\`; do not hand-author copies of them in the docs folder.
 
 | Path                                                     | Content                                                                                                                                                                          | What the writer controls                                                                                                    |
 | -------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
@@ -118,13 +118,13 @@ Two writer-side facts follow from how agents read. Agents choose a page from its
 Report results in this structure. Include the \`Agent exports\` line only after a deploy.
 
 \`\`\`text
-<blodemd_result>
+<edda_result>
 Action: scaffold | validate | preview | deploy
 Status: success | failed
 Project: <slug>
 Details: <summary of what happened>
 Agent exports: verified (<status and Content-Type quoted>) | skipped (<reason>)
-</blodemd_result>
+</edda_result>
 \`\`\`
 
 ## Gotchas
@@ -133,11 +133,11 @@ Agent exports: verified (<status and Content-Type quoted>) | skipped (<reason>)
 - \`push\` succeeds without printing the public URL. Derive it from the slug or \`seo.siteUrl\` before Step 5, or the verification curls hit the wrong host.
 - A page missing from \`navigation\` in \`docs.json\` still publishes and still appears in \`llms.txt\` and \`llms-full.txt\`. To keep a page out of the index, list it under \`navigation.hidden\`, mark its group \`hidden\`, or set \`hidden: true\` in its frontmatter; do not delete pages to hide them.
 - Docs proxied under \`yourdomain.com/docs\` without \`seo.siteUrl\` emit \`llms.txt\` and \`.md\` links on the \`blode.md\` host, which agents then fetch cross-host. Set \`seo.siteUrl\` to the proxied URL, path prefix included.
-- \`blodemd new\` without \`-y\` prompts and hangs a non-interactive run; \`dev\` without \`--no-open\` tries to open a browser that is not there.
+- \`edda new\` without \`-y\` prompts and hangs a non-interactive run; \`dev\` without \`--no-open\` tries to open a browser that is not there.
 `;
 
 export const BLODEMD_SKILL_DESCRIPTION =
-  "Scaffold, preview, and deploy MDX documentation sites with Blode.md from the CLI, then verify the llms.txt and .md exports the deploy publishes for agents.";
+  "Scaffold, preview, and deploy MDX documentation sites with Edda from the CLI, then verify the llms.txt and .md exports the deploy publishes for agents.";
 
 export const sha256Hex = (input: string) =>
   createHash("sha256").update(input, "utf8").digest("hex");

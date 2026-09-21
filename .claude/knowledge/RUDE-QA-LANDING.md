@@ -1,4 +1,4 @@
-# Rude Q&A — Blode.md landing page + Carol stack
+# Rude Q&A — Edda landing page + Carol stack
 
 ---
 
@@ -23,11 +23,11 @@ Verbatim, the page currently says:
 - **H1:** "Docs that match the code you shipped."
 - **Subhead:** "Write MDX in the repo. Most docs tools want you to leave your editor. The pull request is the review. The merge publishes the site, including the Markdown agents fetch from that commit."
 - **CTA:** "Start shipping"
-- **TextReveal:** "Most docs tools want you to leave your editor. Blode.md doesn't."
+- **TextReveal:** "Most docs tools want you to leave your editor. Edda doesn't."
 - **How-it-works H2:** "The merge is the deploy" — CMS lag → agent cites the old API
 - **Features H2:** "What the merge publishes" — no marketplace / no second editor; `$0`; six Mintlify-shaped cards including "40 components"
 - **Closing:** "Push a docs folder. You're live."
-- **SEO title:** "Blode.md: MDX docs from git, live on merge"
+- **SEO title:** "Edda: MDX docs from git, live on merge"
 
 Supporting files: `.claude/knowledge/CAROL.md`, `NEEDS-STACK.md`, `POSITIONING.md` (More for Less), `VOTERS.md` (V1 = refusal of a second editor).
 
@@ -106,12 +106,12 @@ Candidate answers (pick one):
 Candidate answers:
 
 - A. Keep P1 as H1. Accept that Mintlify owns the same promise, and compete on price/surface underneath.
-- B. Put V1 in the H1 ("Most docs tools want you to leave your editor. Blode.md doesn't." or a shorter refusal). Accept that you are a smaller, stricter Mintlify and that mixed teams bounce.
+- B. Put V1 in the H1 ("Most docs tools want you to leave your editor. Edda doesn't." or a shorter refusal). Accept that you are a smaller, stricter Mintlify and that mixed teams bounce.
 - C. Put P10 in the H1 (you do not stand up Docusaurus). Accept that you are a host, not a philosophy.
 
 **3. V1 is unproven as a voter.**
 
-`asb-voters`: if you cannot name a real cost that people who value the voter have eaten, the voter may be imaginary. Nobody public has chosen Blode.md _because_ there is no editor, _despite_ no logo wall, no SOC 2, founder support, pruned schema. Extremity is asserted from the about page. Rarity vs Mintlify is real (they added the editor). Decisiveness is theoretical. One star is not a customer who ate the cost.
+`asb-voters`: if you cannot name a real cost that people who value the voter have eaten, the voter may be imaginary. Nobody public has chosen Edda _because_ there is no editor, _despite_ no logo wall, no SOC 2, founder support, pruned schema. Extremity is asserted from the about page. Rarity vs Mintlify is real (they added the editor). Decisiveness is theoretical. One star is not a customer who ate the cost.
 
 **4. More for Less is fighting the pricing page.**
 

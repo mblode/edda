@@ -17,7 +17,7 @@ jobs:
       - run: npx turbo run build --filter=@repo/common --filter=@repo/previewing
       - run: npx tsdown --clean
         working-directory: apps/cli
-      # Dogfood: push the docs content to the blodemd platform via the CLI. It
+      # Dogfood: push the docs content to the Edda platform via the CLI. It
       # authenticates with BLODEMD_API_KEY, which the API accepts as its admin
       # token (x-admin-token); the repo secret must equal the API's
       # ADMIN_API_TOKEN env var.

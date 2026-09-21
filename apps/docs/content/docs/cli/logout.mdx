@@ -1,19 +1,19 @@
 ---
-title: blodemd logout
-description: Remove the Blode.md CLI credentials file from your machine so the local OAuth session ends and future deploys require login again.
+title: edda logout
+description: Remove the Edda CLI credentials file from your machine so the local OAuth session ends and future deploys require login again.
 ---
 
-Delete the credentials file saved by `blodemd login` from your local machine.
+Delete the credentials file saved by `edda login` from your local machine.
 
-Use `blodemd logout` when you finish on a shared computer, need to switch GitHub accounts, or want to confirm no local credentials remain before handing off a machine. After logout, commands that require auth, such as `blodemd push`, prompt you to run `blodemd login` again.
+Use `edda logout` when you finish on a shared computer, need to switch GitHub accounts, or want to confirm no local credentials remain before handing off a machine. After logout, commands that require auth, such as `edda push`, prompt you to run `edda login` again.
 
-To switch accounts, run `blodemd logout`, then `blodemd login` and verify with `blodemd whoami`. Logout only removes the local credentials file; it does not revoke access in the Blode.md dashboard or delete deployed docs.
+To switch accounts, run `edda logout`, then `edda login` and verify with `edda whoami`. Logout only removes the local credentials file; it does not revoke access in the Edda dashboard or delete deployed docs.
 
 ```bash
-blodemd logout
+edda logout
 ```
 
-The CLI stores credentials at `~/.config/blodemd/credentials.json` (or `%APPDATA%\blodemd\` on Windows). `blodemd logout` removes that file. If the CLI finds no credentials file, it prints a message and exits cleanly.
+The CLI stores credentials at `~/.config/blodemd/credentials.json` (or `%APPDATA%\blodemd\` on Windows). `edda logout` removes that file. If the CLI finds no credentials file, it prints a message and exits cleanly.
 
 This command has no flags.
 
@@ -21,7 +21,7 @@ This command has no flags.
 
 <CodeGroup>
 ```bash title="Log out"
-blodemd logout
+edda logout
 ```
 
 </CodeGroup>
@@ -29,18 +29,18 @@ blodemd logout
 ### Output
 
 ```bash
-$ blodemd logout
+$ edda logout
 ~ Logged out successfully.
 i Done
 ```
 
 ```bash
-$ blodemd logout
+$ edda logout
 i No credentials found.
 ```
 
 ## Related pages
 
-- [blodemd login](/cli/login) -- sign in again after logout
-- [blodemd whoami](/cli/whoami) -- confirm which account is active
+- [edda login](/cli/login) -- sign in again after logout
+- [edda whoami](/cli/whoami) -- confirm which account is active
 - [CLI overview](/cli/overview) -- credentials storage and global CLI behavior

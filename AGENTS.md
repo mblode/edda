@@ -1,10 +1,12 @@
-# Blode.md Repository Guidelines
+# Edda Repository Guidelines
+
+User-facing product name is **Edda**. Public marketing home is **https://blode.co/edda**. The published CLI is **`edda-docs`** (bin `edda`; `blodemd` remains a compatibility alias). Do not write Blode.md, BlodeMD, or blodemd in UI or copy.
 
 ## Project Structure
 
 - Turborepo monorepo; workspaces defined in root `package.json`.
 - `apps/` — product apps:
-  - `apps/web` (Next.js, marketing — `/`, `/about`, `/blog`, `/changelog`, `/privacy`, `/terms`, `/security`). Owns apex `blode.md`. Rewrites `/docs`, `/api`, `/sites`, `/.well-known`, `/llms*.txt` to `DOCS_APP_URL` and `/app`, `/oauth` to `DASHBOARD_APP_URL`.
+  - `apps/web` (Next.js). Owns apex `blode.md`. Production marketing pages (`/`, `/about`, `/blog`, `/changelog`, `/pricing`, `/compare/mintlify`, `/docs-as-code`, `/free-online-llms-txt-resources`) 301 to `https://blode.co/edda`. Legal pages (`/privacy`, `/terms`, `/security`) stay on `blode.md`. Rewrites `/docs`, `/api`, `/sites`, `/.well-known`, `/llms*.txt` to `DOCS_APP_URL` and `/app`, `/oauth` to `DASHBOARD_APP_URL`.
   - `apps/docs` (Next.js, port 3001) — tenant-proxy (`proxy.ts`), multi-tenant docs rendering, public docs utilities, API routes. Served at `docs.blode.md` (or internally via rewrite).
   - `apps/dashboard` (Next.js, port 3002) — product dashboard (`/app`) and auth (`/oauth`). Served via internal rewrite from `apps/web` or from a dedicated dashboard deployment.
   - `apps/api` (Hono, port 4000).
@@ -55,7 +57,7 @@ Copy `.env.example` to `.env.local` before running the API. Required variables i
 ## Gotchas
 
 - **API build may fail** due to ESM/TypeScript module resolution issues with Drizzle and `@repo/contracts`. Run `npx turbo run build --filter=docs --filter=dashboard` to build only the frontends that still depend on the docs/dashboard server code if the API is blocking deployment.
-- **Dashboard production deploys run schema sync first.** `apps/dashboard/vercel.json` uses `apps/dashboard/scripts/vercel-build.sh`, which runs `npm run db:push:ci --workspace=packages/db` when `VERCEL_ENV=production` before building the app. Keep `DATABASE_URL` set on `blodemd-dashboard`, and do not remove the build wrapper unless schema sync moves somewhere else deliberately.
+- **Dashboard production deploys run schema sync first.** `apps/dashboard/vercel.json` uses `apps/dashboard/scripts/vercel-build.sh`, which runs `npm run db:push:ci --workspace=packages/db` when `VERCEL_ENV=production` before building the app. Keep `DATABASE_URL` set on `edda-dashboard`, and do not remove the build wrapper unless schema sync moves somewhere else deliberately.
 - **`@repo/supabase` is deprecated** — do not add new imports or dependencies on it.
 - **Multi-tenant routing** uses Next.js 16's `proxy.ts` convention (`apps/docs/proxy.ts`), not `middleware.ts`. Never create a `middleware.ts` — it conflicts with `proxy.ts` and breaks the build. `DEFAULT_RESERVED_PATHS` in `apps/docs/lib/tenancy.ts` must keep `/app` and `/oauth` reserved so tenant resolution cannot consume dashboard/auth paths when apex traffic reaches the docs app. Changes to domain/tenant logic require updating both the docs proxy and the API tenant resolution in `apps/api/src/index.ts`.
 - **apps/web ↔ apps/docs ↔ apps/dashboard split.** Marketing lives in `apps/web`; tenant docs live in `apps/docs`; auth/dashboard lives in `apps/dashboard`. `apps/web/next.config.js` rewrites `/docs/*`, `/api/*`, `/sites/*`, `/.well-known/*`, `/llms*.txt` to `DOCS_APP_URL` (default `http://127.0.0.1:3001`) and `/app/*`, `/oauth/*` to `DASHBOARD_APP_URL` (default `http://127.0.0.1:3002`, or `https://app.<PLATFORM_ROOT_DOMAIN>` on Vercel). `apps/docs/next.config.js` also proxies `/app/*`, `/oauth/*`, and matching `/_next/*` assets to `DASHBOARD_APP_URL` as a compatibility layer when apex traffic lands on docs or an upstream rewrite misroutes dashboard traffic. The original host rides along as `x-forwarded-host`; only `apps/docs/proxy.ts` reads it via `getRequestHost` in `apps/docs/lib/tenancy.ts`. In production set both `DOCS_APP_URL` and `DASHBOARD_APP_URL` to their deployment URLs; locally set `DOCS_APP_URL=https://docs.localhost` and `DASHBOARD_APP_URL=http://127.0.0.1:3002` in `apps/web/.env.local` and run `npm run dev --workspace=docs` plus `npm run dev --workspace=dashboard` alongside.

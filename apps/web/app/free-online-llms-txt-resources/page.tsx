@@ -41,7 +41,7 @@ const toc = [
   { href: "#examples", label: "Examples" },
   { href: "#specs-and-standards", label: "Specs & standards" },
   { href: "#tools-and-generators", label: "Tools & generators" },
-  { href: "#related-docs-on-blode-md", label: "Related docs on Blode.md" },
+  { href: "#related-docs-on-blode-md", label: "Related docs on Edda" },
   { href: "#faq", label: "FAQ" },
 ] as const;
 
@@ -68,8 +68,8 @@ const faqs = [
   },
   {
     answer:
-      "Yes. Blode.md sites get tenant-aware /llms.txt, /llms-full.txt, robots.txt, sitemap.xml, and per-page .md exports automatically. See /docs/features/seo for the full list.",
-    question: "Does Blode.md generate llms.txt automatically?",
+      "Yes. Edda sites get tenant-aware /llms.txt, /llms-full.txt, robots.txt, sitemap.xml, and per-page .md exports automatically. See /docs/features/seo for the full list.",
+    question: "Does Edda generate llms.txt automatically?",
   },
 ] as const;
 
@@ -343,8 +343,8 @@ export default function FreeOnlineLlmsTxtResourcesPage() {
                 </table>
               </div>
               <p>
-                If you host docs on Blode.md, you do not hand-author the index
-                for every deploy: the platform generates tenant-aware{" "}
+                If you host docs on Edda, you do not hand-author the index for
+                every deploy: the platform generates tenant-aware{" "}
                 <code>llms.txt</code>, <code>llms-full.txt</code>, and{" "}
                 <code>.md</code> page exports from your MDX. Configure the
                 public URL with <code>seo.siteUrl</code> when a proxy sits in
@@ -383,7 +383,7 @@ export default function FreeOnlineLlmsTxtResourcesPage() {
                 >
                   llmstxt.org
                 </a>
-                , and Blode.md&apos;s own{" "}
+                , and Edda&apos;s own{" "}
                 <Link className="underline underline-offset-4" href="/llms.txt">
                   /llms.txt
                 </Link>
@@ -486,7 +486,7 @@ export default function FreeOnlineLlmsTxtResourcesPage() {
                 </li>
                 <li>
                   <Link className="underline underline-offset-4" href="/">
-                    Blode.md
+                    Edda
                   </Link>
                   : git-native docs, published on merge. Sites ship{" "}
                   <code>llms.txt</code> / <code>llms-full.txt</code> /{" "}
@@ -505,7 +505,7 @@ export default function FreeOnlineLlmsTxtResourcesPage() {
                 className="h-display font-bold text-2xl md:text-3xl"
                 id="related-docs-on-blode-md"
               >
-                Related docs on Blode.md
+                Related docs on Edda
               </h2>
               <p>
                 <strong>Short answer:</strong> Platform docs cover SEO exports;
@@ -514,7 +514,7 @@ export default function FreeOnlineLlmsTxtResourcesPage() {
               <ul>
                 <li>
                   <Link className="underline underline-offset-4" href="/docs">
-                    Blode.md docs
+                    Edda docs
                   </Link>
                 </li>
                 <li>
@@ -537,7 +537,7 @@ export default function FreeOnlineLlmsTxtResourcesPage() {
                 </li>
                 <li>
                   <Link className="underline underline-offset-4" href="/about">
-                    About Blode.md
+                    About Edda
                   </Link>
                 </li>
               </ul>
@@ -559,9 +559,9 @@ export default function FreeOnlineLlmsTxtResourcesPage() {
               </h2>
               <p>
                 If you want the educational path above without maintaining
-                generators yourself, Blode.md turns a folder of MDX into a docs
-                site that includes the AI-facing exports. Write locally, push
-                from the CLI, review in a pull request. Same loop as code.
+                generators yourself, Edda turns a folder of MDX into a docs site
+                that includes the AI-facing exports. Write locally, push from
+                the CLI, review in a pull request. Same loop as code.
               </p>
               <div className="not-typeset mt-6 flex flex-wrap items-center gap-3">
                 <Button asChild size="lg">

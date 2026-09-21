@@ -99,7 +99,7 @@ export const toCliError = (error: unknown): CliError => {
   if (error instanceof Error) {
     if (error instanceof TypeError && error.message.includes("fetch")) {
       return new CliError(
-        "Cannot connect to Blode.md API.",
+        "Cannot connect to Edda API.",
         EXIT_CODES.NETWORK,
         "Check your internet connection and API URL configuration.",
         { code: ERROR_CODES.NETWORK }
@@ -118,7 +118,7 @@ export const toCliError = (error: unknown): CliError => {
       return new CliError(
         error.message,
         EXIT_CODES.AUTH_REQUIRED,
-        'Check your API key or run "blodemd login".'
+        'Check your API key or run "edda login".'
       );
     }
 

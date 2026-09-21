@@ -23,7 +23,7 @@ import {
 } from "@/lib/structured-data";
 
 const pricingDescription =
-  "Blode.md pricing: hosted is $0 with unlimited seats. No visual editor, no marketplace, no SOC 2. MIT CLI and renderer if you self-host.";
+  "Edda pricing: hosted is $0 with unlimited seats. No visual editor, no marketplace, no SOC 2. MIT CLI and renderer if you self-host.";
 const pricingTitle = "Pricing for hosted and self-hosted docs";
 
 export const metadata = pageMetadata({

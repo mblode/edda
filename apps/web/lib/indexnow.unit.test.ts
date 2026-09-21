@@ -20,16 +20,19 @@ describe("indexnow helpers", () => {
   });
 
   it("isIndexNowOwnedUrl accepts only https blode.md URLs", () => {
-    expect(isIndexNowOwnedUrl("https://blode.md/about")).toBe(true);
-    expect(isIndexNowOwnedUrl("http://blode.md/about")).toBe(false);
+    expect(isIndexNowOwnedUrl("https://blode.md/privacy")).toBe(true);
+    expect(isIndexNowOwnedUrl("http://blode.md/privacy")).toBe(false);
     expect(isIndexNowOwnedUrl("https://evil.example/about")).toBe(false);
     expect(isIndexNowOwnedUrl("not-a-url")).toBe(false);
   });
 
-  it("getIndexNowUrls includes marketing canonical paths", () => {
+  it("getIndexNowUrls includes remaining on-host legal pages only", () => {
     const urls = getIndexNowUrls();
-    expect(urls).toContain("https://blode.md/");
-    expect(urls).toContain("https://blode.md/free-online-llms-txt-resources");
+    expect(urls).toContain("https://blode.md/privacy");
+    expect(urls).toContain("https://blode.md/terms");
+    expect(urls).toContain("https://blode.md/security");
+    expect(urls).not.toContain("https://blode.md/");
+    expect(urls).not.toContain("https://blode.md/about");
   });
 
   it("submitIndexNow returns 503 when INDEXNOW_KEY is missing", async () => {
@@ -56,7 +59,7 @@ describe("indexnow helpers", () => {
     });
     vi.stubGlobal("fetch", fetchMock);
 
-    const result = await submitIndexNow(["https://blode.md/about"]);
+    const result = await submitIndexNow(["https://blode.md/privacy"]);
     expect(result.ok).toBe(false);
     expect(result.status).toBe(429);
     expect(result.submitted).toBe(0);

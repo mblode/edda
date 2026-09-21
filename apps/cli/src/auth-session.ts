@@ -1,4 +1,4 @@
-import { BLODE_API_KEY_ENV, OAUTH_CLIENT_ID } from "./constants.js";
+import { OAUTH_CLIENT_ID, readApiKeyEnv } from "./constants.js";
 import { refreshAccessToken } from "./oauth-token.js";
 import {
   clearStoredCredentials,
@@ -108,12 +108,11 @@ export const resolveTokenStatus = (
 
 /**
  * The one definition of credential precedence: an explicit `--api-key` wins,
- * then `BLODEMD_API_KEY`, then the stored login session. A blank value counts
+ * then `EDDA_API_KEY` / `BLODEMD_API_KEY`, then the stored login session. A blank value counts
  * as unset. Every command that authenticates reads it from here, because three
  * commands deriving it separately is how `whoami` came to report a session
  * while `push` was using a key.
  */
 export const resolveApiKeyCredential = (
   apiKeyOption?: string
-): string | undefined =>
-  (apiKeyOption ?? process.env[BLODE_API_KEY_ENV])?.trim() || undefined;
+): string | undefined => (apiKeyOption ?? readApiKeyEnv())?.trim() || undefined;

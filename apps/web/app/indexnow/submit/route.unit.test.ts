@@ -6,7 +6,7 @@ const submitIndexNow = vi.hoisted(() =>
       ok: true,
       status: 200,
       submitted: 1,
-      urlList: ["https://blode.md/"],
+      urlList: ["https://blode.co/edda"],
     })
   )
 );

@@ -1,19 +1,19 @@
 ---
 title: REST API overview
 sidebarTitle: Overview
-description: Use the Blode.md REST API for programmatic access to projects, deployments, and domains when you need custom tooling beyond the CLI workflows.
+description: Use the Edda REST API for programmatic access to projects, deployments, and domains when you need custom tooling beyond the CLI workflows.
 ---
 
 The base URL for all requests is `https://api.blode.md`.
 
 <Callout type="note">
   The CLI handles deployments automatically. Use the REST API for custom
-  integrations or tooling built on top of blodemd.
+  integrations or tooling built on top of edda.
 </Callout>
 
 ## Authentication
 
-Every endpoint uses the Supabase user session token issued by `blodemd login`:
+Every endpoint uses the Supabase user session token issued by `edda login`:
 
 ```
 Authorization: Bearer <token>

@@ -1,16 +1,16 @@
 ---
-title: blodemd validate
+title: edda validate
 description: Validate docs.json and your docs directory before deploy so the CLI catches schema errors, missing files, and common config mistakes early.
 ---
 
 Check that your `docs.json` file is valid JSON and can be parsed by the CLI before deploying.
 
-Run `blodemd validate` early in your workflow to catch schema errors, missing navigation pages, and malformed config before you spend time on preview or deploy. Unlike `blodemd push`, validate does not require authentication, which makes it a good fit for pre-commit hooks and CI jobs that only check configuration.
+Run `edda validate` early in your workflow to catch schema errors, missing navigation pages, and malformed config before you spend time on preview or deploy. Unlike `edda push`, validate does not require authentication, which makes it a good fit for pre-commit hooks and CI jobs that only check configuration.
 
-A practical sequence: scaffold with `blodemd new`, edit `docs.json` and add pages, run `blodemd validate`, then `blodemd dev` to preview and `blodemd push` when you are ready. If validate fails, fix the reported issue in `docs.json` or your page paths before trying again.
+A practical sequence: scaffold with `edda new`, edit `docs.json` and add pages, run `edda validate`, then `edda dev` to preview and `edda push` when you are ready. If validate fails, fix the reported issue in `docs.json` or your page paths before trying again.
 
 ```bash
-blodemd validate [dir]
+edda validate [dir]
 ```
 
 ## Directory resolution
@@ -36,11 +36,11 @@ If you omit the `dir` argument, the CLI searches for `docs.json` in these locati
 
 <CodeGroup>
 ```bash title="Validate from default location"
-blodemd validate
+edda validate
 ```
 
 ```bash title="Validate a specific directory"
-blodemd validate ./my-docs
+edda validate ./my-docs
 ```
 
 </CodeGroup>
@@ -48,7 +48,7 @@ blodemd validate ./my-docs
 ### Successful output
 
 ```bash
-$ blodemd validate
+$ edda validate
 ~ docs.json is valid.
 i Done
 ```
@@ -58,20 +58,20 @@ i Done
 Validate also reports warnings that do not block a deploy. The one most worth acting on: pages without a frontmatter `description`. Each page's line in `llms.txt` is `[title](url.md): description`, and that line is how coding agents choose which page to fetch, so a page without one lists as a bare title. See [Docs for agents](/features/agent-readable-docs).
 
 ```bash
-$ blodemd validate
+$ edda validate
 ! 2 pages have no frontmatter description (guides/auth, quickstart). Agents choose pages from the description line in llms.txt, so add one sentence to each.
 ~ docs.json is valid.
 i Done
 ```
 
 <Callout type="info">
-  Running `blodemd push` also validates `docs.json` as its first step. A
-  standalone validate step is useful when you want to fail fast without needing
+  Running `edda push` also validates `docs.json` as its first step. A standalone
+  validate step is useful when you want to fail fast without needing
   authentication.
 </Callout>
 
 ## Related pages
 
-- [blodemd push](/cli/push) -- deploy after validate passes
-- [blodemd new](/cli/new) -- scaffold docs.json and index.mdx
+- [edda push](/cli/push) -- deploy after validate passes
+- [edda new](/cli/new) -- scaffold docs.json and index.mdx
 - [docs.json reference](/configuration/docs-json) -- schema fields validate checks

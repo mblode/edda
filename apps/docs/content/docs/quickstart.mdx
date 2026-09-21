@@ -1,6 +1,6 @@
 ---
 title: Quickstart
-description: Install the Blode.md CLI, authenticate with GitHub, scaffold a docs project with blodemd new, preview locally, and deploy live docs in minutes.
+description: Install the Edda CLI, authenticate with GitHub, scaffold a docs project with edda new, preview locally, and deploy live docs in minutes.
 ---
 
 This guide walks you through installing the CLI, scaffolding a docs project, and deploying it.
@@ -13,19 +13,19 @@ You need [Node.js](https://nodejs.org) 24.x.
 
 <Steps>
   <Step title="Install the CLI">
-    <Installer command="npm i -g blodemd" />
+    <Installer command="npm i -g edda-docs" />
   </Step>
   <Step title="Authenticate">
     ```bash
-    blodemd login
+    edda login
     ```
 
-    This opens your browser for OAuth authentication. Use `blodemd login --token` to paste an API key instead.
+    This opens your browser for OAuth authentication. Use `edda login --token` to paste an API key instead.
 
   </Step>
   <Step title="Scaffold your docs">
     ```bash
-    blodemd new
+    edda new
     ```
 
     In a non-empty repo, the CLI recommends creating a `docs/` subdirectory. Choosing that path creates:
@@ -37,7 +37,7 @@ You need [Node.js](https://nodejs.org) 24.x.
       </Tree.Folder>
     </Tree>
 
-    If you want to scaffold the current directory instead, run `blodemd new .`.
+    If you want to scaffold the current directory instead, run `edda new .`.
 
     For a fuller kit with `.gitignore`, `README.md`, `AGENTS.md`, `CLAUDE.md`, `favicon.svg`, `logo/`, and `images/`, add `--template starter`.
 
@@ -59,7 +59,7 @@ You need [Node.js](https://nodejs.org) 24.x.
   </Step>
   <Step title="Deploy">
     ```bash
-    blodemd push docs
+    edda push docs
     ```
 
     Your docs are live at `your-slug.blode.md`.
@@ -70,8 +70,8 @@ You need [Node.js](https://nodejs.org) 24.x.
 ## Prefer GitHub?
 
 Auto-deploy from a GitHub repo works once the repo already has a docs folder
-with `docs.json` (scaffold it with `blodemd new docs`, then commit). In the
-dashboard, open your project → **Git**, install the Blode.md GitHub App, and
+with `docs.json` (scaffold it with `edda new docs`, then commit). In the
+dashboard, open your project → **Git**, install the Edda GitHub App, and
 point at that folder. Connecting an empty repo will fail until the folder
 exists.
 

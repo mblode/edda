@@ -263,9 +263,9 @@ export const DocArticle = ({
                 Published with{" "}
                 <a
                   className="underline underline-offset-4 hover:text-foreground"
-                  href="https://blode.md"
+                  href="https://blode.co/edda"
                 >
-                  Blode.md
+                  Edda
                 </a>
               </p>
             </div>

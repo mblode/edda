@@ -10,7 +10,7 @@ import { marketingUrl, pageMetadata } from "@/lib/marketing-site";
 import { breadcrumbNode, pageJsonLd, webPageNode } from "@/lib/structured-data";
 
 const blogDescription =
-  "Notes, deep dives, and product updates from the Blode.md team: git-native docs, published on merge.";
+  "Notes, deep dives, and product updates from the Edda team: git-native docs, published on merge.";
 const blogTitle = "Blog, updates, and product notes";
 
 export const metadata = pageMetadata({
@@ -52,7 +52,7 @@ export default function BlogPage() {
             Notes from the repo
           </h1>
           <p className="measure mt-6 text-balance text-lg text-muted-foreground md:text-xl">
-            Updates, decisions, and ship notes from the team behind Blode.md.
+            Updates, decisions, and ship notes from the team behind Edda.
           </p>
         </div>
       </section>
@@ -80,7 +80,7 @@ export default function BlogPage() {
                 className="underline underline-offset-4"
                 href="/blog/intro-to-blode-md"
               >
-                Hello, Blode.md
+                Hello, Edda
               </Link>{" "}
               or browse our{" "}
               <Link

@@ -151,8 +151,8 @@ export const GitConnectionPanel = ({
         <div className="space-y-3 text-sm">
           <p className="text-muted-foreground">
             Need a docs folder first? Run{" "}
-            <code className="text-foreground">blodemd new docs</code> in your
-            repo, commit it, then install the Blode.md GitHub App below.
+            <code className="text-foreground">edda new docs</code> in your repo,
+            commit it, then install the Edda GitHub App below.
           </p>
           <Button disabled={pending} onClick={handleInstall} type="button">
             {pending ? "Redirecting..." : "Install on GitHub"}

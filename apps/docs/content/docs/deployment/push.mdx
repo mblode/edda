@@ -1,14 +1,14 @@
 ---
 title: Deploying with push
-description: Deploy your MDX docs to Blode.md with blodemd push, including project slug resolution, API key auth, directory options, and what happens during upload.
+description: Deploy your MDX docs to Edda with edda push, including project slug resolution, API key auth, directory options, and what happens during upload.
 ---
 
-You deploy documentation to Blode.md by running `blodemd push`. This page covers the command options, how directory resolution works, and what happens during a deployment.
+You deploy documentation to Edda by running `edda push`. This page covers the command options, how directory resolution works, and what happens during a deployment.
 
 ## Command
 
 ```bash
-blodemd push [dir]
+edda push [dir]
 ```
 
 The optional `dir` argument specifies the path to your docs directory. If omitted, the CLI searches for `docs.json` automatically.
@@ -56,13 +56,13 @@ When you omit the `dir` argument, the CLI checks for `docs.json` in this order:
 If none of these contain a `docs.json`, the CLI defaults to the current directory.
 
 <Callout type="info">
-  If you pass an explicit directory (e.g., `blodemd push my-docs`), the CLI uses
+  If you pass an explicit directory (e.g., `edda push my-docs`), the CLI uses
   that path directly without searching.
 </Callout>
 
 ## What happens during a push
 
-When you run `blodemd push`, the CLI performs these steps:
+When you run `edda push`, the CLI performs these steps:
 
 <Steps>
   <Step title="Validate configuration">
@@ -71,7 +71,7 @@ When you run `blodemd push`, the CLI performs these steps:
   </Step>
   <Step title="Resolve credentials">
     Authentication is resolved in this order: `--api-key` flag,
-    `BLODEMD_API_KEY` environment variable, stored credentials from `blodemd
+    `BLODEMD_API_KEY` environment variable, stored credentials from `edda
     login`.
   </Step>
   <Step title="Collect files">
@@ -96,7 +96,7 @@ When you run `blodemd push`, the CLI performs these steps:
 
 ## Project auto-creation
 
-If the project slug does not exist on Blode.md, the CLI offers to create it for you. This only works when you are logged in with browser OAuth (via `blodemd login`). API key authentication cannot auto-create projects.
+If the project slug does not exist on Edda, the CLI offers to create it for you. This only works when you are logged in with browser OAuth (via `edda login`). API key authentication cannot auto-create projects.
 
 When a project is created, the CLI prints an API key for use in CI/CD pipelines. Save this key -- it is only displayed once.
 

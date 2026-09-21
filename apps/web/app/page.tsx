@@ -42,7 +42,7 @@ const faqs = [
   {
     answer:
       "People who already write MDX in git and review docs in a pull request. If you want a visual editor, a plugin marketplace, or a CMS, this is the wrong tool.",
-    question: "Who should use Blode.md?",
+    question: "Who should use Edda?",
   },
   {
     answer:
@@ -51,8 +51,8 @@ const faqs = [
   },
   {
     answer:
-      "Hosted Blode.md is $0: unlimited projects, pages, and team seats, with custom domains, search, MDX, and API references included. What you do not get: a visual editor, a plugin marketplace, SOC 2, SSO, an SLA, or a logo wall. Support is the founder. The CLI and renderer are MIT if you want the same binary on your Postgres. See the pricing page.",
-    question: "How much does Blode.md cost?",
+      "Hosted Edda is $0: unlimited projects, pages, and team seats, with custom domains, search, MDX, and API references included. What you do not get: a visual editor, a plugin marketplace, SOC 2, SSO, an SLA, or a logo wall. Support is the founder. The CLI and renderer are MIT if you want the same binary on your Postgres. See the pricing page.",
+    question: "How much does Edda cost?",
   },
   {
     answer:
@@ -66,8 +66,8 @@ const faqs = [
   },
   {
     answer:
-      "Blode.md is built by Matthew Blode. Email m@blode.co or open an issue on GitHub at github.com/mblode/blodemd. The source is MIT.",
-    question: "Who builds Blode.md and how do I get support?",
+      "Edda is built by Matthew Blode. Email m@blode.co or open an issue on GitHub at github.com/mblode/blodemd. The source is MIT.",
+    question: "Who builds Edda and how do I get support?",
   },
 ];
 
@@ -251,7 +251,7 @@ export default function HomePage() {
                 <div className="relative overflow-hidden rounded-xl bg-surface px-6 pb-6 pt-14 font-mono text-sm md:p-8 md:pt-8">
                   <CopyButton
                     className="absolute right-3 top-3 text-muted-foreground"
-                    content={`npm i -g blodemd\nblodemd login\nblodemd new docs\nblodemd push docs`}
+                    content={`npm i -g edda-docs\nedda login\nedda new docs\nedda push docs`}
                     size="sm"
                     variant="ghost"
                   />
@@ -260,7 +260,7 @@ export default function HomePage() {
                       <p className="text-muted-foreground"># install the CLI</p>
                       <p className="break-words">
                         <span className="text-muted-foreground">$</span> npm i
-                        -g blodemd
+                        -g edda-docs
                       </p>
                     </div>
                     <div>
@@ -268,7 +268,7 @@ export default function HomePage() {
                         # browser sign-in with GitHub
                       </p>
                       <p className="break-words">
-                        <span className="text-muted-foreground">$</span> blodemd
+                        <span className="text-muted-foreground">$</span> edda
                         login
                       </p>
                     </div>
@@ -277,14 +277,14 @@ export default function HomePage() {
                         # scaffold from your project root
                       </p>
                       <p className="break-words">
-                        <span className="text-muted-foreground">$</span> blodemd
+                        <span className="text-muted-foreground">$</span> edda
                         new docs
                       </p>
                     </div>
                     <div>
                       <p className="text-muted-foreground"># ship it</p>
                       <p className="break-words">
-                        <span className="text-muted-foreground">$</span> blodemd
+                        <span className="text-muted-foreground">$</span> edda
                         push docs
                       </p>
                     </div>
@@ -305,7 +305,7 @@ export default function HomePage() {
                         <span className="font-mono text-foreground">docs/</span>{" "}
                         folder first (or run{" "}
                         <span className="font-mono text-foreground">
-                          blodemd new docs
+                          edda new docs
                         </span>
                         )
                       </span>
@@ -444,8 +444,8 @@ export default function HomePage() {
             </div>
             <div className="measure flex flex-col gap-6 text-muted-foreground">
               <p>
-                I built Blode.md so docs stay in the repo, in the editor I
-                already use. Support is me:{" "}
+                I built Edda so docs stay in the repo, in the editor I already
+                use. Support is me:{" "}
                 <a
                   className="underline underline-offset-4"
                   href={`mailto:${siteConfig.links.email}`}

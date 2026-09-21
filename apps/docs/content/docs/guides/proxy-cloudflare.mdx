@@ -1,9 +1,9 @@
 ---
 title: Proxy /docs through Cloudflare Workers
-description: Use a Cloudflare Worker to proxy /docs and /_docs paths on your domain to a Blode.md site, keeping marketing pages on your apex or subdomain.
+description: Use a Cloudflare Worker to proxy /docs and /_docs paths on your domain to an Edda site, keeping marketing pages on your apex or subdomain.
 ---
 
-Use a Cloudflare Worker to proxy any path under `/docs` to your Blode.md site.
+Use a Cloudflare Worker to proxy any path under `/docs` to your Edda site.
 Works with apex domains and subdomains.
 
 ## Worker script
@@ -43,7 +43,7 @@ yourdomain.com/_docs/*
 ```
 
 Cloudflare invokes the Worker for every matching request and forwards them to
-your Blode.md site without exposing the upstream URL to users. Both routes are
+your Edda site without exposing the upstream URL to users. Both routes are
 required: the second is what makes the asset branch above reachable.
 
 ## Caching
@@ -53,12 +53,12 @@ Use Cloudflare&apos;s default cache behavior, or wrap the response with
 if you need fine control.
 
 If you enable caching in the Worker, keep the `Accept` header in the cache key
-or bypass the cache when it contains `text/markdown`. Blode.md returns Markdown
+or bypass the cache when it contains `text/markdown`. Edda returns Markdown
 for `Accept: text/markdown` on every page URL; a cache keyed on the URL alone
 hands that request the HTML it stored for a browser. Coding agents that send
 the header would then read your HTML shell instead of the page.
 
-## Strip the prefix in Blode.md
+## Strip the prefix in Edda
 
 Set the default subdomain path prefix to `/docs` in **Dashboard → Project →
 Domains**, or pass `pathPrefix: "/docs"` when creating the domain via the API,

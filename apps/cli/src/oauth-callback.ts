@@ -11,7 +11,7 @@ interface OAuthCallbackOptions {
 }
 
 const SUCCESS_HTML =
-  '<!doctype html><html><head><meta charset="utf-8"/><title>Blode.md CLI</title></head><body><h2>Logged in! You can close this tab.</h2></body></html>';
+  '<!doctype html><html><head><meta charset="utf-8"/><title>Edda CLI</title></head><body><h2>Logged in! You can close this tab.</h2></body></html>';
 
 const escapeHtml = (text: string): string =>
   text
@@ -21,7 +21,7 @@ const escapeHtml = (text: string): string =>
     .replaceAll('"', "&quot;");
 
 const errorHtml = (message: string): string =>
-  `<!doctype html><html><head><meta charset="utf-8"/><title>Blode.md CLI</title></head><body><h2>Login failed</h2><p>${escapeHtml(message)}</p></body></html>`;
+  `<!doctype html><html><head><meta charset="utf-8"/><title>Edda CLI</title></head><body><h2>Login failed</h2><p>${escapeHtml(message)}</p></body></html>`;
 
 export const waitForOAuthCode = (
   options: OAuthCallbackOptions

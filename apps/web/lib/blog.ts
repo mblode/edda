@@ -18,6 +18,6 @@ export const blogPosts: BlogPost[] = [
     excerpt:
       "Why we built a docs platform that publishes from GitHub in three commands.",
     slug: "intro-to-blode-md",
-    title: "Hello, Blode.md",
+    title: "Hello, Edda",
   },
 ];

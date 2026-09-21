@@ -1,4 +1,4 @@
-# Positioning statements — Blode.md
+# Positioning statements — Edda
 
 Targets Carol (`.claude/knowledge/CAROL.md`) as a **hypothesis**; until onboarding interviews exist, the about page speaks first-person as the founder. Needs stack: `.claude/knowledge/NEEDS-STACK.md`. Voter: `.claude/knowledge/VOTERS.md`.
 
@@ -26,7 +26,7 @@ Reworked from: "AI agents learn your product from your docs."
 **P3.** Write MDX in the repo. The pull request is the review. The merge publishes the site. [N1; K1]
 Reworked from: "Docs that ship with the code." Homepage role: subhead.
 
-**P4.** Two publish paths: `blodemd login` → `blodemd new docs` → `blodemd push docs`, or install the GitHub App and push to `main` once a folder with `docs.json` exists. [N1; S5]
+**P4.** Two publish paths: `edda login` → `edda new docs` → `edda push docs`, or install the GitHub App and push to `main` once a folder with `docs.json` exists. [N1; S5]
 Homepage role: How-it-works tabs. CTA verb is "Connect GitHub" (the oauth click), not "Start shipping."
 
 **P5.** Callouts, tabs, code groups, OpenAPI refs — the component map lives in the docs, not as a homepage brag. [N1]
@@ -34,18 +34,18 @@ Reworked from: "40 components" on the homepage (cut: a spec, not a reason to buy
 
 **P6.** Point `docs.json` at an OpenAPI spec and ship the API reference in the same deploy as the guides. [N1]
 
-**P7.** Hosted Blode.md is `$0` — unlimited projects, pages, and seats — with custom domains, search, MDX, and API references included. The CLI and renderer are MIT if you want the same binary on your own Postgres. [N1; K4]
+**P7.** Hosted Edda is `$0` — unlimited projects, pages, and seats — with custom domains, search, MDX, and API references included. The CLI and renderer are MIT if you want the same binary on your own Postgres. [N1; K4]
 Homepage role: subhead + viability card. Not the button.
 
 ## Against the vendors above (bracket cites the level countered)
 
-**P8.** Mintlify's git workflow is MDX in the repo, plus a web editor that commits back, plus a marketplace. Starter is $0. Blode.md is that git path without the editor or the marketplace. We do not claim drop-in compatibility with every Mintlify config key. [N1; V1; W6]
+**P8.** Mintlify's git workflow is MDX in the repo, plus a web editor that commits back, plus a marketplace. Starter is $0. Edda is that git path without the editor or the marketplace. We do not claim drop-in compatibility with every Mintlify config key. [N1; V1; W6]
 Gap-fill: named enemy. Homepage role: FAQ "How is this different from Mintlify?" — do not say "without the seats"; Starter already includes five.
 
 **P8b.** A docs CMS (GitBook, Notion, Confluence) will take the writing out of the pull request. If that is the workflow you want, this is the wrong tool. [N4; K1; D1]
 Supporting anti-market. FAQ "Is there a visual editor?" — not the H1. Do not say "most docs tools want you to leave your editor"; that is false of Mintlify's git workflow.
 
-**P9.** An AI search box on top of drifted CMS copy still answers from the wrong version. Blode.md does not replace git with a bot; it publishes Markdown from the same commit the HTML came from. [N4; K3]
+**P9.** An AI search box on top of drifted CMS copy still answers from the wrong version. Edda does not replace git with a bot; it publishes Markdown from the same commit the HTML came from. [N4; K3]
 
 ## What you make obsolete (below)
 
@@ -61,7 +61,7 @@ Homepage role: TextReveal + How-it-works body. Not the named enemy.
 Source: Mintlify, _The 2026 State of Knowledge Report_ (mintlify.com/state-of-knowledge/2026), traffic Feb 1 to Aug 31 2026 on Mintlify-hosted docs plus a 329-respondent survey. It is the named enemy's own data, which is why it is usable: it argues for the git path regardless of host.
 
 - Agents were 66% of docs traffic in August 2026 (257M agent requests, 131M human page loads); 83% of agent traffic came through `.md`, `llms.txt`, or skills. Agents fetch those only when they know they exist. Supports P2 and P12; do not turn it into a "knowledge layer" line (retired).
-- Benchmark, 2,400 tasks, 20 sites, Claude and Codex: accuracy 94 to 99% in every format; failed requests per task 2.23 HTML, 1.42 Markdown, 0.11 Markdown with a link to `llms.txt`; 26 to 60% fewer tokens. Blode.md's `.md` twins already open with that link. Usable as a homepage FAQ sentence and in the docs; not a stat to build the H1 on.
+- Benchmark, 2,400 tasks, 20 sites, Claude and Codex: accuracy 94 to 99% in every format; failed requests per task 2.23 HTML, 1.42 Markdown, 0.11 Markdown with a link to `llms.txt`; 26 to 60% fewer tokens. Edda's `.md` twins already open with that link. Usable as a homepage FAQ sentence and in the docs; not a stat to build the H1 on.
 - Freshness: 24% of teams get product changes into docs the same day, 54% within a week, 22% a month or longer. Supports P3/P4 (publish from the merge). It is a survey stat, not an observed inciting event: P13 stays hypothesized.
 - 47% of Mintlify customers have not measured whether discoverability moved growth. Consistent with PROBLEM-SCORE: no adoption promise (N5).
 
@@ -75,7 +75,7 @@ Not usable: their MCP call counts and doc-assistant channel (we have no equivale
 
 ## Aspirations (reference, never promise)
 
-**P15.** When the feature and the docs merge together, the integration a developer attempts is the one you actually shipped. That is the part Blode.md plays in adoption — it does not claim it will get you the users. [N5, N6]
+**P15.** When the feature and the docs merge together, the integration a developer attempts is the one you actually shipped. That is the part Edda plays in adoption — it does not claim it will get you the users. [N5, N6]
 
 ## The H1 (voter)
 
@@ -88,7 +88,7 @@ Mintlify added a web editor. We will not. Opposite: ship a visual editor so mixe
 - "Ship the knowledge layer your AI needs."
 - "Get started free." / "Start shipping." — fluff; Opposite of "don't start" is nonsense. Replaced by "Connect GitHub."
 - "What's the catch? None." — contradicts More for Less. Replaced by named trade-offs.
-- "Most docs tools want you to leave your editor. Blode.md doesn't." — true of GitBook, false of Mintlify's git workflow. Retired from homepage/H1. The intro post may keep it as origin history.
+- "Most docs tools want you to leave your editor. Edda doesn't." — true of GitBook, false of Mintlify's git workflow. Retired from homepage/H1. The intro post may keep it as origin history.
 - "One MDX project, one domain, one price."
 - "fast docs" / "in seconds" / "in about a minute" / "under a minute" — unverified timing.
 - "40 components" as a homepage brag.

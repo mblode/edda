@@ -115,7 +115,7 @@ const EmptyState = ({ project }: { project: Project }) => (
         </p>
       </div>
       <code className="rounded-md bg-surface px-3 py-1.5 font-mono text-foreground text-xs">
-        blodemd push docs --project {project.slug}
+        edda push docs --project {project.slug}
       </code>
     </CardContent>
   </Card>

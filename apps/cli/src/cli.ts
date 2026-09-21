@@ -14,7 +14,7 @@ import { assertSupportedNodeVersion, readCliVersion } from "./runtime.js";
 const program = new Command();
 const cliVersion = readCliVersion(import.meta.url);
 
-program.name("blodemd").description("Blode.md CLI").version(cliVersion);
+program.name("edda").description("Edda CLI").version(cliVersion);
 program.hook("preAction", () => {
   assertSupportedNodeVersion();
 });
@@ -32,12 +32,12 @@ program.addHelpText(
   "after",
   `
 Example:
-  $ blodemd push ./docs --project my-docs
+  $ edda push ./docs --project my-docs
 
 Environment:
-  BLODEMD_API_KEY     API key, used ahead of a stored login session
-  BLODEMD_PROJECT     Default --project slug
-  BLODEMD_API_URL     API origin (defaults to the hosted API)
+  EDDA_API_KEY / BLODEMD_API_KEY     API key, used ahead of a stored login session
+  EDDA_PROJECT / BLODEMD_PROJECT     Default --project slug
+  EDDA_API_URL / BLODEMD_API_URL     API origin (defaults to the hosted API)
 
 Exit codes:
   0  success

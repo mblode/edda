@@ -100,12 +100,12 @@ describe("scaffold templates", () => {
 
   it("uses an explicit display name when provided", () => {
     const files = getScaffoldFiles("minimal", {
-      displayName: "Blode.md",
+      displayName: "Edda",
       projectSlug: "docs",
     });
     const docsJsonContent = getFileContent(files, "docs.json");
 
-    expect(docsJsonContent).toContain('"name": "Blode.md"');
+    expect(docsJsonContent).toContain('"name": "Edda"');
     expect(docsJsonContent).toContain('"slug": "docs"');
   });
 });

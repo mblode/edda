@@ -49,7 +49,7 @@ export const assertSupportedNodeVersion = (
   }
 
   throw new CliError(
-    `blodemd requires Node.js ${SUPPORTED_NODE_RANGE}. Current version: ${version}.`,
+    `edda requires Node.js ${SUPPORTED_NODE_RANGE}. Current version: ${version}.`,
     EXIT_CODES.VALIDATION,
     "Install a supported Node.js version and try again."
   );

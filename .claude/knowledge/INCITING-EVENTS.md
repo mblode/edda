@@ -1,4 +1,4 @@
-# Inciting events — Blode.md
+# Inciting events — Edda
 
 Maps triggers for `.claude/knowledge/KEYSTONES.md`. No customer-interview findings exist. Every event below is HYPOTHESIZED until a real customer is asked, right after purchase, "what prompted you to start looking?"
 

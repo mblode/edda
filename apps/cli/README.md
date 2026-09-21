@@ -1,26 +1,26 @@
-<h1 align="center">Blode.md</h1>
+<h1 align="center">Edda</h1>
 
 <p align="center">Deploy and manage documentation sites from the command line.</p>
 
 <p align="center">
-  <a href="https://www.npmjs.com/package/blodemd"><img src="https://img.shields.io/npm/v/blodemd.svg" alt="npm version"></a>
+  <a href="https://www.npmjs.com/package/edda-docs"><img src="https://img.shields.io/npm/v/edda-docs.svg" alt="npm version"></a>
 </p>
 
-- **One-command deploy:** Push your entire docs folder to Blode.md with `blodemd push`.
-- **Scaffold in seconds:** Generate a ready-to-edit docs folder with `blodemd new`.
+- **One-command deploy:** Push your entire docs folder to Edda with `edda push`.
+- **Scaffold in seconds:** Generate a ready-to-edit docs folder with `edda new`.
 - **Config validation:** Catch `docs.json` errors before deploying.
 - **Zero keys locally:** Sign in once with GitHub in your browser — no keys for local deploys. CI uses a project deploy key.
 
 ## Install
 
 ```bash
-npm install -g blodemd
+npm install -g edda-docs
 ```
 
 Or run without installing:
 
 ```bash
-npx blodemd
+npx edda-docs
 ```
 
 Requires Node.js 24.x.
@@ -29,16 +29,16 @@ Requires Node.js 24.x.
 
 ```bash
 # Sign in with GitHub (opens your browser)
-blodemd login
+edda login
 
 # Create a new docs site
-blodemd new
+edda new
 
 # Preview locally
-blodemd dev
+edda dev
 
 # Deploy
-blodemd push
+edda push
 ```
 
 ## Deploy from CI
@@ -58,35 +58,35 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: 24
-      - run: npx blodemd@latest push --project your-project-slug
+      - run: npx edda-docs@latest push --project your-project-slug
         env:
           BLODEMD_API_KEY: ${{ secrets.BLODEMD_API_KEY }}
 ```
 
-Create a deploy key in the dashboard under **Settings → Deploy keys**, or copy the `bmd_...` key that `blodemd push` prints the first time it auto-creates a project. Deploy keys are project-scoped and deploy-only — store them as CI secrets, never commit them.
+Create a deploy key in the dashboard under **Settings → Deploy keys**, or copy the `bmd_...` key that `edda push` prints the first time it auto-creates a project. Deploy keys are project-scoped and deploy-only — store them as CI secrets, never commit them.
 
 ## Commands
 
 ```bash
-blodemd new [directory]   Create a new blode.md documentation site
-blodemd login             Sign in with GitHub in your browser
-blodemd logout            Remove stored credentials
-blodemd whoami            Show current authentication
-blodemd validate [dir]    Validate docs.json
-blodemd push [dir]        Deploy docs
-blodemd projects          List projects on your account
-blodemd analytics         Manage PostHog (`get`, `set posthog`, `unset`)
-blodemd dev               Start the local docs preview server
+edda new [directory]   Create a new Edda documentation site
+edda login             Sign in with GitHub in your browser
+edda logout            Remove stored credentials
+edda whoami            Show current authentication
+edda validate [dir]    Validate docs.json
+edda push [dir]        Deploy docs
+edda projects          List projects on your account
+edda analytics         Manage PostHog (`get`, `set posthog`, `unset`)
+edda dev               Start the local docs preview server
 ```
 
 ### `push` Options
 
 ```
---project <slug>    Project slug (env: BLODEMD_PROJECT)
---api-key <token>   API key (env: BLODEMD_API_KEY)
---api-url <url>     API URL (env: BLODEMD_API_URL)
---branch <name>     Git branch (env: BLODEMD_BRANCH)
---message <msg>     Deploy message (env: BLODEMD_COMMIT_MESSAGE)
+--project <slug>    Project slug (env: EDDA_PROJECT or BLODEMD_PROJECT)
+--api-key <token>   API key (env: EDDA_API_KEY or BLODEMD_API_KEY)
+--api-url <url>     API URL (env: EDDA_API_URL or BLODEMD_API_URL)
+--branch <name>     Git branch (env: EDDA_BRANCH or BLODEMD_BRANCH)
+--message <msg>     Deploy message (env: EDDA_COMMIT_MESSAGE or BLODEMD_COMMIT_MESSAGE)
 --json              Print machine-readable JSON
 ```
 
@@ -104,7 +104,7 @@ The CLI reads the project slug from the `slug` field in `docs.json` when `--proj
 
 ## Auto-deploy without the CLI
 
-Install the **Blode.md GitHub App** from your project's Git tab in the dashboard. Pushes to your configured branch deploy automatically — no CLI, no tokens, no workflows.
+Install the **Edda GitHub App** from your project's Git tab in the dashboard. Pushes to your configured branch deploy automatically — no CLI, no tokens, no workflows.
 
 ## Configuration
 
@@ -122,11 +122,11 @@ The CLI searches for `docs.json` in the current directory, then `docs/`, then `a
 
 ## Environment and exit codes
 
-| Variable          | Purpose                                                                        |
-| ----------------- | ------------------------------------------------------------------------------ |
-| `BLODEMD_API_KEY` | API key. Used ahead of a stored login session, so CI needs no `blodemd login`. |
-| `BLODEMD_PROJECT` | Default value for `--project`.                                                 |
-| `BLODEMD_API_URL` | API origin. Defaults to the hosted API.                                        |
+| Variable                           | Purpose                                                                     |
+| ---------------------------------- | --------------------------------------------------------------------------- |
+| `EDDA_API_KEY` / `BLODEMD_API_KEY` | API key. Used ahead of a stored login session, so CI needs no `edda login`. |
+| `EDDA_PROJECT` / `BLODEMD_PROJECT` | Default value for `--project`.                                              |
+| `EDDA_API_URL` / `BLODEMD_API_URL` | API origin. Defaults to the hosted API.                                     |
 
 Every command exits with one of these, so a CI gate can branch on the number:
 
