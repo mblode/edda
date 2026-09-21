@@ -23,8 +23,8 @@ import {
 } from "@/lib/structured-data";
 
 const pricingDescription =
-  "Edda pricing: hosted is $0 with unlimited seats. No visual editor, no marketplace, no SOC 2. MIT CLI and renderer if you self-host.";
-const pricingTitle = "Pricing for hosted and self-hosted docs";
+  "Edda pricing for knowledge docs for agents. Hosted is $0 with unlimited seats. No visual editor, no marketplace, no SOC 2. MIT CLI and renderer if you self-host.";
+const pricingTitle = "Pricing";
 
 export const metadata = pageMetadata({
   description: pricingDescription,

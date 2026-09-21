@@ -135,7 +135,7 @@ export default function HomePage() {
             preset="fade-in-blur"
             speedSegment={0.2}
           >
-            {HOME_DESCRIPTION}
+            Hosted is $0. MIT if I disappear.
           </TextEffect>
           <p className="mt-4 text-muted-foreground text-sm">
             {SITE_NAME}

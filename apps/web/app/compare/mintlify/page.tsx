@@ -16,9 +16,9 @@ import {
 } from "@/lib/structured-data";
 
 const PATH = "/compare/mintlify";
-const title = "Mintlify alternative for git-native MDX docs";
+const title = "Edda vs Mintlify: knowledge docs for agents";
 const description =
-  "Edda vs Mintlify: both publish MDX from git. Edda has no web editor and no marketplace, hosted is $0 with unlimited seats, and the CLI is MIT.";
+  "Edda vs Mintlify: Knowledge docs for agents. Git-native MDX. Publish on merge. Edda has no web editor and no marketplace, hosted is $0 with unlimited seats, and the CLI is MIT.";
 
 /** Mintlify facts below were checked against mintlify.com on this date. */
 const MINTLIFY_CHECKED_AT = "2026-08-12";
