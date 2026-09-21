@@ -14,17 +14,12 @@ export const PLATFORM_ORIGIN = "https://blode.md";
 
 export const SITE_NAME = "Edda";
 
-/**
- * Designer lock. Keep character-for-character with the README hero.
- * No em dash. Do not put npm in it.
- */
-export const PRODUCT_ONE_LINER =
-  "Knowledge docs for agents. Git-native MDX. Publish on merge.";
+/** Designer lock. Keep character-for-character with the README hero. */
+// oxfmt-ignore
+export const HOME_TITLE = "Knowledge docs for agents. Git-native MDX. Publish on merge.";
 
-export const HOME_TITLE = `Edda | ${PRODUCT_ONE_LINER}`;
-
-/** Default meta description for the home page and root layout. Lock first, how second. */
-export const HOME_DESCRIPTION = `${PRODUCT_ONE_LINER} Write MDX in git. The merge publishes the site and the Markdown from that commit. Hosted is $0. MIT if I disappear.`;
+/** Default meta description. Lock first, how second. */
+export const HOME_DESCRIPTION = `${HOME_TITLE} Write MDX in git. The merge publishes the site and the Markdown from that commit. Hosted is $0. MIT if I disappear.`;
 
 /** Inner pages set a bare title and the root layout appends the product. */
 export const TITLE_TEMPLATE = `%s | ${SITE_NAME}`;

@@ -1,3 +1,7 @@
+import { readFileSync } from "node:fs";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
+
 import { describe, expect, it } from "vitest";
 
 import {
@@ -8,9 +12,13 @@ import {
   marketingUrl,
   PLATFORM_ORIGIN,
   platformUrl,
-  PRODUCT_ONE_LINER,
   REDIRECTED_MARKETING_PATHS,
 } from "./marketing-site";
+
+const DESIGNER_ONE_LINER =
+  "Knowledge docs for agents. Git-native MDX. Publish on merge.";
+
+const here = dirname(fileURLToPath(import.meta.url));
 
 describe("marketing vs product hosts", () => {
   it("keeps the brand page on blode.co/edda, not blode.co/edda-docs", () => {
@@ -37,16 +45,20 @@ describe("marketing vs product hosts", () => {
 });
 
 describe("Designer-locked product one-liner", () => {
-  it("uses the exact knowledge-first sentence trio", () => {
-    expect(PRODUCT_ONE_LINER).toBe(
-      "Knowledge docs for agents. Git-native MDX. Publish on merge."
-    );
-    expect(HOME_TITLE).toBe(
-      "Edda | Knowledge docs for agents. Git-native MDX. Publish on merge."
-    );
-    expect(HOME_DESCRIPTION.startsWith(PRODUCT_ONE_LINER)).toBe(true);
-    expect(PRODUCT_ONE_LINER).not.toMatch(/published on merge/);
-    expect(PRODUCT_ONE_LINER).not.toMatch(/—/);
-    expect(PRODUCT_ONE_LINER).not.toMatch(/edda-docs/);
+  it("HOME_TITLE is the exact three-sentence string", () => {
+    expect(HOME_TITLE).toBe(DESIGNER_ONE_LINER);
+    expect(HOME_DESCRIPTION.startsWith(HOME_TITLE)).toBe(true);
+    expect(HOME_TITLE).not.toMatch(/published on merge/);
+    expect(HOME_TITLE).not.toMatch(/—/);
+    expect(HOME_TITLE).not.toMatch(/edda-docs/);
+  });
+
+  it("README hero and HOME_TITLE source quote the exact string", () => {
+    const site = readFileSync(join(here, "marketing-site.ts"), "utf8");
+    const readme = readFileSync(join(here, "../../../README.md"), "utf8");
+    expect(readme).toContain(`**${DESIGNER_ONE_LINER}**`);
+    expect(site).toContain(`HOME_TITLE = "${DESIGNER_ONE_LINER}"`);
+    expect(site).not.toMatch(/Knowledge docs for agents, published on merge/);
+    expect(readme).not.toMatch(/Knowledge docs for agents, published on merge/);
   });
 });
