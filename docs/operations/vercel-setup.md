@@ -4,21 +4,21 @@ This file reflects the repo target after the dashboard split as of April 23, 202
 
 ## Active Projects
 
-| Surface            | Vercel Project      | Root Directory   | Build Command                          | Output Directory  | Production URL          |
-| ------------------ | ------------------- | ---------------- | -------------------------------------- | ----------------- | ----------------------- |
-| Web frontend       | `blodemd-web`       | `.`              | `npx turbo run build --filter=web...`  | `apps/web/.next`  | `https://blode.md`      |
-| Docs frontend      | `blodemd-docs`      | `.`              | `npx turbo run build --filter=docs...` | `apps/docs/.next` | `https://docs.blode.md` |
-| Dashboard frontend | `blodemd-dashboard` | `apps/dashboard` | `bash ./scripts/vercel-build.sh`       | `.next`           | `https://app.blode.md`  |
-| API                | `blodemd-api`       | `apps/api`       | `npx turbo run build --filter=api...`  | `dist`            | `https://api.blode.md`  |
+| Surface            | Vercel Project   | Root Directory   | Build Command                          | Output Directory  | Production URL          |
+| ------------------ | ---------------- | ---------------- | -------------------------------------- | ----------------- | ----------------------- |
+| Web frontend       | `edda-web`       | `.`              | `npx turbo run build --filter=web...`  | `apps/web/.next`  | `https://blode.md`      |
+| Docs frontend      | `edda-docs`      | `.`              | `npx turbo run build --filter=docs...` | `apps/docs/.next` | `https://docs.blode.md` |
+| Dashboard frontend | `edda-dashboard` | `apps/dashboard` | `bash ./scripts/vercel-build.sh`       | `.next`           | `https://app.blode.md`  |
+| API                | `edda-api`       | `apps/api`       | `npx turbo run build --filter=api...`  | `dist`            | `https://api.blode.md`  |
 
 ## Domain Notes
 
-- `blode.md` and `www.blode.md` point at `blodemd-web`.
-- `blode.md/docs` is a host-preserving rewrite from `blodemd-web` to `blodemd-docs`.
-- `blode.md/app` and `blode.md/oauth/*` are host-preserving rewrites from `blodemd-web` to `blodemd-dashboard`.
-- `docs.blode.md` and `*.blode.md` point at `blodemd-docs`.
-- `app.blode.md` points at `blodemd-dashboard`.
-- `api.blode.md` points at `blodemd-api`.
+- `blode.md` and `www.blode.md` point at `edda-web`.
+- `blode.md/docs` is a host-preserving rewrite from `edda-web` to `edda-docs`.
+- `blode.md/app` and `blode.md/oauth/*` are host-preserving rewrites from `edda-web` to `edda-dashboard`.
+- `docs.blode.md` and `*.blode.md` point at `edda-docs`.
+- `app.blode.md` points at `edda-dashboard`.
+- `api.blode.md` points at `edda-api`.
 - Product docs are tenant content, not a special hardcoded route. Both `https://docs.blode.md` and `https://blode.md/docs` work only when the production API contains a tenant with slug `docs`.
 
 ## Re-Linking A Project
@@ -27,40 +27,40 @@ If you need to relink any project in Vercel:
 
 ### Web frontend
 
-1. Open `https://vercel.com/blode/blodemd-web/settings/git`.
+1. Open `https://vercel.com/blode/edda-web/settings/git`.
 2. Connect `mblode/edda`.
 3. Set **Root Directory** to `.`.
 4. Keep the project build settings in sync with [apps/web/vercel.json](/Users/mblode/Code/mblode/edda/apps/web/vercel.json).
 
 ### Docs frontend
 
-1. Open `https://vercel.com/blode/blodemd-docs/settings/git`.
+1. Open `https://vercel.com/blode/edda-docs/settings/git`.
 2. Connect `mblode/edda`.
 3. Set **Root Directory** to `.`.
 4. Keep the project build settings in sync with [apps/docs/vercel.json](/Users/mblode/Code/mblode/edda/apps/docs/vercel.json).
 
 ### Dashboard frontend
 
-1. Open `https://vercel.com/blode/blodemd-dashboard/settings/git`.
+1. Open `https://vercel.com/blode/edda-dashboard/settings/git`.
 2. Connect `mblode/edda`.
 3. Set **Root Directory** to `.`.
 4. Keep the project build settings in sync with [apps/dashboard/vercel.json](/Users/mblode/Code/mblode/edda/apps/dashboard/vercel.json).
 
 ### API
 
-1. Open `https://vercel.com/blode/blodemd-api/settings/git`.
+1. Open `https://vercel.com/blode/edda-api/settings/git`.
 2. Connect `mblode/edda`.
 3. Set **Root Directory** to `apps/api`.
 4. Keep the project build settings in sync with [apps/api/vercel.json](/Users/mblode/Code/mblode/edda/apps/api/vercel.json).
 
 ## Required Environment Variables
 
-### `blodemd-web`
+### `edda-web`
 
 - `DOCS_APP_URL`
 - `DASHBOARD_APP_URL`
 
-### `blodemd-docs`
+### `edda-docs`
 
 - `NEXT_PUBLIC_API_URL`
 - `PLATFORM_ROOT_DOMAIN`
@@ -70,7 +70,7 @@ If you need to relink any project in Vercel:
   chunks do not collide with the marketing build's `/_next/*`. Overriding it
   means updating `DOCS_ASSET_PREFIX` in `apps/web/next.config.js` to match.
 
-### `blodemd-dashboard`
+### `edda-dashboard`
 
 - `DATABASE_URL`
 - `NEXT_PUBLIC_API_URL`
@@ -83,12 +83,12 @@ If you need to relink any project in Vercel:
   means updating `DASHBOARD_ASSET_PREFIX` in `apps/web/next.config.js` and the
   `/_app/_next` rewrite in `apps/docs/next.config.js` to match.
 
-`blodemd-dashboard` runs `npm run db:push:ci --workspace=packages/db` as part of
+`edda-dashboard` runs `npm run db:push:ci --workspace=packages/db` as part of
 production builds before Next.js compiles. That keeps the production schema in
 sync with the deployed dashboard code and prevents schema drift from breaking
 `/app`.
 
-### `blodemd-api`
+### `edda-api`
 
 - `DATABASE_URL`
 - `DOCS_APP_URL`
@@ -105,7 +105,7 @@ sync with the deployed dashboard code and prevents schema drift from breaking
 
 ## Verification Checklist
 
-- `vercel project ls` shows `blodemd-web`, `blodemd-docs`, `blodemd-dashboard`, and `blodemd-api`.
+- `vercel project ls` shows `edda-web`, `edda-docs`, `edda-dashboard`, and `edda-api`.
 - `vercel alias ls` includes `blode.md`, `docs.blode.md`, `app.blode.md`, and `api.blode.md`.
 - `curl -I https://blode.md/docs` returns `200`.
 - `curl -I https://docs.blode.md` returns `200`.

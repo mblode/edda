@@ -5,10 +5,10 @@ This file reflects the intended post-split deployment topology as of April 23, 2
 ## Current State
 
 - The repo targets four Vercel projects:
-  - `blodemd-web` at `https://blode.md`
-  - `blodemd-docs` at `https://docs.blode.md`
-  - `blodemd-dashboard` at `https://app.blode.md`
-  - `blodemd-api` at `https://api.blode.md`
+  - `edda-web` at `https://blode.md`
+  - `edda-docs` at `https://docs.blode.md`
+  - `edda-dashboard` at `https://app.blode.md`
+  - `edda-api` at `https://api.blode.md`
 - The web frontend owns the marketing site and performs host-preserving rewrites:
   - `/docs` to the docs frontend
   - `/app` and `/oauth/*` to the dashboard frontend
@@ -22,9 +22,9 @@ This file reflects the intended post-split deployment topology as of April 23, 2
 - `https://blode.md/docs` resolves only if the production API can resolve a tenant with slug `docs`.
 - `https://docs.blode.md` resolves only if:
   - the `docs` tenant exists in production data
-  - `docs.blode.md` is aliased to `blodemd-docs`
+  - `docs.blode.md` is aliased to `edda-docs`
   - wildcard or explicit DNS for `*.blode.md` reaches Vercel
-- `https://blode.md/app` and `https://blode.md/oauth/consent` should stay on the `blode.md` host while being served by `blodemd-dashboard`.
+- `https://blode.md/app` and `https://blode.md/oauth/consent` should stay on the `blode.md` host while being served by `edda-dashboard`.
 - `https://app.blode.md/app` is the direct dashboard deployment URL and should serve the same dashboard/auth bytes as the web rewrite.
 - The root DNS zone should include:
   - an apex `ALIAS` for `blode.md`
@@ -48,7 +48,7 @@ The production issue was not a missing docs page in the app. It was a missing te
 ## Drift To Watch
 
 - Older notes in this repo that describe a two-project frontend topology are stale after the dashboard split.
-- `blodemd-web` must keep `DOCS_APP_URL` and `DASHBOARD_APP_URL` aligned with the active docs/dashboard aliases.
+- `edda-web` must keep `DOCS_APP_URL` and `DASHBOARD_APP_URL` aligned with the active docs/dashboard aliases.
 - Production data still contains legacy tenants like `orbit` and `atlas`.
 - Seed data expects `docs`, `blode`, and `example`; if production is recreated from scratch, verify the seed and production inventory match.
 

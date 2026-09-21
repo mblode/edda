@@ -19,7 +19,7 @@ describe("isPlatformAnalyticsHost", () => {
   });
 
   it("allows Vercel preview hosts", () => {
-    expect(isPlatformAnalyticsHost("blodemd-docs-abc.vercel.app")).toBe(true);
+    expect(isPlatformAnalyticsHost("edda-docs-abc.vercel.app")).toBe(true);
   });
 
   it("rejects customer tenant hosts", () => {
@@ -39,9 +39,9 @@ describe("shouldInitPlatformPostHogForHost", () => {
   it("inits on Edda product hosts and preview deployments", () => {
     expect(shouldInitPlatformPostHogForHost("blode.md")).toBe(true);
     expect(shouldInitPlatformPostHogForHost("docs.blode.md")).toBe(true);
-    expect(
-      shouldInitPlatformPostHogForHost("blodemd-docs-abc.vercel.app")
-    ).toBe(true);
+    expect(shouldInitPlatformPostHogForHost("edda-docs-abc.vercel.app")).toBe(
+      true
+    );
   });
 
   it("still never inits on customer tenant hosts", () => {

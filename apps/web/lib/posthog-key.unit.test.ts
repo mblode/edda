@@ -28,6 +28,6 @@ describe("platform PostHog key (web)", () => {
     expect(isLocalPosthogHost("127.0.0.1:3000")).toBe(true);
     expect(isLocalPosthogHost("blodemd.localhost")).toBe(true);
     expect(isLocalPosthogHost("blode.md")).toBe(false);
-    expect(isLocalPosthogHost("blodemd-web-abc.vercel.app")).toBe(false);
+    expect(isLocalPosthogHost("edda-web-abc.vercel.app")).toBe(false);
   });
 });

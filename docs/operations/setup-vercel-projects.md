@@ -7,7 +7,7 @@ Use this when recreating the split frontend topology from scratch.
 1. Go to `https://vercel.com/new`.
 2. Import `mblode/edda`.
 3. Configure:
-   - **Project Name**: `blodemd-web`
+   - **Project Name**: `edda-web`
    - **Root Directory**: `.`
    - **Framework Preset**: Next.js
    - **Build Command**: `npx turbo run build --filter=web...`
@@ -21,7 +21,7 @@ Use this when recreating the split frontend topology from scratch.
 1. Go to `https://vercel.com/new`.
 2. Import `mblode/edda`.
 3. Configure:
-   - **Project Name**: `blodemd-docs`
+   - **Project Name**: `edda-docs`
    - **Root Directory**: `.`
    - **Framework Preset**: Next.js
    - **Build Command**: `npx turbo run build --filter=docs...`
@@ -35,7 +35,7 @@ Use this when recreating the split frontend topology from scratch.
 1. Go to `https://vercel.com/new`.
 2. Import `mblode/edda`.
 3. Configure:
-   - **Project Name**: `blodemd-dashboard`
+   - **Project Name**: `edda-dashboard`
    - **Root Directory**: `apps/dashboard`
    - **Framework Preset**: Next.js
    - **Build Command**: `bash ./scripts/vercel-build.sh`
@@ -48,7 +48,7 @@ Use this when recreating the split frontend topology from scratch.
 1. Go to `https://vercel.com/new`.
 2. Import `mblode/edda`.
 3. Configure:
-   - **Project Name**: `blodemd-api`
+   - **Project Name**: `edda-api`
    - **Root Directory**: `apps/api`
    - **Framework Preset**: Hono
    - **Build Command**: `npx turbo run build --filter=api...`
@@ -57,12 +57,12 @@ Use this when recreating the split frontend topology from scratch.
 
 ## Required Environment Variables
 
-### `blodemd-web`
+### `edda-web`
 
 - `DOCS_APP_URL`
 - `DASHBOARD_APP_URL`
 
-### `blodemd-docs`
+### `edda-docs`
 
 - `NEXT_PUBLIC_API_URL`
 - `PLATFORM_ROOT_DOMAIN`
@@ -74,7 +74,7 @@ Use this when recreating the split frontend topology from scratch.
   Overriding this means updating `DOCS_ASSET_PREFIX` in `apps/web/next.config.js`
   to match.
 
-### `blodemd-dashboard`
+### `edda-dashboard`
 
 - `NEXT_PUBLIC_API_URL`
 - `DATABASE_URL`
@@ -90,7 +90,7 @@ Use this when recreating the split frontend topology from scratch.
 Production dashboard builds run `npm run db:push:ci --workspace=packages/db`
 before the app build, so `DATABASE_URL` must be present in the Vercel project.
 
-### `blodemd-api`
+### `edda-api`
 
 - `DATABASE_URL`
 - `DOCS_APP_URL`
