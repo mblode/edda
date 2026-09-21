@@ -19,7 +19,7 @@ import {
 
 const introDescription =
   "Why we built Edda: Knowledge docs for agents. Git-native MDX. Publish on merge. Free, MIT licensed, and designed to keep docs next to the code they describe.";
-const introTitle = "Introducing the Edda docs platform";
+const introTitle = "Introducing Edda: knowledge docs for agents";
 const introPath = "/blog/intro-to-blode-md";
 
 export const metadata = pageMetadata({

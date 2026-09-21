@@ -15,8 +15,8 @@ import {
 } from "@/lib/structured-data";
 
 const aboutDescription =
-  "Matthew Blode built Edda to keep docs in git. No second editor, no marketplace. Hosted is $0. MIT if you run it yourself.";
-const aboutTitle = "About the Edda docs platform";
+  "Matthew Blode built Edda: Knowledge docs for agents. Git-native MDX. Publish on merge. No second editor, no marketplace. Hosted is $0. MIT if you run it yourself.";
+const aboutTitle = "About Edda: knowledge docs for agents";
 
 export const metadata = pageMetadata({
   description: aboutDescription,

@@ -15,9 +15,9 @@ import {
 } from "@/lib/structured-data";
 
 const PATH = "/docs-as-code";
-const title = "Docs as code: MDX in git, published on merge";
+const title = "Docs as code: Git-native MDX. Publish on merge.";
 const description =
-  "Keep docs as MDX in the repo, review them in the pull request, and let the merge publish the site plus the Markdown agents read.";
+  "Knowledge docs for agents. Git-native MDX. Publish on merge. Keep docs as MDX in the repo, review them in the pull request, and let the merge publish the site plus the Markdown agents read.";
 
 export const metadata = pageMetadata({
   description,

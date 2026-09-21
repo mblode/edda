@@ -1,11 +1,14 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  HOME_DESCRIPTION,
+  HOME_TITLE,
   isRedirectedMarketingPath,
   MARKETING_HOME,
   marketingUrl,
   PLATFORM_ORIGIN,
   platformUrl,
+  PRODUCT_ONE_LINER,
   REDIRECTED_MARKETING_PATHS,
 } from "./marketing-site";
 
@@ -30,5 +33,18 @@ describe("marketing vs product hosts", () => {
     expect(marketingUrl("/about")).toBe("https://blode.md/about");
     expect(marketingUrl("/pricing")).toBe("https://blode.md/pricing");
     expect(platformUrl("/privacy")).toBe("https://blode.md/privacy");
+  });
+});
+
+describe("Designer-locked product one-liner", () => {
+  it("uses the exact knowledge-first sentence trio", () => {
+    expect(PRODUCT_ONE_LINER).toBe(
+      "Knowledge docs for agents. Git-native MDX. Publish on merge."
+    );
+    expect(HOME_TITLE).toBe(PRODUCT_ONE_LINER);
+    expect(HOME_DESCRIPTION.startsWith(PRODUCT_ONE_LINER)).toBe(true);
+    expect(PRODUCT_ONE_LINER).not.toMatch(/published on merge/);
+    expect(PRODUCT_ONE_LINER).not.toMatch(/—/);
+    expect(PRODUCT_ONE_LINER).not.toMatch(/edda-docs/);
   });
 });

@@ -14,13 +14,17 @@ export const PLATFORM_ORIGIN = "https://blode.md";
 
 export const SITE_NAME = "Edda";
 
-/** Designer lock. Keep character-for-character with the README hero. */
-export const HOME_TITLE =
+/**
+ * Designer lock. Keep character-for-character with the README hero.
+ * No em dash. Do not put npm in it.
+ */
+export const PRODUCT_ONE_LINER =
   "Knowledge docs for agents. Git-native MDX. Publish on merge.";
 
+export const HOME_TITLE = PRODUCT_ONE_LINER;
+
 /** Default meta description for the home page and root layout. */
-export const HOME_DESCRIPTION =
-  "Knowledge docs for agents and humans. Write MDX in git; the merge publishes the site and the Markdown from that commit. Hosted is $0.";
+export const HOME_DESCRIPTION = `${PRODUCT_ONE_LINER} The site and the Markdown agents fetch come from that commit. Hosted is $0.`;
 
 /** Inner pages set a bare title and the root layout appends the product. */
 export const TITLE_TEMPLATE = `%s | ${SITE_NAME}`;
@@ -36,13 +40,13 @@ export const REDIRECTED_MARKETING_PATHS = ["/"] as const;
  * Bump the date when the page's copy changes; it feeds the sitemap `lastmod`.
  */
 export const PLATFORM_PAGES = {
-  "/about": "2026-08-14",
-  "/blog": "2026-09-19",
+  "/about": "2026-09-21",
+  "/blog": "2026-09-21",
   "/changelog": "2026-09-19",
-  "/compare/mintlify": "2026-09-06",
-  "/docs-as-code": "2026-09-06",
-  "/free-online-llms-txt-resources": "2026-09-19",
-  "/pricing": "2026-08-14",
+  "/compare/mintlify": "2026-09-21",
+  "/docs-as-code": "2026-09-21",
+  "/free-online-llms-txt-resources": "2026-09-21",
+  "/pricing": "2026-09-21",
   "/privacy": "2026-08-14",
   "/security": "2026-08-14",
   "/terms": "2026-08-14",

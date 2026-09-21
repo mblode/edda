@@ -1,6 +1,6 @@
 <h1 align="center">Edda</h1>
 
-<p align="center">Deploy and manage documentation sites from the command line.</p>
+<p align="center">Knowledge docs for agents. Git-native MDX. Publish on merge.</p>
 
 <p align="center">
   <a href="https://www.npmjs.com/package/edda-docs"><img src="https://img.shields.io/npm/v/edda-docs.svg" alt="npm version"></a>

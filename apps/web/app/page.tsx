@@ -135,8 +135,7 @@ export default function HomePage() {
             preset="fade-in-blur"
             speedSegment={0.2}
           >
-            Write MDX in git. The merge publishes the site and the Markdown from
-            that commit. Hosted is $0. MIT if I disappear.
+            Hosted is $0. MIT if I disappear.
           </TextEffect>
           <p className="mt-4 text-muted-foreground text-sm">
             {SITE_NAME}

@@ -25,7 +25,7 @@ const glideMono = localFont({
 
 export const metadata: Metadata = {
   description:
-    "Edda: Knowledge docs for agents. Git-native MDX. Publish on merge. Write MDX in git; the merge publishes the HTML and the Markdown agents fetch.",
+    "Edda: Knowledge docs for agents. Git-native MDX. Publish on merge. The merge publishes the HTML and the Markdown agents fetch.",
   metadataBase: new URL("https://blode.md"),
   openGraph: {
     siteName: "Edda",
@@ -41,7 +41,7 @@ export const metadata: Metadata = {
       "max-video-preview": -1,
     },
   },
-  title: "Edda",
+  title: "Edda | Knowledge docs for agents. Git-native MDX. Publish on merge.",
   twitter: {
     card: "summary_large_image",
   },
