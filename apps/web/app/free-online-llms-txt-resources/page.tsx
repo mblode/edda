@@ -41,7 +41,7 @@ const toc = [
   { href: "#examples", label: "Examples" },
   { href: "#specs-and-standards", label: "Specs & standards" },
   { href: "#tools-and-generators", label: "Tools & generators" },
-  { href: "#related-docs-on-blode-md", label: "Related docs on Edda" },
+  { href: "#related-docs-on-edda", label: "Related docs on Edda" },
   { href: "#faq", label: "FAQ" },
 ] as const;
 
@@ -488,7 +488,7 @@ export default function FreeOnlineLlmsTxtResourcesPage() {
                   <Link className="underline underline-offset-4" href="/">
                     Edda
                   </Link>
-                  : git-native docs, published on merge. Sites ship{" "}
+                  : knowledge docs for agents, published on merge. Sites ship{" "}
                   <code>llms.txt</code> / <code>llms-full.txt</code> /{" "}
                   <code>.md</code> alternates. See{" "}
                   <Link
@@ -503,7 +503,7 @@ export default function FreeOnlineLlmsTxtResourcesPage() {
 
               <h2
                 className="h-display font-bold text-2xl md:text-3xl"
-                id="related-docs-on-blode-md"
+                id="related-docs-on-edda"
               >
                 Related docs on Edda
               </h2>

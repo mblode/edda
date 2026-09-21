@@ -4,7 +4,7 @@
   "description": "Edda dev server runtime (companion package for edda-docs)",
   "repository": {
     "type": "git",
-    "url": "https://github.com/mblode/blodemd"
+    "url": "https://github.com/mblode/edda"
   },
   "bin": {
     "blodemd-dev": "./dist/dev.mjs",

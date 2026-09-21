@@ -23,8 +23,8 @@ const glideMono = localFont({
 });
 
 export const metadata: Metadata = {
-  description: "Local docs preview for blodemd dev.",
-  title: "blodemd dev",
+  description: "Local docs preview for edda dev.",
+  title: "edda dev",
 };
 
 export default function RootLayout({

@@ -1,10 +1,10 @@
 {
   "name": "edda-docs",
   "version": "1.0.0",
-  "description": "Edda CLI: git-native docs, published on merge",
+  "description": "Edda CLI: knowledge docs for agents, published on merge",
   "repository": {
     "type": "git",
-    "url": "https://github.com/mblode/blodemd"
+    "url": "https://github.com/mblode/edda"
   },
   "bin": {
     "blodemd": "./dist/cli.mjs",

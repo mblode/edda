@@ -407,7 +407,7 @@ describe("absolutiseInternalLinks", () => {
   });
 
   it("leaves absolute http(s) links alone", () => {
-    const input = "Visit [GitHub](https://github.com/mblode/blodemd).";
+    const input = "Visit [GitHub](https://github.com/mblode/edda).";
     expect(absolutiseInternalLinks(input, "https://docs.example.com", "")).toBe(
       input
     );

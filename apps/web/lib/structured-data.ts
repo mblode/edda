@@ -53,7 +53,7 @@ const organization: SchemaNode = {
   },
   name: SITE_NAME,
   sameAs: [
-    "https://github.com/mblode/blodemd",
+    "https://github.com/mblode/edda",
     "https://blode.co",
     MARKETING_HOME,
   ],

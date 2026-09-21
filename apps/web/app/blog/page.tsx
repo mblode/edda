@@ -10,7 +10,7 @@ import { marketingUrl, pageMetadata } from "@/lib/marketing-site";
 import { breadcrumbNode, pageJsonLd, webPageNode } from "@/lib/structured-data";
 
 const blogDescription =
-  "Notes, deep dives, and product updates from the Edda team: git-native docs, published on merge.";
+  "Notes, deep dives, and product updates from the Edda team: knowledge docs for agents, published on merge.";
 const blogTitle = "Blog, updates, and product notes";
 
 export const metadata = pageMetadata({

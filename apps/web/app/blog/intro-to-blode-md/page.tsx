@@ -18,7 +18,7 @@ import {
 } from "@/lib/structured-data";
 
 const introDescription =
-  "Why we built Edda: git-native docs, published on merge. Free, MIT licensed, and designed to keep docs next to the code they describe.";
+  "Why we built Edda: knowledge docs for agents, published on merge. Free, MIT licensed, and designed to keep docs next to the code they describe.";
 const introTitle = "Introducing the Edda docs platform";
 const introPath = "/blog/intro-to-blode-md";
 

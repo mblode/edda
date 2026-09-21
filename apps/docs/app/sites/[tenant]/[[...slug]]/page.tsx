@@ -130,7 +130,7 @@ export const generateMetadata = async ({
     `${canonicalBasePath}${canonicalPath}`
       .replaceAll(/\/+/g, "/")
       .replace(/\/$/, "") || "/";
-  const canonicalOrigin = canonicals?.origin ?? "https://blode.co/edda";
+  const canonicalOrigin = canonicals?.origin ?? "https://blode.md";
   const canonicalUrl = `${canonicalOrigin}${fullCanonical}`;
   const favicon = config?.favicon;
   // Always emit a complete Open Graph + Twitter card. Fall back to the docs

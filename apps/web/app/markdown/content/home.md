@@ -1,10 +1,10 @@
 # Edda
 
-> The answer they read matches the commit you merged.
+> Knowledge docs for agents.
 
-I built this for people who already write MDX in git. Hosted is $0. MIT if I disappear.
+Write MDX in git. The merge publishes the site and the Markdown from that commit. Hosted is $0. MIT if I disappear.
 
-Last updated: 13 August 2026
+Last updated: 21 September 2026
 
 ## Get started
 
@@ -60,14 +60,14 @@ Proxy `/docs` through the site you already run. See the [proxy guides](https://b
 
 ### MIT if I disappear
 
-Same CLI and renderer, your Postgres. Source on [GitHub](https://github.com/mblode/blodemd). If hosted goes away, you still have the source.
+Same CLI and renderer, your Postgres. Source on [GitHub](https://github.com/mblode/edda). If hosted goes away, you still have the source.
 
 ## Choose your edition
 
 Named for what you do not get. Hosted is $0: no visual editor, no marketplace, no SOC 2. Detail is on [pricing](https://blode.co/edda).
 
 - **No second editor:** $0 hosted. [Connect GitHub](https://blode.md/oauth/consent)
-- **Your Postgres:** MIT. [View on GitHub](https://github.com/mblode/blodemd)
+- **Your Postgres:** MIT. [View on GitHub](https://github.com/mblode/edda)
 
 ## FAQ
 
@@ -87,4 +87,4 @@ No. The pull request is the review.
 On every deploy the site writes `llms.txt`, `llms-full.txt`, robots.txt, a sitemap, and per-page `.md` exports from the MDX. Each `.md` page opens with a link back to `llms.txt`, the shape Mintlify's 2026 benchmark measured at 0.11 failed requests per task against 2.23 for HTML.
 
 **Who builds Edda and how do I get support?**
-Edda is built by [Matthew Blode](https://blode.co). Email [m@blode.co](mailto:m@blode.co) or open an issue on [GitHub](https://github.com/mblode/blodemd).
+Edda is built by [Matthew Blode](https://blode.co). Email [m@blode.co](mailto:m@blode.co) or open an issue on [GitHub](https://github.com/mblode/edda).

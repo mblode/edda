@@ -14,7 +14,10 @@ import { assertSupportedNodeVersion, readCliVersion } from "./runtime.js";
 const program = new Command();
 const cliVersion = readCliVersion(import.meta.url);
 
-program.name("edda").description("Edda CLI").version(cliVersion);
+program
+  .name("edda")
+  .description("Edda CLI: knowledge docs for agents, published on merge")
+  .version(cliVersion);
 program.hook("preAction", () => {
   assertSupportedNodeVersion();
 });

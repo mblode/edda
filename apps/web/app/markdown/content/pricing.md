@@ -30,7 +30,7 @@ Clone the repo, point it at a Postgres, and run the same CLI we do.
 - Deploy to Vercel, Fly, Railway, or bare metal
 - No license keys, no telemetry
 
-[View on GitHub](https://github.com/mblode/blodemd)
+[View on GitHub](https://github.com/mblode/edda)
 
 ## FAQ
 

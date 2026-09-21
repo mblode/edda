@@ -9,11 +9,12 @@ export const PLATFORM_ORIGIN = "https://blode.md";
 export const SITE_NAME = "Edda";
 
 /** `Product: what it does`, under 60 characters so the SERP does not clip it. */
-export const HOME_TITLE = "Edda | Git-native MDX docs, published on merge";
+export const HOME_TITLE =
+  "Edda | Knowledge docs for agents, published on merge";
 
 /** Default meta description for the home page and root layout. */
 export const HOME_DESCRIPTION =
-  "Git-native MDX docs. I built this for people who already write MDX in git. No second editor. Hosted is $0. MIT if I disappear.";
+  "Knowledge docs for agents and humans. Write MDX in git; the merge publishes the site and the Markdown from that commit. Hosted is $0.";
 
 /** Inner pages set a bare title and the root layout appends the product. */
 export const TITLE_TEMPLATE = `%s | ${SITE_NAME}`;
