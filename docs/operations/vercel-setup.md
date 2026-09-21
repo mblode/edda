@@ -28,30 +28,30 @@ If you need to relink any project in Vercel:
 ### Web frontend
 
 1. Open `https://vercel.com/blode/blodemd-web/settings/git`.
-2. Connect `mblode/blodemd`.
+2. Connect `mblode/edda`.
 3. Set **Root Directory** to `.`.
-4. Keep the project build settings in sync with [apps/web/vercel.json](/Users/mblode/Code/mblode/blodemd/apps/web/vercel.json).
+4. Keep the project build settings in sync with [apps/web/vercel.json](/Users/mblode/Code/mblode/edda/apps/web/vercel.json).
 
 ### Docs frontend
 
 1. Open `https://vercel.com/blode/blodemd-docs/settings/git`.
-2. Connect `mblode/blodemd`.
+2. Connect `mblode/edda`.
 3. Set **Root Directory** to `.`.
-4. Keep the project build settings in sync with [apps/docs/vercel.json](/Users/mblode/Code/mblode/blodemd/apps/docs/vercel.json).
+4. Keep the project build settings in sync with [apps/docs/vercel.json](/Users/mblode/Code/mblode/edda/apps/docs/vercel.json).
 
 ### Dashboard frontend
 
 1. Open `https://vercel.com/blode/blodemd-dashboard/settings/git`.
-2. Connect `mblode/blodemd`.
+2. Connect `mblode/edda`.
 3. Set **Root Directory** to `.`.
-4. Keep the project build settings in sync with [apps/dashboard/vercel.json](/Users/mblode/Code/mblode/blodemd/apps/dashboard/vercel.json).
+4. Keep the project build settings in sync with [apps/dashboard/vercel.json](/Users/mblode/Code/mblode/edda/apps/dashboard/vercel.json).
 
 ### API
 
 1. Open `https://vercel.com/blode/blodemd-api/settings/git`.
-2. Connect `mblode/blodemd`.
+2. Connect `mblode/edda`.
 3. Set **Root Directory** to `apps/api`.
-4. Keep the project build settings in sync with [apps/api/vercel.json](/Users/mblode/Code/mblode/blodemd/apps/api/vercel.json).
+4. Keep the project build settings in sync with [apps/api/vercel.json](/Users/mblode/Code/mblode/edda/apps/api/vercel.json).
 
 ## Required Environment Variables
 

@@ -34,10 +34,10 @@ Move each docs set into `apps/docs/content/<slug>` with:
   - `ResponseField`
 - `blodemd` does not currently add Fumadocs runtime behavior, Fumadocs `Cards`, or Mermaid rendering.
 - Reference files:
-  - `/Users/mblode/Code/mblode/blodemd/apps/docs/lib/content-root.ts`
-  - `/Users/mblode/Code/mblode/blodemd/packages/previewing/src/index.ts`
-  - `/Users/mblode/Code/mblode/blodemd/apps/docs/components/mdx/index.tsx`
-  - `/Users/mblode/Code/mblode/blodemd/apps/docs/components/mdx/tabs.tsx`
+  - `/Users/mblode/Code/mblode/edda/apps/docs/lib/content-root.ts`
+  - `/Users/mblode/Code/mblode/edda/packages/previewing/src/index.ts`
+  - `/Users/mblode/Code/mblode/edda/apps/docs/components/mdx/index.tsx`
+  - `/Users/mblode/Code/mblode/edda/apps/docs/components/mdx/tabs.tsx`
 
 ## Source Audit Summary
 

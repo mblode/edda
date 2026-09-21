@@ -2,11 +2,11 @@
 
 These are RAW OBSERVATIONS, deliberately not yet classified as strengths or weaknesses. They are derived from public product artifacts (marketing pages, pricing, about, intro blog, README, GitHub, schema comments, architecture notes) rather than a live founder write-storm or customer interviews. No customer quotes exist in the public record. Categories that need private evidence are marked thin.
 
-Edda is a docs-as-code platform: MDX in a git repo, published via CLI (`edda login` / `new` / `push`) or a GitHub App, hosted at `$0` with unlimited projects, pages, and seats, or self-hosted under MIT. Built by Matthew Blode. GitHub repo `mblode/blodemd` (created 2025-12-30; 1 star, 0 forks as of 2026-08-12). Support is `m@blode.co` or GitHub issues.
+Edda is a docs-as-code platform: MDX in a git repo, published via CLI (`edda login` / `new` / `push`) or a GitHub App, hosted at `$0` with unlimited projects, pages, and seats, or self-hosted under MIT. Built by Matthew Blode. GitHub repo `mblode/edda` (created 2025-12-30; 1 star, 0 forks as of 2026-08-12). Support is `m@blode.co` or GitHub issues.
 
 ## External research (public sources — seed material, not yet confirmed)
 
-- **[GitHub / mblode/blodemd]** 1 star, 0 forks, MIT license, homepage https://blode.co/edda. README: "Beautiful documentation sites from MDX, scaffolded and deployed from your terminal." Demo cited: captain.blode.md.
+- **[GitHub / mblode/edda]** 1 star, 0 forks, MIT license, homepage https://blode.co/edda. README: "Beautiful documentation sites from MDX, scaffolded and deployed from your terminal." Demo cited: captain.blode.md.
 - **[GitHub / npm]** CLI package `edda`; commands documented: login, new, dev, validate, push, projects, analytics. CI path uses project-scoped `bmd_` deploy keys.
 - **[blode.md/pricing]** Hosted plan is `$0 · Unlimited projects, pages, and seats`. Self-host is MIT. FAQ: "What's the catch? None." "How do you make money? We don't, yet."
 - **[blode.md/blog/intro-to-blode-md]** "Most docs tools want you to leave your editor. Edda doesn't." "Existing docs platforms charge per seat or per page." "We wanted Markdown in a repo and a URL." Roadmap named: themes, analytics, team accounts.
@@ -105,7 +105,7 @@ Edda is a docs-as-code platform: MDX in a git repo, published via CLI (`edda log
 
 **O33.** Intro post roadmap: themes, analytics, team accounts.
 
-**O34.** Agent skill install: `npx skills add mblode/blodemd` so coding agents can scaffold and push docs in natural language.
+**O34.** Agent skill install: `npx skills add mblode/edda` so coding agents can scaffold and push docs in natural language.
 
 ## Side-list (ideas parked during the session — not processed)
 

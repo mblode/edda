@@ -45,20 +45,20 @@ Make the public docs surface behave like a Vercel-native static product:
 
 ### Already Completed
 
-- [x] Staticize tenant docs page routes in [`apps/docs/app/sites/[tenant]/[[...slug]]/page.tsx](/Users/mblode/Code/mblode/blodemd/apps/docs/app/sites/[tenant]/[[...slug]]/page.tsx)
-- [x] Staticize tenant utility and search routes under [`apps/docs/app/sites/[tenant]](/Users/mblode/Code/mblode/blodemd/apps/docs/app/sites/[tenant])
-- [x] Remove `headers()` from the tenant page render path in [`apps/docs/lib/docs-runtime.tsx](/Users/mblode/Code/mblode/blodemd/apps/docs/lib/docs-runtime.tsx)
-- [x] Reuse shell raw MDX instead of double-reading content in [`apps/docs/lib/docs-runtime.tsx](/Users/mblode/Code/mblode/blodemd/apps/docs/lib/docs-runtime.tsx)
+- [x] Staticize tenant docs page routes in [`apps/docs/app/sites/[tenant]/[[...slug]]/page.tsx](/Users/mblode/Code/mblode/edda/apps/docs/app/sites/[tenant]/[[...slug]]/page.tsx)
+- [x] Staticize tenant utility and search routes under [`apps/docs/app/sites/[tenant]](/Users/mblode/Code/mblode/edda/apps/docs/app/sites/[tenant])
+- [x] Remove `headers()` from the tenant page render path in [`apps/docs/lib/docs-runtime.tsx](/Users/mblode/Code/mblode/edda/apps/docs/lib/docs-runtime.tsx)
+- [x] Reuse shell raw MDX instead of double-reading content in [`apps/docs/lib/docs-runtime.tsx](/Users/mblode/Code/mblode/edda/apps/docs/lib/docs-runtime.tsx)
 - [x] Cut low-value RSC prefetches in sidebar, tiles, cards, and mobile nav
 - [x] Move desktop sidebar and TOC to server-rendered markup
-- [x] Add CDN cache headers on tenant rewrite responses in [`apps/docs/proxy.ts](/Users/mblode/Code/mblode/blodemd/apps/docs/proxy.ts)
+- [x] Add CDN cache headers on tenant rewrite responses in [`apps/docs/proxy.ts](/Users/mblode/Code/mblode/edda/apps/docs/proxy.ts)
 - [x] Add explicit revalidation to tenant and blob-backed fetches
 
 ### Remaining Bottlenecks
 
-- [ ] Hot host resolution still starts in [`apps/docs/lib/tenancy.ts](/Users/mblode/Code/mblode/blodemd/apps/docs/lib/tenancy.ts) via `DOCS_API_URL/tenants/resolve`
-- [ ] Root host-routed utility routes still depend on request-time tenant resolution through [`apps/docs/lib/request-tenant.ts](/Users/mblode/Code/mblode/blodemd/apps/docs/lib/request-tenant.ts)
-- [ ] Runtime artifact assembly in [`apps/docs/lib/docs-runtime.tsx](/Users/mblode/Code/mblode/blodemd/apps/docs/lib/docs-runtime.tsx) still builds nav, search items, TOC, and OpenAPI structures on demand
+- [ ] Hot host resolution still starts in [`apps/docs/lib/tenancy.ts](/Users/mblode/Code/mblode/edda/apps/docs/lib/tenancy.ts) via `DOCS_API_URL/tenants/resolve`
+- [ ] Root host-routed utility routes still depend on request-time tenant resolution through [`apps/docs/lib/request-tenant.ts](/Users/mblode/Code/mblode/edda/apps/docs/lib/request-tenant.ts)
+- [ ] Runtime artifact assembly in [`apps/docs/lib/docs-runtime.tsx](/Users/mblode/Code/mblode/edda/apps/docs/lib/docs-runtime.tsx) still builds nav, search items, TOC, and OpenAPI structures on demand
 - [x] Tenant docs page no longer calls `headers()` or sets `instant = false`; 404s stay in `proxy.ts`
 - [ ] Global theme and command-search UI still keep client JavaScript in the shell
 
@@ -89,7 +89,7 @@ Until the new deployment is live, production numbers still reflect the old dynam
   - [ ] one tenant `robots.txt` route
   - [ ] one tenant `sitemap.xml` route
 - [ ] Record cold and warm TTFB from at least two regions
-- [ ] Confirm custom-domain utility paths rewrite into static tenant routes through [`apps/docs/proxy.ts](/Users/mblode/Code/mblode/blodemd/apps/docs/proxy.ts)
+- [ ] Confirm custom-domain utility paths rewrite into static tenant routes through [`apps/docs/proxy.ts](/Users/mblode/Code/mblode/edda/apps/docs/proxy.ts)
 
 ## Phase 2: Move Tenant Resolution To Edge Config
 
@@ -106,16 +106,16 @@ The remaining hottest miss is host lookup. Vercel’s docs position Edge Config 
 ### File Targets
 
 - [ ] Add `apps/docs/lib/edge-config.ts`
-- [ ] Update [`apps/docs/lib/tenancy.ts](/Users/mblode/Code/mblode/blodemd/apps/docs/lib/tenancy.ts) to:
+- [ ] Update [`apps/docs/lib/tenancy.ts](/Users/mblode/Code/mblode/edda/apps/docs/lib/tenancy.ts) to:
   - [ ] normalize host once
   - [ ] read Edge Config first
   - [ ] keep the docs API resolver as a fallback/backfill path
   - [ ] preserve the short in-process promise cache only as a local collapse layer
-- [ ] Update [`apps/docs/proxy.ts](/Users/mblode/Code/mblode/blodemd/apps/docs/proxy.ts) to rely on the new Edge Config-backed resolver
-- [ ] Update [`apps/docs/lib/request-tenant.ts](/Users/mblode/Code/mblode/blodemd/apps/docs/lib/request-tenant.ts) so root utility routes use the same lookup path
+- [ ] Update [`apps/docs/proxy.ts](/Users/mblode/Code/mblode/edda/apps/docs/proxy.ts) to rely on the new Edge Config-backed resolver
+- [ ] Update [`apps/docs/lib/request-tenant.ts](/Users/mblode/Code/mblode/edda/apps/docs/lib/request-tenant.ts) so root utility routes use the same lookup path
 - [ ] Add/update schemas in:
-  - [ ] [`packages/contracts/src/tenant.ts](/Users/mblode/Code/mblode/blodemd/packages/contracts/src/tenant.ts)
-  - [ ] [`packages/models/src/tenant.ts](/Users/mblode/Code/mblode/blodemd/packages/models/src/tenant.ts)
+  - [ ] [`packages/contracts/src/tenant.ts](/Users/mblode/Code/mblode/edda/packages/contracts/src/tenant.ts)
+  - [ ] [`packages/models/src/tenant.ts](/Users/mblode/Code/mblode/edda/packages/models/src/tenant.ts)
 
 ### Data Shape
 
@@ -134,9 +134,9 @@ The remaining hottest miss is host lookup. Vercel’s docs position Edge Config 
 
 - [ ] Update domain-management or publish code to write Edge Config records after successful changes
 - [ ] Candidate integration points:
-  - [ ] [`apps/api/src/routes/domains.ts](/Users/mblode/Code/mblode/blodemd/apps/api/src/routes/domains.ts)
-  - [ ] [`apps/api/src/routes/deployments.ts](/Users/mblode/Code/mblode/blodemd/apps/api/src/routes/deployments.ts)
-  - [ ] [`apps/api/src/lib/publish.ts](/Users/mblode/Code/mblode/blodemd/apps/api/src/lib/publish.ts)
+  - [ ] [`apps/api/src/routes/domains.ts](/Users/mblode/Code/mblode/edda/apps/api/src/routes/domains.ts)
+  - [ ] [`apps/api/src/routes/deployments.ts](/Users/mblode/Code/mblode/edda/apps/api/src/routes/deployments.ts)
+  - [ ] [`apps/api/src/lib/publish.ts](/Users/mblode/Code/mblode/edda/apps/api/src/lib/publish.ts)
 
 ## Phase 3: Push More Runtime Assembly To Publish Time
 
@@ -161,10 +161,10 @@ The repo already publishes `_content-index.json` and compiled MDX. The next win 
 
 ### File Targets
 
-- [ ] Extend [`apps/api/src/lib/publish.ts](/Users/mblode/Code/mblode/blodemd/apps/api/src/lib/publish.ts) to emit the additional artifacts
-- [ ] Add serializer/helpers in [`packages/previewing/src/index.ts](/Users/mblode/Code/mblode/blodemd/packages/previewing/src/index.ts) for the new artifact types
-- [ ] Update [`packages/previewing/src/blob-source.ts](/Users/mblode/Code/mblode/blodemd/packages/previewing/src/blob-source.ts) to read typed deployment artifacts directly
-- [ ] Refactor [`apps/docs/lib/docs-runtime.tsx](/Users/mblode/Code/mblode/blodemd/apps/docs/lib/docs-runtime.tsx) so:
+- [ ] Extend [`apps/api/src/lib/publish.ts](/Users/mblode/Code/mblode/edda/apps/api/src/lib/publish.ts) to emit the additional artifacts
+- [ ] Add serializer/helpers in [`packages/previewing/src/index.ts](/Users/mblode/Code/mblode/edda/packages/previewing/src/index.ts) for the new artifact types
+- [ ] Update [`packages/previewing/src/blob-source.ts](/Users/mblode/Code/mblode/edda/packages/previewing/src/blob-source.ts) to read typed deployment artifacts directly
+- [ ] Refactor [`apps/docs/lib/docs-runtime.tsx](/Users/mblode/Code/mblode/edda/apps/docs/lib/docs-runtime.tsx) so:
   - [ ] `getTenantArtifacts()` loads prebuilt JSON first
   - [ ] `buildOpenApiRegistry()` becomes publish-time for public deployments
   - [ ] `buildSearchItems()` is removed from the hot path
@@ -183,19 +183,19 @@ Once Edge Config lookup exists, the host-routed surface should collapse to “lo
 
 ### File Targets
 
-- [ ] Simplify [`apps/docs/proxy.ts](/Users/mblode/Code/mblode/blodemd/apps/docs/proxy.ts)
+- [ ] Simplify [`apps/docs/proxy.ts](/Users/mblode/Code/mblode/edda/apps/docs/proxy.ts)
 - [ ] Audit and simplify:
-  - [ ] [`apps/docs/app/robots.txt/route.ts](/Users/mblode/Code/mblode/blodemd/apps/docs/app/robots.txt/route.ts)
-  - [ ] [`apps/docs/app/sitemap.xml/route.ts](/Users/mblode/Code/mblode/blodemd/apps/docs/app/sitemap.xml/route.ts)
-  - [ ] [`apps/docs/app/llms.txt/route.ts](/Users/mblode/Code/mblode/blodemd/apps/docs/app/llms.txt/route.ts)
-  - [ ] [`apps/docs/app/llms-full.txt/route.ts](/Users/mblode/Code/mblode/blodemd/apps/docs/app/llms-full.txt/route.ts)
-  - [ ] [`apps/docs/app/llms.mdx/[[...slug]]/route.ts](/Users/mblode/Code/mblode/blodemd/apps/docs/app/llms.mdx/[[...slug]]/route.ts)
+  - [ ] [`apps/docs/app/robots.txt/route.ts](/Users/mblode/Code/mblode/edda/apps/docs/app/robots.txt/route.ts)
+  - [ ] [`apps/docs/app/sitemap.xml/route.ts](/Users/mblode/Code/mblode/edda/apps/docs/app/sitemap.xml/route.ts)
+  - [ ] [`apps/docs/app/llms.txt/route.ts](/Users/mblode/Code/mblode/edda/apps/docs/app/llms.txt/route.ts)
+  - [ ] [`apps/docs/app/llms-full.txt/route.ts](/Users/mblode/Code/mblode/edda/apps/docs/app/llms-full.txt/route.ts)
+  - [ ] [`apps/docs/app/llms.mdx/[[...slug]]/route.ts](/Users/mblode/Code/mblode/edda/apps/docs/app/llms.mdx/[[...slug]]/route.ts)
 - [ ] Prefer host-aware rewrite to `/sites/[tenant]` over bespoke runtime rendering wherever possible
 
 ## Phase 5: Use `cacheComponents` Only For Residual Dynamic Work
 
 Why:
-The repo already has `cacheLife` config in [`apps/docs/next.config.js](/Users/mblode/Code/mblode/blodemd/apps/docs/next.config.js) but does not yet use `cacheComponents`. This should only be introduced after the static and publish-time wins are exhausted.
+The repo already has `cacheLife` config in [`apps/docs/next.config.js](/Users/mblode/Code/mblode/edda/apps/docs/next.config.js) but does not yet use `cacheComponents`. This should only be introduced after the static and publish-time wins are exhausted.
 
 ### Deliverables
 
@@ -230,28 +230,28 @@ The remaining client cost is now concentrated in global theme/search/mobile UI a
 
 ### Priority 1
 
-- [ ] Audit [`apps/docs/components/providers.tsx](/Users/mblode/Code/mblode/blodemd/apps/docs/components/providers.tsx) and [`apps/docs/app/layout.tsx](/Users/mblode/Code/mblode/blodemd/apps/docs/app/layout.tsx)
+- [ ] Audit [`apps/docs/components/providers.tsx](/Users/mblode/Code/mblode/edda/apps/docs/components/providers.tsx) and [`apps/docs/app/layout.tsx](/Users/mblode/Code/mblode/edda/apps/docs/app/layout.tsx)
 - [ ] Decide whether `next-themes` remains worth a global client provider
 - [ ] If not, replace it with a lighter server-first theme strategy plus a tiny hydration-free toggle path
 
 ### Priority 2
 
-- [ ] Refactor [`apps/docs/components/ui/search.tsx](/Users/mblode/Code/mblode/blodemd/apps/docs/components/ui/search.tsx)
+- [ ] Refactor [`apps/docs/components/ui/search.tsx](/Users/mblode/Code/mblode/edda/apps/docs/components/ui/search.tsx)
 - [ ] Stop prefetching the full search index on hover/pointer enter
 - [ ] Load the search payload only on real open intent or keyboard shortcut
 - [ ] Consider splitting the command dialog body into a dynamic import
 
 ### Priority 3
 
-- [ ] Re-check [`apps/docs/components/docs/mobile-nav.tsx](/Users/mblode/Code/mblode/blodemd/apps/docs/components/docs/mobile-nav.tsx)
+- [ ] Re-check [`apps/docs/components/docs/mobile-nav.tsx](/Users/mblode/Code/mblode/edda/apps/docs/components/docs/mobile-nav.tsx)
 - [ ] Keep it client-only if needed, but isolate it from the desktop shell
 - [ ] Lazy-load any non-essential nested content or animation logic
 
 ### Priority 4
 
 - [ ] Audit API reference interactivity:
-  - [ ] [`apps/docs/components/api/api-playground.tsx](/Users/mblode/Code/mblode/blodemd/apps/docs/components/api/api-playground.tsx)
-  - [ ] [`apps/docs/components/api/api-reference.tsx](/Users/mblode/Code/mblode/blodemd/apps/docs/components/api/api-reference.tsx)
+  - [ ] [`apps/docs/components/api/api-playground.tsx](/Users/mblode/Code/mblode/edda/apps/docs/components/api/api-playground.tsx)
+  - [ ] [`apps/docs/components/api/api-reference.tsx](/Users/mblode/Code/mblode/edda/apps/docs/components/api/api-reference.tsx)
 - [ ] Keep playground JS off ordinary markdown docs pages
 - [ ] Lazy-load playground UI only on pages that actually render OpenAPI operations
 
