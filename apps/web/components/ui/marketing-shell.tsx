@@ -1,5 +1,6 @@
 import type { CSSProperties, ReactNode } from "react";
 
+import { LandingHeader } from "@/components/ui/landing-header";
 import { MarketingHeader } from "@/components/ui/marketing-header";
 import { SiteFooter } from "@/components/ui/site-footer";
 
@@ -13,9 +14,13 @@ const landingTheme = {
 
 interface MarketingShellProps {
   children: ReactNode;
+  staticLanding?: boolean;
 }
 
-export const MarketingShell = ({ children }: MarketingShellProps) => (
+export const MarketingShell = ({
+  children,
+  staticLanding = false,
+}: MarketingShellProps) => (
   <div
     className="min-h-screen bg-background text-foreground"
     style={landingTheme}
@@ -26,10 +31,10 @@ export const MarketingShell = ({ children }: MarketingShellProps) => (
     >
       Skip to content
     </a>
-    <MarketingHeader />
+    {staticLanding ? <LandingHeader /> : <MarketingHeader />}
     <main className="scroll-mt-24" id="main">
       {children}
     </main>
-    <SiteFooter />
+    <SiteFooter staticLanding={staticLanding} />
   </div>
 );

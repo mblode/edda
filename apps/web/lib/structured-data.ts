@@ -52,11 +52,7 @@ const organization: SchemaNode = {
     width: 512,
   },
   name: SITE_NAME,
-  sameAs: [
-    "https://github.com/mblode/edda",
-    "https://blode.co",
-    MARKETING_HOME,
-  ],
+  sameAs: ["https://github.com/mblode/edda"],
   url: MARKETING_HOME,
 };
 

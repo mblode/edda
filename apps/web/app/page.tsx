@@ -2,7 +2,6 @@ import { ArrowRightIcon, CodeIcon, GithubIcon } from "blode-icons-react";
 import Link from "next/link";
 
 import { JsonLd } from "@/components/json-ld";
-import { AnimatedGroup } from "@/components/ui/animated-group";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -10,13 +9,9 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { CopyButton } from "@/components/ui/copy-button";
 import { HeroMedia } from "@/components/ui/hero-media";
 import { MarketingShell } from "@/components/ui/marketing-shell";
 import { SignupLink } from "@/components/ui/signup-link";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { TextEffect } from "@/components/ui/text-effect";
-import { TextReveal } from "@/components/ui/text-reveal";
 import { siteConfig } from "@/lib/config";
 import {
   HOME_DESCRIPTION,
@@ -35,39 +30,19 @@ export const metadata = pageMetadata({
   title: HOME_TITLE,
 });
 
-/** Visible publish / last-updated date for freshness and AI citation signals. */
+/** Date of the latest substantive homepage edit. */
 const HOME_UPDATED_AT = "2026-09-21";
 
 const faqs = [
   {
     answer:
-      "People who already write MDX in git and review docs in a pull request. If you want a visual editor, a plugin marketplace, or a CMS, this is the wrong tool.",
-    question: "Who should use Edda?",
-  },
-  {
-    answer:
-      "Mintlify Starter is also $0 and includes a web editor. We will not ship one. The merge publishes the site plus llms.txt from that commit. We do not claim drop-in compatibility with every Mintlify config key.",
+      "Mintlify Starter is also $0 and includes a web editor. Edda keeps writing and review in git. Mintlify configs may need changes.",
     question: "How is this different from Mintlify?",
   },
   {
     answer:
-      "Hosted Edda is $0: unlimited projects, pages, and team seats, with custom domains, search, MDX, and API references included. What you do not get: a visual editor, a plugin marketplace, SOC 2, SSO, an SLA, or a logo wall. Support is the founder. The CLI and renderer are MIT if you want the same binary on your Postgres. See the pricing page.",
-    question: "How much does Edda cost?",
-  },
-  {
-    answer:
-      "No. The pull request is the review. If your team writes docs in a CMS instead of git, this is the wrong tool.",
-    question: "Is there a visual editor?",
-  },
-  {
-    answer:
-      "On every deploy the site writes llms.txt, llms-full.txt, robots.txt, a sitemap, and per-page .md exports from the MDX. Each .md page opens with a link back to llms.txt, the shape Mintlify's 2026 benchmark measured at 0.11 failed requests per task against 2.23 for HTML. Humans still get the HTML site from the same commit.",
-    question: "Do agents get Markdown, or only the HTML site?",
-  },
-  {
-    answer:
-      "Edda is built by Matthew Blode. Email m@blode.co or open an issue on GitHub at github.com/mblode/edda. The source is MIT.",
-    question: "Who builds Edda and how do I get support?",
+      "Every deploy generates llms.txt, llms-full.txt and per-page Markdown from the same MDX as the HTML. Each Markdown page links back to llms.txt.",
+    question: "What do agents get?",
   },
 ];
 
@@ -76,67 +51,80 @@ const homeJsonLd = pageJsonLd(
     description: HOME_DESCRIPTION,
     extra: {
       dateModified: HOME_UPDATED_AT,
-      datePublished: "2025-01-01",
       mainEntity: { "@id": `${marketingUrl("/")}#faq` },
+      breadcrumb: { "@id": `${marketingUrl("/")}#breadcrumb` },
     },
     name: HOME_TITLE,
     path: "/",
   }),
-  faqPageNode("/", faqs)
+  faqPageNode("/", faqs),
+  {
+    "@type": "BreadcrumbList",
+    "@id": `${marketingUrl("/")}#breadcrumb`,
+    itemListElement: [
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: "Matthew Blode",
+        item: "https://blode.co",
+      },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: "Projects",
+        item: "https://blode.co/projects",
+      },
+      {
+        "@type": "ListItem",
+        position: 3,
+        name: "Edda",
+        item: marketingUrl("/"),
+      },
+    ],
+  }
 );
-
-const insides: {
-  body: string;
-  href?: string;
-  hrefLabel?: string;
-  title: string;
-}[] = [
-  {
-    body: "llms.txt, llms-full.txt, and per-page .md exports are written from the same MDX as the HTML. Agents fetch those files instead of scraping a stale page.",
-    title: "Markdown from that commit",
-  },
-  {
-    body: "Proxy /docs through the site you already run. Paste-ready configs for Vercel, Cloudflare, Nginx, and Caddy live in the guides, not as a second product.",
-    href: "/docs/guides/proxy-vercel",
-    hrefLabel: "Read the proxy guides",
-    title: "On the domain they already trust",
-  },
-  {
-    body: "Same CLI and renderer, your Postgres. No license keys. If hosted goes away, you still have the source.",
-    href: siteConfig.links.github,
-    hrefLabel: "View on GitHub",
-    title: "MIT if I disappear",
-  },
-];
 
 export default function HomePage() {
   return (
-    <MarketingShell>
+    <MarketingShell staticLanding>
       <JsonLd data={homeJsonLd} />
+      <script src="/landing.js" defer />
       <section className="pb-16 pt-[calc(var(--header-height)+4rem)] md:pb-24 md:pt-[calc(var(--header-height)+7rem)] lg:pt-[calc(var(--header-height)+9rem)]">
         <div className="container flex flex-col items-center text-center">
-          <h1 className="sr-only">{HOME_TITLE}</h1>
-          <TextEffect
-            aria-hidden="true"
-            as="div"
-            className="h-display mx-auto max-w-5xl text-balance text-5xl font-semibold sm:text-6xl md:text-7xl lg:text-[88px]"
-            per="word"
-            preset="fade-in-blur"
-            speedSegment={0.3}
+          <nav
+            aria-label="Breadcrumb"
+            className="mb-6 text-sm text-muted-foreground"
           >
+            <ol className="flex flex-wrap justify-center gap-2">
+              <li>
+                <a
+                  className="underline-offset-4 hover:underline"
+                  href="https://blode.co"
+                  rel="author"
+                >
+                  Matthew Blode
+                </a>
+              </li>
+              <li aria-hidden="true">/</li>
+              <li>
+                <a
+                  className="underline-offset-4 hover:underline"
+                  href="https://blode.co/projects"
+                >
+                  Projects
+                </a>
+              </li>
+              <li aria-hidden="true">/</li>
+              <li aria-current="page">Edda</li>
+            </ol>
+          </nav>
+          <h1 className="h-display mx-auto max-w-5xl text-balance text-5xl font-semibold sm:text-6xl md:text-7xl lg:text-[88px]">
             {HOME_TITLE}
-          </TextEffect>
-
-          <TextEffect
-            as="p"
-            className="mx-auto mt-8 max-w-xl text-balance text-base text-muted-foreground md:text-lg"
-            delay={0.55}
-            per="word"
-            preset="fade-in-blur"
-            speedSegment={0.2}
-          >
-            Hosted is $0. MIT if I disappear.
-          </TextEffect>
+          </h1>
+          <p className="mx-auto mt-8 max-w-xl text-balance text-base text-muted-foreground md:text-lg">
+            Write MDX. Review the pull request. Merge to publish HTML and
+            agent-readable Markdown. Hosted is $0. The source is MIT.
+          </p>
           <p className="mt-4 text-muted-foreground text-sm">
             {SITE_NAME}
             <span aria-hidden="true"> · </span>
@@ -144,20 +132,7 @@ export default function HomePage() {
             <time dateTime={HOME_UPDATED_AT}>21 September 2026</time>
           </p>
 
-          <AnimatedGroup
-            className="mt-10 flex flex-wrap items-center justify-center gap-3"
-            variants={{
-              container: {
-                hidden: {},
-                visible: {
-                  transition: {
-                    delayChildren: 0.8,
-                    staggerChildren: 0.08,
-                  },
-                },
-              },
-            }}
-          >
+          <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
             <Button asChild className="rounded-full" size="lg">
               <SignupLink location="home_hero">Connect GitHub</SignupLink>
             </Button>
@@ -170,48 +145,20 @@ export default function HomePage() {
             >
               <Link href="/docs">Read the docs</Link>
             </Button>
-          </AnimatedGroup>
-        </div>
-        <AnimatedGroup
-          className="mt-20 md:mt-24"
-          variants={{
-            container: {
-              hidden: {},
-              visible: {
-                transition: {
-                  delayChildren: 0.95,
-                  staggerChildren: 0.05,
-                },
-              },
-            },
-          }}
-        >
-          <HeroMedia />
-        </AnimatedGroup>
-      </section>
-
-      <section>
-        <TextReveal>No second editor. On purpose.</TextReveal>
-      </section>
-
-      <section className="pb-24 md:pb-32">
-        <div className="container">
-          <div className="measure mx-auto flex flex-col gap-6 text-muted-foreground md:text-lg">
-            <p>
-              Git-native docs hosts added a web editor that commits back to the
-              repo, plus a marketplace. If you want that, that product exists.
-            </p>
-            <p>
-              If you want a CMS, this is the wrong tool. You&apos;re not looking
-              for a second review flow.
-            </p>
-            <p>
-              Write MDX in the repo. The pull request is the review. The merge
-              publishes the site, including the Markdown agents fetch from that
-              commit.
-            </p>
           </div>
         </div>
+        <div className="mt-20 md:mt-24">
+          <HeroMedia />
+        </div>
+      </section>
+
+      <section className="container pb-16 text-center md:pb-24">
+        <h2 className="h-display text-3xl font-semibold md:text-5xl">
+          No second editor. On purpose.
+        </h2>
+        <p className="mx-auto mt-6 max-w-xl text-muted-foreground md:text-lg">
+          Your editor, your repo, your pull request. Edda handles publishing.
+        </p>
       </section>
 
       <section
@@ -221,78 +168,69 @@ export default function HomePage() {
         <div className="container">
           <div className="grid gap-12 md:grid-cols-[1fr_1.4fr] md:items-start">
             <div className="min-w-0">
-              <p className="mb-4 text-sm font-medium text-muted-foreground">
-                What&apos;s inside
-              </p>
               <h2 className="h-title text-balance text-3xl font-semibold md:text-4xl">
                 The merge is the deploy
               </h2>
               <p className="measure mt-4 text-muted-foreground">
-                Sign in with GitHub and push. You do not run Docusaurus, a
-                search index, or a custom-domain pipeline to get a public URL.
+                Connect GitHub or publish from the CLI. Use a custom domain or
+                proxy /docs through your existing site.
               </p>
+              <div className="mt-6 flex flex-col items-start gap-3">
+                <Link
+                  className="underline underline-offset-4"
+                  href="/docs/quickstart"
+                >
+                  Setup guide
+                </Link>
+                <Link
+                  className="underline underline-offset-4"
+                  href="/docs/guides/proxy-vercel"
+                >
+                  Proxy guides
+                </Link>
+              </div>
             </div>
-            <Tabs className="min-w-0" defaultValue="cli">
-              <TabsList>
-                <TabsTrigger value="cli">
-                  <CodeIcon data-icon="inline-start" />
-                  CLI
-                </TabsTrigger>
-                <TabsTrigger value="github">
-                  <GithubIcon data-icon="inline-start" />
-                  GitHub
-                </TabsTrigger>
-              </TabsList>
-
-              <TabsContent className="mt-6 min-w-0" value="cli">
-                <div className="relative overflow-hidden rounded-xl bg-surface px-6 pb-6 pt-14 font-mono text-sm md:p-8 md:pt-8">
-                  <CopyButton
-                    className="absolute right-3 top-3 text-muted-foreground"
-                    content={`npm i -g edda-docs\nedda login\nedda new docs\nedda push docs`}
-                    size="sm"
-                    variant="ghost"
+            <div className="min-w-0 space-y-4">
+              <details className="rounded-xl border border-border p-4" open>
+                <summary className="flex cursor-pointer items-center gap-2 font-medium">
+                  <CodeIcon className="size-4" />
+                  CLI installation
+                </summary>
+                <div className="relative overflow-hidden rounded-xl bg-surface px-6 pb-6 pt-6 font-mono text-sm md:p-8 md:pt-8">
+                  <button
+                    type="button"
+                    aria-label="Copy install commands"
+                    data-copy-command={
+                      "npm i -g edda-docs\nedda login\nedda new docs\nedda push docs"
+                    }
+                    className="mb-4 rounded-md border border-border px-3 py-2 font-sans text-sm hover:bg-muted"
+                  >
+                    Copy commands
+                  </button>
+                  <p
+                    data-copy-status
+                    role="status"
+                    aria-live="polite"
+                    className="mb-4 min-h-5 font-sans text-sm text-muted-foreground"
                   />
-                  <div className="space-y-6">
-                    <div>
-                      <p className="text-muted-foreground"># install the CLI</p>
-                      <p className="break-words">
-                        <span className="text-muted-foreground">$</span> npm i
-                        -g edda-docs
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-muted-foreground">
-                        # browser sign-in with GitHub
-                      </p>
-                      <p className="break-words">
-                        <span className="text-muted-foreground">$</span> edda
-                        login
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-muted-foreground">
-                        # scaffold from your project root
-                      </p>
-                      <p className="break-words">
-                        <span className="text-muted-foreground">$</span> edda
-                        new docs
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-muted-foreground"># ship it</p>
-                      <p className="break-words">
-                        <span className="text-muted-foreground">$</span> edda
-                        push docs
-                      </p>
-                    </div>
-                    <p className="text-muted-foreground">
-                      Deployed to acme.blode.md
-                    </p>
-                  </div>
+                  <pre
+                    aria-label="Install commands"
+                    className="whitespace-pre-wrap break-words leading-7"
+                  >
+                    <code>
+                      {
+                        "npm i -g edda-docs\nedda login\nedda new docs\nedda push docs"
+                      }
+                    </code>
+                  </pre>
                 </div>
-              </TabsContent>
+              </details>
 
-              <TabsContent className="mt-6 min-w-0" value="github">
+              <details className="rounded-xl border border-border p-4">
+                <summary className="flex cursor-pointer items-center gap-2 font-medium">
+                  <GithubIcon className="size-4" />
+                  Connect GitHub
+                </summary>
                 <div className="overflow-hidden rounded-xl bg-surface p-6 text-sm md:p-8">
                   <ol className="space-y-4">
                     <li className="flex gap-3">
@@ -300,7 +238,7 @@ export default function HomePage() {
                       <span className="min-w-0 break-words">
                         Add a{" "}
                         <span className="font-mono text-foreground">docs/</span>{" "}
-                        folder first (or run{" "}
+                        folder (or run{" "}
                         <span className="font-mono text-foreground">
                           edda new docs
                         </span>
@@ -316,7 +254,7 @@ export default function HomePage() {
                     <li className="flex gap-3">
                       <span className="text-muted-foreground">3.</span>
                       <span className="min-w-0 break-words">
-                        Point at the folder with{" "}
+                        Select the folder with{" "}
                         <span className="font-mono text-foreground">
                           docs.json
                         </span>
@@ -326,62 +264,23 @@ export default function HomePage() {
                     </li>
                   </ol>
                 </div>
-              </TabsContent>
-            </Tabs>
+              </details>
+            </div>
           </div>
-
-          <ol className="mt-16 grid gap-10 border-t border-border pt-16 md:grid-cols-3">
-            {insides.map((item, index) => (
-              <li key={item.title}>
-                <p className="mb-3 font-mono text-muted-foreground text-sm">
-                  {String(index + 2).padStart(2, "0")}
-                </p>
-                <h3 className="h-title text-balance font-semibold text-xl">
-                  {item.title}
-                </h3>
-                <p className="mt-3 text-muted-foreground">{item.body}</p>
-                {item.href ? (
-                  <div className="mt-4">
-                    <Button asChild variant="outline">
-                      {item.href.startsWith("http") ? (
-                        <a
-                          href={item.href}
-                          rel="noopener noreferrer"
-                          target="_blank"
-                        >
-                          {item.hrefLabel}
-                          <ArrowRightIcon data-icon="inline-end" />
-                        </a>
-                      ) : (
-                        <Link href={item.href}>
-                          {item.hrefLabel}
-                          <ArrowRightIcon data-icon="inline-end" />
-                        </Link>
-                      )}
-                    </Button>
-                  </div>
-                ) : null}
-              </li>
-            ))}
-          </ol>
         </div>
       </section>
 
       <section className="border-t border-border py-24 md:py-32">
         <div className="container">
-          <p className="mb-4 text-sm font-medium text-muted-foreground">
-            Choose your edition
-          </p>
-          <h2 className="h-title max-w-2xl text-balance text-3xl font-semibold md:text-4xl">
-            Named for what you do not get
+          <h2
+            id="pricing"
+            className="h-title scroll-mt-24 max-w-2xl text-balance text-3xl font-semibold md:text-4xl"
+          >
+            Hosted or self-hosted
           </h2>
           <p className="measure mt-4 text-muted-foreground">
-            Same renderer either way. Hosted is $0: no visual editor, no
-            marketplace, no SOC 2. What you do not get is on{" "}
-            <Link className="underline underline-offset-4" href="/pricing">
-              pricing
-            </Link>
-            .
+            No visual editor, plugin marketplace, SOC 2, SSO or SLA. Support is
+            the founder.
           </p>
           <div className="mt-12 grid gap-3 md:grid-cols-2">
             <Card className="justify-start">
@@ -389,8 +288,8 @@ export default function HomePage() {
                 <p className="mb-2 text-muted-foreground text-sm">$0 hosted</p>
                 <CardTitle className="text-2xl">No second editor</CardTitle>
                 <CardDescription>
-                  Sign in with GitHub and push. Custom domains, search, MDX, and
-                  API references included. No visual editor, no marketplace.
+                  Unlimited projects, pages and seats. Custom domains, search,
+                  MDX and API references included.
                 </CardDescription>
                 <div className="pt-4">
                   <Button asChild>
@@ -407,8 +306,8 @@ export default function HomePage() {
                 <p className="mb-2 text-muted-foreground text-sm">MIT</p>
                 <CardTitle className="text-2xl">Your Postgres</CardTitle>
                 <CardDescription>
-                  Clone the repo, point it at a Postgres, and run the same CLI.
-                  No license keys, no telemetry.
+                  Self-host the same CLI and renderer on your Postgres. No
+                  license keys or telemetry.
                 </CardDescription>
                 <div className="pt-4">
                   <Button asChild variant="outline">
@@ -432,30 +331,35 @@ export default function HomePage() {
         <div className="container">
           <div className="grid gap-12 md:grid-cols-[1fr_1.4fr] md:items-start">
             <div className="min-w-0">
-              <p className="mb-4 text-sm font-medium text-muted-foreground">
-                About
-              </p>
-              <h2 className="h-title text-balance text-3xl font-semibold md:text-4xl">
-                One founder. The source is MIT.
+              <h2
+                id="about"
+                className="h-title scroll-mt-24 text-balance text-3xl font-semibold md:text-4xl"
+              >
+                Built by Matthew Blode
               </h2>
             </div>
             <div className="measure flex flex-col gap-6 text-muted-foreground">
               <p>
-                I built Edda so docs stay in the repo, in the editor I already
-                use. Support is me:{" "}
+                I built Edda to keep docs in my repo. For support, email{" "}
                 <a
                   className="underline underline-offset-4"
                   href={`mailto:${siteConfig.links.email}`}
                 >
                   {siteConfig.links.email}
                 </a>
-                , or a GitHub issue. There is no logo wall. I will not invent
-                one.
+                {" or "}
+                <a
+                  className="underline underline-offset-4"
+                  href={`${siteConfig.links.github}/issues`}
+                >
+                  open an issue
+                </a>
+                .
               </p>
               <div>
                 <Button asChild variant="outline">
-                  <Link href="/about">
-                    Read the about page
+                  <Link href="https://blode.co">
+                    More about Matthew
                     <ArrowRightIcon data-icon="inline-end" />
                   </Link>
                 </Button>
@@ -469,16 +373,15 @@ export default function HomePage() {
         <div className="container">
           <div className="grid gap-12 md:grid-cols-[1fr_1.4fr] md:items-start">
             <div className="min-w-0">
-              <p className="mb-4 text-sm font-medium text-muted-foreground">
-                FAQ
-              </p>
               <h2 className="h-title text-balance text-3xl font-semibold md:text-4xl">
-                Who this is for
+                FAQ
               </h2>
-              <p className="measure mt-4 text-muted-foreground">
-                And who it is not. Hosted is $0. The CLI is MIT if you want to
-                run it yourself.
-              </p>
+              <Link
+                className="mt-6 inline-flex underline underline-offset-4"
+                href="/docs/features/agent-readable-docs"
+              >
+                Agent-readable docs
+              </Link>
             </div>
             <dl className="flex flex-col divide-y divide-border">
               {faqs.map((faq) => (
@@ -488,35 +391,6 @@ export default function HomePage() {
                 </div>
               ))}
             </dl>
-          </div>
-        </div>
-      </section>
-
-      <section className="border-t border-border py-28 md:py-40">
-        <div
-          className="container flex flex-col items-center text-center"
-          id="get-started"
-        >
-          <h2 className="h-display mx-auto max-w-4xl text-balance text-5xl font-semibold md:text-6xl lg:text-7xl">
-            Docs that match the code you shipped.
-          </h2>
-          <p className="mx-auto mt-6 max-w-xl text-balance text-muted-foreground md:text-lg">
-            Connect GitHub. Hosted is $0. Or clone the MIT repo and run the same
-            CLI.
-          </p>
-          <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
-            <Button asChild className="rounded-full" size="lg">
-              <SignupLink location="home_cta">Connect GitHub</SignupLink>
-            </Button>
-
-            <Button
-              asChild
-              className="rounded-full"
-              size="lg"
-              variant="secondary"
-            >
-              <Link href="/docs">Read the docs</Link>
-            </Button>
           </div>
         </div>
       </section>

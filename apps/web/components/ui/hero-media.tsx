@@ -33,8 +33,8 @@ export const HeroMedia = ({ className }: HeroMediaProps) => (
           className="h-full w-full object-cover object-top"
           height={HEIGHT}
           placeholder="blur"
-          priority
-          sizes="(min-width: 1280px) 1200px, 100vw"
+          loading="lazy"
+          sizes="(min-width: 1024px) 992px, calc(100vw - 32px)"
           src="/hero-docs.png"
           width={WIDTH}
         />

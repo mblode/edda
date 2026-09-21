@@ -484,3 +484,10 @@
     transition: none !important;
   }
 }
+
+@media (scripting: none) {
+  [data-copy-command],
+  [data-copy-status] {
+    display: none;
+  }
+}

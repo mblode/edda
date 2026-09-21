@@ -27,7 +27,24 @@ const renderLink = ({
     </Link>
   );
 
-export const SiteFooter = () => (
+const landingHref = (href: string) =>
+  ({
+    "/pricing": "#pricing",
+    "/about": "#about",
+    "/docs-as-code": "#how-it-works",
+    "/compare/mintlify": "#faq",
+  })[href] ?? href;
+const retiredLandingPaths = new Set([
+  "/blog",
+  "/changelog",
+  "/free-online-llms-txt-resources",
+]);
+
+export const SiteFooter = ({
+  staticLanding = false,
+}: {
+  staticLanding?: boolean;
+}) => (
   <footer className="border-border/60 border-t">
     <div className="mx-auto w-full max-w-[1436px] px-4 py-14 lg:px-[46px]">
       <div className="grid grid-cols-2 gap-x-4 gap-y-10 lg:grid-cols-5 lg:gap-0">
@@ -47,9 +64,20 @@ export const SiteFooter = () => (
               {group.label}
             </h3>
             <ul className="flex flex-col">
-              {group.links.map((link) => (
-                <li key={link.label}>{renderLink(link)}</li>
-              ))}
+              {group.links
+                .filter(
+                  (link) =>
+                    !staticLanding || !retiredLandingPaths.has(link.href)
+                )
+                .map((link) => (
+                  <li key={link.label}>
+                    {renderLink(
+                      staticLanding
+                        ? { ...link, href: landingHref(link.href) }
+                        : link
+                    )}
+                  </li>
+                ))}
             </ul>
           </div>
         ))}
@@ -65,12 +93,12 @@ export const SiteFooter = () => (
         <a
           className="inline-flex items-center gap-2 transition-colors hover:text-foreground"
           href="https://blode.co"
-          rel="noopener noreferrer author"
-          target="_blank"
+          rel={staticLanding ? "author" : "noopener noreferrer author"}
+          target={staticLanding ? undefined : "_blank"}
         >
           {/* oxlint-disable-next-line no-img-element -- self-hosted 20px avatar, plain img avoids next/image overhead */}
           <img
-            alt="Matthew Blode"
+            alt=""
             className="rounded-full"
             height={20}
             loading="lazy"

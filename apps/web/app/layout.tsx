@@ -14,6 +14,7 @@ import "./globals.css";
 
 const glide = localFont({
   display: "swap",
+  preload: false,
   src: [
     { path: "./fonts/glide-variable.woff2", style: "normal" },
     { path: "./fonts/glide-variable-italic.woff2", style: "italic" },
@@ -24,6 +25,7 @@ const glide = localFont({
 
 const glideMono = localFont({
   display: "swap",
+  preload: false,
   src: [{ path: "./fonts/glide-mono.woff2" }],
   variable: "--font-glide-mono",
   weight: "400",

@@ -33,6 +33,15 @@ describe("structured data graph", () => {
     );
   });
 
+  it("keeps the product identity distinct from its founder", () => {
+    const organization = siteGraph.find(
+      (node) => node["@id"] === ORGANIZATION_ID
+    );
+
+    expect(organization?.founder).toEqual({ "@id": PERSON_ID });
+    expect(organization?.sameAs).toEqual(["https://github.com/mblode/edda"]);
+  });
+
   it("points FAQ and Article nodes back at the shared website and org", () => {
     const faq = faqPageNode("/", [
       { answer: "Git-native MDX.", question: "Who is it for?" },
