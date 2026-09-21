@@ -3,7 +3,7 @@ const MARKETING_MARKDOWN: Record<string, string> = {
 
 Knowledge docs for agents. Git-native MDX. Publish on merge.
 
-Write MDX in git. The merge publishes the site and the Markdown from that commit. Hosted is $0. MIT if I disappear.
+Knowledge docs for agents. Git-native MDX. Publish on merge. Write MDX in git. The merge publishes the site and the Markdown from that commit. Hosted is $0. MIT if I disappear.
 
 ## No second editor. On purpose.
 

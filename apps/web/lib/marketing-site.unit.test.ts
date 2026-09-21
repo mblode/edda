@@ -5,6 +5,7 @@ import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 
 import {
+  HOME_DESCRIPTION,
   HOME_TITLE,
   isRedirectedMarketingPath,
   MARKETING_HOME,
@@ -55,5 +56,12 @@ describe("Designer-locked product one-liner", () => {
     expect(site).toContain(`HOME_TITLE = "${DESIGNER_ONE_LINER}"`);
     expect(site).not.toMatch(/Knowledge docs for agents, published on merge/);
     expect(readme).not.toMatch(/Knowledge docs for agents, published on merge/);
+  });
+
+  it("HOME_DESCRIPTION leads with the lock", () => {
+    expect(HOME_DESCRIPTION.startsWith(DESIGNER_ONE_LINER)).toBe(true);
+    expect(HOME_DESCRIPTION).not.toMatch(
+      /Knowledge docs for agents, published on merge/
+    );
   });
 });

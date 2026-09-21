@@ -18,9 +18,8 @@ export const SITE_NAME = "Edda";
 // oxfmt-ignore
 export const HOME_TITLE = "Knowledge docs for agents. Git-native MDX. Publish on merge.";
 
-/** Default meta description for the home page and root layout. */
-export const HOME_DESCRIPTION =
-  "Knowledge docs for agents and humans. Write MDX in git; the merge publishes the site and the Markdown from that commit. Hosted is $0.";
+/** Default meta description. Lock first, how second. */
+export const HOME_DESCRIPTION = `${HOME_TITLE} Write MDX in git. The merge publishes the site and the Markdown from that commit. Hosted is $0. MIT if I disappear.`;
 
 /** Inner pages set a bare title and the root layout appends the product. */
 export const TITLE_TEMPLATE = `%s | ${SITE_NAME}`;
