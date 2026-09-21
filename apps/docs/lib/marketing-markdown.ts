@@ -35,10 +35,10 @@ edda push docs
 
 ## Links
 
-- [About](https://blode.co/edda)
-- [Blog](https://blode.co/edda)
-- [Changelog](https://blode.co/edda)
-- [Free online llms.txt resources](https://blode.co/edda)
+- [About](https://blode.md/about)
+- [Blog](https://blode.md/blog)
+- [Changelog](https://blode.md/changelog)
+- [Free online llms.txt resources](https://blode.md/free-online-llms-txt-resources)
 - [Privacy](https://blode.md/privacy)
 - [Terms](https://blode.md/terms)
 - [Security](https://blode.md/security)
@@ -113,7 +113,7 @@ Yes. Edda sites get tenant-aware \`/llms.txt\`, \`/llms-full.txt\`, robots.txt, 
 
 ## Links
 
-- [Full HTML resource](https://blode.co/edda)
+- [Full HTML resource](https://blode.md/free-online-llms-txt-resources)
 - [blode.md/llms.txt](https://blode.md/llms.txt)
 - [Docs](https://blode.md/docs)
 `,

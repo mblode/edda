@@ -87,7 +87,7 @@ Live references worth reading: the FastHTML docs index linked from [llmstxt.org]
 - [llms_txt2ctx](https://github.com/AnswerDotAI/llms-txt): CLI/Python helper that expands an llms.txt index into context files (as described on llmstxt.org).
 - [url-discovery-bench](https://github.com/mintlify/url-discovery-bench): Mintlify's open-source benchmark that drives Claude and Codex through your docs and counts failed requests per task. Its 2026 run put HTML at 2.23, Markdown at 1.42, and Markdown with a link to llms.txt at 0.11.
 - Framework generators such as vitepress-plugin-llms and docusaurus-plugin-llms are listed on [llmstxt.org](https://llmstxt.org/). Use those listings rather than package-registry pages that block crawlers.
-- [Edda](https://blode.co/edda): knowledge docs for agents, published on merge. Sites ship `llms.txt` / `llms-full.txt` / `.md` alternates from the same deploy. See [pricing](https://blode.co/edda).
+- [Edda](https://blode.co/edda): knowledge docs for agents, published on merge. Sites ship `llms.txt` / `llms-full.txt` / `.md` alternates from the same deploy. See [pricing](https://blode.md/pricing).
 
 ## Related docs on Edda
 
@@ -96,7 +96,7 @@ Live references worth reading: the FastHTML docs index linked from [llmstxt.org]
 - [Edda docs](https://blode.md/docs)
 - [SEO and sitemaps](https://blode.md/docs/features/seo): robots, sitemap, llms.txt, llms-full.txt, and `.md` exports
 - [blode.md/llms.txt](https://blode.md/llms.txt)
-- [About Edda](https://blode.co/edda)
+- [About Edda](https://blode.md/about)
 
 ## FAQ
 

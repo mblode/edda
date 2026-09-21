@@ -50,4 +50,4 @@ Choose Mintlify if anyone on the team needs to edit docs without a repo, if you 
 
 Sign in with GitHub, run `edda new` to scaffold a docs.json, move your MDX files in, and push. Proxy guides for Vercel, Cloudflare, and Nginx cover keeping docs on your own domain under /docs.
 
-[Connect GitHub](https://blode.md/oauth/consent) · [Pricing](https://blode.co/edda)
+[Connect GitHub](https://blode.md/oauth/consent) · [Pricing](https://blode.md/pricing)

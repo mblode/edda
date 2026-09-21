@@ -10,7 +10,7 @@ Last updated: 21 September 2026
 
 - [Connect GitHub](https://blode.md/oauth/consent)
 - [Read the docs](https://blode.md/docs)
-- [Pricing](https://blode.co/edda)
+- [Pricing](https://blode.md/pricing)
 
 ## No second editor. On purpose.
 
@@ -64,7 +64,7 @@ Same CLI and renderer, your Postgres. Source on [GitHub](https://github.com/mblo
 
 ## Choose your edition
 
-Named for what you do not get. Hosted is $0: no visual editor, no marketplace, no SOC 2. Detail is on [pricing](https://blode.co/edda).
+Named for what you do not get. Hosted is $0: no visual editor, no marketplace, no SOC 2. Detail is on [pricing](https://blode.md/pricing).
 
 - **No second editor:** $0 hosted. [Connect GitHub](https://blode.md/oauth/consent)
 - **Your Postgres:** MIT. [View on GitHub](https://github.com/mblode/edda)
@@ -78,7 +78,7 @@ People who already write MDX in git and review docs in a pull request. If you wa
 Mintlify Starter is also $0 and includes a web editor. We will not ship one. The merge publishes the site plus `llms.txt` from that commit. We do not claim drop-in compatibility with every Mintlify config key.
 
 **How much does Edda cost?**
-Hosted is $0. What you do not get: a visual editor, a plugin marketplace, SOC 2, SSO, an SLA, or a logo wall. Support is the founder. The CLI and renderer are MIT. See [pricing](https://blode.co/edda).
+Hosted is $0. What you do not get: a visual editor, a plugin marketplace, SOC 2, SSO, an SLA, or a logo wall. Support is the founder. The CLI and renderer are MIT. See [pricing](https://blode.md/pricing).
 
 **Is there a visual editor?**
 No. The pull request is the review.
