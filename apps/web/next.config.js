@@ -160,19 +160,35 @@ const nextConfig = {
   },
   partialPrefetching: true,
   reactCompiler: true,
-  // Only the apex marketing landing 301s to https://blode.co/edda (blode-co
-  // repo). Host-conditional so localhost and preview still render `/`.
-  // Do not whole-host redirect: /about, /blog, /pricing, /docs, /app, /oauth,
+  // Marketing URLs on blode.md / www.blode.md 301 to blode.co/edda*.
+  // Host-conditional so localhost and preview still render these paths.
+  // Do not whole-host redirect: /about, /blog, /pricing, /app, /oauth,
   // /api, /sites, /.well-known, /llms*, /mcp, and legal stay on blode.md.
+  // docs.blode.md is the fetch origin for blode.co/edda/docs — never 301 it.
   redirects() {
     const marketingHome = "https://blode.co/edda";
+    const docsHome = "https://blode.co/edda/docs";
     const hosts = ["blode.md", "www.blode.md"];
-    return hosts.map((host) => ({
-      destination: marketingHome,
-      has: [{ type: "host", value: host }],
-      source: "/",
-      statusCode: 301,
-    }));
+    return hosts.flatMap((host) => [
+      {
+        destination: marketingHome,
+        has: [{ type: "host", value: host }],
+        source: "/",
+        statusCode: 301,
+      },
+      {
+        destination: docsHome,
+        has: [{ type: "host", value: host }],
+        source: "/docs",
+        statusCode: 301,
+      },
+      {
+        destination: `${docsHome}/:path*`,
+        has: [{ type: "host", value: host }],
+        source: "/docs/:path*",
+        statusCode: 301,
+      },
+    ]);
   },
   rewrites() {
     return {

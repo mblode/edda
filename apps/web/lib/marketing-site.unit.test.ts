@@ -27,7 +27,7 @@ describe("marketing vs product hosts", () => {
     expect(PLATFORM_ORIGIN).toBe("https://blode.md");
   });
 
-  it("redirects only the apex marketing landing", () => {
+  it("redirects apex and /docs marketing URLs on blode.md hosts", () => {
     expect(REDIRECTED_MARKETING_PATHS).toEqual(["/"]);
     expect(isRedirectedMarketingPath("/")).toBe(true);
     expect(isRedirectedMarketingPath("")).toBe(true);
@@ -72,13 +72,16 @@ describe("marketing vs product hosts", () => {
     expect(redirects).toContain('"www.blode.md"');
     expect(redirects).toContain("destination: marketingHome");
     expect(redirects).toContain('source: "/"');
+    expect(redirects).toContain("destination: docsHome");
+    expect(redirects).toContain('source: "/docs"');
+    expect(redirects).toContain('source: "/docs/:path*"');
     expect(redirects).not.toContain("/about");
-    expect(redirects).not.toContain("/docs");
     expect(redirects).not.toContain("/app");
     expect(redirects).not.toContain("/oauth");
     expect(redirects).not.toContain("/api");
     expect(redirects).not.toContain("/pricing");
     expect(redirects).not.toContain("/blog");
+    expect(redirects).not.toContain("docs.blode.md");
   });
 });
 
