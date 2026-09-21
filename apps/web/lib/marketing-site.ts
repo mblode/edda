@@ -7,6 +7,13 @@ import type { Metadata } from "next";
 export const MARKETING_HOME = "https://blode.co/edda";
 
 /**
+ * Public docs home. Also owned by the blode-co repo, which proxies it to the
+ * docs app. `blode.md/docs` 301s here, so crawler files must name this URL and
+ * not the redirecting one.
+ */
+export const DOCS_HOME = "https://blode.co/edda/docs";
+
+/**
  * Product runtime host: docs, dashboard, API, tenant `*.blode.md` sites,
  * and every apex page except the marketing landing.
  */

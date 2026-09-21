@@ -156,6 +156,26 @@ describe("loadSiteConfig", () => {
     expect(result.config.collections).toHaveLength(1);
   });
 
+  it("carries metadata.titleTemplate through to the rendered SiteConfig", async () => {
+    const root = await createTempContentRoot({
+      "docs.json": JSON.stringify({
+        metadata: { titleTemplate: "%s · Example Docs" },
+        name: "Example",
+        navigation: { pages: ["index"] },
+        slug: "example",
+      }),
+      "index.mdx": "---\ntitle: Welcome\n---\n",
+    });
+
+    const result = await loadSiteConfig(createFsSource(root));
+
+    expect(result.ok).toBe(true);
+    if (!result.ok) {
+      return;
+    }
+    expect(result.config.metadata?.titleTemplate).toBe("%s · Example Docs");
+  });
+
   it("errors when docs.json is missing", async () => {
     const root = await createTempContentRoot({
       "site.json": JSON.stringify({ name: "Old config" }, null, 2),

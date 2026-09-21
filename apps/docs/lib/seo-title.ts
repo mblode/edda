@@ -23,6 +23,9 @@ const truncateAtWordBoundary = (text: string, maxLength: number): string => {
   return `${trimmed}${ellipsis}`;
 };
 
+const startsWithSiteName = (pageTitle: string, baseTitle: string) =>
+  pageTitle === baseTitle || pageTitle.startsWith(`${baseTitle} `);
+
 /**
  * Build a docs page SEO title: the page title plus the site suffix, kept under
  * ~60 characters so the SERP does not clip it.
@@ -39,6 +42,13 @@ export const buildDocsSeoTitle = ({
 }: BuildDocsSeoTitleInput): string => {
   if (!pageTitle) {
     return baseTitle;
+  }
+
+  // A page whose title already opens with the site name ("Edda documentation")
+  // is the homepage or a landing page naming the product. Appending the
+  // template would print the brand twice, so the title stands alone.
+  if (startsWithSiteName(pageTitle, baseTitle)) {
+    return truncateAtWordBoundary(pageTitle, MAX_TITLE_LENGTH);
   }
 
   const template = titleTemplate?.includes("%s")

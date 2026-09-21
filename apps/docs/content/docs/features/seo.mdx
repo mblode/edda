@@ -43,6 +43,12 @@ Every deployed site includes these files at their standard paths:
   language models.
 </Callout>
 
+Every HTML page also carries a canonical URL, Open Graph and Twitter cards,
+and JSON-LD structured data: a `WebSite` node for the site, a `WebPage` typed
+as `TechArticle` with the page description and last-modified date, and a
+`BreadcrumbList` matching the sidebar path. None of it is configured; the
+canonical host comes from `seo.siteUrl` below.
+
 Append `.md` to any page URL to get its Markdown export. For example,
 `/docs/quickstart` becomes `/docs/quickstart.md`. For what agents do with
 these files, why the index matters more than the Markdown, and what to put in
@@ -73,6 +79,43 @@ on.
   is invisible to us: a proxied request is indistinguishable from a direct one:
   so it is the only case we cannot work out on your behalf.
 </Note>
+
+## Titles and descriptions
+
+Every page renders `<title>{page title} · {name}</title>` and a
+`<meta name="description">` from the page's frontmatter `description`. Google
+shows about 60 characters of a title and about 160 of a description, so Edda
+clamps the title at a word boundary and leaves the description to you.
+
+The suffix is the site `name`. If that name is ambiguous on a results page,
+give the template a more descriptive suffix with `metadata.titleTemplate`.
+`%s` stands in for the page title:
+
+```json title="docs.json"
+{
+  "name": "Acme",
+  "metadata": {
+    "titleTemplate": "%s · Acme Docs"
+  }
+}
+```
+
+A page whose title already opens with the site name, such as
+`Acme documentation` on the homepage, is rendered without the suffix so the
+brand does not appear twice. Use `sidebarTitle` to keep the sidebar label short
+when the page title is written for search:
+
+```mdx title="index.mdx"
+---
+title: Acme documentation
+sidebarTitle: Introduction
+description: Set up Acme, authenticate, and ship your first widget in ten minutes.
+---
+```
+
+Prefer titles that name what the page is about on their own. `Card component`
+ranks for a query a bare `Card` never will, and the sidebar can still say
+`Card`.
 
 ## Indexing mode
 
