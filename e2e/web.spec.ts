@@ -1,7 +1,16 @@
 import { expect, test } from "@playwright/test";
 
 test("landing page renders primary CTA", async ({ page }) => {
-  await page.goto("/");
+  const response = await page.goto("/");
+  expect(response?.status()).toBe(200);
+  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+    "href",
+    "https://blode.co/edda"
+  );
+  await expect(page.locator('meta[name="robots"]')).toHaveAttribute(
+    "content",
+    /noindex/
+  );
 
   await expect(
     page

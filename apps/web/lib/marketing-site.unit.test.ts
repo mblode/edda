@@ -7,12 +7,13 @@ import { describe, expect, it } from "vitest";
 import {
   HOME_DESCRIPTION,
   HOME_TITLE,
-  isRedirectedMarketingPath,
+  isMarketingHomePath,
   MARKETING_HOME,
+  MARKETING_HOME_PATHS,
   marketingUrl,
+  pageMetadata,
   PLATFORM_ORIGIN,
   platformUrl,
-  REDIRECTED_MARKETING_PATHS,
 } from "./marketing-site";
 
 const DESIGNER_ONE_LINER =
@@ -26,14 +27,30 @@ describe("marketing vs product hosts", () => {
     expect(PLATFORM_ORIGIN).toBe("https://blode.md");
   });
 
-  it("redirects only the apex marketing landing", () => {
-    expect(REDIRECTED_MARKETING_PATHS).toEqual(["/"]);
-    expect(isRedirectedMarketingPath("/")).toBe(true);
-    expect(isRedirectedMarketingPath("/about")).toBe(false);
-    expect(isRedirectedMarketingPath("/pricing")).toBe(false);
-    expect(isRedirectedMarketingPath("/blog")).toBe(false);
-    expect(isRedirectedMarketingPath("/docs")).toBe(false);
-    expect(isRedirectedMarketingPath("/app")).toBe(false);
+  it("canonicalizes and noindexes only the apex landing", () => {
+    expect(MARKETING_HOME_PATHS).toEqual(["/"]);
+    expect(isMarketingHomePath("/")).toBe(true);
+    expect(isMarketingHomePath("/about")).toBe(false);
+    expect(isMarketingHomePath("/pricing")).toBe(false);
+    expect(isMarketingHomePath("/blog")).toBe(false);
+    expect(isMarketingHomePath("/docs")).toBe(false);
+    expect(isMarketingHomePath("/app")).toBe(false);
+
+    const home = pageMetadata({
+      description: "d",
+      path: "/",
+      title: HOME_TITLE,
+    });
+    expect(home.alternates?.canonical).toBe("https://blode.co/edda");
+    expect(home.robots).toEqual({ follow: true, index: false });
+
+    const about = pageMetadata({
+      description: "d",
+      path: "/about",
+      title: "About",
+    });
+    expect(about.alternates?.canonical).toBe("https://blode.md/about");
+    expect(about.robots).toBeUndefined();
   });
 
   it("canonicalizes `/` to the brand page and other paths to blode.md", () => {
@@ -41,6 +58,12 @@ describe("marketing vs product hosts", () => {
     expect(marketingUrl("/about")).toBe("https://blode.md/about");
     expect(marketingUrl("/pricing")).toBe("https://blode.md/pricing");
     expect(platformUrl("/privacy")).toBe("https://blode.md/privacy");
+  });
+
+  it("does not 301 apex /; next.config has no host-conditional redirects", () => {
+    const config = readFileSync(join(here, "../next.config.js"), "utf8");
+    expect(config).not.toContain("redirects()");
+    expect(config).not.toMatch(/statusCode:\s*301/);
   });
 });
 

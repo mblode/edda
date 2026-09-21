@@ -28,7 +28,7 @@ export const GET = () => {
   ];
 
   // No `changefreq` or `priority`: Google ignores both.
-  // Apex `/` 301s to blode.co/edda and is omitted. Remaining pages stay here.
+  // Apex `/` canonicalizes to blode.co/edda and is noindex, so it is omitted.
   const urls = entries
     .map(
       ({ lastmod, path }) => `  <url>

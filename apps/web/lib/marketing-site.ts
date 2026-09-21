@@ -2,13 +2,14 @@ import type { Metadata } from "next";
 
 /**
  * Brand/marketing page, owned by the blode-co repo.
- * Apex `/` on blode.md 301s here. Not a product host.
+ * Apex `/` on blode.md stays 200, canonicalizes here, and is noindex,follow.
+ * Not a product host.
  */
 export const MARKETING_HOME = "https://blode.co/edda";
 
 /**
  * Product runtime host: docs, dashboard, API, tenant `*.blode.md` sites,
- * and every apex page except the marketing landing.
+ * and every apex page. Apex `/` is served here with an off-host canonical.
  */
 export const PLATFORM_ORIGIN = "https://blode.md";
 
@@ -25,10 +26,10 @@ export const HOME_DESCRIPTION = `${HOME_TITLE} Write MDX in git. The merge publi
 export const TITLE_TEMPLATE = `%s | ${SITE_NAME}`;
 
 /**
- * Only the apex marketing landing 301s to MARKETING_HOME.
- * Do not whole-host redirect blode.md. Product routes stay.
+ * Only apex `/` canonicalizes off-host to MARKETING_HOME and is noindex,follow.
+ * Do not 301 blode.md. Product routes stay indexed on this host.
  */
-export const REDIRECTED_MARKETING_PATHS = ["/"] as const;
+export const MARKETING_HOME_PATHS = ["/"] as const;
 
 /**
  * Pages that remain on blode.md.
@@ -51,15 +52,15 @@ export type PlatformPath = keyof typeof PLATFORM_PAGES;
 
 export const PLATFORM_PATHS = Object.keys(PLATFORM_PAGES) as PlatformPath[];
 
-export const isRedirectedMarketingPath = (path: string): boolean =>
-  path === "/" || path === "";
+export const isMarketingHomePath = (path: string): boolean =>
+  path === "" || (MARKETING_HOME_PATHS as readonly string[]).includes(path);
 
 export const platformUrl = (path: string) =>
   `${PLATFORM_ORIGIN}${path.startsWith("/") ? path : `/${path}`}`;
 
 /** Brand home for `/`; every other path stays on the product host. */
 export const marketingUrl = (path: string) =>
-  isRedirectedMarketingPath(path) ? MARKETING_HOME : platformUrl(path);
+  isMarketingHomePath(path) ? MARKETING_HOME : platformUrl(path);
 
 /** Static 1200x630 cards in `app/`; declared here because pages replace `openGraph` wholesale. */
 const OG_IMAGE = { height: 630, url: "/opengraph-image.png", width: 1200 };
@@ -69,8 +70,9 @@ export const TWITTER_CREATOR = "@mattblode";
 /**
  * Page metadata with a canonical URL and `og:url`.
  *
- * The apex landing canonicalizes to MARKETING_HOME (it 301s there).
- * Every other page keeps a blode.md canonical.
+ * The apex landing canonicalizes to MARKETING_HOME and is noindex,follow so
+ * Google treats blode.co/edda as the indexed URL. Every other page keeps a
+ * blode.md canonical and remains indexable.
  *
  * `title` is the bare page name ("Pricing"), not the finished string: the root
  * layout's template appends the product. Next applies that template to `<title>`
@@ -93,7 +95,7 @@ export const pageMetadata = ({
   title: string;
   type?: "article" | "website";
 }): Metadata => {
-  const isHome = path === "/";
+  const isHome = isMarketingHomePath(path);
   const canonical = marketingUrl(path);
   return {
     alternates: { canonical },
@@ -106,6 +108,7 @@ export const pageMetadata = ({
       type,
       url: canonical,
     },
+    ...(isHome ? { robots: { follow: true, index: false } } : {}),
     title: isHome ? { absolute: title } : title,
     twitter: {
       card: "summary_large_image",
