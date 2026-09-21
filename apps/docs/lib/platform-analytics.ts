@@ -11,13 +11,18 @@ const LOCAL_PLATFORM_HOSTS = new Set<string>(LOCAL_ROOT_HOSTS);
 const isLocalAnalyticsHost = (hostname: string): boolean => {
   const host = normalizeHost(hostname);
   return (
-    host === "localhost" || host === "127.0.0.1" || host.endsWith(".localhost")
+    host === "localhost" ||
+    host === "127.0.0.1" ||
+    host === "[::1]" ||
+    host === "::1" ||
+    host === "0.0.0.0" ||
+    host.endsWith(".localhost")
   );
 };
 
 /**
- * Platform PostHog should only run on Edda / blode.md product hosts — never on
- * customer tenant subdomains or custom domains.
+ * Product hosts eligible for signed-in platform identity. Tenant readers stay
+ * anonymous in the shared project; their own analytics use a separate instance.
  */
 export const isPlatformAnalyticsHost = (hostname: string): boolean => {
   const host = normalizeHost(hostname);
@@ -57,11 +62,19 @@ export const shouldInitPlatformPostHog = (): boolean => {
   return shouldInitPlatformPostHogForHost(window.location.hostname);
 };
 
+/** All deployed docs surfaces, including tenant/custom domains and path proxies. */
+export const shouldTrackDocsPostHogForHost = (hostname: string): boolean =>
+  Boolean(normalizeHost(hostname)) && !isLocalAnalyticsHost(hostname);
+
+export const shouldTrackDocsPostHog = (): boolean =>
+  typeof window !== "undefined" &&
+  shouldTrackDocsPostHogForHost(window.location.hostname);
+
 export const capturePlatformEvent = (
   event: string,
   properties?: Record<string, string | number | boolean | null | undefined>
 ): void => {
-  if (!(posthog.__loaded && shouldInitPlatformPostHog())) {
+  if (!(posthog.__loaded && shouldTrackDocsPostHog())) {
     return;
   }
   posthog.capture(event, properties);

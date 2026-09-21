@@ -4,7 +4,9 @@ sidebarTitle: Analytics
 description: Connect your own PostHog project key in the dashboard to load analytics on every tenant docs page, with an optional EU host and no content wiring.
 ---
 
-Edda does not ship a proprietary analytics tool. Instead, we inject the analytics you already trust: PostHog: into every page of your tenant docs. Paste your key into the dashboard, and the script loads on the next request. There is nothing to wire up in your content.
+All deployed Edda docs sites report pageviews and docs interactions to the shared blode.co PostHog project, including tenant subdomains, custom domains and proxied docs. Local development is excluded.
+
+You can also send analytics to your own PostHog project. Add its public key in the dashboard.
 
 ## Add PostHog
 
@@ -14,13 +16,13 @@ Edda does not ship a proprietary analytics tool. Instead, we inject the analytic
    - **PostHog host**: optional. Defaults to `https://us.i.posthog.com`. Use `https://eu.i.posthog.com` if your project lives in the EU cloud.
 3. Save. The next request on your tenant domain loads the script.
 
-Leave the project key empty to disable analytics.
+Leave the project key empty to disable your additional project. Shared platform analytics remain enabled.
 
 ## How it works
 
 When tenant analytics are configured, every request through the docs proxy carries a compact, tenant-scoped header that the root layout reads on the server. We inject a small PostHog provider that initializes `posthog-js` with `capture_pageview: false` and emits a `$pageview` event on every client-side navigation.
 
-PostHog only loads when `VERCEL_ENV === "production"`, so local dev previews and preview deployments never pollute your numbers.
+Your additional project only loads when `VERCEL_ENV === "production"`. It uses a separate SDK instance, so it cannot replace the shared project. Selecting the blode.co project key does not send duplicate pageviews.
 
 <Callout type="info">
   PostHog project keys are public client-side tokens: they are designed to be
