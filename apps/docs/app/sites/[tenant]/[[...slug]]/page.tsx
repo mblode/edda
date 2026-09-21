@@ -14,6 +14,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { CopyButton } from "@/components/ui/copy-button";
+import { WebMcpTools } from "@/components/web-mcp";
 import { defaultOgImageUrl } from "@/lib/default-og-image";
 import {
   getDocChromeData,
@@ -444,6 +445,11 @@ const CachedDocPage = async ({
         // oxlint-disable-next-line no-danger -- JSON-LD for SEO
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         type="application/ld+json"
+      />
+      <WebMcpTools
+        basePath={basePath}
+        siteDescription={shell.config.description}
+        siteName={shell.config.name}
       />
       <DocArticle
         basePath={basePath}

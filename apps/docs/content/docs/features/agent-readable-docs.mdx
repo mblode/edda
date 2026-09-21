@@ -1,7 +1,7 @@
 ---
 title: Docs for agents
 sidebarTitle: Docs for agents
-description: What Edda publishes for AI agents on every deploy (llms.txt, llms-full.txt, per-page Markdown, discovery headers) and what to write so an agent finds the right page first time.
+description: What Edda publishes for AI agents on every deploy (llms.txt, llms-full.txt, per-page Markdown, discovery headers, WebMCP tools for browser agents) and what to write so an agent finds the right page first time.
 ---
 
 In 2026, agents became the majority reader of documentation. Mintlify's [2026 State of Knowledge Report](https://www.mintlify.com/state-of-knowledge/2026) counted 257 million agent requests against 131 million human page loads across its hosted docs in August 2026, and 83% of that agent traffic arrived through machine-friendly routes: a `.md` version of a page, an `llms.txt` index, or an agent skill. Agents request those routes only when they know they exist.
@@ -10,15 +10,16 @@ Edda publishes every one of them from the same deploy as the HTML, so what an ag
 
 ## What every deploy publishes
 
-| Path                             | What it is                                                                                                                                                                           | You control                                                                      |
-| -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------- |
-| `/llms.txt`                      | Index of every visible page as a `.md` link with the page description, plus `Sitemap:`, `Full content:` and `Skills:` lines and one `/llms/<group>.txt` segment per navigation group | `name` and `description` in `docs.json`; each page's `description`; hidden pages |
-| `/llms-full.txt`                 | Every visible page as Markdown in one file                                                                                                                                           | Same                                                                             |
-| `/{page}.md`                     | The page as Markdown. Also returned when a client sends `Accept: text/markdown` to the HTML URL                                                                                      | Frontmatter and body                                                             |
-| `Link` header on every HTML page | `llms.txt`, `llms-full.txt`, the skills index, and the page's own Markdown alternate                                                                                                 | Nothing; always on                                                               |
-| `X-Llms-Txt` header              | The `llms.txt` path, for clients that read headers before bodies                                                                                                                     | Nothing; always on                                                               |
-| `/.well-known/skills/index.json` | A generated skill describing your docs for agents that install skills                                                                                                                | `name` and `description` in `docs.json`                                          |
-| `/robots.txt`, `/sitemap.xml`    | Crawler files with the same page set; `robots.txt` also names the agent routes in comments                                                                                           | `seo.indexing`                                                                   |
+| Path                             | What it is                                                                                                                                                                                                             | You control                                                                      |
+| -------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- |
+| `/llms.txt`                      | Index of every visible page as a `.md` link with the page description, plus `Sitemap:`, `Full content:` and `Skills:` lines and one `/llms/<group>.txt` segment per navigation group                                   | `name` and `description` in `docs.json`; each page's `description`; hidden pages |
+| `/llms-full.txt`                 | Every visible page as Markdown in one file                                                                                                                                                                             | Same                                                                             |
+| `/{page}.md`                     | The page as Markdown. Also returned when a client sends `Accept: text/markdown` to the HTML URL                                                                                                                        | Frontmatter and body                                                             |
+| `Link` header on every HTML page | `llms.txt`, `llms-full.txt`, the skills index, and the page's own Markdown alternate                                                                                                                                   | Nothing; always on                                                               |
+| `X-Llms-Txt` header              | The `llms.txt` path, for clients that read headers before bodies                                                                                                                                                       | Nothing; always on                                                               |
+| `/.well-known/skills/index.json` | A generated skill describing your docs for agents that install skills                                                                                                                                                  | `name` and `description` in `docs.json`                                          |
+| `/robots.txt`, `/sitemap.xml`    | Crawler files with the same page set; `robots.txt` also names the agent routes in comments                                                                                                                             | `seo.indexing`                                                                   |
+| WebMCP tools on every HTML page  | Five typed tools (`search_docs`, `read_page`, `get_site_overview`, `read_skill`, `navigate_page`) registered with the browser for agents that drive a tab. See [Browser agents and WebMCP](#browser-agents-and-webmcp) | Nothing; always on                                                               |
 
 Do not hand-author copies of these in your docs folder. They are regenerated on every deploy and a committed copy would drift.
 
@@ -88,6 +89,46 @@ curl -sSI "$SITE/quickstart" -H "Accept: text/markdown"
 ```
 
 Expect `200` on each, `Content-Type: text/markdown; charset=utf-8` on the `.md` twin and on the `Accept` request, and a `Link` header on the HTML page that names `llms.txt`. The `## Docs` list in `llms.txt` should show a description after every title.
+
+## Browser agents and WebMCP
+
+The routes above serve agents that fetch over HTTP. A second kind of agent drives a browser tab: Gemini in Chrome, browser extensions such as Claude in Chrome, and the automation agents built on them. Those agents have read docs sites the way a screen reader does, guessing at the search box and the sidebar. [WebMCP](https://developer.chrome.com/docs/ai/webmcp) is the proposed web standard, shipping in Chrome, that lets a page hand such an agent typed tools instead.
+
+Every Edda site registers the same five tools that Mintlify docs expose, so an agent that already knows how to read one hosted docs platform in the browser reads yours the same way:
+
+| Tool                | What it does                                                                                                                        |
+| ------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| `search_docs`       | Searches the same index the search dialog uses (page titles and headings) and returns matching pages with their URL                 |
+| `read_page`         | Returns a page as Markdown. Takes a path or same-origin URL from another tool, or reads the open page when called with no arguments |
+| `get_site_overview` | Returns `llms.txt`: every visible page grouped by navigation section, with its description and Markdown URL                         |
+| `read_skill`        | Lists the skills under `/.well-known/skills` or returns one skill's `SKILL.md`                                                      |
+| `navigate_page`     | Moves the tab to another page of the docs. Refuses other origins                                                                    |
+
+Each tool is a thin client over a route the deploy already publishes, so what an agent reads through a tool is what it would fetch over HTTP, and the same `description` and `hidden` rules apply. The four read tools carry WebMCP's `readOnlyHint` annotation, so an agent can call them without asking the user to confirm each one.
+
+There is nothing to configure. The tools register after the page is interactive and only when the browser exposes the WebMCP API; every other browser gets the page it always got. Registration is same-origin: a docs page embedded in an `<iframe>` on another site registers nothing unless that site grants it with `allow="tools"`.
+
+### Verify in Chrome
+
+WebMCP is behind a flag while it is in origin trial. Chrome plans to turn it on by default in Chrome 157.
+
+1. Open `chrome://flags/#enable-webmcp-testing`, enable it, and relaunch.
+2. Open any page of your docs and run this in the DevTools console:
+
+```js
+(await document.modelContext.getTools()).map((tool) => tool.name);
+```
+
+Expect the five tool names. To call one from the console:
+
+```js
+const [overview] = (await document.modelContext.getTools()).filter(
+  (tool) => tool.name === "get_site_overview"
+);
+console.log(await document.modelContext.executeTool(overview, {}));
+```
+
+Google's Model Context Tool Inspector extension, linked from the [WebMCP documentation](https://developer.chrome.com/docs/ai/webmcp), lists the same tools with their schemas and lets you invoke them from a panel.
 
 ## Measuring agent readership
 
