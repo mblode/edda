@@ -4,7 +4,9 @@ test("landing page renders primary CTA", async ({ page }) => {
   await page.goto("/");
 
   await expect(
-    page.getByText("Knowledge docs for agents.").first()
+    page
+      .getByText("Knowledge docs for agents. Git-native MDX. Publish on merge.")
+      .first()
   ).toBeVisible();
 
   await expect(

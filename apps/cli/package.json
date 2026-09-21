@@ -1,7 +1,7 @@
 {
   "name": "edda-docs",
   "version": "1.0.0",
-  "description": "Edda CLI: knowledge docs for agents, published on merge",
+  "description": "Edda CLI: Knowledge docs for agents. Git-native MDX. Publish on merge.",
   "repository": {
     "type": "git",
     "url": "https://github.com/mblode/edda"

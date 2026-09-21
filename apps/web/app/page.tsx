@@ -115,7 +115,7 @@ export default function HomePage() {
       <JsonLd data={homeJsonLd} />
       <section className="pb-16 pt-[calc(var(--header-height)+4rem)] md:pb-24 md:pt-[calc(var(--header-height)+7rem)] lg:pt-[calc(var(--header-height)+9rem)]">
         <div className="container flex flex-col items-center text-center">
-          <h1 className="sr-only">Knowledge docs for agents.</h1>
+          <h1 className="sr-only">{HOME_TITLE}</h1>
           <TextEffect
             aria-hidden="true"
             as="div"
@@ -124,7 +124,7 @@ export default function HomePage() {
             preset="fade-in-blur"
             speedSegment={0.3}
           >
-            Knowledge docs for agents.
+            {HOME_TITLE}
           </TextEffect>
 
           <TextEffect

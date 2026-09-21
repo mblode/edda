@@ -16,7 +16,9 @@ const cliVersion = readCliVersion(import.meta.url);
 
 program
   .name("edda")
-  .description("Edda CLI: knowledge docs for agents, published on merge")
+  .description(
+    "Edda CLI: Knowledge docs for agents. Git-native MDX. Publish on merge."
+  )
   .version(cliVersion);
 program.hook("preAction", () => {
   assertSupportedNodeVersion();

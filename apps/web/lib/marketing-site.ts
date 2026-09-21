@@ -14,9 +14,9 @@ export const PLATFORM_ORIGIN = "https://blode.md";
 
 export const SITE_NAME = "Edda";
 
-/** `Product: what it does`, under 60 characters so the SERP does not clip it. */
+/** Designer lock. Keep character-for-character with the README hero. */
 export const HOME_TITLE =
-  "Edda | Knowledge docs for agents, published on merge";
+  "Knowledge docs for agents. Git-native MDX. Publish on merge.";
 
 /** Default meta description for the home page and root layout. */
 export const HOME_DESCRIPTION =
