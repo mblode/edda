@@ -26,7 +26,7 @@ describe("indexnow helpers", () => {
     expect(isIndexNowOwnedUrl("not-a-url")).toBe(false);
   });
 
-  it("getIndexNowUrls includes on-host pages and omits the noindex apex landing", () => {
+  it("getIndexNowUrls includes on-host pages and omits the redirected landing", () => {
     const urls = getIndexNowUrls();
     expect(urls).toContain("https://blode.md/about");
     expect(urls).toContain("https://blode.md/pricing");

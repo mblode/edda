@@ -160,9 +160,20 @@ const nextConfig = {
   },
   partialPrefetching: true,
   reactCompiler: true,
-  // Apex `/` stays 200. Home metadata canonicalizes to https://blode.co/edda
-  // and is noindex,follow so Google does not treat blode.md/ as a duplicate.
-  // Do not 301 `/` on blode.md / www.blode.md.
+  // Only the apex marketing landing 301s to https://blode.co/edda (blode-co
+  // repo). Host-conditional so localhost and preview still render `/`.
+  // Do not whole-host redirect: /about, /blog, /pricing, /docs, /app, /oauth,
+  // /api, /sites, /.well-known, /llms*, /mcp, and legal stay on blode.md.
+  redirects() {
+    const marketingHome = "https://blode.co/edda";
+    const hosts = ["blode.md", "www.blode.md"];
+    return hosts.map((host) => ({
+      destination: marketingHome,
+      has: [{ type: "host", value: host }],
+      source: "/",
+      statusCode: 301,
+    }));
+  },
   rewrites() {
     return {
       // afterFiles: filesystem routes like /robots.txt win first. IndexNow

@@ -30,7 +30,7 @@ export const getIndexNowKey = (): string | null => {
 export const getIndexNowKeyLocation = (key: string): string =>
   platformUrl(`/${key}.txt`);
 
-/** Absolute blode.md URLs eligible for IndexNow. Apex `/` is noindex. */
+/** Absolute blode.md URLs eligible for IndexNow. Apex `/` 301s off-host. */
 export const getMarketingIndexableUrls = (): string[] => {
   const paths = [
     ...PLATFORM_PATHS,
