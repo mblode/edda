@@ -421,6 +421,19 @@ describe("buildUtilityIndex", () => {
 });
 
 describe("toAgentMarkdown", () => {
+  it("keeps a Callout title in the markdown twin", () => {
+    const output = toAgentMarkdown(
+      `<Callout type="warning" title="Not drop-in compatible">\n  Expect to edit the file.\n</Callout>`
+    );
+
+    expect(output).toContain("> [!WARNING]");
+    expect(output).toContain("> **Not drop-in compatible**");
+    expect(output).toContain("> Expect to edit the file.");
+    expect(toAgentMarkdown(`<Callout type="info">\n  Plain.\n</Callout>`)).toBe(
+      "> [!INFO]\n> Plain."
+    );
+  });
+
   it("keeps MDX card bodies from the shipped docs index", async () => {
     const source = await fs.readFile(
       path.resolve(process.cwd(), "apps/docs/content/docs/index.mdx"),
