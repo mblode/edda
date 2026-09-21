@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-import { platformUrl } from "@/lib/marketing-site";
+import { DOCS_HOME, platformUrl } from "@/lib/marketing-site";
 
 // Proxied dashboard and auth surfaces. They carry no search value and each
 // crawl of them burns budget that should go to docs.
@@ -22,7 +22,7 @@ ${disallowBlock}
 # Content-Signal: ${CONTENT_SIGNAL}
 
 Sitemap: ${platformUrl("/sitemap.xml")}
-Sitemap: ${platformUrl("/docs/sitemap.xml")}
+Sitemap: ${DOCS_HOME}/sitemap.xml
 `;
 
 export const GET = () =>

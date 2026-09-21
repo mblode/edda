@@ -38,6 +38,7 @@ const CONTEXTUAL_OPTIONS = [
   "claude",
   "copy",
   "cursor",
+  "gemini",
   "devin",
   "devin-mcp",
   "grok",
@@ -97,12 +98,50 @@ const updateSeoProperty = (properties) => {
 
   properties.seo = {
     additionalProperties: false,
-    description: "SEO indexing configuration.",
+    description: "SEO configuration.",
     properties: {
       indexing: {
         description:
           "Set `all` to index every page, or `default` to respect page-level `noindex` frontmatter.",
         enum: ["all", "default"],
+        type: "string",
+      },
+      siteName: {
+        description:
+          "Publisher name for `og:site_name` when it differs from `name`. Defaults to `name`.",
+        minLength: 1,
+        type: "string",
+      },
+      siteUrl: {
+        description:
+          "The public URL your docs are served from, including any path prefix, for example `https://example.com/docs`. Set this whenever you proxy your docs behind your own domain: canonical tags, Open Graph URLs, the sitemap and llms.txt are all built from it.",
+        format: "uri",
+        type: "string",
+      },
+    },
+    type: "object",
+  };
+};
+
+const updateMetadataProperty = (properties) => {
+  if (!properties.metadata) {
+    return;
+  }
+
+  properties.metadata = {
+    additionalProperties: false,
+    description: "Metadata configuration for documentation pages.",
+    properties: {
+      timestamp: {
+        default: false,
+        description:
+          "When enabled, all pages will display the date the content was last modified. Default is false.",
+        type: "boolean",
+      },
+      titleTemplate: {
+        description:
+          "Pattern for the `<title>` of every page. `%s` is replaced with the page title; the default is `%s · {name}`. Use it to make the suffix descriptive in search results, for example `%s · Acme Docs`.",
+        pattern: "%s",
         type: "string",
       },
     },
@@ -135,6 +174,7 @@ const customizeProperties = (properties) => {
   updateLogoProperty(properties);
   updateContextualProperty(properties);
   updateSeoProperty(properties);
+  updateMetadataProperty(properties);
 };
 
 const main = async () => {

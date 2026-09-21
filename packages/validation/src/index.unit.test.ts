@@ -42,6 +42,28 @@ describe("config validation", () => {
       expect(result.success && result.data.seo?.siteName).toBe("Matthew Blode");
     });
 
+    it("accepts metadata.titleTemplate when it carries the %s placeholder", () => {
+      const result = validateDocsConfig({
+        ...baseConfig,
+        metadata: { titleTemplate: "%s · Acme Docs" },
+      });
+
+      expect(result.success).toBe(true);
+      expect(result.success && result.data.metadata?.titleTemplate).toBe(
+        "%s · Acme Docs"
+      );
+    });
+
+    it("rejects a titleTemplate that would drop the page title", () => {
+      const result = validateDocsConfig({
+        ...baseConfig,
+        metadata: { titleTemplate: "Acme Docs" },
+      });
+
+      expect(result.success).toBe(false);
+      expect(result.success ? [] : result.errors.join(" ")).toContain("%s");
+    });
+
     it("rejects an empty seo.siteName rather than emitting a blank credit", () => {
       const result = validateDocsConfig({
         ...baseConfig,

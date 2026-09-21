@@ -201,8 +201,13 @@ const transformMdxComponents = (source: string) => {
     /<Callout(?=[\s>])\s*([^>]*)>([\s\S]*?)<\/Callout>/g,
     (_match, attributes: string, children: string) => {
       const type = (getStringProp(attributes, "type") ?? "note").toUpperCase();
-      return `> [!${type}]\n${children
-        .trim()
+      // The HTML renders `title` as the callout heading, so the twin must say
+      // it too or the two copies drift and parity checks flag the page.
+      const title = getStringProp(attributes, "title");
+      const body = [title ? `**${title}**` : null, children.trim()]
+        .filter((part): part is string => Boolean(part))
+        .join("\n\n");
+      return `> [!${type}]\n${body
         .split(NEWLINE_REGEX)
         .map((line) => `> ${line}`)
         .join("\n")}`;

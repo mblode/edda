@@ -14,12 +14,15 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { CopyButton } from "@/components/ui/copy-button";
+import { WebMcpTools } from "@/components/web-mcp";
+import { getTenantContentSource } from "@/lib/content-source";
 import { defaultOgImageUrl } from "@/lib/default-og-image";
 import {
   getDocChromeData,
   getDocPageContent,
   getDocShellData,
 } from "@/lib/docs-runtime";
+import { buildDocsJsonLd } from "@/lib/json-ld";
 import { toDocHref, toMarkdownDocHref } from "@/lib/routes";
 import { buildDocsSeoTitle } from "@/lib/seo-title";
 import {
@@ -50,12 +53,13 @@ const getCachedCanonicals = async (tenantSlug: string) => {
   }
 
   const requestContext = getStaticTenantRequestContext(chrome.tenant);
-  const [basePath, origin] = await Promise.all([
+  const [basePath, origin, publishedAt] = await Promise.all([
     getCanonicalDocBasePath(chrome.tenant, requestContext),
     getCanonicalOrigin(chrome.tenant, requestContext),
+    getTenantContentSource(chrome.tenant).publishedAt?.() ?? null,
   ]);
 
-  return { basePath, origin };
+  return { basePath, origin, publishedAt };
 };
 
 const getCachedDocPageContent = async (
@@ -146,11 +150,26 @@ export const generateMetadata = async ({
     (kind === "page" || kind === "openapi") && currentPath
       ? `${canonicalOrigin}${toMarkdownDocHref(currentPath, canonicalBasePath)}`
       : undefined;
+  // The agent-readable twins, on the same host as the canonical so a crawler
+  // that follows them never leaves the public origin.
+  const llmsAlternates = [
+    {
+      title: "llms.txt",
+      url: `${canonicalOrigin}${toDocHref("llms.txt", canonicalBasePath)}`,
+    },
+    {
+      title: "llms-full.txt",
+      url: `${canonicalOrigin}${toDocHref("llms-full.txt", canonicalBasePath)}`,
+    },
+  ];
 
   return {
     alternates: {
       canonical: canonicalUrl,
-      ...(markdownUrl ? { types: { "text/markdown": markdownUrl } } : {}),
+      types: {
+        "text/plain": llmsAlternates,
+        ...(markdownUrl ? { "text/markdown": markdownUrl } : {}),
+      },
     },
     description: ogDescription,
     icons: favicon ? { icon: favicon } : undefined,
@@ -394,56 +413,30 @@ const CachedDocPage = async ({
   const markdownHrefAbsolute = markdownHref
     ? `${canonicalOrigin}${markdownHref}`
     : undefined;
-  const webpage: Record<string, unknown> = {
-    "@id": `${canonicalUrl}#webpage`,
-    "@type": "WebPage",
-    url: canonicalUrl,
-  };
-  if (shell.pageTitle) {
-    webpage.headline = shell.pageTitle;
-    webpage.name = shell.pageTitle;
-  }
-  const jsonLdDescription = shell.metaDescription ?? shell.pageDescription;
-  if (jsonLdDescription) {
-    webpage.description = jsonLdDescription;
-  }
-  if (markdownHref) {
-    webpage.encoding = {
-      "@type": "MediaObject",
-      contentUrl: `${canonicalOrigin}${markdownHref}`,
-      encodingFormat: "text/markdown",
-    };
-  }
-  const graph: Record<string, unknown>[] = [webpage];
-  if (shell.breadcrumbs.length > 0) {
-    graph.push({
-      "@type": "BreadcrumbList",
-      itemListElement: shell.breadcrumbs.map((crumb, index) => ({
-        "@type": "ListItem",
-        item: `${canonicalOrigin}${toDocHref(crumb.path, basePath)}`,
-        name: crumb.label,
-        position: index + 1,
-      })),
-    });
-  }
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@graph": graph,
-  };
+  const jsonLd = buildDocsJsonLd({
+    basePath,
+    breadcrumbs: shell.breadcrumbs,
+    canonicalUrl,
+    description: shell.metaDescription ?? shell.pageDescription,
+    markdownUrl: markdownHrefAbsolute,
+    origin: canonicalOrigin,
+    publishedAt: canonicals?.publishedAt,
+    siteDescription: shell.config.description,
+    siteName: shell.config.seo?.siteName ?? shell.config.name,
+    title: shell.pageTitle,
+  });
 
   return (
     <>
-      {markdownHrefAbsolute ? (
-        <link
-          href={markdownHrefAbsolute}
-          rel="alternate"
-          type="text/markdown"
-        />
-      ) : null}
       <script
         // oxlint-disable-next-line no-danger -- JSON-LD for SEO
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         type="application/ld+json"
+      />
+      <WebMcpTools
+        basePath={basePath}
+        siteDescription={shell.config.description}
+        siteName={shell.config.name}
       />
       <DocArticle
         basePath={basePath}

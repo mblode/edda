@@ -20,12 +20,33 @@ interface WebMCPTool {
   name: string;
   description: string;
   inputSchema: JSONSchemaObject;
+  annotations?: { readOnlyHint?: boolean; consequentialHint?: boolean };
   execute: (args: Record<string, unknown>) => Promise<unknown>;
 }
 
-interface NavigatorModelContext {
-  provideContext?: (context: { tools: WebMCPTool[] }) => void | Promise<void>;
+// Chrome ships WebMCP on `document.modelContext`; earlier preview builds used
+// `navigator.modelContext`, and the earliest only implemented `provideContext`.
+interface ModelContextLike {
+  provideContext?: (context: { tools: WebMCPTool[] }) => unknown;
+  registerTool?: (
+    tool: WebMCPTool,
+    options?: { signal?: AbortSignal }
+  ) => unknown;
 }
+
+const getModelContext = (): ModelContextLike | null => {
+  const fromDocument = (document as Document & { modelContext?: unknown })
+    .modelContext;
+  if (fromDocument && typeof fromDocument === "object") {
+    return fromDocument as ModelContextLike;
+  }
+  const fromNavigator = (navigator as Navigator & { modelContext?: unknown })
+    .modelContext;
+  if (fromNavigator && typeof fromNavigator === "object") {
+    return fromNavigator as ModelContextLike;
+  }
+  return null;
+};
 
 const buildTools = (): WebMCPTool[] => [
   {
@@ -55,6 +76,7 @@ const buildTools = (): WebMCPTool[] => [
       type: "object",
     },
     name: "edda_scaffold_command",
+    annotations: { readOnlyHint: true },
   },
   {
     description:
@@ -84,6 +106,7 @@ const buildTools = (): WebMCPTool[] => [
       type: "object",
     },
     name: "edda_deploy_command",
+    annotations: { readOnlyHint: true },
   },
   {
     description: "Open the Edda dashboard in the current tab.",
@@ -142,6 +165,7 @@ const buildTools = (): WebMCPTool[] => [
       type: "object",
     },
     name: "contact_support",
+    annotations: { readOnlyHint: true },
   },
   {
     description: "Open the Edda source repository on GitHub in a new tab.",
@@ -162,13 +186,23 @@ const buildTools = (): WebMCPTool[] => [
 
 export function WebMcpTools() {
   useEffect(() => {
-    const nav = navigator as Navigator & {
-      modelContext?: NavigatorModelContext;
-    };
-    if (!nav.modelContext?.provideContext) {
+    const context = getModelContext();
+    if (!context) {
       return;
     }
-    void nav.modelContext.provideContext({ tools: buildTools() });
+    const tools = buildTools();
+    if (typeof context.registerTool === "function") {
+      const controller = new AbortController();
+      for (const tool of tools) {
+        void context.registerTool(tool, { signal: controller.signal });
+      }
+      return () => {
+        controller.abort();
+      };
+    }
+    if (typeof context.provideContext === "function") {
+      void context.provideContext({ tools });
+    }
   }, []);
 
   return null;

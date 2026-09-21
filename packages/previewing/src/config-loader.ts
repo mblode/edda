@@ -123,6 +123,9 @@ const mapDocsConfig = (docs: DocsConfig): SiteConfig => {
           light: typeof docs.logo === "string" ? docs.logo : docs.logo.light,
         }
       : undefined,
+    metadata: docs.metadata?.titleTemplate
+      ? { titleTemplate: docs.metadata.titleTemplate }
+      : undefined,
     name: docs.name,
     navigation,
     openapiProxy: {

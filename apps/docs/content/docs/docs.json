@@ -5,7 +5,10 @@
   "description": "Edda: Knowledge docs for agents. Git-native MDX. Publish on merge. The merge publishes the HTML and the Markdown agents fetch.",
   "favicon": "icon0.svg",
   "seo": {
-    "siteUrl": "https://blode.md/docs"
+    "siteUrl": "https://blode.co/edda/docs"
+  },
+  "metadata": {
+    "titleTemplate": "%s · Edda Docs"
   },
   "contextual": {
     "options": [

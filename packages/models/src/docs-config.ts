@@ -394,6 +394,17 @@ const MintlifyAppearanceSchema = z
 const MintlifyMetadataSchema = z
   .object({
     timestamp: z.boolean().optional(),
+    // `%s` stands in for the page title. The default is `%s · {name}`; a site
+    // whose `name` is ambiguous on a results page ("Edda" is also a book of
+    // Norse poems) can spell out `%s · Edda Docs` here without renaming itself.
+    titleTemplate: z
+      .string()
+      .trim()
+      .refine(
+        (value) => value.includes("%s"),
+        "titleTemplate must contain %s where the page title goes, for example `%s · Acme Docs`"
+      )
+      .optional(),
   })
   .strict();
 

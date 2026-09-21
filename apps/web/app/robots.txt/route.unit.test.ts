@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { platformUrl } from "@/lib/marketing-site";
+import { DOCS_HOME, platformUrl } from "@/lib/marketing-site";
 
 import { CONTENT_SIGNAL, GET } from "./route";
 
@@ -20,7 +20,10 @@ describe("marketing robots.txt", () => {
     expect(body).toContain(`# Content-Signal: ${CONTENT_SIGNAL}`);
     expect(body).not.toMatch(/^Content-Signal:/m);
     expect(body).toContain(`Sitemap: ${platformUrl("/sitemap.xml")}`);
-    expect(body).toContain(`Sitemap: ${platformUrl("/docs/sitemap.xml")}`);
+    // blode.md/docs 301s to blode.co/edda/docs; a sitemap behind a redirect
+    // is one Google may refuse to read, so the crawler file names the target.
+    expect(body).toContain(`Sitemap: ${DOCS_HOME}/sitemap.xml`);
+    expect(body).not.toContain(platformUrl("/docs/sitemap.xml"));
     expect(body).not.toContain("User-agent: GPTBot");
     expect(body.match(/^User-agent: \*$/gm)).toHaveLength(1);
   });

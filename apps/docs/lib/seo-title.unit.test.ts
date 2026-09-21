@@ -45,6 +45,32 @@ describe("buildDocsSeoTitle", () => {
     expect(title.endsWith("... · Edda")).toBe(true);
   });
 
+  it("leaves a title that already opens with the site name alone", () => {
+    expect(
+      buildDocsSeoTitle({
+        baseTitle: "Edda",
+        pageTitle: "Edda documentation",
+        titleTemplate: "%s · Edda Docs",
+      })
+    ).toBe("Edda documentation");
+    expect(buildDocsSeoTitle({ baseTitle: "Edda", pageTitle: "Edda" })).toBe(
+      "Edda"
+    );
+  });
+
+  it("still suffixes titles that merely contain the site name", () => {
+    expect(
+      buildDocsSeoTitle({
+        baseTitle: "Edda",
+        pageTitle: "edda new",
+        titleTemplate: "%s · Edda Docs",
+      })
+    ).toBe("edda new · Edda Docs");
+    expect(
+      buildDocsSeoTitle({ baseTitle: "Edda", pageTitle: "Eddard's guide" })
+    ).toBe("Eddard's guide · Edda");
+  });
+
   it("respects a custom titleTemplate with %s", () => {
     expect(
       buildDocsSeoTitle({

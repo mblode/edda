@@ -2,7 +2,6 @@ import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
 
 import { Providers } from "@/components/providers";
-import { WebMcpTools } from "@/components/web-mcp";
 
 import "./globals.css";
 
@@ -24,8 +23,7 @@ const glideMono = localFont({
 });
 
 export const metadata: Metadata = {
-  description:
-    "Knowledge docs for agents. Git-native MDX. Publish on merge.",
+  description: "Knowledge docs for agents. Git-native MDX. Publish on merge.",
   metadataBase: new URL("https://blode.md"),
   openGraph: {
     siteName: "Edda",
@@ -64,24 +62,10 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <head>
-        <link
-          rel="alternate"
-          type="text/plain"
-          title="llms.txt"
-          href="/llms.txt"
-        />
-        <link
-          rel="alternate"
-          type="text/plain"
-          title="llms-full.txt"
-          href="/llms-full.txt"
-        />
-        <link rel="describedby" href="/llms.txt" />
         <link rel="preconnect" href="https://public.blob.vercel-storage.com" />
       </head>
       <body className="relative flex w-full flex-col justify-center scroll-smooth bg-background font-sans antialiased [--header-height:calc(var(--spacing)*16)]">
         <Providers>{children}</Providers>
-        <WebMcpTools />
       </body>
     </html>
   );

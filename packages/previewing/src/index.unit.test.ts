@@ -156,6 +156,26 @@ describe("loadSiteConfig", () => {
     expect(result.config.collections).toHaveLength(1);
   });
 
+  it("carries metadata.titleTemplate through to the rendered SiteConfig", async () => {
+    const root = await createTempContentRoot({
+      "docs.json": JSON.stringify({
+        metadata: { titleTemplate: "%s · Example Docs" },
+        name: "Example",
+        navigation: { pages: ["index"] },
+        slug: "example",
+      }),
+      "index.mdx": "---\ntitle: Welcome\n---\n",
+    });
+
+    const result = await loadSiteConfig(createFsSource(root));
+
+    expect(result.ok).toBe(true);
+    if (!result.ok) {
+      return;
+    }
+    expect(result.config.metadata?.titleTemplate).toBe("%s · Example Docs");
+  });
+
   it("errors when docs.json is missing", async () => {
     const root = await createTempContentRoot({
       "site.json": JSON.stringify({ name: "Old config" }, null, 2),
@@ -401,6 +421,19 @@ describe("buildUtilityIndex", () => {
 });
 
 describe("toAgentMarkdown", () => {
+  it("keeps a Callout title in the markdown twin", () => {
+    const output = toAgentMarkdown(
+      `<Callout type="warning" title="Not drop-in compatible">\n  Expect to edit the file.\n</Callout>`
+    );
+
+    expect(output).toContain("> [!WARNING]");
+    expect(output).toContain("> **Not drop-in compatible**");
+    expect(output).toContain("> Expect to edit the file.");
+    expect(toAgentMarkdown(`<Callout type="info">\n  Plain.\n</Callout>`)).toBe(
+      "> [!INFO]\n> Plain."
+    );
+  });
+
   it("keeps MDX card bodies from the shipped docs index", async () => {
     const source = await fs.readFile(
       path.resolve(process.cwd(), "apps/docs/content/docs/index.mdx"),
