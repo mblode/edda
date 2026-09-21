@@ -46,11 +46,11 @@ const baseSecurityHeaders = [
 ];
 
 // PostHog runs through the `s.blode.md` reverse proxy, so one origin covers the
-// SDK's own script loads and its ingest calls. Unset at build time means
-// analytics is off (instrumentation-client soft no-ops) and the directive is
-// simply narrower.
-const posthogOrigin = (process.env.NEXT_PUBLIC_POSTHOG_HOST ?? "").trim();
-const posthogSource = posthogOrigin ? ` ${posthogOrigin}` : "";
+// SDK's own script loads and its ingest calls. Keep the default in sync with
+// `posthogDefaultApiHost` in apps/web/lib/posthog-key.ts.
+const posthogOrigin =
+  process.env.NEXT_PUBLIC_POSTHOG_HOST?.trim() || "https://s.blode.md";
+const posthogSource = ` ${posthogOrigin}`;
 
 const contentSecurityPolicy = [
   "default-src 'self'",
