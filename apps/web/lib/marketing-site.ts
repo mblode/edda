@@ -15,8 +15,8 @@ export const PLATFORM_ORIGIN = "https://blode.md";
 export const SITE_NAME = "Edda";
 
 /** Designer lock. Keep character-for-character with the README hero. */
-export const HOME_TITLE =
-  "Knowledge docs for agents. Git-native MDX. Publish on merge.";
+// oxfmt-ignore
+export const HOME_TITLE = "Knowledge docs for agents. Git-native MDX. Publish on merge.";
 
 /** Default meta description for the home page and root layout. */
 export const HOME_DESCRIPTION =
