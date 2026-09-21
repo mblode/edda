@@ -1,5 +1,7 @@
 import { timingSafeEqual } from "node:crypto";
 
+import { blogPosts } from "@/lib/blog";
+import { educationalResources } from "@/lib/educational-resources";
 import {
   PLATFORM_ORIGIN,
   PLATFORM_PATHS,
@@ -28,9 +30,13 @@ export const getIndexNowKey = (): string | null => {
 export const getIndexNowKeyLocation = (key: string): string =>
   platformUrl(`/${key}.txt`);
 
-/** Absolute blode.md URLs still eligible for IndexNow after the marketing move. */
+/** Absolute blode.md URLs eligible for IndexNow. Apex `/` 301s off-host. */
 export const getMarketingIndexableUrls = (): string[] => {
-  const paths = [...PLATFORM_PATHS];
+  const paths = [
+    ...PLATFORM_PATHS,
+    ...blogPosts.map((post) => `/blog/${post.slug}`),
+    ...educationalResources.map((resource) => resource.path),
+  ];
   return [...new Set(paths.map((path) => platformUrl(path)))];
 };
 

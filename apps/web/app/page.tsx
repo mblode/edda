@@ -36,7 +36,7 @@ export const metadata = pageMetadata({
 });
 
 /** Visible publish / last-updated date for freshness and AI citation signals. */
-const HOME_UPDATED_AT = "2026-09-19";
+const HOME_UPDATED_AT = "2026-09-21";
 
 const faqs = [
   {
@@ -66,7 +66,7 @@ const faqs = [
   },
   {
     answer:
-      "Edda is built by Matthew Blode. Email m@blode.co or open an issue on GitHub at github.com/mblode/blodemd. The source is MIT.",
+      "Edda is built by Matthew Blode. Email m@blode.co or open an issue on GitHub at github.com/mblode/edda. The source is MIT.",
     question: "Who builds Edda and how do I get support?",
   },
 ];
@@ -115,9 +115,7 @@ export default function HomePage() {
       <JsonLd data={homeJsonLd} />
       <section className="pb-16 pt-[calc(var(--header-height)+4rem)] md:pb-24 md:pt-[calc(var(--header-height)+7rem)] lg:pt-[calc(var(--header-height)+9rem)]">
         <div className="container flex flex-col items-center text-center">
-          <h1 className="sr-only">
-            The answer they read matches the commit you merged.
-          </h1>
+          <h1 className="sr-only">{HOME_TITLE}</h1>
           <TextEffect
             aria-hidden="true"
             as="div"
@@ -126,7 +124,7 @@ export default function HomePage() {
             preset="fade-in-blur"
             speedSegment={0.3}
           >
-            The answer they read matches the commit you merged.
+            {HOME_TITLE}
           </TextEffect>
 
           <TextEffect
@@ -137,14 +135,14 @@ export default function HomePage() {
             preset="fade-in-blur"
             speedSegment={0.2}
           >
-            I built this for people who already write MDX in git. Hosted is $0.
-            MIT if I disappear.
+            Write MDX in git. The merge publishes the site and the Markdown from
+            that commit. Hosted is $0. MIT if I disappear.
           </TextEffect>
           <p className="mt-4 text-muted-foreground text-sm">
             {SITE_NAME}
             <span aria-hidden="true"> · </span>
             Last updated{" "}
-            <time dateTime={HOME_UPDATED_AT}>19 September 2026</time>
+            <time dateTime={HOME_UPDATED_AT}>21 September 2026</time>
           </p>
 
           <AnimatedGroup

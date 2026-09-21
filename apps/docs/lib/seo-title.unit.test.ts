@@ -18,9 +18,9 @@ describe("buildDocsSeoTitle", () => {
         baseTitle: "Edda",
         pageDescription:
           "Start a local development server for real-time docs preview with hot reload.",
-        pageTitle: "blodemd dev",
+        pageTitle: "edda dev",
       })
-    ).toBe("blodemd dev · Edda");
+    ).toBe("edda dev · Edda");
   });
 
   it("clamps a long page title to 60 chars at a word boundary", () => {

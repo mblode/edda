@@ -6,7 +6,7 @@ User-facing product name is **Edda**. Public marketing home is **https://blode.c
 
 - Turborepo monorepo; workspaces defined in root `package.json`.
 - `apps/` — product apps:
-  - `apps/web` (Next.js). Owns apex `blode.md`. Production marketing pages (`/`, `/about`, `/blog`, `/changelog`, `/pricing`, `/compare/mintlify`, `/docs-as-code`, `/free-online-llms-txt-resources`) 301 to `https://blode.co/edda`. Legal pages (`/privacy`, `/terms`, `/security`) stay on `blode.md`. Rewrites `/docs`, `/api`, `/sites`, `/.well-known`, `/llms*.txt` to `DOCS_APP_URL` and `/app`, `/oauth` to `DASHBOARD_APP_URL`.
+  - `apps/web` (Next.js). Owns apex `blode.md`. Only the marketing landing (`/`) 301s to `https://blode.co/edda` when Host is `blode.md` / `www.blode.md`. Do not whole-host 301. About, blog, pricing, docs, dashboard, API, tenant `*.blode.md`, and legal stay on `blode.md`. Rewrites `/docs`, `/api`, `/sites`, `/.well-known`, `/llms*.txt` to `DOCS_APP_URL` and `/app`, `/oauth` to `DASHBOARD_APP_URL`.
   - `apps/docs` (Next.js, port 3001) — tenant-proxy (`proxy.ts`), multi-tenant docs rendering, public docs utilities, API routes. Served at `docs.blode.md` (or internally via rewrite).
   - `apps/dashboard` (Next.js, port 3002) — product dashboard (`/app`) and auth (`/oauth`). Served via internal rewrite from `apps/web` or from a dedicated dashboard deployment.
   - `apps/api` (Hono, port 4000).

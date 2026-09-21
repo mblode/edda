@@ -20,19 +20,19 @@ describe("indexnow helpers", () => {
   });
 
   it("isIndexNowOwnedUrl accepts only https blode.md URLs", () => {
-    expect(isIndexNowOwnedUrl("https://blode.md/privacy")).toBe(true);
-    expect(isIndexNowOwnedUrl("http://blode.md/privacy")).toBe(false);
+    expect(isIndexNowOwnedUrl("https://blode.md/about")).toBe(true);
+    expect(isIndexNowOwnedUrl("http://blode.md/about")).toBe(false);
     expect(isIndexNowOwnedUrl("https://evil.example/about")).toBe(false);
     expect(isIndexNowOwnedUrl("not-a-url")).toBe(false);
   });
 
-  it("getIndexNowUrls includes remaining on-host legal pages only", () => {
+  it("getIndexNowUrls includes on-host pages and omits the redirected landing", () => {
     const urls = getIndexNowUrls();
+    expect(urls).toContain("https://blode.md/about");
+    expect(urls).toContain("https://blode.md/pricing");
     expect(urls).toContain("https://blode.md/privacy");
-    expect(urls).toContain("https://blode.md/terms");
-    expect(urls).toContain("https://blode.md/security");
+    expect(urls).toContain("https://blode.md/free-online-llms-txt-resources");
     expect(urls).not.toContain("https://blode.md/");
-    expect(urls).not.toContain("https://blode.md/about");
   });
 
   it("submitIndexNow returns 503 when INDEXNOW_KEY is missing", async () => {

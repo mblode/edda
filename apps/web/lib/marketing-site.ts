@@ -1,66 +1,64 @@
 import type { Metadata } from "next";
 
-/** Public marketing home. Apex marketing pages on blode.md 301 here. */
+/**
+ * Brand/marketing page, owned by the blode-co repo.
+ * Apex `/` on blode.md 301s here. Not a product host.
+ */
 export const MARKETING_HOME = "https://blode.co/edda";
 
-/** Product host: docs, dashboard, API, legal pages, tenant `*.blode.md` sites. */
+/**
+ * Product runtime host: docs, dashboard, API, tenant `*.blode.md` sites,
+ * and every apex page except the marketing landing.
+ */
 export const PLATFORM_ORIGIN = "https://blode.md";
 
 export const SITE_NAME = "Edda";
 
-/** `Product: what it does`, under 60 characters so the SERP does not clip it. */
-export const HOME_TITLE = "Edda | Git-native MDX docs, published on merge";
+/** Designer lock. Keep character-for-character with the README hero. */
+export const HOME_TITLE =
+  "Knowledge docs for agents. Git-native MDX. Publish on merge.";
 
 /** Default meta description for the home page and root layout. */
 export const HOME_DESCRIPTION =
-  "Git-native MDX docs. I built this for people who already write MDX in git. No second editor. Hosted is $0. MIT if I disappear.";
+  "Knowledge docs for agents and humans. Write MDX in git; the merge publishes the site and the Markdown from that commit. Hosted is $0.";
 
 /** Inner pages set a bare title and the root layout appends the product. */
 export const TITLE_TEMPLATE = `%s | ${SITE_NAME}`;
 
 /**
- * Marketing paths on blode.md / www.blode.md that 301 to MARKETING_HOME.
- * Host-conditional so localhost and preview deployments still render these pages.
+ * Only the apex marketing landing 301s to MARKETING_HOME.
+ * Do not whole-host redirect blode.md. Product routes stay.
  */
-export const REDIRECTED_MARKETING_PATHS = [
-  "/",
-  "/about",
-  "/blog",
-  "/changelog",
-  "/compare/mintlify",
-  "/docs-as-code",
-  "/free-online-llms-txt-resources",
-  "/pricing",
-] as const;
+export const REDIRECTED_MARKETING_PATHS = ["/"] as const;
 
 /**
- * Pages that remain on blode.md after the marketing move.
+ * Pages that remain on blode.md.
  * Bump the date when the page's copy changes; it feeds the sitemap `lastmod`.
  */
 export const PLATFORM_PAGES = {
-  "/privacy": "2026-09-21",
-  "/security": "2026-09-21",
-  "/terms": "2026-09-21",
+  "/about": "2026-08-14",
+  "/blog": "2026-09-19",
+  "/changelog": "2026-09-19",
+  "/compare/mintlify": "2026-09-06",
+  "/docs-as-code": "2026-09-06",
+  "/free-online-llms-txt-resources": "2026-09-19",
+  "/pricing": "2026-08-14",
+  "/privacy": "2026-08-14",
+  "/security": "2026-08-14",
+  "/terms": "2026-08-14",
 } as const;
 
 export type PlatformPath = keyof typeof PLATFORM_PAGES;
 
 export const PLATFORM_PATHS = Object.keys(PLATFORM_PAGES) as PlatformPath[];
 
-export const isRedirectedMarketingPath = (path: string): boolean => {
-  if (
-    (REDIRECTED_MARKETING_PATHS as readonly string[]).includes(path) ||
-    path === "/blog" ||
-    path.startsWith("/blog/")
-  ) {
-    return true;
-  }
-  return false;
-};
+export const isRedirectedMarketingPath = (path: string): boolean =>
+  path === "/" || path === "";
 
 export const platformUrl = (path: string) =>
   `${PLATFORM_ORIGIN}${path.startsWith("/") ? path : `/${path}`}`;
 
+/** Brand home for `/`; every other path stays on the product host. */
 export const marketingUrl = (path: string) =>
   isRedirectedMarketingPath(path) ? MARKETING_HOME : platformUrl(path);
 
@@ -72,8 +70,8 @@ export const TWITTER_CREATOR = "@mattblode";
 /**
  * Page metadata with a canonical URL and `og:url`.
  *
- * Redirected marketing pages canonicalize to MARKETING_HOME. Legal and other
- * pages that still live on blode.md keep a platform canonical.
+ * The apex landing canonicalizes to MARKETING_HOME (it 301s there).
+ * Every other page keeps a blode.md canonical.
  *
  * `title` is the bare page name ("Pricing"), not the finished string: the root
  * layout's template appends the product. Next applies that template to `<title>`

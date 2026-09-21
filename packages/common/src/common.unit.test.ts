@@ -7,6 +7,10 @@ import {
   getPortlessHostFromEnv,
   normalizeHost,
   normalizePath,
+  PLATFORM_POSTHOG_DEFAULT_API_HOST,
+  PLATFORM_POSTHOG_PROJECT_TOKEN,
+  PLATFORM_POSTHOG_UI_HOST,
+  resolvePlatformPosthogApiHost,
   safeJsonParse,
   shouldIgnoreRootDocsFile,
   slugify,
@@ -85,5 +89,17 @@ describe("common utilities", () => {
     expect(clamp(5, 0, 10)).toBe(5);
     expect(clamp(-1, 0, 10)).toBe(0);
     expect(clamp(11, 0, 10)).toBe(10);
+  });
+
+  it("pins platform PostHog to the blode.co project", () => {
+    expect(PLATFORM_POSTHOG_PROJECT_TOKEN).toBe(
+      "phc_yYatHXysbRxjTyfmyCKSUyMSQpgepJPuxegz2HtpfX35"
+    );
+    expect(PLATFORM_POSTHOG_UI_HOST).toBe("https://us.posthog.com");
+    expect(PLATFORM_POSTHOG_DEFAULT_API_HOST).toBe("https://s.blode.md");
+    expect(resolvePlatformPosthogApiHost("")).toBe("https://s.blode.md");
+    expect(resolvePlatformPosthogApiHost("  https://r.blode.co  ")).toBe(
+      "https://r.blode.co"
+    );
   });
 });

@@ -2,7 +2,7 @@
   "$schema": "https://blode.md/docs.json",
   "name": "Edda",
   "slug": "docs",
-  "description": "Edda: git-native docs, published on merge. Write MDX in the repo, review it in the pull request, and the merge publishes the site.",
+  "description": "Edda: Knowledge docs for agents. Git-native MDX. Publish on merge. Write MDX in git; the merge publishes the HTML and the Markdown agents fetch.",
   "favicon": "icon0.svg",
   "seo": {
     "siteUrl": "https://blode.md/docs"
@@ -26,11 +26,11 @@
       },
       {
         "label": "Pricing",
-        "href": "https://blode.co/edda"
+        "href": "https://blode.md/pricing"
       },
       {
         "label": "GitHub",
-        "href": "https://github.com/mblode/blodemd"
+        "href": "https://github.com/mblode/edda"
       }
     ]
   },

@@ -2,16 +2,14 @@
 
 # [Edda](https://blode.co/edda)
 
-**Git-native docs, published on merge**
-
-Write your docs as MDX files next to your code, then push them live with one command.
+**Knowledge docs for agents. Git-native MDX. Publish on merge.**
 
 <p align="center">
   <a href="https://www.npmjs.com/package/edda-docs">
     <img src="https://img.shields.io/npm/v/edda-docs?style=flat&colorA=000000&colorB=000000" />
   </a>
-  <a href="https://github.com/mblode/blodemd/blob/main/LICENSE">
-    <img src="https://img.shields.io/github/license/mblode/blodemd?style=flat&colorA=000000&colorB=000000" />
+  <a href="https://github.com/mblode/edda/blob/main/LICENSE">
+    <img src="https://img.shields.io/github/license/mblode/edda?style=flat&colorA=000000&colorB=000000" />
   </a>
 </p>
 
@@ -68,7 +66,7 @@ Your site is live on its own `blode.md` subdomain, taking its name, navigation, 
 Install the slash command for Claude Code or any [skills.sh](https://skills.sh)-compatible agent:
 
 ```bash
-npx skills add mblode/blodemd -g --all -y
+npx skills add mblode/edda -g --all -y
 ```
 
 Then scaffold and deploy in plain language:

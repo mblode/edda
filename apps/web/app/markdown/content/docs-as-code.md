@@ -20,7 +20,7 @@ A docs CMS such as GitBook or Notion is the right tool for that team, and choosi
 
 A docs CMS is the editor and the store. Writing happens in the browser, history lives in the CMS, and git is at most a sync. A docs-as-code host is a renderer for MDX documentation. It takes the files at one commit and serves them. The editor is yours, the history is git, and the host holds nothing you could not rebuild from the repo.
 
-That is the whole difference, and it is why the hosting can be $0: it is a build step with a URL. Mintlify sits between the two, the git path plus a web editor that commits back. That comparison has [its own page](https://blode.co/edda).
+That is the whole difference, and it is why the hosting can be $0: it is a build step with a URL. Mintlify sits between the two, the git path plus a web editor that commits back. That comparison has [its own page](https://blode.md/compare/mintlify).
 
 ## Can I keep docs on my own domain under /docs?
 
@@ -36,7 +36,7 @@ Anything that publishes on save from a second editor reintroduces the drift the 
 
 They answer different questions. A sitemap lists URLs for a crawler, and [robots.txt](https://developers.google.com/search/docs/crawling-indexing/robots/robots_txt) tells that crawler what it may fetch. `llms.txt`, as proposed at [llmstxt.org](https://llmstxt.org/), is a Markdown index for a model reading at inference time, pointing at Markdown versions of the pages so the model does not parse HTML chrome.
 
-Agents read Markdown, not HTML. If that Markdown comes from a different pipeline than the site, it lags the site. Here it comes from the same commit. The longer answer, with examples, is in the [llms.txt resource](https://blode.co/edda).
+Agents read Markdown, not HTML. If that Markdown comes from a different pipeline than the site, it lags the site. Here it comes from the same commit. The longer answer, with examples, is in the [llms.txt resource](https://blode.md/free-online-llms-txt-resources).
 
 ## How do I move an existing Docusaurus or Mintlify site over?
 
@@ -53,7 +53,7 @@ From Mintlify, the `docs.json` is similar in spirit, but the config surface is s
 
 ## What you do not get
 
-No visual editor. No plugin marketplace. No SOC 2, SSO, or SLA. Support is me. Hosted is $0 with unlimited projects, pages, and seats, and custom domains, search, MDX, and API references are included. The [pricing page](https://blode.co/edda) names each edition by what it leaves out.
+No visual editor. No plugin marketplace. No SOC 2, SSO, or SLA. Support is me. Hosted is $0 with unlimited projects, pages, and seats, and custom domains, search, MDX, and API references are included. The [pricing page](https://blode.md/pricing) names each edition by what it leaves out.
 
 If the question is what happens when Edda is gone, the CLI and renderer are MIT, which makes this an open source documentation platform in the narrow sense: the same binary on your own Postgres. That is the bus-factor answer, not a feature.
 
@@ -75,4 +75,4 @@ Yes. The deploy that renders the HTML also writes llms.txt, llms-full.txt, and a
 
 Yes. `edda push docs` publishes from the terminal, which suits a preview or a repo without the GitHub App. The merge path is the one I recommend, because it ties every publish to a reviewed commit.
 
-[Connect GitHub](https://blode.md/oauth/consent) · [Pricing](https://blode.co/edda)
+[Connect GitHub](https://blode.md/oauth/consent) · [Pricing](https://blode.md/pricing)

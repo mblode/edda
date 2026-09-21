@@ -18,7 +18,7 @@ Edda is built by [Matthew Blode](https://blode.co).
 
 ## Open source
 
-The source, issues, and releases live on [GitHub](https://github.com/mblode/blodemd). MIT licensed.
+The source, issues, and releases live on [GitHub](https://github.com/mblode/edda). MIT licensed.
 
 ## Get in touch
 

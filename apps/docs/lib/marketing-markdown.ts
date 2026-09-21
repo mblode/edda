@@ -1,9 +1,9 @@
 const MARKETING_MARKDOWN: Record<string, string> = {
   "/": `# Edda
 
-The answer they read matches the commit you merged.
+Knowledge docs for agents. Git-native MDX. Publish on merge.
 
-I built this for people who already write MDX in git. Hosted is $0. MIT if I disappear.
+Write MDX in git. The merge publishes the site and the Markdown from that commit. Hosted is $0. MIT if I disappear.
 
 ## No second editor. On purpose.
 
@@ -35,15 +35,15 @@ edda push docs
 
 ## Links
 
-- [About](https://blode.co/edda)
-- [Blog](https://blode.co/edda)
-- [Changelog](https://blode.co/edda)
-- [Free online llms.txt resources](https://blode.co/edda)
+- [About](https://blode.md/about)
+- [Blog](https://blode.md/blog)
+- [Changelog](https://blode.md/changelog)
+- [Free online llms.txt resources](https://blode.md/free-online-llms-txt-resources)
 - [Privacy](https://blode.md/privacy)
 - [Terms](https://blode.md/terms)
 - [Security](https://blode.md/security)
 - [Docs](https://blode.md/docs)
-- [GitHub](https://github.com/mblode/blodemd)
+- [GitHub](https://github.com/mblode/edda)
 `,
   "/about": `# About Edda
 
@@ -51,11 +51,11 @@ I will not ship a second editor. Docs stay in the git repo. Hosted is $0. MIT if
 `,
   "/blog": `# Blog
 
-Notes from the team building blode.md.
+Notes from the team building Edda.
 `,
   "/changelog": `# Changelog
 
-Latest updates to the blode.md platform.
+Latest updates to the Edda platform.
 `,
   "/free-online-llms-txt-resources": `# Free online llms.txt resources
 
@@ -71,7 +71,7 @@ llms.txt is a proposed Markdown file served at \`/llms.txt\` that gives language
 4. [Examples](#examples)
 5. [Specs & standards](#specs-and-standards)
 6. [Tools & generators](#tools-and-generators)
-7. [Related docs on Edda](#related-docs-on-blode-md)
+7. [Related docs on Edda](#related-docs-on-edda)
 8. [FAQ](#faq)
 
 ## What is llms.txt
@@ -113,7 +113,7 @@ Yes. Edda sites get tenant-aware \`/llms.txt\`, \`/llms-full.txt\`, robots.txt, 
 
 ## Links
 
-- [Full HTML resource](https://blode.co/edda)
+- [Full HTML resource](https://blode.md/free-online-llms-txt-resources)
 - [blode.md/llms.txt](https://blode.md/llms.txt)
 - [Docs](https://blode.md/docs)
 `,
@@ -123,15 +123,15 @@ Edda is currently free for hosted projects and MIT licensed for self-hosting.
 `,
   "/privacy": `# Privacy Policy
 
-How blode.md collects, uses, and protects your information.
+How Edda collects, uses, and protects your information. The product is hosted at blode.md.
 `,
   "/security": `# Security
 
-Security practices at blode.md.
+Security practices for Edda, the docs platform at blode.md.
 `,
   "/terms": `# Terms of Service
 
-Terms governing your use of blode.md.
+Terms governing your use of Edda at blode.md.
 `,
 };
 

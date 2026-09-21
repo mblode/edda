@@ -40,7 +40,7 @@ export const siteConfig = {
         { href: "/docs/api/overview", label: "API" },
         {
           external: true,
-          href: "https://github.com/mblode/blodemd",
+          href: "https://github.com/mblode/edda",
           label: "GitHub",
         },
       ],
@@ -57,7 +57,7 @@ export const siteConfig = {
   links: {
     author: "https://blode.co",
     email: "m@blode.co",
-    github: "https://github.com/mblode/blodemd",
+    github: "https://github.com/mblode/edda",
     marketing: "https://blode.co/edda",
   },
   version: "0.0.9",

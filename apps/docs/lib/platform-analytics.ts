@@ -8,8 +8,15 @@ const PLATFORM_DOCS_TENANT_SLUG =
 
 const LOCAL_PLATFORM_HOSTS = new Set<string>(LOCAL_ROOT_HOSTS);
 
+const isLocalAnalyticsHost = (hostname: string): boolean => {
+  const host = normalizeHost(hostname);
+  return (
+    host === "localhost" || host === "127.0.0.1" || host.endsWith(".localhost")
+  );
+};
+
 /**
- * Platform PostHog should only run on Blode product/docs hosts — never on
+ * Platform PostHog should only run on Edda / blode.md product hosts — never on
  * customer tenant subdomains or custom domains.
  */
 export const isPlatformAnalyticsHost = (hostname: string): boolean => {
@@ -36,11 +43,18 @@ export const isPlatformAnalyticsHost = (hostname: string): boolean => {
   return false;
 };
 
+export const shouldInitPlatformPostHogForHost = (hostname: string): boolean => {
+  if (isLocalAnalyticsHost(hostname)) {
+    return false;
+  }
+  return isPlatformAnalyticsHost(hostname);
+};
+
 export const shouldInitPlatformPostHog = (): boolean => {
   if (typeof window === "undefined") {
     return false;
   }
-  return isPlatformAnalyticsHost(window.location.hostname);
+  return shouldInitPlatformPostHogForHost(window.location.hostname);
 };
 
 export const capturePlatformEvent = (

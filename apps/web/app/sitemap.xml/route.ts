@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 
+import { blogPosts } from "@/lib/blog";
+import { educationalResources } from "@/lib/educational-resources";
 import {
   PLATFORM_PAGES,
   PLATFORM_PATHS,
@@ -7,13 +9,26 @@ import {
 } from "@/lib/marketing-site";
 
 export const GET = () => {
-  const entries = PLATFORM_PATHS.map((path) => ({
-    lastmod: PLATFORM_PAGES[path],
-    path,
-  }));
+  const canonicalSet = new Set<string>(PLATFORM_PATHS);
+  const entries = [
+    ...PLATFORM_PATHS.map((path) => ({
+      lastmod: PLATFORM_PAGES[path],
+      path,
+    })),
+    ...blogPosts.map((post) => ({
+      lastmod: post.date,
+      path: `/blog/${post.slug}`,
+    })),
+    ...educationalResources
+      .filter((resource) => !canonicalSet.has(resource.path))
+      .map((resource) => ({
+        lastmod: resource.updatedAt,
+        path: resource.path,
+      })),
+  ];
 
   // No `changefreq` or `priority`: Google ignores both.
-  // Marketing pages 301 off this host; only remaining blode.md pages are listed.
+  // Apex `/` 301s to blode.co/edda and is omitted. Remaining pages stay here.
   const urls = entries
     .map(
       ({ lastmod, path }) => `  <url>

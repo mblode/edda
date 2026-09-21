@@ -46,11 +46,11 @@ const baseSecurityHeaders = [
 ];
 
 // PostHog runs through the `s.blode.md` reverse proxy, so one origin covers the
-// SDK's own script loads and its ingest calls. Unset at build time means
-// analytics is off (instrumentation-client soft no-ops) and the directive is
-// simply narrower.
-const posthogOrigin = (process.env.NEXT_PUBLIC_POSTHOG_HOST ?? "").trim();
-const posthogSource = posthogOrigin ? ` ${posthogOrigin}` : "";
+// SDK's own script loads and its ingest calls. Keep the default in sync with
+// `posthogDefaultApiHost` in apps/web/lib/posthog-key.ts.
+const posthogOrigin =
+  process.env.NEXT_PUBLIC_POSTHOG_HOST?.trim() || "https://s.blode.md";
+const posthogSource = ` ${posthogOrigin}`;
 
 const contentSecurityPolicy = [
   "default-src 'self'",
@@ -160,32 +160,19 @@ const nextConfig = {
   },
   partialPrefetching: true,
   reactCompiler: true,
-  // Production apex marketing → https://blode.co/edda. Host-conditional so
-  // localhost and preview deployments still render the pages. Product paths
-  // (/docs, /app, /oauth, /api, /sites, /.well-known, /llms*, /mcp, legal)
-  // stay on blode.md.
+  // Only the apex marketing landing 301s to https://blode.co/edda (blode-co
+  // repo). Host-conditional so localhost and preview still render `/`.
+  // Do not whole-host redirect: /about, /blog, /pricing, /docs, /app, /oauth,
+  // /api, /sites, /.well-known, /llms*, /mcp, and legal stay on blode.md.
   redirects() {
     const marketingHome = "https://blode.co/edda";
-    const sources = [
-      "/",
-      "/about",
-      "/blog",
-      "/blog/:path*",
-      "/changelog",
-      "/compare/mintlify",
-      "/docs-as-code",
-      "/free-online-llms-txt-resources",
-      "/pricing",
-    ];
     const hosts = ["blode.md", "www.blode.md"];
-    return hosts.flatMap((host) =>
-      sources.map((source) => ({
-        destination: marketingHome,
-        has: [{ type: "host", value: host }],
-        source,
-        statusCode: 301,
-      }))
-    );
+    return hosts.map((host) => ({
+      destination: marketingHome,
+      has: [{ type: "host", value: host }],
+      source: "/",
+      statusCode: 301,
+    }));
   },
   rewrites() {
     return {

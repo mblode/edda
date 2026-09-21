@@ -99,3 +99,10 @@ export const safeJsonParse = <T>(value: string): T | null => {
 
 export const clamp = (value: number, min: number, max: number) =>
   Math.min(Math.max(value, min), max);
+
+export {
+  PLATFORM_POSTHOG_DEFAULT_API_HOST,
+  PLATFORM_POSTHOG_PROJECT_TOKEN,
+  PLATFORM_POSTHOG_UI_HOST,
+  resolvePlatformPosthogApiHost,
+} from "./platform-posthog.js";

@@ -6,7 +6,7 @@ import {
 } from "@/lib/marketing-site";
 
 /**
- * Marketing now lives at blode.co/edda. Product hosts stay on blode.md.
+ * Brand marketing lives at blode.co/edda. Product hosts stay on blode.md.
  * Organization and website nodes follow the public marketing home.
  *
  * The one node it must not mint is the person. Reusing blode.co's `@id` across
@@ -53,7 +53,7 @@ const organization: SchemaNode = {
   },
   name: SITE_NAME,
   sameAs: [
-    "https://github.com/mblode/blodemd",
+    "https://github.com/mblode/edda",
     "https://blode.co",
     MARKETING_HOME,
   ],
