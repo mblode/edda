@@ -1,6 +1,6 @@
 {
   "name": "edda-docs",
-  "version": "0.2.2",
+  "version": "1.0.0",
   "description": "Edda CLI: git-native docs, published on merge",
   "repository": {
     "type": "git",

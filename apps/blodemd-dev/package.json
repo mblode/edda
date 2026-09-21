@@ -1,6 +1,6 @@
 {
   "name": "edda-docs-dev",
-  "version": "0.2.2",
+  "version": "1.0.0",
   "description": "Edda dev server runtime (companion package for edda-docs)",
   "repository": {
     "type": "git",

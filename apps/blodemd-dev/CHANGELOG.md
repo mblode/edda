@@ -1,5 +1,19 @@
 # blodemd-dev
 
+## 1.0.0
+
+### Major Changes
+
+- ab834cb: **Breaking:** the published CLI is now `edda-docs` (bin `edda`). The previous unscoped `blodemd` package name is retired. Bare `edda` is taken on npm, and the package name must not include Blode. Install with `npm i -g edda-docs`. The `blodemd` binary remains as a compatibility alias.
+
+  The companion dev-server package is now `edda-docs-dev` (bins `edda-dev` and `blodemd-dev`).
+
+  `EDDA_API_KEY`, `EDDA_PROJECT`, `EDDA_API_URL`, `EDDA_BRANCH`, and `EDDA_COMMIT_MESSAGE` are the documented environment variables. The previous `BLODEMD_*` names still work.
+
+### Minor Changes
+
+- cb1255a: `blodemd validate` now warns when visible pages have no frontmatter `description`. Each page's line in the generated `llms.txt` is `[title](url.md): description`, and that line is how coding agents choose which page to fetch, so a page without one lists as a bare title. Hidden pages are not reported. The scaffolded `CLAUDE.md` carries the same reminder.
+
 ## 0.2.2
 
 ### Patch Changes
