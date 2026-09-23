@@ -401,8 +401,8 @@ const eddaInitReveals = () => {
 
 // section_viewed {site, section} once per section per page view, the first
 // time half of it (or half the viewport, for a tall section) is on screen.
-// Skips the hero and anything already in view on load. Mirrors
-// trackSectionViews in lib/analytics.ts.
+// Skips the hero and anything already in view on load.
+// lib/analytics.unit.test.ts runs this against a fake observer.
 const eddaInitSectionViews = () => {
   try {
     if (!("IntersectionObserver" in window)) {

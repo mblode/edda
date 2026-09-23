@@ -34,7 +34,7 @@ edda new docs
 edda push docs
 \`\`\`
 
-## Choose your edition
+## Hosted or self-hosted
 
 - **No second editor**: $0 hosted. Sign in with GitHub and push.
 - **Your Postgres**: MIT. Clone the repo and run the same CLI.

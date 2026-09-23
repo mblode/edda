@@ -27,9 +27,17 @@ const servers = {
 
 // `E2E_APPS=web` starts only the servers a spec needs (`npm run test:instant`
 // touches apps/web alone). Unset, every app starts.
-const selected = (process.env.E2E_APPS ?? "web,docs,dashboard")
+const webServer = (process.env.E2E_APPS ?? "web,docs,dashboard")
   .split(",")
-  .map((name) => name.trim()) as (keyof typeof servers)[];
+  .map((name) => {
+    const server = servers[name.trim() as keyof typeof servers];
+    if (!server) {
+      throw new Error(
+        `Unknown E2E_APPS entry "${name}". Use ${Object.keys(servers).join(", ")}.`
+      );
+    }
+    return server;
+  });
 
 export default defineConfig({
   testDir: "./e2e",
@@ -38,5 +46,5 @@ export default defineConfig({
     baseURL: "http://localhost:3000",
     trace: "retain-on-failure",
   },
-  webServer: selected.map((name) => servers[name]),
+  webServer,
 });

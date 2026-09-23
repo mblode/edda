@@ -3,15 +3,12 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createContext, runInContext } from "node:vm";
 
-import { afterEach, describe, expect, it, vi } from "vitest";
-
-import { trackSectionViews } from "./analytics";
+import { describe, expect, it, vi } from "vitest";
 
 type Notify = (entries: unknown[]) => void;
 
 interface FakeSection {
   dataset: { section: string };
-  getAttribute: (name: string) => string | null;
   getBoundingClientRect: () => { bottom: number; top: number };
 }
 
@@ -19,7 +16,6 @@ const VIEWPORT = 800;
 
 const section = (id: string, top: number): FakeSection => ({
   dataset: { section: id },
-  getAttribute: (name) => (name === "data-section" ? id : null),
   getBoundingClientRect: () => ({ bottom: top + 600, top }),
 });
 
@@ -53,75 +49,12 @@ const fakeObserver = () => {
   return { FakeIntersectionObserver, observed, show };
 };
 
-const BrokenIntersectionObserver = function BrokenIntersectionObserver() {
-  throw new Error("unsupported");
-};
-
-const asElements = (sections: FakeSection[]) =>
-  sections as unknown as Element[];
-
-afterEach(() => {
-  vi.unstubAllGlobals();
-});
-
-describe("trackSectionViews", () => {
-  it("fires once per section, and skips the hero and the first viewport", () => {
-    const { FakeIntersectionObserver, observed, show } = fakeObserver();
-    vi.stubGlobal("window", {
-      IntersectionObserver: FakeIntersectionObserver,
-      innerHeight: VIEWPORT,
-    });
-    const capture = vi.fn();
-    const hero = section("hero", 2000);
-    const onLoad = section("agent-reader", 400);
-    const faq = section("faq", 3000);
-
-    trackSectionViews(asElements([hero, onLoad, faq]), capture);
-
-    expect([...observed]).toEqual([faq]);
-    show(faq);
-    show(faq);
-    expect(capture).toHaveBeenCalledTimes(1);
-    expect(capture).toHaveBeenCalledWith("faq");
-  });
-
-  it("does nothing without IntersectionObserver", () => {
-    vi.stubGlobal("window", { innerHeight: VIEWPORT });
-    const capture = vi.fn();
-    const cleanup = trackSectionViews(
-      asElements([section("faq", 3000)]),
-      capture
-    );
-    expect(capture).not.toHaveBeenCalled();
-    expect(() => cleanup()).not.toThrow();
-  });
-
-  it("never throws, even when the capture or the observer does", () => {
-    const { FakeIntersectionObserver, show } = fakeObserver();
-    vi.stubGlobal("window", {
-      IntersectionObserver: FakeIntersectionObserver,
-      innerHeight: VIEWPORT,
-    });
-    const faq = section("faq", 3000);
-    trackSectionViews(asElements([faq]), () => {
-      throw new Error("analytics down");
-    });
-    expect(() => show(faq)).not.toThrow();
-
-    vi.stubGlobal("window", {
-      IntersectionObserver: BrokenIntersectionObserver,
-      innerHeight: VIEWPORT,
-    });
-    expect(() => trackSectionViews(asElements([faq]))).not.toThrow();
-  });
-});
-
 describe("landing.js section_viewed", () => {
   const here = dirname(fileURLToPath(import.meta.url));
   const source = readFileSync(join(here, "../public/landing.js"), "utf8");
 
   const run = (sections: FakeSection[], withObserver: boolean) => {
-    const { FakeIntersectionObserver, show } = fakeObserver();
+    const { FakeIntersectionObserver, observed, show } = fakeObserver();
     const capture = vi.fn();
     const window: Record<string, unknown> = {
       innerHeight: VIEWPORT,
@@ -143,12 +76,16 @@ describe("landing.js section_viewed", () => {
       window,
     });
     runInContext(source, context);
-    return { capture, show };
+    return { capture, observed, show };
   };
 
-  it("fires once per section with the edda site", () => {
+  it("fires once per section, skipping the hero and the first viewport", () => {
     const faq = section("faq", 3000);
-    const { capture, show } = run([section("pricing", 100), faq], true);
+    const { capture, observed, show } = run(
+      [section("hero", 2000), section("pricing", 100), faq],
+      true
+    );
+    expect([...observed]).toEqual([faq]);
     show(faq);
     show(faq);
     expect(capture).toHaveBeenCalledTimes(1);

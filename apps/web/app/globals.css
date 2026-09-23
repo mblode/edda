@@ -586,7 +586,8 @@
 }
 
 /* Once-only reveal, below the fold only. landing.js sets "pending" on an
-   element that starts off screen, then "shown" when it scrolls in. */
+   element that starts off screen, then "shown" when it scrolls in. It can run
+   before hydration, so each [data-reveal] element suppresses the warning. */
 @media (prefers-reduced-motion: no-preference) {
   [data-reveal="pending"] {
     opacity: 0;

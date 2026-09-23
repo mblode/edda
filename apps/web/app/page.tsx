@@ -105,7 +105,7 @@ const PrimaryCta = ({
   location: string;
   size?: "default" | "lg";
 }) => (
-  <Button asChild className="rounded-full" size={size}>
+  <Button asChild className="min-h-11 rounded-full" size={size}>
     <a
       data-cta-label={CTA_LABEL}
       data-cta-location={location}
@@ -225,14 +225,14 @@ export default function HomePage() {
         secondary={
           <>
             <Link
-              className={`${textLink} text-sm`}
+              className={`${textLink} inline-flex min-h-11 items-center text-sm`}
               data-cta-location="home_hero_secondary"
               href="/docs"
             >
               Read the docs
             </Link>
             <Link
-              className={`${textLink} text-sm`}
+              className={`${textLink} inline-flex min-h-11 items-center text-sm`}
               data-cta-location="home_hero_migrate"
               href="/docs/guides/migrate-from-mintlify"
             >
@@ -250,7 +250,7 @@ export default function HomePage() {
         data-section="agent-reader"
         className="border-border border-t py-24 text-center md:py-32"
       >
-        <div className="container" data-reveal>
+        <div className="container" data-reveal suppressHydrationWarning>
           <h2
             className="h-title mx-auto max-w-3xl text-balance font-semibold text-3xl md:text-5xl"
             id="new-reader-title"
@@ -283,7 +283,7 @@ export default function HomePage() {
         className="border-border border-t py-24 text-center md:py-32"
         data-section="agents-draft"
       >
-        <div className="container" data-reveal>
+        <div className="container" data-reveal suppressHydrationWarning>
           <h2 className="h-display text-balance font-semibold text-3xl md:text-5xl">
             Agents draft. People merge.
           </h2>
@@ -349,7 +349,11 @@ export default function HomePage() {
                 keys or telemetry.
               </p>
               <div className="mt-6">
-                <Button asChild className="rounded-full" variant="outline">
+                <Button
+                  asChild
+                  className="min-h-11 rounded-full"
+                  variant="outline"
+                >
                   <a
                     data-cta-location="home_pricing_self_hosted"
                     href={siteConfig.links.github}
