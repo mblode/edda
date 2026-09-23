@@ -88,10 +88,6 @@ Whether a person or an agent wrote it, a docs change is a diff your team approve
 
 The GitHub App deploys on every push to `main`, so the docs change ships the day the product does.
 
-### Hosted or self-hosted
-
-Use hosted Edda on a `blode.md` subdomain or your own domain, or run the same MIT CLI and renderer on your Postgres. If hosted goes away, you keep the source.
-
 ## Hosted or self-hosted
 
 No visual editor, plugin marketplace, SOC 2, SSO or SLA. Support is the founder.

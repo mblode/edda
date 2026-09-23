@@ -1,4 +1,4 @@
-import { ArrowRightIcon } from "blode-icons-react";
+import { ArrowRightIcon, ChevronRightIcon } from "blode-icons-react";
 import Link from "next/link";
 import type { ReactNode } from "react";
 
@@ -16,7 +16,6 @@ import { siteConfig } from "@/lib/config";
 import { HOME_FAQS } from "@/lib/home-faqs";
 import {
   HOME_DESCRIPTION,
-  HOME_EYEBROW,
   HOME_HEADLINE,
   HOME_SUBHEAD,
   HOME_TITLE,
@@ -148,6 +147,41 @@ const DiffMedia = () => (
   </figure>
 );
 
+const breadcrumbLink =
+  "rounded-sm outline-none transition-colors hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring";
+
+/**
+ * blode.co/edda injects this trail when the page has none, but with class
+ * names this app's CSS never generates, so it rendered unstyled over the
+ * header. Rendering it here makes the proxy skip its copy. Keep the labels and
+ * URLs in step with EDDA_BREADCRUMB_NAV in blode-co's lib/edda-landing.ts.
+ */
+const Breadcrumb = () => (
+  <nav aria-label="Breadcrumb">
+    <ol className="flex flex-wrap items-center justify-center gap-2 text-muted-foreground text-sm">
+      <li>
+        <a className={breadcrumbLink} href="https://blode.co" rel="author">
+          Matthew Blode
+        </a>
+      </li>
+      <li aria-hidden="true">
+        <ChevronRightIcon className="size-3.5" />
+      </li>
+      <li>
+        <a className={breadcrumbLink} href="https://blode.co/projects">
+          Projects
+        </a>
+      </li>
+      <li aria-hidden="true">
+        <ChevronRightIcon className="size-3.5" />
+      </li>
+      <li aria-current="page" className="text-foreground">
+        Edda
+      </li>
+    </ol>
+  </nav>
+);
+
 const textLink =
   "rounded-sm underline underline-offset-4 outline-none focus-visible:ring-2 focus-visible:ring-ring";
 
@@ -195,19 +229,6 @@ const features: { description: string; media: ReactNode; title: string }[] = [
     ),
     title: "Publish on merge",
   },
-  {
-    description:
-      "Use hosted Edda on a blode.md subdomain or your own domain, or run the same MIT CLI and renderer on your Postgres. If hosted goes away, you keep the source.",
-    media: (
-      <CodeMedia
-        caption="Same CLI either way"
-        code={
-          "# hosted, $0\nedda push docs\n\n# self-hosted, MIT\ngit clone https://github.com/mblode/edda"
-        }
-      />
-    ),
-    title: "Hosted or self-hosted",
-  },
 ];
 
 export default function HomePage() {
@@ -219,9 +240,7 @@ export default function HomePage() {
       <MarketingHero
         action={<PrimaryCta location="home_hero" />}
         description={HOME_SUBHEAD}
-        eyebrow={
-          <p className="text-muted-foreground text-sm">{HOME_EYEBROW}</p>
-        }
+        eyebrow={<Breadcrumb />}
         secondary={
           <>
             <Link
