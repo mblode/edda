@@ -41,7 +41,7 @@ export const LandingHeader = () => (
           Log in
         </a>
         <a
-          className="rounded-full bg-foreground px-4 py-2 text-sm font-medium text-background"
+          className="relative rounded-full bg-foreground px-4 py-2 text-sm font-medium text-background after:absolute after:-inset-y-1 after:inset-x-0"
           data-cta-location="header"
           href="https://blode.md/oauth/consent"
         >
