@@ -21,12 +21,36 @@ export const PLATFORM_ORIGIN = "https://blode.md";
 
 export const SITE_NAME = "Edda";
 
-/** Designer lock. Keep character-for-character with the README hero. */
+/**
+ * Product one-liner. Designer lock: keep character-for-character with the
+ * README hero and the CLI description. The home page H1 is HOME_HEADLINE.
+ */
 // oxfmt-ignore
-export const HOME_TITLE = "Knowledge docs for agents. Git-native MDX. Publish on merge.";
+export const PRODUCT_ONE_LINER = "Knowledge docs for agents. Git-native MDX. Publish on merge.";
 
-/** Default meta description. Lock first, how second. */
-export const HOME_DESCRIPTION = `${HOME_TITLE} Write MDX in git. The merge publishes the site and the Markdown from that commit. Hosted is $0. MIT if I disappear.`;
+/** Home eyebrow above the H1. The brand plus the one-liner's category. */
+export const HOME_EYEBROW = "Edda, knowledge docs for agents";
+
+/** Home H1: the promise. The search query lives in HOME_TITLE. */
+export const HOME_HEADLINE = "Docs agents can navigate";
+
+/** Home subhead: why it matters and what changes, in one sentence. */
+export const HOME_SUBHEAD =
+  "Agents now read more docs than people do, so every merge publishes HTML for people and indexed Markdown for agents from the same commit.";
+
+/** Home `<title>`: the query first, then the brand. */
+export const HOME_TITLE = `Docs for AI agents, published on merge | ${SITE_NAME}`;
+
+/** Default meta description. */
+export const HOME_DESCRIPTION =
+  "Git-native MDX docs. Every merge publishes HTML for people and indexed Markdown, llms.txt and WebMCP tools for agents. $0 hosted, MIT source.";
+
+/**
+ * Mintlify's 2026 State of Knowledge Report, the source of every agent
+ * readership figure on the home page. Each figure is cited next to a link here.
+ */
+export const KNOWLEDGE_REPORT_URL =
+  "https://www.mintlify.com/state-of-knowledge/2026";
 
 /** Inner pages set a bare title and the root layout appends the product. */
 export const TITLE_TEMPLATE = `%s | ${SITE_NAME}`;

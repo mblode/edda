@@ -11,6 +11,9 @@ const termsDescription =
   "Terms of service for Edda: ground rules for the hosted docs platform, including your content, acceptable use, account responsibilities, and updates.";
 const termsTitle = "Terms of service for Edda";
 
+// Linked from the landing footer; e2e/web-instant.spec.ts guards it.
+export const instant = true;
+
 export const metadata = pageMetadata({
   description: termsDescription,
   path: "/terms",

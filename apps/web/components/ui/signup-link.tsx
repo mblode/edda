@@ -3,7 +3,7 @@
 import Link from "next/link";
 import type { ComponentProps } from "react";
 
-import { captureEvent } from "@/lib/analytics";
+import { captureCtaClicked, captureEvent } from "@/lib/analytics";
 
 type SignupLinkProps = Omit<ComponentProps<typeof Link>, "href"> & {
   href?: ComponentProps<typeof Link>["href"];
@@ -20,6 +20,10 @@ export const SignupLink = ({
     href={href}
     onClick={(event) => {
       captureEvent("signup_intent_selected", { location });
+      captureCtaClicked(
+        location,
+        event.currentTarget.textContent?.trim() || location
+      );
       onClick?.(event);
     }}
     {...props}

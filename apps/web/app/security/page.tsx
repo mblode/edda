@@ -17,6 +17,9 @@ const securityDescription =
   "How Edda handles security today: HTTPS by default, GitHub OAuth for sign-in, open source code you can audit, and a clear path to report vulnerabilities.";
 const securityTitle = "Security practices and reporting";
 
+// Linked from the landing footer.
+export const instant = true;
+
 export const metadata = pageMetadata({
   description: securityDescription,
   path: "/security",

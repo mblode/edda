@@ -1,90 +1,135 @@
-# Edda
+# Docs agents can navigate
 
-> Knowledge docs for agents. Git-native MDX. Publish on merge.
+> Agents now read more docs than people do, so every merge publishes HTML for people and indexed Markdown for agents from the same commit.
 
-Hosted is $0. MIT if I disappear.
+Edda, knowledge docs for agents. Hosted is $0. The CLI and renderer are MIT.
 
-Last updated: 21 September 2026
+Last updated: 22 September 2026
 
-## Get started
+- [Connect GitHub to publish](https://blode.md/oauth/consent)
+- [Read the docs](https://blode.co/edda/docs)
+- [Moving from Mintlify?](https://blode.co/edda/docs/guides/migrate-from-mintlify)
 
-- [Connect GitHub](https://blode.md/oauth/consent)
-- [Read the docs](https://blode.md/docs)
-- [Pricing](https://blode.md/pricing)
+## MDX in, HTML and Markdown out
 
-## No second editor. On purpose.
+This MDX:
 
-Git-native docs hosts added a web editor that commits back to the repo, plus a marketplace. If you want that, that product exists.
+<!-- prettier-ignore -->
+```mdx
+# Quickstart
 
-If you want a CMS, this is the wrong tool. You're not looking for a second review flow.
+Install the CLI, then publish your first page.
 
-Write MDX in the repo. The pull request is the review. The merge publishes the site, including the Markdown agents fetch from that commit.
+<Note>
+Run `edda login` once per machine.
+</Note>
 
-## What's inside
+## Publish
 
-### The merge is the deploy
+1. Run `edda new docs`
+2. Run `edda push docs`
 
-Sign in with GitHub and push. You do not run Docusaurus, a search index, or a custom-domain pipeline to get a public URL.
-
-#### CLI
-
-```bash
-# install the CLI
-npm i -g edda-docs
-
-# browser sign-in with GitHub
-edda login
-
-# scaffold from your project root
-edda new docs
-
-# ship it
-edda push docs
+Read the [CLI guide](/docs/cli/overview).
 ```
 
-Deployed to `acme.blode.md`.
+publishes an HTML page at `acme.blode.md/quickstart` and this Markdown at `acme.blode.md/quickstart.md`:
 
-#### GitHub
+<!-- prettier-ignore -->
+```md
+> ## Documentation Index
+> [HTML page](https://acme.blode.md/quickstart)
+> [Documentation index](https://acme.blode.md/llms.txt)
+> Use the index to discover all available pages before exploring further.
 
-1. Add a `docs/` folder first (or run `edda new docs`)
-2. Sign in with GitHub and pick the repo
-3. Point at the folder with `docs.json`, then push to `main`
+# Quickstart
 
-### Markdown from that commit
+Install the CLI, then publish your first page.
 
-`llms.txt`, `llms-full.txt`, and per-page `.md` exports are written from the same MDX as the HTML.
+> [!NOTE]
+> Run `edda login` once per machine.
 
-### On the domain they already trust
+## Publish
 
-Proxy `/docs` through the site you already run. See the [proxy guides](https://blode.md/docs/guides/proxy-vercel).
+1. Run `edda new docs`
+2. Run `edda push docs`
 
-### MIT if I disappear
+Read the [CLI guide](/docs/cli/overview).
+```
 
-Same CLI and renderer, your Postgres. Source on [GitHub](https://github.com/mblode/edda). If hosted goes away, you still have the source.
+## Your majority reader is an agent
 
-## Choose your edition
+- **257M** agent requests vs 131M human page loads, across Mintlify-hosted docs in August 2026
+- **83%** of agent traffic came through `.md` pages, `llms.txt` or agent skills
+- **0.11** failed requests per task when Markdown links to an index, vs 2.23 for HTML
 
-Named for what you do not get. Hosted is $0: no visual editor, no marketplace, no SOC 2. Detail is on [pricing](https://blode.md/pricing).
+Source: [Mintlify, 2026 State of Knowledge Report](https://www.mintlify.com/state-of-knowledge/2026).
 
-- **No second editor:** $0 hosted. [Connect GitHub](https://blode.md/oauth/consent)
-- **Your Postgres:** MIT. [View on GitHub](https://github.com/mblode/edda)
+Edda ships all three routes on every deploy, and every Markdown page links to the index before its first heading.
+
+## Agents draft. People merge.
+
+Most teams now have agents drafting docs changes, and most still want a person to approve them. In Edda that approval is the pull request you already review, and merging it is the publish. No second editor, no sync job, no docs that lag the release.
+
+## The merge is the deploy
+
+### Indexed Markdown on every page
+
+Each page has a `.md` twin that opens with a link to `llms.txt`, so an agent that lands on one page can find the rest instead of guessing URLs.
+
+### Tools for browser agents
+
+Every page registers five WebMCP tools (`search_docs`, `read_page`, `get_site_overview`, `read_skill`, `navigate_page`), so an agent driving a browser tab reads your docs through typed calls.
+
+### Review in the pull request
+
+Whether a person or an agent wrote it, a docs change is a diff your team approves beside the code it describes.
+
+### Publish on merge
+
+The GitHub App deploys on every push to `main`, so the docs change ships the day the product does.
+
+### Hosted or self-hosted
+
+Use hosted Edda on a `blode.md` subdomain or your own domain, or run the same MIT CLI and renderer on your Postgres. If hosted goes away, you keep the source.
+
+## Hosted or self-hosted
+
+No visual editor, plugin marketplace, SOC 2, SSO or SLA. Support is the founder.
+
+- **No second editor:** $0 hosted. Unlimited projects, pages and seats. Custom domains, search, MDX and API references included. [Connect GitHub to publish](https://blode.md/oauth/consent)
+- **Your Postgres:** MIT. Self-host the same CLI and renderer on your Postgres. No licence keys or telemetry. [View the source on GitHub](https://github.com/mblode/edda)
 
 ## FAQ
 
-**Who should use Edda?**
-People who already write MDX in git and review docs in a pull request. If you want a visual editor, a plugin marketplace, or a CMS, this is the wrong tool.
+**What is Edda?**
+Edda is a docs platform for teams that keep MDX in git. Every merge publishes an HTML site for people and, for agents, llms.txt, a Markdown copy of every page and WebMCP tools. Hosting is $0 and the source is MIT.
 
-**How is this different from Mintlify?**
-Mintlify Starter is also $0 and includes a web editor. We will not ship one. The merge publishes the site plus `llms.txt` from that commit. We do not claim drop-in compatibility with every Mintlify config key.
+**How is Edda different from Mintlify?**
+Edda is the git path without the web editor or marketplace: the same MDX files, a smaller docs.json and one command to publish. Hosted Edda is $0, and you can self-host the MIT source. Moving over takes a docs.json rewrite, not a content rewrite.
+[Migrate from Mintlify](https://blode.co/edda/docs/guides/migrate-from-mintlify)
 
-**How much does Edda cost?**
-Hosted is $0. What you do not get: a visual editor, a plugin marketplace, SOC 2, SSO, an SLA, or a logo wall. Support is the founder. The CLI and renderer are MIT. See [pricing](https://blode.md/pricing).
+**What do agents get from an Edda site?**
+llms.txt and llms-full.txt, a .md twin of every page (also served for Accept: text/markdown), discovery headers on every HTML page, a generated agent skill, and five WebMCP tools for browser agents. All of it is rebuilt from the commit you merged.
 
-**Is there a visual editor?**
-No. The pull request is the review.
+**Can an AI agent write my docs?**
+An agent can draft the change as a pull request like any other code change. Edda publishes what you merge, so a person stays the approver. Edda doesn't include a writing agent of its own.
 
-**Do agents get Markdown, or only the HTML site?**
-On every deploy the site writes `llms.txt`, `llms-full.txt`, robots.txt, a sitemap, and per-page `.md` exports from the MDX. Each `.md` page opens with a link back to `llms.txt`, the shape Mintlify's 2026 benchmark measured at 0.11 failed requests per task against 2.23 for HTML.
+**Can I see how much agent traffic my docs get?**
+Not in Edda yet. Agents fetch server-side and run no JavaScript, so PostHog counts people only. To count agents today, put a proxy you can log in front of the docs and count .md, llms.txt and AI user-agent requests.
+[Proxy with Vercel](https://blode.co/edda/docs/guides/proxy-vercel), [Proxy with Cloudflare](https://blode.co/edda/docs/guides/proxy-cloudflare), [Proxy with Nginx](https://blode.co/edda/docs/guides/proxy-nginx)
 
-**Who builds Edda and how do I get support?**
-Edda is built by [Matthew Blode](https://blode.co). Email [m@blode.co](mailto:m@blode.co) or open an issue on [GitHub](https://github.com/mblode/edda).
+**What does Edda cost?**
+Hosted Edda is $0 with unlimited projects, pages and seats, including custom domains, search, MDX and API references. You do not get a visual editor, a plugin marketplace, SOC 2, SSO or an SLA, and support is the founder. The CLI and renderer are MIT if you self-host.
+
+## Your next reader is an agent.
+
+Give it docs it can navigate, from the commit you merged.
+
+[Connect GitHub to publish](https://blode.md/oauth/consent), or install the CLI and publish from your terminal:
+
+```bash
+npm i -g edda-docs
+edda login
+edda new docs
+edda push docs
+```

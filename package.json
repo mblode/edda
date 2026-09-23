@@ -29,6 +29,7 @@
     "test:smoke": "vitest run --project smoke",
     "pretest:e2e": "turbo build --filter=web --filter=docs --filter=dashboard",
     "test:e2e": "playwright test",
+    "test:instant": "E2E_APPS=web playwright test e2e/web-instant.spec.ts",
     "db:start": "npx supabase start",
     "db:stop": "npx supabase stop",
     "db:push": "npm run db:local:push --workspace=packages/db",
@@ -36,18 +37,19 @@
     "knip": "DATABASE_URL=postgresql://localhost/dummy knip"
   },
   "devDependencies": {
-    "@changesets/cli": "^3.0.2",
+    "@changesets/cli": "^3.0.3",
+    "@next/playwright": "^16.3.6",
     "@playwright/test": "^1.63.0",
     "@testing-library/jest-dom": "^7.0.1",
-    "jsdom": "^30.0.1",
-    "knip": "6.35.1",
-    "lefthook": "^2.1.12",
-    "oxfmt": "^0.67.0",
-    "oxlint": "^1.82.0",
-    "turbo": "^2.10.12",
+    "jsdom": "^30.1.1",
+    "knip": "6.37.0",
+    "lefthook": "^2.1.14",
+    "oxfmt": "^0.70.0",
+    "oxlint": "^1.85.0",
+    "turbo": "^2.11.3",
     "typescript": "^7.0.2",
-    "ultracite": "7.11.1",
-    "vitest": "^5.0.0"
+    "ultracite": "7.12.0",
+    "vitest": "^5.0.1"
   },
   "engines": {
     "node": "24.x"

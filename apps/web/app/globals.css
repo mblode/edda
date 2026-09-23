@@ -491,3 +491,113 @@
     display: none;
   }
 }
+
+/* Landing MDX demo. Only the renderer's fixed tag set appears in here. */
+@layer components {
+  .mdx-demo-preview {
+    font-size: var(--text-sm);
+    line-height: 1.6;
+
+    & > * + * {
+      margin-top: calc(var(--spacing) * 3);
+    }
+
+    /* The renderer emits h3 to h5 for MDX # to ###. */
+    & h3 {
+      font-size: var(--text-2xl);
+      font-weight: 600;
+      line-height: 1.2;
+      letter-spacing: -0.02em;
+    }
+
+    & h4 {
+      margin-top: calc(var(--spacing) * 5);
+      font-size: var(--text-lg);
+      font-weight: 600;
+    }
+
+    & h5 {
+      font-weight: 600;
+    }
+
+    & ul,
+    & ol {
+      padding-left: calc(var(--spacing) * 5);
+    }
+
+    & ul {
+      list-style: disc;
+    }
+
+    & ol {
+      list-style: decimal;
+    }
+
+    & a {
+      text-decoration: underline;
+      text-underline-offset: 4px;
+    }
+
+    & code {
+      border-radius: var(--radius-sm);
+      background-color: var(--color-muted);
+      padding: 0.1rem 0.3rem;
+      font-family: var(--font-mono);
+      font-size: 0.85em;
+    }
+
+    & pre {
+      overflow-x: auto;
+      border-radius: var(--radius-lg);
+      background-color: var(--color-muted);
+      padding: calc(var(--spacing) * 3);
+
+      & code {
+        background: none;
+        padding: 0;
+      }
+    }
+
+    & .callout {
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      background-color: color-mix(in oklab, var(--muted) 60%, transparent);
+      padding: calc(var(--spacing) * 3) calc(var(--spacing) * 4);
+
+      & > * + * {
+        margin-top: calc(var(--spacing) * 2);
+      }
+    }
+
+    & .mdx-demo-empty {
+      color: var(--color-muted-foreground);
+    }
+  }
+
+  .mdx-demo-nojs {
+    display: none;
+  }
+
+  @media (scripting: none) {
+    .mdx-demo-nojs {
+      display: block;
+    }
+  }
+}
+
+/* Once-only reveal, below the fold only. landing.js sets "pending" on an
+   element that starts off screen, then "shown" when it scrolls in. */
+@media (prefers-reduced-motion: no-preference) {
+  [data-reveal="pending"] {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+
+  [data-reveal="shown"] {
+    opacity: 1;
+    transform: none;
+    transition:
+      opacity 450ms cubic-bezier(0.22, 1, 0.36, 1),
+      transform 450ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+}

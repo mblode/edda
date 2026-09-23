@@ -6,6 +6,8 @@ import { describe, expect, it } from "vitest";
 
 import {
   HOME_DESCRIPTION,
+  HOME_HEADLINE,
+  HOME_SUBHEAD,
   HOME_TITLE,
   isRedirectedMarketingPath,
   MARKETING_HOME,
@@ -13,6 +15,7 @@ import {
   pageMetadata,
   PLATFORM_ORIGIN,
   platformUrl,
+  PRODUCT_ONE_LINER,
   REDIRECTED_MARKETING_PATHS,
 } from "./marketing-site";
 
@@ -86,23 +89,32 @@ describe("marketing vs product hosts", () => {
 });
 
 describe("Designer-locked product one-liner", () => {
-  it("HOME_TITLE value is the exact three-sentence string", () => {
-    expect(HOME_TITLE).toBe(DESIGNER_ONE_LINER);
+  it("PRODUCT_ONE_LINER value is the exact three-sentence string", () => {
+    expect(PRODUCT_ONE_LINER).toBe(DESIGNER_ONE_LINER);
   });
 
-  it("README hero and HOME_TITLE source quote the exact string", () => {
+  it("README hero and PRODUCT_ONE_LINER source quote the exact string", () => {
     const site = readFileSync(join(here, "marketing-site.ts"), "utf8");
     const readme = readFileSync(join(here, "../../../README.md"), "utf8");
     expect(readme).toContain(`**${DESIGNER_ONE_LINER}**`);
-    expect(site).toContain(`HOME_TITLE = "${DESIGNER_ONE_LINER}"`);
+    expect(site).toContain(`PRODUCT_ONE_LINER = "${DESIGNER_ONE_LINER}"`);
     expect(site).not.toMatch(/Knowledge docs for agents, published on merge/);
     expect(readme).not.toMatch(/Knowledge docs for agents, published on merge/);
   });
+});
 
-  it("HOME_DESCRIPTION leads with the lock", () => {
-    expect(HOME_DESCRIPTION.startsWith(DESIGNER_ONE_LINER)).toBe(true);
-    expect(HOME_DESCRIPTION).not.toMatch(
-      /Knowledge docs for agents, published on merge/
-    );
+describe("home page copy", () => {
+  it("keeps the H1 to 3 to 6 words and the query in the title", () => {
+    const words = HOME_HEADLINE.split(/\s+/);
+    expect(words.length).toBeGreaterThanOrEqual(3);
+    expect(words.length).toBeLessThanOrEqual(6);
+    expect(HOME_TITLE).toBe("Docs for AI agents, published on merge | Edda");
+  });
+
+  it("keeps the subhead to one sentence with no em dashes", () => {
+    expect(HOME_SUBHEAD.match(/[.!?](\s|$)/g)).toHaveLength(1);
+    for (const copy of [HOME_HEADLINE, HOME_SUBHEAD, HOME_DESCRIPTION]) {
+      expect(copy).not.toMatch(/\u2014|--/);
+    }
   });
 });

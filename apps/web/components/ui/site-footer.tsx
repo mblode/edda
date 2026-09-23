@@ -2,6 +2,7 @@ import { FileTextIcon } from "blode-icons-react";
 import Link from "next/link";
 
 import { siteConfig } from "@/lib/config";
+import { platformUrl } from "@/lib/marketing-site";
 
 const renderLink = ({
   label,
@@ -29,8 +30,8 @@ const renderLink = ({
 
 const landingHref = (href: string) =>
   ({
+    "/about": platformUrl("/about"),
     "/pricing": "#pricing",
-    "/about": "#about",
     "/docs-as-code": "#how-it-works",
     "/compare/mintlify": "#faq",
   })[href] ?? href;

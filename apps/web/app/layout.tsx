@@ -77,6 +77,9 @@ export default function RootLayout({
   return (
     <html
       className={`${glide.variable} ${glideMono.variable}`}
+      // globals.css sets smooth scrolling on <html>; this lets Next turn it off
+      // during route transitions so a client navigation lands at the top.
+      data-scroll-behavior="smooth"
       lang="en"
       suppressHydrationWarning
     >

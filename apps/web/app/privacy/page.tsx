@@ -11,6 +11,9 @@ const privacyDescription =
   "Privacy policy for Edda: what we collect when you sign in or publish docs, how we use it, third parties we rely on, and how to contact us.";
 const privacyTitle = "Privacy policy and data practices";
 
+// Linked from the landing footer; e2e/web-instant.spec.ts guards it.
+export const instant = true;
+
 export const metadata = pageMetadata({
   description: privacyDescription,
   path: "/privacy",
