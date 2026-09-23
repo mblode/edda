@@ -99,7 +99,7 @@ export const MarketingHeader = () => {
             Log in
           </LoginLink>
           <SignupLink
-            className="inline-flex h-8 items-center rounded-full bg-foreground px-4 font-medium text-background text-sm transition-opacity hover:opacity-90"
+            className="relative inline-flex h-8 items-center rounded-full bg-foreground px-4 font-medium text-background text-sm transition-opacity after:absolute after:-inset-y-1.5 after:inset-x-0 hover:opacity-90"
             location="header_desktop"
           >
             Sign up

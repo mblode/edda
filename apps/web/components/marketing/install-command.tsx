@@ -20,7 +20,7 @@ export const InstallCommand = ({ commands }: InstallCommandProps) => (
           <span className="text-muted-foreground text-xs">{item.label}</span>
           <button
             aria-label={`Copy ${item.label} commands`}
-            className="inline-flex h-8 min-w-20 items-center justify-center rounded-md border border-border px-3 text-sm outline-none transition-colors hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring"
+            className="relative inline-flex h-8 min-w-20 items-center justify-center rounded-md border border-border px-3 text-sm outline-none transition-colors hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring after:absolute after:-inset-2"
             data-copy-command={item.command}
             data-copy-label="Copy"
             data-copy-variant={item.label.toLowerCase()}
