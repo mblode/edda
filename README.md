@@ -17,8 +17,6 @@
 
 ## Demo
 
-Every docs site on the platform is built this way, including [captain.blode.md](https://captain.blode.md).
-
 <p>
 <a href="https://blode.co/edda">
 <img alt="Read the docs" src=".github/assets/demo.svg" width="200" />
