@@ -8,9 +8,9 @@
 @theme inline {
   --breakpoint-3xl: 1600px;
   --breakpoint-4xl: 2000px;
-  --font-sans: var(--font-glide), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
   --font-mono:
-    var(--font-glide-mono), ui-monospace, SFMono-Regular, Menlo, Monaco,
+    var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, Monaco,
     Consolas, monospace;
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
@@ -217,7 +217,7 @@
     font-synthesis: none;
     font-kerning: normal;
     font-variant-ligatures: common-ligatures;
-    font-feature-settings: "ss01", "cv11", "calt";
+    font-feature-settings: "calt";
   }
 
   :is([data-slot="kbd"], code, pre, .font-mono) {

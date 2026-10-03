@@ -45,7 +45,7 @@ describe("tenancy helpers", () => {
   it("treats root-level static assets as reserved", () => {
     expect(isReservedPath("/matthew-blode-profile.jpg")).toBe(true);
     expect(isReservedPath("/web-app-manifest-192x192.png")).toBe(true);
-    expect(isReservedPath("/glide-variable.woff2")).toBe(true);
+    expect(isReservedPath("/inter-variable.woff2")).toBe(true);
     expect(isReservedPath("/file-text.svg")).toBe(true);
     expect(isReservedPath("/some-new-image.webp")).toBe(true);
   });
