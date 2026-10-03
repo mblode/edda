@@ -18,7 +18,7 @@ describe("isReservedPath with the implicit Vercel asset prefix", () => {
 
   it("reserves the docs asset prefix", () => {
     expect(isReservedPath("/_docs/_next/static/chunks/main.js")).toBe(true);
-    expect(isReservedPath("/_docs/_next/static/media/glide.woff2")).toBe(true);
+    expect(isReservedPath("/_docs/_next/static/media/inter.woff2")).toBe(true);
   });
 
   it("still routes tenant pages that merely start with an underscore", () => {

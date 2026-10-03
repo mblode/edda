@@ -5,20 +5,20 @@ import localFont from "next/font/local";
 
 import "./globals.css";
 
-const glide = localFont({
+const inter = localFont({
   display: "swap",
   src: [
-    { path: "./fonts/glide-variable.woff2", style: "normal" },
-    { path: "./fonts/glide-variable-italic.woff2", style: "italic" },
+    { path: "./fonts/inter-variable.woff2", style: "normal" },
+    { path: "./fonts/inter-variable-italic.woff2", style: "italic" },
   ],
-  variable: "--font-glide",
-  weight: "100 950",
+  variable: "--font-inter",
+  weight: "100 900",
 });
 
-const glideMono = localFont({
+const geistMono = localFont({
   display: "swap",
-  src: [{ path: "./fonts/glide-mono.woff2" }],
-  variable: "--font-glide-mono",
+  src: [{ path: "./fonts/geist-mono.woff2" }],
+  variable: "--font-geist-mono",
   weight: "400",
 });
 
@@ -35,7 +35,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${glide.variable} ${glideMono.variable}`}
+      className={`${inter.variable} ${geistMono.variable}`}
       suppressHydrationWarning
     >
       <body className="relative flex w-full flex-col justify-center overflow-x-hidden scroll-smooth bg-background font-sans antialiased [--header-height:calc(var(--spacing)*16)]">
