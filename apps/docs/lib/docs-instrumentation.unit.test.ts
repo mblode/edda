@@ -11,7 +11,7 @@ beforeEach(() => {
 afterEach(() => vi.unstubAllGlobals());
 
 describe("docs instrumentation", () => {
-  it.each(["docs.blode.md", "acme.blode.md", "docs.example.com", "blode.co"])(
+  it.each(["docs.blode.md", "acme.blode.md", "blode.co"])(
     "initializes the shared project once on %s",
     async (hostname) => {
       vi.stubGlobal("window", { location: { hostname } });
@@ -30,12 +30,18 @@ describe("docs instrumentation", () => {
         product: "edda",
         surface: "docs",
       });
+      expect(
+        init.mock.calls[0]?.[1].before_send({ properties: {} })
+      ).toStrictEqual({ properties: { project: "edda" } });
     }
   );
 
-  it("does not initialize on localhost", async () => {
-    vi.stubGlobal("window", { location: { hostname: "localhost" } });
-    await import("../instrumentation-client");
-    expect(init).not.toHaveBeenCalled();
-  });
+  it.each(["localhost", "docs.example.com"])(
+    "does not initialize on %s",
+    async (hostname) => {
+      vi.stubGlobal("window", { location: { hostname } });
+      await import("../instrumentation-client");
+      expect(init).not.toHaveBeenCalled();
+    }
+  );
 });

@@ -62,9 +62,25 @@ export const shouldInitPlatformPostHog = (): boolean => {
   return shouldInitPlatformPostHogForHost(window.location.hostname);
 };
 
-/** All deployed docs surfaces, including tenant/custom domains and path proxies. */
-export const shouldTrackDocsPostHogForHost = (hostname: string): boolean =>
-  Boolean(normalizeHost(hostname)) && !isLocalAnalyticsHost(hostname);
+const isUnderDomain = (host: string, domain: string): boolean =>
+  host === domain || host.endsWith(`.${domain}`);
+
+/**
+ * Docs served on our own domains: the platform, its tenant subdomains, and
+ * the blode.co path proxies. Customer custom domains are excluded so their
+ * readers land only in the tenant's own PostHog project.
+ */
+export const shouldTrackDocsPostHogForHost = (hostname: string): boolean => {
+  const host = normalizeHost(hostname);
+  if (!host || isLocalAnalyticsHost(host)) {
+    return false;
+  }
+  return (
+    isPlatformAnalyticsHost(host) ||
+    isUnderDomain(host, PLATFORM_ROOT_DOMAIN) ||
+    isUnderDomain(host, "blode.co")
+  );
+};
 
 export const shouldTrackDocsPostHog = (): boolean =>
   typeof window !== "undefined" &&

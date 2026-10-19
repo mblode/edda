@@ -57,12 +57,18 @@ describe("shared docs analytics", () => {
     "blode.md",
     "docs.blode.md",
     "acme.blode.md",
-    "docs.example.com",
     "blode.co",
+    "www.blode.co",
     "edda-docs-abc.vercel.app",
   ])("tracks deployed docs on %s", (host) => {
     expect(shouldTrackDocsPostHogForHost(host)).toBe(true);
   });
+  it.each(["docs.example.com", "donebear.com", "notblode.co"])(
+    "leaves custom domain %s to tenant analytics",
+    (host) => {
+      expect(shouldTrackDocsPostHogForHost(host)).toBe(false);
+    }
+  );
   it.each([
     "",
     "localhost",

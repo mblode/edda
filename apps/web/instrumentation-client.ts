@@ -20,6 +20,12 @@ const isLocalHost = (): boolean => {
 if (!isLocalHost()) {
   posthog.init(posthogKey, {
     api_host: resolvePosthogHost(),
+    before_send: (event) => {
+      if (event) {
+        event.properties.project = "edda";
+      }
+      return event;
+    },
     capture_exceptions: true,
     debug: process.env.NODE_ENV === "development",
     defaults: "2026-05-30",

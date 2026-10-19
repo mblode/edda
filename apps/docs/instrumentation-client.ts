@@ -7,8 +7,9 @@ import { posthog } from "posthog-js";
 
 import { shouldTrackDocsPostHog } from "./lib/platform-analytics";
 
-// Every deployed docs site reports to the shared project. Tenant BYO analytics
-// remain isolated in the named "tenant" instance.
+// Docs on our own domains report to the shared project; custom domains do not
+// (see shouldTrackDocsPostHogForHost). Tenant BYO analytics remain isolated in
+// the named "tenant" instance.
 // Token is hardcoded to the blode.co project so a stray
 // NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN cannot send to a different project.
 if (shouldTrackDocsPostHog()) {
@@ -16,6 +17,12 @@ if (shouldTrackDocsPostHog()) {
     api_host: resolvePlatformPosthogApiHost(
       process.env.NEXT_PUBLIC_POSTHOG_HOST
     ),
+    before_send: (event) => {
+      if (event) {
+        event.properties.project = "edda";
+      }
+      return event;
+    },
     capture_exceptions: true,
     capture_pageview: "history_change",
     loaded: (client) => client.register({ product: "edda", surface: "docs" }),
